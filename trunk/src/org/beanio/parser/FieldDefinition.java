@@ -1,0 +1,393 @@
+/*
+ * Copyright 2010 Kevin Seim
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.beanio.parser;
+
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.*;
+import java.util.Map;
+import java.util.regex.*;
+
+import org.beanio.*;
+import org.beanio.types.*;
+
+/**
+ * 
+ * @author Kevin Seim
+ * @since 1.0
+ */
+public abstract class FieldDefinition {
+
+	private String name;
+	private int position = 0;
+	private boolean recordIdentifier = false;
+	private boolean trim = true;
+	private boolean required = false;
+	private boolean property = false;
+	protected int minLength = 0; 
+	protected int maxLength = -1; // -1 for unbounded
+	private String literal = null;
+	private Pattern regex;
+	
+	private Class<?> propertyClass;
+	private PropertyDescriptor propertyDescriptor;
+	private TypeHandler handler;
+	private Object defaultValue;
+	
+	/**
+	 * Tests if the field text in the record matches this field definition.
+	 * @param record the record containing the field to test
+	 * @return <tt>true</tt> if the text is a match
+	 */
+	public abstract boolean isMatch(Record record);
+	
+	protected boolean isMatch(String text) {
+		if (text == null)
+			return false;
+		if (literal != null && literal.equals(text))
+			return true;
+		if (regex != null && regex.matcher(text).matches())
+			return true;
+		return false;
+	}
+	
+	/**
+	 * Tests if the given field value matches this field definition.
+	 * @param value the field value to test
+	 * @return <tt>true</tt> if the value matched, <tt>false</tt> otherwise
+	 */
+	public boolean isMatch(Object value) {
+		if (value == null)
+			return false;
+		
+		return isMatch(value.toString());
+	}
+	
+	/**
+	 * Parses the raw field text from a record prior to any validation and sets
+	 * the text on the record. 
+	 * @param record the record to parse
+	 * @return the parsed field text
+	 */
+	protected abstract String parseField(Record record);
+	
+	/**
+	 * Validates and parses the value of this field from a record.  If field validation
+	 * fails, appropriate field errors are set on the record, and null is returned. 
+	 * @param record the record to parse and update with any field errors
+	 * @return the field value, or <tt>null</tt> if validation failed
+	 */
+	public Object parseValue(Record record) {
+		boolean valid = true;
+		
+		// parse the field text from the record
+		String text = parseField(record);
+
+		// trim if configured
+		if (text != null && trim) {
+			text = text.trim();
+		}
+		
+		if (text == null || "".equals(text)) {
+			if (required) {
+				record.addFieldError(name, text, "required");
+				valid = false;
+			}
+			return defaultValue;
+		}
+		else {
+			// validate constant fields
+			if (literal != null && !literal.equals(text)) {
+				record.addFieldError(name, text, "literal", literal);
+				valid = false;
+			}
+			// validate minimum length
+			if (minLength > -1 && text.length() < minLength) {
+				record.addFieldError(name, text, "minLength", minLength, maxLength);
+				valid = false;
+			}
+			// validate maximum length
+			if (maxLength > -1 && text.length() > maxLength) {
+				record.addFieldError(name, text, "maxLength", minLength, maxLength);
+				valid  = false;
+			}
+			// validate the regular expression
+			if (regex != null && !regex.matcher(text).matches()) {
+				record.addFieldError(name, text, "regex", regex.pattern());
+				valid = false;
+			}
+		}
+		
+		if (valid) {
+			try {
+				return handler == null ? text : handler.parse(text);
+			}
+			catch (TypeConversionException ex) {
+				record.addFieldError(name, text, "type", ex.getMessage());
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Derives the field value from a bean and formats the field text.
+	 * @param isMap set to <tt>true</tt> if the record bean is assignable
+	 *   to <tt>Map</tt> 
+	 * @param bean the record bean
+	 * @return the formatted field text
+	 */
+	@SuppressWarnings("rawtypes")
+	public String formatValue(boolean isMap, Object bean) {
+		if (literal != null)
+			return literal;
+		
+		Object value;
+		if (isMap) {
+			value = ((Map)bean).get(name);
+		}
+		else {
+			Method getter = null;
+			if (propertyDescriptor != null) {
+				getter = propertyDescriptor.getReadMethod();
+			}
+			if (getter == null) {
+				throw new BeanWriterIOException("No getter found for field '" + name + "'");
+			}
+			
+			try {
+				value = getter.invoke(bean);
+			} catch (IllegalArgumentException e) {
+				throw new BeanIOException(e);
+			} catch (IllegalAccessException e) {
+				throw new BeanIOException(e);
+			} catch (InvocationTargetException e) {
+				throw new BeanIOException(e);
+			}
+		}
+		
+		String text = null;
+		if (handler != null) {
+			try {
+				text = handler.format(value);
+			}
+			catch (Exception ex) {
+				throw new BeanIOException(ex);
+			}
+		}
+		else if (value != null) {
+			text = value.toString();
+		}
+		else {
+			text = "";
+		}
+		
+		return text;
+	}
+	
+	/**
+	 * Returns the field name.
+	 * @return the field name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Sets the field name.
+	 * @param name the new field name
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * Returns the position of this field within the record.
+	 * @return the field position
+	 */
+	public int getPosition() {
+		return position;
+	}
+
+	/**
+	 * Sets the position of this field within the record beginning at <tt>0</tt>.
+	 * @param position the field position, starting at <tt>0</tt>
+	 */
+	public void setPosition(int position) {
+		this.position = position;
+	}
+
+	/**
+	 * Returns <tt>true</tt> if the field text will be trimmed before
+	 * validation and type conversion.
+	 * @return <tt>true</tt> if the field text will be trimmed
+	 */
+	public boolean isTrim() {
+		return trim;
+	}
+
+	/**
+	 * Set to <tt>true</tt> if the field text should be trimmed before
+	 * validation and type conversion.
+	 * @param trim set to <tt>true</tt> to trim the field text
+	 */
+	public void setTrim(boolean trim) {
+		this.trim = trim;
+	}
+
+	/**
+	 * Returns <tt>true</tt> if this field is used to identify the
+	 * record type.
+	 * @return <tt>true</tt> if this fields is used to identify the record type
+	 */
+	public boolean isRecordIdentifier() {
+		return recordIdentifier;
+	}
+
+	/**
+	 * Set to <tt>true</tt> if this field should be used to identify the record type.
+	 * @param b set to <tt>true</tt> to use this field to identify the reocrd type
+	 */
+	public void setRecordIdentifier(boolean b) {
+		this.recordIdentifier = b;
+	}
+
+	/**
+	 * Returns the textual literal value the field text must match, or <tt>null</tt> if
+	 * no literal validation will be performed.
+	 * @return literal field text
+	 */
+	public String getLiteral() {
+		return literal;
+	}
+
+	/**
+	 * Sets the literal text this field must match.  If set to <tt>null</tt>, no
+	 * literal validation is performed.
+	 * @param literal the literal field text
+	 */
+	public void setLiteral(String literal) {
+		this.literal = literal;
+	}
+
+	/**
+	 * Returns the type handler for this field.  May be <tt>null</tt> if the
+	 * field value is of type <tt>String</tt>.
+	 * @return the field type handler
+	 */
+	public TypeHandler getHandler() {
+		return handler;
+	}
+
+	/**
+	 * Sets the type handler for this field.  May be set to <tt>null</tt> if the
+	 * field value is of type <tt>String</tt>.
+	 * @param handler the new type handler
+	 */
+	public void setHandler(TypeHandler handler) {
+		this.handler = handler;
+	}
+
+	public PropertyDescriptor getPropertyDescriptor() {
+		return propertyDescriptor;
+	}
+
+	public void setPropertyDescriptor(PropertyDescriptor propertyDescriptor) {
+		this.propertyDescriptor = propertyDescriptor;
+	}
+
+	/**
+	 * Returns <tt>true</tt> if this field is required.  Required fields cannot
+	 * match the empty String.  Note that trimming is performed before the required
+	 * validation is performed. 
+	 * @return <tt>true</tt> if this field is required
+	 */
+	public boolean isRequired() {
+		return required;
+	}
+
+	/**
+	 * Sets to <tt>true</tt> if this field is required.  Required fields cannot
+	 * match the empty String.  Note that trimming is performed before the required
+	 * validation is performed. 
+	 * @param required <tt>true</tt> if this field is required
+	 */
+	public void setRequired(boolean required) {
+		this.required = required;
+	}
+
+	/**
+	 * Returns the minimum length in characters of the field text after trimming.
+	 * @return the minimum field length in characters
+	 */
+	public int getMinLength() {
+		return minLength;
+	}
+
+	/**
+	 * Sets the minimum length in characters of the field text after trimming.
+	 * @param minLength the minimum length in characters
+	 */
+	public void setMinLength(int minLength) {
+		this.minLength = minLength;
+	}
+
+	public int getMaxLength() {
+		return maxLength;
+	}
+
+	public void setMaxLength(int maxLength) {
+		this.maxLength = maxLength;
+	}
+
+	public boolean isProperty() {
+		return property;
+	}
+
+	public void setProperty(boolean property) {
+		this.property = property;
+	}
+
+	public String getRegex() {
+		return regex == null ? null : regex.pattern();
+	}
+
+	public void setRegex(String pattern) throws PatternSyntaxException {
+		if (pattern == null)
+			this.regex = null;
+		else
+			this.regex = Pattern.compile(pattern);
+	}
+	
+	protected Pattern getRegexPattern() {
+		return regex;
+	}
+
+	public Object getDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(Object defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
+	public Class<?> getFieldClass() {
+		return propertyClass;
+	}
+
+	public void setFieldClass(Class<?> fieldClass) {
+		this.propertyClass = fieldClass;
+	}
+}

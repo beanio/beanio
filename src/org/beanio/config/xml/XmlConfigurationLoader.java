@@ -33,7 +33,7 @@ import org.xml.sax.*;
  */
 public class XmlConfigurationLoader implements ConfigurationLoader {
 
-	private static final String BEANIO_XMLNS = "http://www.beanio.org/2011/10";
+	private static final String BEANIO_XMLNS = "http://www.beanio.org/2011/01";
 	private static final String BEANIO_XSD = "beanio-201110.xsd";
 	
 	private static final EntityResolver defaultEntityResolver = new DefaultEntityResolver();
@@ -160,6 +160,11 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
 		config.setFormat(getAttribute(stream, "format"));
 		config.setOrdered(getBooleanAttribute(stream, "ordered", true));
 		config.setResourceBundle(getAttribute(stream, "resourceBundle"));
+		config.setMinOccurs(getIntAttribute(stream, "minOccurs", 0));
+		Integer maxOccurs = getUnboundedIntegerAttribute(stream, "maxOccurs", -1);
+		if (maxOccurs == null)
+			maxOccurs = 1;
+		config.setMaxOccurs(maxOccurs);
 		
 		NodeList children = stream.getChildNodes();
 		for (int i=0,j=children.getLength(); i<j; i++) {

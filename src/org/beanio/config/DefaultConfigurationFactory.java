@@ -21,12 +21,11 @@ import java.lang.reflect.*;
 import java.util.*;
 
 import org.beanio.BeanIOConfigurationException;
-import org.beanio.config.delimited.DelimitedStreamDefinitionFactory;
-import org.beanio.config.fixedlength.FixedLengthStreamDefinitionFactory;
 import org.beanio.config.xml.XmlConfigurationLoader;
 import org.beanio.parser.*;
 import org.beanio.stream.RecordReaderFactory;
 import org.beanio.types.*;
+import org.beanio.util.Settings;
 
 /**
  * 
@@ -95,15 +94,15 @@ public class DefaultConfigurationFactory implements ConfigurationFactory {
 	 * @return
 	 */
 	protected StreamDefinitionFactory createStreamDefinitionFactory(String format) {
-		if ("delimited".equals(format)) {
-			return new DelimitedStreamDefinitionFactory();
+		String clazz = Settings.getInstance().getProperty(
+			"org.beanio." + format + ".streamDefinitionFactory");
+		
+		if (clazz == null) {
+			throw new BeanIOConfigurationException("A stream definition factory " +
+				" is not configured for format '" + format + "'");
 		}
-		else if ("fixedlength".equals(format)) {
-			return new FixedLengthStreamDefinitionFactory();
-		}
-		else {
-			throw new BeanIOConfigurationException("Stream format not supported: " + format);
-		}
+		
+		return (StreamDefinitionFactory) BeanUtil.createBean(clazz);
 	}
 	
 	/**

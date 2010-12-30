@@ -50,4 +50,28 @@ public class IOUtil {
 		}
 		catch (IOException ex) { }
 	}
+	
+	/**
+	 * Closes an input stream and quietly ignores any exception.
+	 * @param in the stream to close
+	 */
+	public static void closeQuietly(InputStream in) {
+		try {
+			if (in != null)
+				in.close();
+		}
+		catch (IOException ex) { }
+	}
+	
+	/**
+	 * Closes an output stream and quietly ignores any exception.
+	 * @param out the stream to close
+	 */
+	public static void closeQuietly(OutputStream out) {
+		try {
+			if (out != null)
+				out.close();
+		}
+		catch (IOException ex) { }
+	}
 }

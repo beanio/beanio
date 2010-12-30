@@ -17,6 +17,13 @@ package org.beanio.config;
 
 import java.util.*;
 
+/**
+ * <tt>RecordConfig</tt> instances are used to define the records that make up
+ * a stream.
+ * 
+ * @author Kevin Seim
+ * @since 1.0
+ */
 public class RecordConfig extends NodeConfig {
 
 	private Integer minLength = null;
@@ -28,18 +35,41 @@ public class RecordConfig extends NodeConfig {
 	public char getType() {
 		return RECORD;
 	}
+	/**
+	 * Returns the minimum length of the record.  Depending on the type
+	 * of stream, the length may refer to the number of fields or the 
+	 * number of characters.
+	 * @return the minimum record length, or <tt>null</tt> if not set
+	 */
 	public Integer getMinLength() {
 		return minLength;
 	}
+	
+	
 	public void setMinLength(Integer minLength) {
 		this.minLength = minLength;
 	}
+	
+	/**
+	 * Returns the maximum length of the field.  Depending on the type of
+	 * stream, the length may refer to the number of fields or the number
+	 * of characters.
+	 * @return the maximum record length, or <tt>null</tt> if not set
+	 */
 	public Integer getMaxLength() {
 		return maxLength;
 	}
 	public void setMaxLength(Integer maxLength) {
 		this.maxLength = maxLength;
 	}
+	
+	/**
+	 * Returns the fully qualified class name or alias name of the bean
+	 * associated with this record.  If <tt>null</tt>, matching records
+	 * are fully validated according to its field definition but no bean
+	 * will be created for the record.
+	 * @return the bean class, or <tt>null</tt> if bean creation is skipped
+	 */
 	public String getBeanClass() {
 		return beanClass;
 	}
@@ -47,12 +77,26 @@ public class RecordConfig extends NodeConfig {
 		this.beanClass = beanClass;
 	}
 	
+	/**
+	 * Adds a field to this record.
+	 * @param fieldConfig the field configuration
+	 */
 	public void addField(FieldConfig fieldConfig) {
 		fieldList.add(fieldConfig);
 	}
+	
+	/**
+	 * Returns a list of this record's fields.
+	 * @return the list of fields that make up this record
+	 */
 	public List<FieldConfig> getFieldList() {
 		return fieldList;
 	}
+	
+	/**
+	 * Sets the list of fields that make up this record.
+	 * @param fieldList the list of fields
+	 */
 	public void setFieldList(List<FieldConfig> fieldList) {
 		if (fieldList == null) {
 			this.fieldList.clear();

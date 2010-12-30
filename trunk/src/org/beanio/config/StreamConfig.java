@@ -36,8 +36,7 @@ public class StreamConfig {
 	
 	public StreamConfig() {
 		root = new GroupConfig();
-		root.setName("");
-		root.setMinOccurs(1);
+		root.setMinOccurs(0);
 		root.setMaxOccurs(1);
 		root.setOrder(1);
 	}
@@ -103,4 +102,11 @@ public class StreamConfig {
 		this.writerFactory = writerFactory;
 	}
 	
+	public void setMinOccurs(int minOccurs) {
+		this.root.setMinOccurs(minOccurs);
+	}
+
+	public void setMaxOccurs(int maxOccurs) {
+		this.root.setMaxOccurs(maxOccurs);
+	}
 }

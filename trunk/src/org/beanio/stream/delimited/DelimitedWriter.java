@@ -97,10 +97,8 @@ public class DelimitedWriter implements RecordWriter {
 		}
 		if (lineSeparator == null) {
 			lineSeparator = System.getProperty("line.separator");
-			
+		}
 		this.lineSeparator = lineSeparator;
-	}
-	
 	}
 	
 	/* 

@@ -67,7 +67,7 @@ public abstract class StreamDefinition implements MessageFactory {
 		
 		root = new GroupDefinition();
 		root.setOrder(1);
-		root.setMinOccurs(1);
+		root.setMinOccurs(0);
 		root.setMaxOccurs(1);
 		root.setName("<root>");
 	}
@@ -334,12 +334,35 @@ public abstract class StreamDefinition implements MessageFactory {
 	}
 
 	/**
+	 * Sets the minimum number of times the record layout must be read from
+	 * in the input stream.  Defaults to 0.
+	 * @param minOccurs the minimum number of times the record layout
+	 *   must be read from the input stream
+	 */
+	public void setMinOccurs(int minOccurs) {
+		this.root.setMinOccurs(minOccurs);
+	}
+	
+	/**
+	 * Sets the maximum number of times the record layout can be read from
+	 * the input stream.  Defaults to 1.
+	 * @param maxOccurs the maximum number of times the record layout can be
+	 *   read from the input straem
+	 */
+	public void setMaxOccurs(int maxOccurs) {
+		this.root.setMaxOccurs(maxOccurs);
+	}
+	
+	/**
 	 * Creates a new <tt>BeanReader</tt> for reading from the given input stream.
 	 * @param in the input stream to read from
 	 * @param locale the locale to use for rendering error messages
 	 * @return a new <tt>BeanReader</tt>.
 	 */
 	public BeanReader createBeanReader(Reader in, Locale locale) {
+		if (in == null) {
+			throw new NullPointerException();
+		}
 		RecordReader reader = createRecordReader(in);
 		Record record = createRecord(locale);
 		return new BeanReaderImpl(reader, record);
@@ -351,6 +374,9 @@ public abstract class StreamDefinition implements MessageFactory {
 	 * @return a new <tt>BeanWriter</tt>
 	 */
 	public BeanWriter createBeanWriter(Writer out) {
+		if (out == null) {
+			throw new NullPointerException();
+		}
 		RecordWriter writer = createRecordWriter(out);
 		return new BeanWriterImpl(writer);
 	}
@@ -429,13 +455,26 @@ public abstract class StreamDefinition implements MessageFactory {
 					// set the value of the record (which is implementation specific) on the record
 					record.setValue(recordValue);
 					
-					node = (RecordNode) layout.matchNext(record);
+					try {
+						node = (RecordNode) layout.matchNext(record);
+					}
+					catch (UnexpectedRecordException ex) {
+						if (layout.matchAny(record) == null) {
+							record.addRecordError("unidentified", record.getRecordLineNumber(), record.getRecordText());
+							throw new UnidentifiedRecordException(record.getContext(),
+								"Unidentified record type at line " + record.getRecordLineNumber());							
+						}
+						else {
+							record.addRecordError("unexpected", record.getRecordLineNumber(), record.getRecordText());
+							throw ex;
+						}
+					}
 					if (node == null) {
 						// determine if the record matches any record type in order to throw
 						// the correct exception type
 						node = (RecordNode) layout.matchAny(record);
 						if (node != null) {
-							record.addRecordError("sequence", record.getRecordLineNumber(), record.getRecordText());
+							record.addRecordError("unexpected", record.getRecordLineNumber(), record.getRecordText());
 							throw new UnexpectedRecordException(record.getContext(),
 								"Unexpeced record type '" + node.getName() + "' found at line " + record.getRecordLineNumber());
 						}

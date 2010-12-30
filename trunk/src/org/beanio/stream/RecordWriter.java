@@ -29,7 +29,7 @@ public interface RecordWriter {
 
 	/**
 	 * This method writes line termination characters to the given stream.
-	 * @param out stream to write tos
+	 * @param out stream to write to
 	 */
 	public void write(Object record) throws IOException;
 	

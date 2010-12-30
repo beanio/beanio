@@ -27,7 +27,7 @@ import org.junit.*;
  * 
  * @author Kevin Seim
  */
-public class CsvRecordReaderTest {
+public class CsvReaderTest {
 
 	private CsvReaderFactory factory;
 	

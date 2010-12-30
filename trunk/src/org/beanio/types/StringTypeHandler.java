@@ -16,18 +16,28 @@
 package org.beanio.types;
 
 /**
- * A type handler implementation for the <tt>String</tt> class that does no
- * translation of the text or value.
+ * A type handler implementation for the <tt>String</tt> class.
  * 
  * @author Kevin Seim
  * @since 1.0
  */
 public class StringTypeHandler implements TypeHandler {
 
+	private boolean trim = false;
+	private boolean nullIfEmpty = true;
+	
 	/**
 	 * Returns the unmodified text.
 	 */
 	public String parse(String text) throws TypeConversionException {
+		if (text != null) {
+			if (trim) {
+				text = text.trim();
+			}
+			if (nullIfEmpty && text.length() == 0) {
+				text = null;
+			}
+		}
 		return text;
 	}
 
@@ -43,4 +53,37 @@ public class StringTypeHandler implements TypeHandler {
 		return value.toString();
 	}
 
+	/**
+	 * Returns <tt>true</tt> if <tt>parse(String)</tt> should trim the text.
+	 * By default, <tt>trim</tt> is <tt>false</tt> which allows trimming to
+	 * be controlled by the field definition.
+	 * @return <tt>true</tt> if parsed text is trimmed
+	 */
+	public boolean isTrim() {
+		return trim;
+	}
+
+	/**
+	 * Set to <tt>true</tt> to trim text when parsed.
+	 * @param trim <tt>true</tt> if parsed text is trimmed
+	 */
+	public void setTrim(boolean trim) {
+		this.trim = trim;
+	}
+
+	/**
+	 * Returns <tt>true</tt> if empty string values are parsed as <tt>null</tt>.
+	 * @return <tt>true</tt> to convert the empty string to <tt>null</tt>
+	 */
+	public boolean isNullIfEmpty() {
+		return nullIfEmpty;
+	}
+
+	/**
+	 * Set to <tt>true</tt> if the parsed empty strings should be converted to <tt>null</tt>.
+	 * @param nullIfEmpty <tt>true<</tt> to convert empty string to <tt>null</tt>
+	 */
+	public void setNullIfEmpty(boolean nullIfEmpty) {
+		this.nullIfEmpty = nullIfEmpty;
+	}
 }

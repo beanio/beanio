@@ -16,26 +16,32 @@
 package org.beanio.parser;
 
 import java.io.*;
-import java.util.Collection;
 
-import org.beanio.BeanIOConfigurationException;
+import org.beanio.StreamFactory;
+import org.beanio.util.IOUtil;
 
 /**
- * A <tt>ConfigurationFactory</tt> is used by the <tt>DefaultStreamFactory</tt>
- * to load stream definitions.
  * 
  * @author Kevin Seim
  * @since 1.0
  */
-public interface ConfigurationFactory {
+public class ParserTest {
 
 	/**
-	 * Loads stream definitions from the an input stream.
-	 * @param in the input stream to read from
-	 * @return the loaded collection of stream definitions
-	 * @throws IOException if an I/O error occurs
-	 * @throws BeanIOConfigurationException if the configuration is invalid
+	 * 
+	 * @param config
+	 * @return
+	 * @throws IOException
 	 */
-	public Collection<StreamDefinition> loadDefinitions(InputStream in) throws IOException, BeanIOConfigurationException;
-	
+	protected StreamFactory newStreamFactory(String config) throws IOException {
+		StreamFactory factory = StreamFactory.newInstance();
+		InputStream in = getClass().getResourceAsStream(config);
+		try {
+			factory.load(in);
+			return factory;
+		}
+		finally {
+			IOUtil.closeQuietly(in);
+		}
+	}
 }

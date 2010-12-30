@@ -35,8 +35,7 @@ public class FixedLengthWriterFactory implements RecordWriterFactory {
 	 * @see org.beanio.stream.RecordWriterFactory#createWriter(java.io.Writer)
 	 */
 	public RecordWriter createWriter(Writer out) {
-		FixedLengthWriter writer = new FixedLengthWriter(out);
-		return writer;
+		return new FixedLengthWriter(out, lineSeparator);
 	}
 
     /**

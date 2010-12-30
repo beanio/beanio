@@ -17,6 +17,11 @@ package org.beanio.config;
 
 import java.util.*;
 
+/**
+ * 
+ * @author Kevin Seim
+ * @since 1.0
+ */
 public class GroupConfig extends NodeConfig {
 
 	private List<NodeConfig> nodeList = new ArrayList<NodeConfig>();

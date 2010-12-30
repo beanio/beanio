@@ -88,6 +88,7 @@ public class CsvWriter implements RecordWriter {
     	this.out = out;
     	this.delim = delimiter;
     	this.quote = quote;
+    	this.endQuote = quote;
     	this.alwaysQuote = alwaysQuote;
     	this.escapeChar = escapeCharacter;
     	if (lineSeparator == null) {

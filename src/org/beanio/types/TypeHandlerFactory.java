@@ -104,16 +104,7 @@ public class TypeHandlerFactory {
 	 *    for the name
 	 */
 	public TypeHandler getTypeHandler(String name) {
-		TypeHandler handler = null;
-		TypeHandlerFactory factory = this;
-		while (factory != null) {
-			handler = factory.handlerMap.get(name);
-			if (handler != null) {
-				return handler;
-			}
-			factory = factory.parent;
-		}
-		return null;
+		return getHandler("name:" + name);
 	}
 	
 	/**
@@ -123,16 +114,29 @@ public class TypeHandlerFactory {
 	 * @return the type handler, or null if the class is not supported
 	 */
 	public TypeHandler getTypeHandler(Class<?> clazz) {
-		return getTypeHandler(clazz.getName());
+		return getHandler("class:" + clazz.getName());
 	}
 	
+    protected TypeHandler getHandler(String key) {
+        TypeHandler handler = null;
+        TypeHandlerFactory factory = this;
+        while (factory != null) {
+            handler = factory.handlerMap.get(key);
+            if (handler != null) {
+                return handler;
+            }
+            factory = factory.parent;
+        }
+        return null;
+    }
+
 	/**
 	 * Registers a type handler in this factory.
 	 * @param name the name to register the type handler under
 	 * @param handler the type handler to register
 	 */
 	public void registerHandler(String name, TypeHandler handler) {
-		handlerMap.put(name, handler);
+		handlerMap.put("name:" + name, handler);
 	}
 	
 	/**
@@ -141,7 +145,7 @@ public class TypeHandlerFactory {
 	 * @param handler the type handler to register
 	 */
 	public void addHandler(Class<?> clazz, TypeHandler handler) {
-		handlerMap.put(clazz.getName(), handler);
+		handlerMap.put("class:" + clazz.getName(), handler);
 	}
 	
 	/**
@@ -182,7 +186,7 @@ public class TypeHandlerFactory {
 	 * @return the class, or null if the type name is invalid
 	 */
 	public static Class<?> toType(String type) {
-		if ("string".equals(type))
+		if ("String".equals(type))
 			return String.class;
 		else if ("boolean".equals(type))
 			return boolean.class;
@@ -216,9 +220,9 @@ public class TypeHandlerFactory {
 			return double.class;
 		else if ("Double".equalsIgnoreCase(type))
 			return Double.class;
-		else if ("bigdecimal".equalsIgnoreCase(type))
+		else if ("BigDecimal".equalsIgnoreCase(type))
 			return BigDecimal.class;
-		else if ("biginteger".equalsIgnoreCase(type))
+		else if ("BigInteger".equalsIgnoreCase(type))
 			return BigInteger.class;
 
 		try {

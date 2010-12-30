@@ -16,10 +16,10 @@
 -->
 <schema 
   xmlns="http://www.w3.org/2001/XMLSchema" 
-  xmlns:tns="http://www.beanio.org/2011/10" 
+  xmlns:tns="http://www.beanio.org/2011/01" 
   xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
   elementFormDefault="qualified" 
-  targetNamespace="http://www.beanio.org/2011/10"
+  targetNamespace="http://www.beanio.org/2011/01"
   version="1.0">
   
   <element name="beanio">
@@ -44,6 +44,8 @@
     <attribute name="name" type="xsd:string" use="required" />
     <attribute name="format" type="xsd:string" use="required" />
     <attribute name="ordered" type="xsd:boolean" use="optional" />
+    <attribute name="minOccurs" type="xsd:nonNegativeInteger" use="optional" />
+    <attribute name="maxOccurs" type="tns:limit" use="optional" />
     <attribute name="resourceBundle" type="xsd:string" use="optional" />
    </complexType>
 

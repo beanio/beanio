@@ -94,7 +94,7 @@ public abstract class FieldDefinition {
 		
 		// parse the field text from the record
 		String text = parseField(record);
-
+		
 		// trim if configured
 		if (text != null && trim) {
 			text = text.trim();
@@ -105,7 +105,9 @@ public abstract class FieldDefinition {
 				record.addFieldError(name, text, "required");
 				valid = false;
 			}
-			return defaultValue;
+			if (defaultValue != null) {
+				return defaultValue;
+			}
 		}
 		else {
 			// validate constant fields
@@ -287,7 +289,7 @@ public abstract class FieldDefinition {
 	 * field value is of type <tt>String</tt>.
 	 * @return the field type handler
 	 */
-	public TypeHandler getHandler() {
+	public TypeHandler getTypeHandler() {
 		return handler;
 	}
 
@@ -296,7 +298,7 @@ public abstract class FieldDefinition {
 	 * field value is of type <tt>String</tt>.
 	 * @param handler the new type handler
 	 */
-	public void setHandler(TypeHandler handler) {
+	public void setTypeHandler(TypeHandler handler) {
 		this.handler = handler;
 	}
 

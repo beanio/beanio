@@ -51,11 +51,35 @@ public class FixedLengthFieldDefinition extends FieldDefinition {
 	public String formatValue(boolean isMap, Object bean) {
 		String text = super.formatValue(isMap, bean);
 		
-		// TODO format the fixed length value for output...
-		
+		int textWidth = text.length();
+		if (textWidth > width) {
+			return text.substring(0, width);
+		}
+		else if (textWidth == width) {
+			return text;
+		}
+		int remaining = width - textWidth;
+		StringBuffer s = new StringBuffer(width);
+		if (justification == LEFT) {
+			s.append(text);
+			for (int i=0; i<remaining; i++) {
+				s.append(padding);
+			}
+		}
+		else {
+			for (int i=0; i<remaining; i++) {
+				s.append(padding);
+			}
+			s.append(text);
+		}
 		return text;
 	}
 	
+	/**
+	 * Parses this field's text from a record.
+	 * @param record the record to parse
+	 * @return the parsed field text
+	 */
 	private String getFieldText(Record record) {
 		int position = getPosition();
 		

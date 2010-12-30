@@ -28,7 +28,7 @@ import org.beanio.stream.*;
  */
 public class DelimitedWriterFactory implements RecordWriterFactory {
 
-	private char delimiter;
+	private char delimiter = '\t';
 	private boolean escapeEnabled = false;
 	private char escapeCharacter = '\\';
 	private String lineSeparator = null;

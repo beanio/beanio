@@ -54,6 +54,8 @@ public abstract class StreamDefinitionFactory {
 		
 		StreamDefinition definition = createStreamDefinition(config);
 		definition.setName(config.getName());
+		definition.setMinOccurs(config.getRootGroupConfig().getMinOccurs());
+		definition.setMaxOccurs(config.getRootGroupConfig().getMaxOccurs());
 		
 		try {
 			// configure the record reader factory
@@ -321,9 +323,14 @@ public abstract class StreamDefinitionFactory {
 						fieldClass.getName() + "' on field '" + field.getName() + "'");
 				}
 			}
+			else {
+				// default to the string handler
+				handler = typeHandlerFactory.getTypeHandler(String.class);
+			}
+			
 			// set the handler on the field context
 			if (handler != null) {
-				fieldDefinition.setHandler(handler);
+				fieldDefinition.setTypeHandler(handler);
 				
 				if (field.getDefault() != null) {
 					try {

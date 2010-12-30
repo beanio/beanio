@@ -84,6 +84,9 @@ class GroupNode extends Node {
 	 * Checks for any unsatisfied node before the stream is closed.
 	 */
 	public Node close() {
+		if (last == null && getMinOccurs() == 0)
+			return null;
+		
 		int pos = last == null ? 1 : last.getOrder();
 		
 		// TODO remove:
@@ -175,7 +178,6 @@ class GroupNode extends Node {
 				// min occurs have been met at the previous position
 				if (unsatisfied != null) {
 					if (last != null) {
-						record.addRecordError("sequence", record.getRecordLineNumber(), record.getRecordText());
 						throw new UnexpectedRecordException(record.getContext(),
 							"Expected record type '" + unsatisfied.getName() + "' at line " + 
 							record.getRecordLineNumber());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,28 +28,27 @@ import org.beanio.stream.*;
  */
 public class DelimitedWriterFactory implements RecordWriterFactory {
 
-	private char delimiter = '\t';
-	private boolean escapeEnabled = false;
-	private char escapeCharacter = '\\';
-	private String lineSeparator = null;
-	
-	/*
-	 * (non-Javadoc)
-	 * @see org.beanio.stream.RecordWriterFactory#createWriter(java.io.Writer)
-	 */
-	public RecordWriter createWriter(Writer out) {
-		if (escapeEnabled && delimiter == escapeCharacter)
-			throw new IllegalArgumentException("Delimiter cannot match the escape character");
+    private char delimiter = '\t';
+    private char escape = '\\';
+    private boolean escapeEnabled = false;
+    private String lineSeparator = null;
 
-		Character escape = null;
-		if (escapeEnabled) {
-			escape = escapeCharacter;
-		}
-		
-		return new DelimitedWriter(out, delimiter, escape, lineSeparator);
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.stream.RecordWriterFactory#createWriter(java.io.Writer)
+     */
+    public RecordWriter createWriter(Writer out) {
+        if (escapeEnabled && delimiter == escape)
+            throw new IllegalArgumentException("Delimiter cannot match the escape character");
 
-	
+        Character e = null;
+        if (escapeEnabled) {
+            e = escape;
+        }
+
+        return new DelimitedWriter(out, delimiter, e, lineSeparator);
+    }
+
     /**
      * Sets the field delimiter.  By default, the delimiter is a comma.
      * @param c the character used to delimit fields
@@ -57,7 +56,7 @@ public class DelimitedWriterFactory implements RecordWriterFactory {
     public void setDelimiter(char c) {
         this.delimiter = c;
     }
-    
+
     /**
      * Returns the field delimiter.  By default, the delimiter is a comma.
      * @return the character used to delimit fields
@@ -65,23 +64,41 @@ public class DelimitedWriterFactory implements RecordWriterFactory {
     public char getDelimiter() {
         return delimiter;
     }
-    
+
     /**
-     * Set to false to disable the escape character.  By default, escaping is enabled.
-     * @param escapeEnabled boolean
-     * @see #getEscapeChar()
+     * Set to <tt>false</tt> to disable the escape character.  By default, escaping is enabled.
+     * @param escapeEnabled set to <tt>true</tt> to enable escaping or <tt>false</tt> to disable it
+     * @see #getEscape()
      */
     public void setEscapeEnabled(boolean escapeEnabled) {
         this.escapeEnabled = escapeEnabled;
     }
-    
+
     /**
      * Returns whether the escaping is enabled.  By default, escaping is enabled.
-     * @return boolean
-     * @see #getEscapeChar()
+     * @return boolean <tt>true</tt> if escaping is enabled
+     * @see #getEscape()
      */
     public boolean isEscapeEnabled() {
         return escapeEnabled;
+    }
+
+    /**
+     * Sets the escape character.  Quotation marks are escaped within quoted values
+     * using the escape character.
+     * @param c the new escape character
+     */
+    public void setEscape(char c) {
+        this.escape = c;
+    }
+
+    /**
+     * Returns the escape character.  Quotation marks are escaped within quoted values
+     * using the escape character.
+     * @return the escape character
+     */
+    public char getEscape() {
+        return escape;
     }
 
     /**
@@ -89,16 +106,16 @@ public class DelimitedWriterFactory implements RecordWriterFactory {
      * line separator is set using the 'line.separator' system property.
      * @return the line separation text
      */
-	public String getLineSeparator() {
-		return lineSeparator;
-	}
+    public String getLineSeparator() {
+        return lineSeparator;
+    }
 
-	/**
-	 * Sets the text used to terminate a record.  If set to <tt>null</tt>, the default
+    /**
+     * Sets the text used to terminate a record.  If set to <tt>null</tt>, the default
      * line separator is used based on the 'line.separator' system property.
-	 * @param lineSeparator the line separation text
-	 */
-	public void setLineSeparator(String lineSeparator) {
-		this.lineSeparator = lineSeparator;
-	}
+     * @param lineSeparator the line separation text
+     */
+    public void setLineSeparator(String lineSeparator) {
+        this.lineSeparator = lineSeparator;
+    }
 }

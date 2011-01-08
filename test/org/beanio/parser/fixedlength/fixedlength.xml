@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!-- 
+    Copyright 2010-2011 Kevin Seim
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+       http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<beanio xmlns="http://www.beanio.org/2011/01" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.beanio.org/2011/01 http://www.beanio.org/2011/01">
+
+  <typeHandler type="java.util.Date" class="org.beanio.types.DateTypeHandler">
+    <property name="pattern" value="MMddyy" />
+  </typeHandler>
+
+  <stream name="f1" format="fixedlength">
+    <writer>
+      <property name="lineSeparator" value="" />
+    </writer>
+    <record name="record" class="map">
+      <field name="default" length="10" trim="false" />
+      <field name="number" type="int" length="10" justify="right" padding="0" />
+      <field name="padx" length="10" justify="left" padding="x" trim="false" />
+      <field name="pos40" position="41" length="5" trim="false" />
+    </record>
+  </stream>
+
+  <stream name="f2" format="fixedlength" resourceBundle="org.beanio.parser.fixedlength.f2_messages">
+    <writer>
+      <property name="lineSeparator" value="" />
+    </writer>
+    <record name="record" class="map" minLength="10" maxLength="20">
+      <field name="field1" length="5" />
+      <field name="field2" length="5" />
+      <field name="field3" length="5" />
+    </record>
+  </stream>
+
+</beanio>

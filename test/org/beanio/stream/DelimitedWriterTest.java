@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,5 +51,19 @@ public class DelimitedWriterTest {
         RecordWriter out = factory.createWriter(text);
         out.write(new String[] { "value1", "value,2" });
         assertEquals("value1,value\\,2", text.toString());
+    }
+    
+    @Test
+    public void testFlushAndClose() throws IOException {
+        DelimitedWriterFactory factory = new DelimitedWriterFactory();
+        factory.setDelimiter(',');
+        factory.setEscapeEnabled(true);
+        factory.setLineSeparator("");
+        StringWriter text = new StringWriter();
+        RecordWriter out = factory.createWriter(new BufferedWriter(text));
+        out.write(new String[] { "v" });
+        out.flush();
+        assertEquals("v", text.toString());
+        out.close();
     }
 }

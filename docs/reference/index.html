@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<h1>BeanIO 1.0 Reference Documentation</h1>
+<h1>BeanIO 1.0 - Reference Documentation</h1>
 <p>&copy; 2010-2011 Kevin Seim</p>
 <i style="font-size: 90%">Copies of this document may be made for your own use and for
 distribution to others, provided that you do not charge any fee for such copies and further provided
@@ -20,9 +20,24 @@ that each copy contains this Copyright Notice, whether distributed in print or e
 <div class="toc"><a href="">2.0 Getting Started</a></div>
 <div class="toc"><a href="">3.0 Core Concepts</a></div>
 <div class="toc">
-<div class="toc"><a href="">3.1 BeanReader</a></div>
-<div class="toc"><a href="">3.1 BeanWriter</a></div>
+  <div class="toc"><a href="">3.1 BeanReader</a></div>
+  <div class="toc"><a href="">3.1 BeanWriter</a></div>
 </div>
+
+<div class="toc"><a href="#A">Appendix A: XML Mapping File Reference</a></div>
+<div class="toc">
+<div class="toc"><a href="#beanio">A.1 <tt>beanio</tt></a></div>
+<div class="toc"><a href="#typeHandler">A.2 <tt>typeHandler</tt></a></div>
+<div class="toc"><a href="#property">A.3 <tt>property</tt></a></div>
+<div class="toc"><a href="#stream">A.4 <tt>stream</tt></a></div>
+<div class="toc"><a href="#reader">A.5 <tt>reader</tt></a></div>
+<div class="toc"><a href="#writer">A.6 <tt>writer</tt></a></div>
+<div class="toc"><a href="#group">A.7 <tt>group</tt></a></div>
+<div class="toc"><a href="#record">A.8 <tt>record</tt></a></div>
+<div class="toc"><a href="#field">A.9 <tt>field</tt></a></div>
+</div>
+<div class="toc"><a href="#B">Appendix B: Error Message Parameters</a></div>
+
 
 <h1>1.0 Introduction to BeanIO</h1>
 <p>BeanIO is an open source Java framework for reading and writing Java beans or plain old java
@@ -455,7 +470,7 @@ on the stream definition as shown below.</p>
   
 &lt;/beanio&gt;</pre>
 
-<h2>4.4 Record Groups</h2>
+<h2>4.4 Record Grouping</h2>
 <p>In some cases, streams may be further split into batches or groups.  Continuing
 with our employee file, lets assume employee detail records are batched by department
 where each group of employees has a department header and a department trailer record.  
@@ -652,7 +667,7 @@ value.</p>
 
 <h2>4.7 Stream Validation</h2>
 <p>BeanIO will throw an <tt>InvalidRecordException</tt> when reading an input stream if
-a record or field fails a validation.  BeanIO handles two levels of errors: record
+a record or field fails a configured validation rule.  BeanIO handles two levels of errors: record
 level errors and field level errors.  If a record level error occurs, further processing
 is aborted and an excception is thrown.  If a field level error is detected, BeanIO
 will continue to process the record's other fields before throwing an exception.</p>
@@ -794,8 +809,13 @@ information about the
 
 <h1>4.0 The BeanWriter</h1>
 
-<h1>Appendix A: Configuration Reference</h1>
 
+<!-- 
+
+	APPENDIX A
+	
+ -->
+<h1><a name="A">Appendix A:  XML Mapping File Reference</a></h1>
 
 <h2><a name="beanio">A.1 <tt>beanio</tt></a></h2>
 <p><tt>beanio</tt> is the root element for a BeanIO mapping configuration file.</p>
@@ -832,10 +852,32 @@ that implement the <tt>org.beanio.types.TypeHandler</tt> interface.</p>
 </table>
 
 <p>Children: 
-<a href="#typeHandler"><tt>property</tt></a>*
+<a href="#property"><tt>property</tt></a>*
 </p>
 
-<h2><a name="stream">A.3 <tt>stream</tt></a></h2>
+<h2><a name="property">A.3 <tt>property</tt></a></h2>
+<p>A <tt>property</tt> is used to customize other setting elements, such
+as a <a href="#typeHandler"><tt>typeHandler</tt></a>.</p>
+<table>
+<tr>
+  <th>Attribute</th>
+  <th>Description</th>
+  <th>Required</th>
+</tr>
+<tr>
+  <td><tt>name</tt></td>
+  <td>The type bean property name.</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><tt>value</tt></td>
+  <td>The bean property value.  Only default type handlers can be used to convert
+    the property text to an object value. </td>
+  <td>Yes</td>
+</tr>
+</table>
+
+<h2><a name="stream">A.4 <tt>stream</tt></a></h2>
 <p>A <tt>stream</tt> defines the record layout of an input or output stream.</p> 
 <p>Attributes:</p>
 <table>
@@ -885,15 +927,331 @@ that implement the <tt>org.beanio.types.TypeHandler</tt> interface.</p>
 <a href="#reader"><tt>reader</tt></a>?,
 <a href="#writer"><tt>writer</tt></a>?,
 <a href="#typeHandler"><tt>typeHandler</tt></a>*,
-<a href="#typeHandler"><tt>record</tt></a>* or
-<a href="#typeHandler"><tt>group</tt></a>*
+<a href="#record"><tt>record</tt></a>* or
+<a href="#group"><tt>group</tt></a>*
+</p>
+
+<h2><a name="reader">A.5 <tt>reader</tt></a></h2>
+<p>A <tt>reader</tt> is used to customize or replace the default record reader factory
+for the stream..</p> 
+<p>Attributes:</p>
+<table>
+<tr>
+  <th>Attribute</th>
+  <th>Description</th>
+  <th>Required</th>
+</tr>
+<tr>
+  <td><tt>class</tt></td>
+  <td>The fully qualified classname of the <tt>RecordReaderFactory</tt> implementation
+    to use for this stream.  If not specified, one of the following default factories is 
+    used based on the stream format:<br />
+    <br />csv - <tt>org.beanio.stream.csv.CsvReaderFactory</tt>
+    <br />delimited - <tt>org.beanio.stream.delimited.DelimitedReaderFactory</tt>
+    <br />fixedlength - <tt>org.beanio.stream.fixedlength.FixedLengthReaderFactory</tt> 
+  </td>
+  <td>No</td>
+</tr>
+</table>
+
+<p>Children: 
+<a href="#property"><tt>property</tt></a>*
+</p>
+
+<h2><a name="writer">A.6 <tt>writer</tt></a></h2>
+<p>A <tt>writer</tt> is used to customize or replace the default record writer factory
+for the stream..</p> 
+<p>Attributes:</p>
+<table>
+<tr>
+  <th>Attribute</th>
+  <th>Description</th>
+  <th>Required</th>
+</tr>
+<tr>
+  <td><tt>class</tt></td>
+  <td>The fully qualified classname of the <tt>RecordWriterFactory</tt> implementation
+    to use for this stream.  If not specified, one of the following default factories is 
+    used based on the stream format:<br />
+    <br />csv - <tt>org.beanio.stream.csv.CsvWriterFactory</tt>
+    <br />delimited - <tt>org.beanio.stream.delimited.DelimitedWriterFactory</tt>
+    <br />fixedlength - <tt>org.beanio.stream.fixedlength.FixedLengthWriterFactory</tt> 
+  </td>
+  <td>No</td>
+</tr>
+</table>
+
+<p>Children: 
+<a href="#property"><tt>property</tt></a>*
+</p>
+
+<h2><a name="group">A.7 <tt>group</tt></a></h2>
+<p>A <tt>group</tt> is used to group records together for validating the occurances of
+the group as a whole.</p> 
+<p>Attributes:</p>
+<table>
+<tr>
+  <th>Attribute</th>
+  <th>Description</th>
+  <th>Required</th>
+</tr>
+<tr>
+  <td><tt>name</tt></td>
+  <td>The name of the group.</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><tt>order</tt></td>
+  <td>The order this group must appear within its parent group or stream.  Unless the stream
+    is unordered, <tt>order</tt> will default to the next sequential number following the 
+    order of the previous record/group at the same level.  If this is the first record/group, 
+    <tt>order</tt> defaults to <tt>1</tt>.</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><tt>minOccurs</tt></td>
+  <td>The minimum number of times this group must repeat within its parent group or stream.
+    Defaults to <tt>0</tt>.</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><tt>maxOccurs</tt></td>
+  <td>The maximum number of times this group may repeat within its parent group or stream.
+    Defaults to <tt>unbounded</tt>.</td>
+  <td>No</td>
+</tr>
+</table>
+
+<p>Children: 
+<a href="#record"><tt>record</tt></a>*
+</p>
+
+<h2><a name="record">A.8 <tt>record</tt></a></h2>
+<p>A <tt>record</tt> is used to define a record mapping within a stream.</p> 
+<p>Attributes:</p>
+<table>
+<tr>
+  <th>Attribute</th>
+  <th>Description</th>
+  <th>Required</th>
+</tr>
+<tr>
+  <td><tt>name</tt></td>
+  <td>The name of the record.</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><tt>order</tt></td>
+  <td>The order this record must appear within its parent group or stream.  Unless the stream
+    is unordered, <tt>order</tt> will default to the next sequential number following the 
+    order of the previous record/group at the same level.  If this is the first record/group, 
+    <tt>order</tt> defaults to <tt>1</tt>.</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><tt>minOccurs</tt></td>
+  <td>The minimum number of times this record must repeat within its parent group or stream.
+    Defaults to <tt>0</tt>.</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><tt>maxOccurs</tt></td>
+  <td>The maximum number of times this record may repeat within its parent group or stream.
+    Defaults to <tt>unbounded</tt>.</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><tt>minLength</tt></td>
+  <td>If the stream format is delimited or csv, <tt>minLength</tt> is the minimum number
+    of fields required by this record.  Defaults to the number of fields defined for this record.
+    <br /><br />
+    If the stream format is fixedlength, <tt>minLength</tt> is the minimum number 
+    of characters required by this record.  Defaults to the sum of all field lengths definied for
+    this record.
+    </td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><tt>maxLength</tt></td>
+  <td>If the stream format is delimited or csv, <tt>maxLength</tt> is the maximum number
+    of fields allowed by this record.  Defaults to the number of fields defined for this record.
+    <br /><br />
+    If the stream format is fixedlength, <tt>maxLength</tt> is the maximum number 
+    of characters allowed by this record.  Defaults to the sum of all field lengths definied for
+    this record.
+    </td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><tt>class</tt></td>
+  <td>The fully qualified class name of the bean object mapped to this record.  If not set,
+    a <tt>BeanReader</tt> will fully validate the record, but no bean object will be returned
+    and the reader will continue reading the next record.  If set to <tt>map</tt> or 
+    any <tt>java.util.Map</tt> implementation, a Map object will be used with field names
+    for keys and field values for values.
+  </td>
+  <td>No</td>
+</tr>
+</table>
+
+<p>Children: 
+<a href="#field"><tt>field</tt></a>*
 </p>
 
 
+<h2><a name="field">A.9 <tt>field</tt></a></h2>
+<p>A <tt>field</tt> is used .  All fields within a record must be ordered according to 
+their position.</p> 
+<p>Attributes:</p>
+<table>
+<tr>
+  <th>Attribute</th>
+  <th>Description</th>
+  <th>Required</th>
+  <th>Formats</th>
+</tr>
+<tr>
+  <td><tt>name</tt></td>
+  <td>The name of field.  Unless a getter and/or setter is defined, the field name is used
+    for the bean property name.</td>
+  <td>Yes</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>getter</tt></td>
+  <td>The getter method used to retrieve the field property value from the bean class of
+    the record.  By default, the getter method is determined through intropection using
+    the field name.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>setter</tt></td>
+  <td>The setter method used to set the field property value on the bean class of
+    the record.  By default, the setter method is determined through intropection using
+    the field name.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>rid</tt></td>
+  <td>Record identifier.  Set to <tt>true</tt> if this this field is used to identify the record.  
+    More than one field can be used to identy a record.  Defaults to <tt>false</tt>.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>position</tt></td>
+  <td>For delimited and CSV formatted streams, <tt>position</tt> is the index of the field
+    within the record, beginning at 0.  Defaults to the next sequential number after the
+    previous field, or 0 if this is the first field in the record.
+    <br /><br />
+    For fixed length formatted streams, <tt>position</tt> is the index of the first character
+    of this field within the record, beginning at 0.  Defaults to the previous field's 
+    position plus its length, or 0 if this is the first field in the record.
+  </td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>trim</tt></td>
+  <td>Set to <tt>true</tt> to trim the field text before validation and type
+    conversion.  Defaults to <tt>false</tt>.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>required</tt></td>
+  <td>Set to <tt>true</tt> if this this field is required.  If this field is required,
+    and its field text is empty or the field is not present in the record, a <tt>BeanReader</tt> 
+    will throw an exception when reading the record.  Defaults to <tt>false</tt>.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>minLength</tt></td>
+  <td>The minimum length of the field text before type conversion.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>maxLength</tt></td>
+  <td>The maximum length of the field text before type conversion.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>regex</tt></td>
+  <td>The regular expression pattern the field text must match.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>literal</tt></td>
+  <td>Sets the <i>literal</i> or constant value of this field.  When reading an input stream,
+    a <tt>BeanReader</tt> will throw an exception if the field text does not match the
+    literal value.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>default</tt></td>
+  <td>The default value of this field.  This value will be set on the bean object when the
+    field text is null or the empty string.  The default value will be converted to a 
+    bean property value using the same type handler configured for this field.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>type</tt></td>
+  <td>The fully qualified class name or type alias of this field value.  By default,
+    BeanIO will derrive the field type from the bean class of the record.  This attribute
+    can be used to override the default or may be required if the bean class of the
+    record is a <tt>Map</tt>.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>typeHandler</tt></td>
+  <td>The name of the type handler to use for type conversion.  By default, BeanIO
+    will select a type handler based on the field type when set, or through 
+    introspection of the record class.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>ignored</tt></td>
+  <td>Set to <tt>true</tt> if this field is not a bean property or the record class.  
+    Defaults to <tt>false</tt>.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>length</tt></td>
+  <td>The length in characters of this fixed length field.</td>
+  <td>Yes</td>
+  <td><tt>fixedlength</tt></td>
+</tr>
+<tr>
+  <td><tt>padding</tt></td>
+  <td>The character used to pad this fixed length field.  Defaults to a space.</td>
+  <td>No</td>
+  <td><tt>fixedlength</tt></td>
+</tr>
+<tr>
+  <td><tt>justify</tt></td>
+  <td>The justification of the field text within this fixed length field.  Either
+    <tt>left</tt> or <tt>right</tt>.  Defaults to <tt>left</tt>.</td>
+  <td>No</td>
+  <td><tt>fixedlength</tt></td>
+</tr>
+</table>
 
 
-<h1>Appendix B: Validation Rules</h1>
+<h1><a name="B">Appendix B: Error Message Parameters</a></h1>
 
+<p>The following table shows the message parameters used to format an error
+message for each configurable validation rule.</p>
 
 <table style="vertical-align: top">
 <tr>
@@ -957,7 +1315,7 @@ that implement the <tt>org.beanio.types.TypeHandler</tt> interface.</p>
   <td>Maximum Length</td>
 </tr>
 <tr>
-  <td rowspan="12">Field Error</td>
+  <td rowspan="36">Field Error</td>
   <td rowspan="4"><tt>required</tt></td>
   <td>0</td>
   <td>Line Number</td>
@@ -999,11 +1357,122 @@ that implement the <tt>org.beanio.types.TypeHandler</tt> interface.</p>
   <td>5</td>
   <td>Maximum Length</td>
 </tr>
+<tr>
+  <td rowspan="6"><tt>maxLength</tt></td>
+  <td>0</td>
+  <td>Line Number</td>
+</tr>
+<tr>
+  <td>1</td>
+  <td>Record Label/Name</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td>Field Label/Name</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>Field Text</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>Minimum Length</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td>Maximum Length</td>
+</tr>
+<tr>
+  <td rowspan="5"><tt>length</tt></td>
+  <td>0</td>
+  <td>Line Number</td>
+</tr>
+<tr>
+  <td>1</td>
+  <td>Record Label/Name</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td>Field Label/Name</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>Field Text</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>Fixed Length Field Length</td>
+</tr>
+<tr>
+  <td rowspan="5"><tt>regex</tt></td>
+  <td>0</td>
+  <td>Line Number</td>
+</tr>
+<tr>
+  <td>1</td>
+  <td>Record Label/Name</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td>Field Label/Name</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>Field Text</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>Regular Expression Pattern</td>
+</tr>
+<tr>
+  <td rowspan="5"><tt>type</tt></td>
+  <td>0</td>
+  <td>Line Number</td>
+</tr>
+<tr>
+  <td>1</td>
+  <td>Record Label/Name</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td>Field Label/Name</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>Field Text</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><tt>TypeConversionException</tt> error message.</td>
+</tr>
+<tr>
+  <td rowspan="5"><tt>literal</tt></td>
+  <td>0</td>
+  <td>Line Number</td>
+</tr>
+<tr>
+  <td>1</td>
+  <td>Record Label/Name</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td>Field Label/Name</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>Field Text</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>Literal value</td>
+</tr>
 </table>
 
 
 
-
+<br />
+<br />
+<br />
 
 </body>
 </html>

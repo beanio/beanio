@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ package org.beanio;
 import java.util.*;
 
 /**
- * A subclass of <tt>BeanReaderException</tt> is thrown for any error
- * that occurs while using the bean reader from the input stream.
+ * A subclass of <tt>BeanReaderException</tt> is thrown for any exception
+ * that occurs while using a <tt>BeanReader</tt> to read from an input stream.
  * 
  * @author Kevin Seim
  * @since 1.0
@@ -27,64 +27,66 @@ import java.util.*;
  */
 public abstract class BeanReaderException extends BeanIOException {
 
-	private static final long serialVersionUID = 1453590555984013399L;
-	
-	private BeanReaderContext context;
-	
-	/**
-	 * Constructs a new <tt>BeanReaderException</tt>.
-	 * @param context the current context of the bean reader
-	 * @param message the error message
-	 */
-	public BeanReaderException(BeanReaderContext context, String message) {
-		this(context, message, null);
-	}
+    private static final long serialVersionUID = 1L;
 
-	public BeanReaderException(BeanReaderContext context, String message, Throwable cause) {
-		super(message, cause);
-		this.context = context;
-	}
-	
-	/**
-	 * Returns the current context of the bean reader.
-	 * @return bean reader context
-	 */
-	public BeanReaderContext getContext() {
-		return context;
-	}
+    private BeanReaderContext context;
 
-	@Override
-	public String toString() {
-		String message = super.toString(); 
-		if (context == null || !(context.hasFieldErrors() || context.hasRecordErrors())) {
-			return message;
-		}
-		
-		StringBuffer s = new StringBuffer(message);
-		
-		if (context.hasRecordErrors()) {
-			for (String error : context.getRecordErrors()) {
-				s.append("\n  ==> Invalid '");
-				s.append(context.getRecordName());
-				s.append("' record: ");
-				s.append(error);
-				s.append("\n");
-			}
-		}
-		if (context.hasFieldErrors()) {
-			for (Map.Entry<String, Collection<String>> entry : context.getFieldErrors().entrySet()) {
-				String fieldName = entry.getKey();
-				for (String error : entry.getValue()) {
-					s.append("\n  ==> Invalid '");
-					s.append(fieldName);
-					s.append("' field: ");
-					s.append(error);
-				}
-			}
-		}
-		return s.toString();
-	}
-	
-	
-	
+    /**
+     * Constructs a new <tt>BeanReaderException</tt>.
+     * @param context the current context of the bean reader
+     * @param message the error message
+     */
+    public BeanReaderException(BeanReaderContext context, String message) {
+        this(context, message, null);
+    }
+
+    /**
+     * Constructs a new <tt>BeanReaderException</tt>.
+     * @param context the current context of the bean reader
+     * @param message the error message
+     * @param cause the root cause
+     */
+    public BeanReaderException(BeanReaderContext context, String message, Throwable cause) {
+        super(message, cause);
+        this.context = context;
+    }
+
+    /**
+     * Returns the current context of the bean reader.
+     * @return bean reader context
+     */
+    public BeanReaderContext getContext() {
+        return context;
+    }
+
+    @Override
+    public String toString() {
+        String message = super.toString();
+        if (context == null || !(context.hasFieldErrors() || context.hasRecordErrors())) {
+            return message;
+        }
+
+        StringBuffer s = new StringBuffer(message);
+
+        if (context.hasRecordErrors()) {
+            for (String error : context.getRecordErrors()) {
+                s.append("\n  ==> Invalid '");
+                s.append(context.getRecordName());
+                s.append("' record: ");
+                s.append(error);
+            }
+        }
+        if (context.hasFieldErrors()) {
+            for (Map.Entry<String, Collection<String>> entry : context.getFieldErrors().entrySet()) {
+                String fieldName = entry.getKey();
+                for (String error : entry.getValue()) {
+                    s.append("\n  ==> Invalid '");
+                    s.append(fieldName);
+                    s.append("' field: ");
+                    s.append(error);
+                }
+            }
+        }
+        return s.toString();
+    }
 }

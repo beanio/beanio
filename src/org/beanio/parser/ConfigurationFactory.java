@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,13 +29,14 @@ import org.beanio.BeanIOConfigurationException;
  */
 public interface ConfigurationFactory {
 
-	/**
-	 * Loads stream definitions from the an input stream.
-	 * @param in the input stream to read from
-	 * @return the loaded collection of stream definitions
-	 * @throws IOException if an I/O error occurs
-	 * @throws BeanIOConfigurationException if the configuration is invalid
-	 */
-	public Collection<StreamDefinition> loadDefinitions(InputStream in) throws IOException, BeanIOConfigurationException;
-	
+    /**
+     * Loads a stream mapping configuration from an input stream.
+     * @param in the input stream to read
+     * @return the collection of stream definitions loaded from the input stream
+     * @throws IOException if an I/O error occurs
+     * @throws BeanIOConfigurationException if the configuration is invalid
+     */
+    public Collection<StreamDefinition> loadDefinitions(InputStream in) throws IOException,
+        BeanIOConfigurationException;
+
 }

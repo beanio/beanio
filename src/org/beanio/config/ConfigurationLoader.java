@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,26 @@ package org.beanio.config;
 
 import java.io.*;
 
+import org.beanio.BeanIOConfigurationException;
+
 /**
+ * A <tt>ConfigurationLoader</tt> is used to load a BeanIO mapping configuration from
+ * an input stream.
  * 
- * Must be thread safe.
+ * <p>Implementations must be thread safe.</p>
+ * 
  * @author Kevin Seim
  * @since 1.0
  */
 public interface ConfigurationLoader {
 
-	public BeanIOConfig loadConfiguration(InputStream in) throws IOException;
-	
+    /**
+     * Loads a BeanIO configuration from an input stream.
+     * @param in the input stream to read the configuration from
+     * @return the BeanIO configuration
+     * @throws IOException if an I/O error occurs
+     * @throws BeanIOConfigurationException if the configuration is invalid or malformed
+     */
+    public BeanIOConfig loadConfiguration(InputStream in) throws IOException, BeanIOConfigurationException;
+
 }

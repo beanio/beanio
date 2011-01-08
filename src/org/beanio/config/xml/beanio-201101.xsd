@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-    Copyright 2010 Kevin Seim
+    Copyright 2010-2011 Kevin Seim
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -110,7 +110,7 @@
     <attribute name="typeHandler" type="xsd:string" use="optional" />
     <attribute name="ignored" type="xsd:boolean" use="optional" />
     <attribute name="trim" type="xsd:boolean" use="optional" />
-    <attribute name="width" type="xsd:positiveInteger" use="optional" />
+    <attribute name="length" type="xsd:positiveInteger" use="optional" />
     <attribute name="padding" type="xsd:string" use="optional" />
     <attribute name="justify" type="tns:justification" use="optional" />
   </complexType>  

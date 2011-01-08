@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,28 +26,30 @@ package org.beanio;
  */
 public class BeanWriterIOException extends BeanWriterException {
 
-	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * Constructs a new <tt>BeanWriterIOException</tt>.
-	 * @param message the error message
-	 * @param cause the root cause
-	 */
-	public BeanWriterIOException(String message, Throwable cause) {
-		super(message, cause);
-	}
-	/**
-	 * Constructs a new <tt>BeanWriterIOException</tt>.
-	 * @param cause the root cause
-	 */
-	public BeanWriterIOException(String message) {
-		super(message);
-	}
-	/**
-	 * Constructs a new <tt>BeanWriterIOException</tt>.
-	 * @param cause the root cause
-	 */
-	public BeanWriterIOException(Throwable cause) {
-		super(cause);
-	}
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Constructs a new <tt>BeanWriterIOException</tt>.
+     * @param message the error message
+     * @param cause the root cause
+     */
+    public BeanWriterIOException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    /**
+     * Constructs a new <tt>BeanWriterIOException</tt>.
+     * @param message the error message
+     */
+    public BeanWriterIOException(String message) {
+        super(message);
+    }
+
+    /**
+     * Constructs a new <tt>BeanWriterIOException</tt>.
+     * @param cause the root cause
+     */
+    public BeanWriterIOException(Throwable cause) {
+        super(cause);
+    }
 }

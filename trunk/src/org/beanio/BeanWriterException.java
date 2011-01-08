@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 package org.beanio;
 
 /**
- * A subclass of <tt>BeanWriterException</tt> is thrown for any error
- * that occurs while using a bean writer to write to an output stream.
+ * A subclass of <tt>BeanWriterException</tt> is thrown for any exception
+ * that occurs while using a <tt>BeanWriter</tt> to write to an output stream.
  * 
  * @author Kevin Seim
  * @since 1.0
@@ -25,31 +25,30 @@ package org.beanio;
  */
 public abstract class BeanWriterException extends BeanIOException {
 
-	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * Constructs a new <tt>BeanWriterException</tt>.
-	 * @param message the error message
-	 * @param cause the root cause
-	 */
-	public BeanWriterException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructs a new <tt>BeanWriterException</tt>.
-	 * @param message the error message
-	 */
-	public BeanWriterException(String message) {
-		super(message);
-	}
+    /**
+     * Constructs a new <tt>BeanWriterException</tt>.
+     * @param message the error message
+     * @param cause the root cause
+     */
+    public BeanWriterException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	/**
-	 * Constructs a new <tt>BeanWriterException</tt>.
-	 * @param cause the root cause
-	 */
-	public BeanWriterException(Throwable cause) {
-		super(cause);
-	}
+    /**
+     * Constructs a new <tt>BeanWriterException</tt>.
+     * @param message the error message
+     */
+    public BeanWriterException(String message) {
+        super(message);
+    }
 
+    /**
+     * Constructs a new <tt>BeanWriterException</tt>.
+     * @param cause the root cause
+     */
+    public BeanWriterException(Throwable cause) {
+        super(cause);
+    }
 }

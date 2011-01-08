@@ -72,7 +72,7 @@ public class FieldValidationTest extends ParserTest {
 		++lineNumber;
 		Map record = (Map) in.read();
 		assertEquals(expected, record.get("field"));
-		assertEquals(recordName, in.getName());
+		assertEquals(recordName, in.getRecordName());
 		assertEquals(lineNumber, in.getLineNumber());
 	}
 
@@ -83,7 +83,7 @@ public class FieldValidationTest extends ParserTest {
 			in.read();
 			fail("Record should not have passed validation");
 		} catch (InvalidRecordException ex) {
-			assertEquals(recordName, in.getName());
+			assertEquals(recordName, in.getRecordName());
 			assertEquals(lineNumber, in.getLineNumber());
 
 			BeanReaderContext ctx = ex.getContext();

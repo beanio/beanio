@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,49 +26,84 @@ import org.beanio.parser.*;
  */
 public class FixedLengthRecordDefinition extends RecordDefinition {
 
-	private int minLength = 0;
-	private int maxLength = -1;
-	
-	@Override
-	public Object formatBean(Object bean) {
-		StringBuffer record = new StringBuffer();
-		for (FieldDefinition field : getFieldList()) {
-			record.append(field.formatValue(isBeanClassMap(), bean));
-		}
-		return record;
-	}
+    private int minLength = 0;
+    private int maxLength = -1;
+    private char filler = ' ';
 
-	/**
-	 * Returns the minimum number of fields this record must have to be valid.
-	 * @return the minimum number of fields.
-	 */
-	public int getMinLength() {
-		return minLength;
-	}
+    @Override
+    public Object formatBean(Object bean) {
+        StringBuffer record = new StringBuffer();
+        for (FieldDefinition field : getFieldList()) {
+            // add filler for undefined spaces
+            int fillerLength = field.getPosition() - record.length();
+            for (int i = 0; i < fillerLength; i++) {
+                record.append(filler);
+            }
 
-	/**
-	 * Sets the minimum number of fields the record must have to be valid.
-	 * @param minLength the minimum number of fields
-	 */
-	public void setMinLength(int minLength) {
-		this.minLength = minLength;
-	}
+            record.append(field.formatValue(isBeanClassMap(), bean));
+        }
+        return record;
+    }
 
-	/**
-	 * Returns the maximum number of fields this record can have to be valid.  
-	 * A value of <tt>-1</tt> indicates there is no limit.
-	 * @return the maximum number of fields
-	 */
-	public int getMaxLength() {
-		return maxLength;
-	}
-	
-	/**
-	 * Sets the maximum number of fields this record can have.  A value of 
-	 * <tt>-1</tt> indicates there is no limit.
-	 * @param maxLength the number of fields
-	 */
-	public void setMaxLength(int maxLength) {
-		this.maxLength = maxLength;
-	}
+    @Override
+    protected void validateRecord(Record record) {
+        int length = record.getRecordText().length();
+        if (minLength > 0 && length < minLength) {
+            record.addRecordError("minLength", minLength, maxLength);
+        }
+        if (maxLength > 0 && length > maxLength) {
+            record.addRecordError("maxLength", minLength, maxLength);
+        }
+    }
+
+    /**
+     * Returns the minimum number of fields this record must have to be valid.
+     * @return the minimum number of fields.
+     */
+    public int getMinLength() {
+        return minLength;
+    }
+
+    /**
+     * Sets the minimum number of fields the record must have to be valid.
+     * @param minLength the minimum number of fields
+     */
+    public void setMinLength(int minLength) {
+        this.minLength = minLength;
+    }
+
+    /**
+     * Returns the maximum number of fields this record can have to be valid.  
+     * A value of <tt>-1</tt> indicates there is no limit.
+     * @return the maximum number of fields
+     */
+    public int getMaxLength() {
+        return maxLength;
+    }
+
+    /**
+     * Sets the maximum number of fields this record can have.  A value of 
+     * <tt>-1</tt> indicates there is no limit.
+     * @param maxLength the number of fields
+     */
+    public void setMaxLength(int maxLength) {
+        this.maxLength = maxLength;
+    }
+
+    /**
+     * Returns the filler character used to fill undefined spaces in the record.
+     * Defaults to a space.
+     * @return the filler character
+     */
+    public char getFiller() {
+        return filler;
+    }
+
+    /**
+     * Sets the filler character to use to fill undefined spaces in the record.
+     * @param filler the filler character
+     */
+    public void setFiller(char filler) {
+        this.filler = filler;
+    }
 }

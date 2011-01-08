@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public interface BeanReader {
 	 * Returns the name of the last record read.
 	 * @return the name of the last record read
 	 */
-	public String getName();
+	public String getRecordName();
 	
 	/**
 	 * The beginning line number of the last record read.
@@ -54,6 +54,6 @@ public interface BeanReader {
 	 * Closes the underlying input stream.
 	 * @throws BeanReaderIOException if an IOException is thrown when closing the stream
 	 */
-	public void close() throws BeanReaderIOException;
-	
+    public void close() throws BeanReaderIOException;
+
 }

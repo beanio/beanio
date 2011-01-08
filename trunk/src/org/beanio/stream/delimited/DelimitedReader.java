@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,14 +58,14 @@ public class DelimitedReader implements RecordReader {
     private char lineContinuationChar = '\\';
     private boolean multilineEnabled = false;
     private boolean escapeEnabled = false;
-    
+
     private transient Reader in;
     private transient String recordText;
     private transient int recordLineNumber;
     private transient int lineNumber = 0;
     private transient boolean skipLF = false;
     private transient List<String> fieldList = new ArrayList<String>();
-    
+
     /**
      * Constructs a new <tt>DelimitedReader</tt> using a tab character for
      * the field delimiter.  Escaping is and line continuation characters
@@ -73,9 +73,9 @@ public class DelimitedReader implements RecordReader {
      * @param in the input stream to read from
      */
     public DelimitedReader(Reader in) {
-    	this(in, '\t', null, null);
+        this(in, '\t', null, null);
     }
-    
+
     /**
      * Constructs a new <tt>DelimitedReader</tt>.  Escaping is and line 
      * continuation characters are disabled.
@@ -85,7 +85,7 @@ public class DelimitedReader implements RecordReader {
     public DelimitedReader(Reader in, char delimiter) {
         this(in, delimiter, null, null);
     }
-    
+
     /**
      * Constructs a new <tt>DelimitedReader</tt>.
      * @param in the input stream to read from
@@ -93,21 +93,30 @@ public class DelimitedReader implements RecordReader {
      * @param escapeChar the escape character, or null to disable escaping
      * @param lineContinuationCharacter the line continuation character,
      *   or <tt>null</tt> to disable line continuations
+     * @throws IllegalArgumentException if the delimiter matches the escape character or
+     *   or the line continuation character
      */
-    public DelimitedReader(Reader in, char delimiter, Character escapeChar, 
-		Character lineContinuationCharacter) {
+    public DelimitedReader(Reader in, char delimiter, Character escapeChar,
+        Character lineContinuationCharacter) {
+        if (escapeChar != null && delimiter == escapeChar) {
+            throw new IllegalArgumentException("The field delimiter canot match the escape character");
+        }
+        if (lineContinuationCharacter != null && delimiter == lineContinuationCharacter) {
+            throw new IllegalArgumentException("The field delimiter cannot match the line continuation character");
+        }
+
         this.in = in;
         this.delim = delimiter;
         if (escapeChar != null) {
-        	this.escapeEnabled = true;
-        	this.escapeChar = escapeChar;
+            this.escapeEnabled = true;
+            this.escapeChar = escapeChar;
         }
         if (lineContinuationCharacter != null) {
-        	this.multilineEnabled = true;
-        	this.lineContinuationChar = lineContinuationCharacter;
+            this.multilineEnabled = true;
+            this.lineContinuationChar = lineContinuationCharacter;
         }
-    }    
-    
+    }
+
     /**
      * Returns the starting line number of the last record record.  A value of
      * -1 is returned if the end of the stream was reached.
@@ -116,7 +125,7 @@ public class DelimitedReader implements RecordReader {
     public int getRecordLineNumber() {
         return recordLineNumber;
     }
-    
+
     /**
      * Returns the raw text of the last record read or null if the end of the
      * stream was reached.
@@ -125,7 +134,7 @@ public class DelimitedReader implements RecordReader {
     public String getRecordText() {
         return recordText;
     }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.stream.RecordReader#read()
@@ -137,10 +146,10 @@ public class DelimitedReader implements RecordReader {
             recordLineNumber = -1;
             return null;
         }
-        
+
         ++lineNumber;
         int lineOffset = 0;
-        
+
         // clear the field list
         fieldList.clear();
 
@@ -149,8 +158,8 @@ public class DelimitedReader implements RecordReader {
         boolean eol = false; // end of record flag
         StringBuffer text = new StringBuffer(); // holds the record text being read
         StringBuffer field = new StringBuffer(); // holds the latest field value being read
-        
-        int n; 
+
+        int n;
         while (!eol && (n = in.read()) != -1) {
             char c = (char) n;
 
@@ -161,25 +170,25 @@ public class DelimitedReader implements RecordReader {
                     continue;
                 }
             }
-            
+
             // handle line continuation
             if (continued) {
-            	continued = false;
+                continued = false;
 
-            	text.append(c);
-            	
+                text.append(c);
+
                 if (c == '\n') {
-                	escaped = false;
+                    escaped = false;
                     ++lineNumber;
                     ++lineOffset;
                     continue;
                 }
                 else if (c == '\r') {
-                	escaped = false;
+                    escaped = false;
                     skipLF = true;
                     ++lineNumber;
                     ++lineOffset;
-                    continue;                    
+                    continue;
                 }
                 else if (!escaped) {
                     field.append(lineContinuationChar);
@@ -188,11 +197,11 @@ public class DelimitedReader implements RecordReader {
             else if (c != '\n' && c != '\r') {
                 text.append(c);
             }
-            
+
             // handle escaped characters
             if (escaped) {
                 escaped = false;
-                
+
                 // an escape character can be used to escape itself or an end quote
                 if (c == delim) {
                     field.append(c);
@@ -203,10 +212,10 @@ public class DelimitedReader implements RecordReader {
                     continue;
                 }
                 else {
-                	field.append(escapeChar);
+                    field.append(escapeChar);
                 }
             }
-            
+
             // default handling
             if (escapeEnabled && c == escapeChar) {
                 escaped = true;
@@ -238,41 +247,41 @@ public class DelimitedReader implements RecordReader {
         // update the record line number
         recordLineNumber = lineNumber - lineOffset;
         recordText = text.toString();
-        
+
         // if eol is true, we're done; if not, then the end of file was reached 
         // and further validation is needed
         if (eol) {
             recordText = text.toString();
-            String [] record = new String[fieldList.size()];
+            String[] record = new String[fieldList.size()];
             return fieldList.toArray(record);
         }
-        
+
         if (continued) {
             throw new RecordIOException("Unexpected end of stream after line continuation at line " + lineNumber);
         }
-        
+
         // handle last escaped char
         if (escaped) {
             field.append(escapeChar);
         }
-        
+
         if (text.length() > 0) {
-        	fieldList.add(field.toString());
-        	
-            String [] record = new String[fieldList.size()];
+            fieldList.add(field.toString());
+
+            String[] record = new String[fieldList.size()];
             record = fieldList.toArray(record);
             recordText = text.toString();
             fieldList = null;
             return record;
         }
-        else  {
+        else {
             fieldList = null;
             recordText = null;
             recordLineNumber = -1;
             return null;
         }
     }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.stream.RecordReader#close()

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,67 +23,70 @@ package org.beanio.types;
  */
 public class StringTypeHandler implements TypeHandler {
 
-	private boolean trim = false;
-	private boolean nullIfEmpty = true;
-	
-	/**
-	 * Returns the unmodified text.
-	 */
-	public String parse(String text) throws TypeConversionException {
-		if (text != null) {
-			if (trim) {
-				text = text.trim();
-			}
-			if (nullIfEmpty && text.length() == 0) {
-				text = null;
-			}
-		}
-		return text;
-	}
+    private boolean trim = false;
+    private boolean nullIfEmpty = false;
 
-	/**
-	 * Formats the value by calling {@link Object#toString()}.
-	 * @param value the value to format
-	 * @returns the formatted value, or the empty string if <tt>value</tt>
-	 *     was <tt>null</tt>
-	 */
-	public String format(Object value) {
-		if (value == null) 
-			return "";
-		return value.toString();
-	}
+    /**
+     * Parses a <tt>String</tt> from the given text.
+     * @param text the text to parse
+     * @return the parsed <tt>String</tt>
+     */
+    public String parse(String text) {
+        if (text != null) {
+            if (trim) {
+                text = text.trim();
+            }
+            if (nullIfEmpty && text.length() == 0) {
+                text = null;
+            }
+        }
+        return text;
+    }
 
-	/**
-	 * Returns <tt>true</tt> if <tt>parse(String)</tt> should trim the text.
-	 * By default, <tt>trim</tt> is <tt>false</tt> which allows trimming to
-	 * be controlled by the field definition.
-	 * @return <tt>true</tt> if parsed text is trimmed
-	 */
-	public boolean isTrim() {
-		return trim;
-	}
+    /**
+     * Formats the value by calling {@link Object#toString()}.
+     * @param value the value to format
+     * @return the formatted value, or the empty string if <tt>value</tt>
+     *     is <tt>null</tt>
+     */
+    public String format(Object value) {
+        if (value == null)
+            return "";
+        return value.toString();
+    }
 
-	/**
-	 * Set to <tt>true</tt> to trim text when parsed.
-	 * @param trim <tt>true</tt> if parsed text is trimmed
-	 */
-	public void setTrim(boolean trim) {
-		this.trim = trim;
-	}
+    /**
+     * Returns <tt>true</tt> if <tt>parse(String)</tt> should trim the text.
+     * By default, <tt>trim</tt> is <tt>false</tt> which allows trimming to
+     * be controlled by the field definition.
+     * @return <tt>true</tt> if parsed text is trimmed
+     */
+    public boolean isTrim() {
+        return trim;
+    }
 
-	/**
-	 * Returns <tt>true</tt> if empty string values are parsed as <tt>null</tt>.
-	 * @return <tt>true</tt> to convert the empty string to <tt>null</tt>
-	 */
-	public boolean isNullIfEmpty() {
-		return nullIfEmpty;
-	}
+    /**
+     * Set to <tt>true</tt> to trim text when parsing.
+     * @param trim <tt>true</tt> if text should be trimmed when parsed
+     */
+    public void setTrim(boolean trim) {
+        this.trim = trim;
+    }
 
-	/**
-	 * Set to <tt>true</tt> if the parsed empty strings should be converted to <tt>null</tt>.
-	 * @param nullIfEmpty <tt>true<</tt> to convert empty string to <tt>null</tt>
-	 */
-	public void setNullIfEmpty(boolean nullIfEmpty) {
-		this.nullIfEmpty = nullIfEmpty;
-	}
+    /**
+     * Returns <tt>true</tt> if empty string values are parsed as <tt>null</tt>.
+     * Defaults to <tt>false</tt>.
+     * @return <tt>true</tt> to convert the empty string to <tt>null</tt>
+     */
+    public boolean isNullIfEmpty() {
+        return nullIfEmpty;
+    }
+
+    /**
+     * Set to <tt>true</tt> if the parsed empty strings should be converted to <tt>null</tt>.
+     * @param nullIfEmpty <tt>true<</tt> to convert empty string to <tt>null</tt>
+     */
+    public void setNullIfEmpty(boolean nullIfEmpty) {
+        this.nullIfEmpty = nullIfEmpty;
+    }
 }

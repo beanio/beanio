@@ -1,0 +1,187 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!-- 
+    Copyright 2010-2011 Kevin Seim
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+       http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<project name="beanio">
+
+  <property name="target" location="target" />
+  <property name="version" value="1.0-SNAPSHOT" />
+  <property name="emma.enabled" value="true" />
+
+  <target name="clean">
+
+  </target>
+
+  <target name="init">
+    <tstamp />
+    <!-- create the build directory -->
+    <mkdir dir="${target}" />
+    <property name="classes.main" location="${target}/classes/main" />
+    <property name="classes.test" location="${target}/classes/test" />
+    <property name="classes.emma" location="${target}/classes/emma" />
+  </target>
+
+  <!-- Compile main source files (src -> target/classes/main) -->
+  <target name="compile" depends="init">
+    <delete dir="${classes.main}" failonerror="false" />
+    <mkdir dir="${classes.main}" />
+    <javac srcdir="src" destdir="${classes.main}" includeantruntime="false" debug="true" source="1.5" target="1.5" />
+  </target>
+
+  <!-- Create the beanio jar -->
+  <target name="jar" depends="init">
+    <!-- TODO valiate manifest file -->
+    <jar destfile="${target}/beanio.jar">
+      <fileset dir="${classes.main}" />
+      <fileset dir="src">
+        <exclude name="**/*.java" />
+        <exclude name="**/package.html" />
+      </fileset>
+      <manifest>
+        <attribute name="Implementation-Title" value="BeanIO ${version}" />
+        <attribute name="Implementation-Version" value="${version}" />
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- Creates docs related directories -->
+  <target name="docs-init">
+    <delete dir="${target}/docs" />
+    <mkdir dir="${target}/docs/api" />
+  </target>
+  <!-- Create API documentation -->
+  <target name="docs-api" depends="docs-init">
+    <javadoc sourcepath="src" destdir="${target}/docs/api" windowtitle="BeanIO 1.0 API" access="protected"
+      header="BeanIO 1.0">
+      <doctitle><![CDATA[<h2>BeanIO 1.0 API</h2>]]></doctitle>
+      <bottom><![CDATA[<i>Copyright &copy; 2010-2011 Kevin Seim</i>]]></bottom>
+      <link href="http://download.oracle.com/javase/6/docs/api/" />
+    </javadoc>
+  </target>
+  <target name="docs" depends="docs-init,docs-api" />
+
+	<!-- Create the release ZIP -->
+	<target name="package">
+	  <property name="parent" value="beanio-${version}" />
+	  <zip destfile="${target}/beanio-${version}.zip">
+	    <zipfileset dir="${target}" prefix="${parent}">
+	      <include name="beanio.jar" />
+	      <include name="docs/**" />
+	    </zipfileset>
+	    <zipfileset dir="." prefix="${parent}">
+	      <include name="src/**" />
+	      <include name="test/**" />
+	      <include name="*.txt" />
+	      <include name="*.xml" />
+	    </zipfileset>
+	  </zip>
+	</target>
+
+  <!-- Prepare for test execution -->
+  <target name="test-init" depends="init">
+    <path id="classpath.test">
+      <pathelement location="${target}/beanio.jar" />
+      <pathelement location="${classes.test}" />
+      <pathelement location="test" />
+      <fileset dir="lib">
+        <include name="**/*.jar" />
+      </fileset>
+    </path>
+
+    <!-- Compile test classes -->
+    <delete dir="${classes.test}" failonerror="false" />
+    <mkdir dir="${classes.test}" />
+    <javac srcdir="test" destdir="${classes.test}" debug="true" includeAntRuntime="false" classpathref="classpath.test" />
+
+    <property name="junit.report.dir" value="${target}/report/junit" />
+    <delete dir="${junit.report.dir}" failonerror="false" />
+    <mkdir dir="${junit.report.dir}" />
+
+    <condition property="flag.emma">
+      <and>
+        <istrue value="${emma.enabled}" />
+      </and>
+    </condition>
+  </target>
+
+  <!-- Run JUnit without capturing coverage -->
+  <target name="test-junit" depends="test-init" unless="flag.emma">
+    <junit printsummary="true" fork="true" haltonfailure="true">
+      <formatter type="plain" />
+      <classpath refid="classpath.test" />
+      <batchtest fork="true" todir="${junit.report.dir}">
+        <fileset dir="test">
+          <include name="**/*Test.java" />
+          <exclude name="**/ParserTest.java" />
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+
+  <!-- Run JUnit while monitoring code coverage with Emma -->
+  <target name="test-emma" depends="test-init" if="flag.emma">
+    <mkdir dir="${target}/classes/emma" />
+    <mkdir dir="${target}/report/emma" />
+
+    <path id="emma.lib">
+      <fileset dir="lib">
+        <include name="emma*.jar" />
+      </fileset>
+    </path>
+    <taskdef resource="emma_ant.properties" classpathref="emma.lib" />
+
+    <!-- Instrument the Java classes using Emma -->
+    <path id="main">
+      <pathelement location="${target}/classes/main" />
+    </path>
+    <emma enabled="true">
+      <instr instrpathref="main" destdir="${target}/classes/emma" metadatafile="${target}/report/emma/metadata.emma" merge="true" />
+    </emma>
+
+    <!-- Add the instrumented classes to the test classpath -->
+    <path id="classpath.test.emma">
+      <pathelement location="${target}/classes/emma" />
+      <path refid="classpath.test" />
+    </path>
+
+    <!-- Run the JUnit test cases -->
+    <junit printsummary="true" fork="true" haltonfailure="true">
+      <formatter type="plain" />
+      <classpath refid="classpath.test.emma" />
+      <jvmarg value="-Demma.coverage.out.file=${target}/report/emma/coverage.emma" />
+      <jvmarg value="-Demma.coverage.out.merge=true" />
+      <batchtest fork="true" todir="${junit.report.dir}">
+        <fileset dir="test">
+          <include name="**/*Test.java" />
+          <exclude name="**/ParserTest.java" />
+        </fileset>
+      </batchtest>
+    </junit>
+
+    <!-- Create the coverage report -->
+    <emma enabled="true">
+      <report sourcepath="src">
+        <fileset dir="${target}/report/emma">
+          <include name="*.emma" />
+        </fileset>
+        <html outfile="${target}/report/emma/coverage.html" />
+      </report>
+    </emma>
+  </target>
+
+  <target name="test" depends="compile,jar,test-init,test-junit,test-emma" />
+  <target name="build" depends="compile,jar,docs,package" />
+
+</project>

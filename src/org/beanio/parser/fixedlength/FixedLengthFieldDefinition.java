@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,132 +26,171 @@ import org.beanio.parser.*;
  */
 public class FixedLengthFieldDefinition extends FieldDefinition {
 
-	/** Left justification */
-	public static final char LEFT = 'L';
-	/** Right justification */
-	public static final char RIGHT = 'R';
-	
-	private int width;
-	private char padding = ' ';
-	private char justification = LEFT;
-	
-	@Override
-	public boolean isMatch(Record record) {
-		return isMatch(getFieldText(record));
-	}
+    /** Left justification */
+    public static final char LEFT = 'L';
+    /** Right justification */
+    public static final char RIGHT = 'R';
 
-	@Override
-	protected String parseField(Record record) {
-		String fieldText = getFieldText(record);
-		record.setFieldText(getName(), fieldText);
-		return fieldText;
-	}
-	
-	@Override
-	public String formatValue(boolean isMap, Object bean) {
-		String text = super.formatValue(isMap, bean);
-		
-		int textWidth = text.length();
-		if (textWidth > width) {
-			return text.substring(0, width);
-		}
-		else if (textWidth == width) {
-			return text;
-		}
-		int remaining = width - textWidth;
-		StringBuffer s = new StringBuffer(width);
-		if (justification == LEFT) {
-			s.append(text);
-			for (int i=0; i<remaining; i++) {
-				s.append(padding);
-			}
-		}
-		else {
-			for (int i=0; i<remaining; i++) {
-				s.append(padding);
-			}
-			s.append(text);
-		}
-		return text;
-	}
-	
-	/**
-	 * Parses this field's text from a record.
-	 * @param record the record to parse
-	 * @return the parsed field text
-	 */
-	private String getFieldText(Record record) {
-		int position = getPosition();
-		
-		String text = record.getRecordText();
-		if ((position + width) > text.length())
-			return null;
-		
-		int start = position;
-		int end = position + width - 1;
-		
-		if (justification == LEFT) {
-			while (end > start && text.charAt(end) == padding) {
-				--end;
-			}
-		}
-		else {
-			while (start < end && text.charAt(start) == padding) {
-				++start;
-			}
-		}
-		
-		if (start == end)
-			return "";
-		
-		return text.substring(start, end + 1);
-	}
+    private int length;
+    private char padding = ' ';
+    private char justification = LEFT;
 
-	/**
-	 * Returns the width of this field.
-	 * @return the field width
-	 */
-	public int getWidth() {
-		return width;
-	}
+    @Override
+    public boolean isMatch(Record record) {
+        String text = getFieldText(record);
+        if (text.length() != length) {
+            return false;
+        }
+        else {
+            return isMatch(unpad(text));
+        }
+    }
 
-	/**
-	 * Sets the width of this field
-	 * @param width the field width
-	 */
-	public void setWidth(int width) {
-		this.width = width;
-	}
+    @Override
+    protected String parseField(Record record) {
+        String fieldText = getFieldText(record);
+        record.setFieldText(getName(), fieldText);
 
-	/**
-	 * Returns the character used to pad this field.
-	 * @return the padding character
-	 */
-	public char getPadding() {
-		return padding;
-	}
+        if (fieldText == null) {
+            return null;
+        }
+        else if (fieldText.length() != length) {
+            record.addFieldError(getName(), fieldText, "length", length);
+            return null;
+        }
+        else {
+            return unpad(fieldText);
+        }
+    }
 
-	/**
-	 * Sets the character used to pad this field.
-	 * @param padding the padding character
-	 */
-	public void setPadding(char padding) {
-		this.padding = padding;
-	}
+    @Override
+    public String formatValue(boolean isMap, Object bean) {
+        String text = super.formatValue(isMap, bean);
 
-	/**
-	 * Returns the text justification for this field.
-	 * @return the text justification, {@link #LEFT} or {@link #RIGHT}
-	 */
-	public char getJustification() {
-		return justification;
-	}
+        int textWidth = text.length();
+        if (textWidth > length) {
+            return text.substring(0, length);
+        }
+        else if (textWidth == length) {
+            return text;
+        }
 
-	/**
-	 * Sets the text justification for this field.
-	 * @param justification the text justification, {@link #LEFT} or {@link #RIGHT}
-	 */
-	public void setJustification(char justification) {
-		this.justification = justification;
-	}
+        int remaining = length - textWidth;
+        StringBuffer s = new StringBuffer(length);
+        if (justification == LEFT) {
+            s.append(text);
+            for (int i = 0; i < remaining; i++) {
+                s.append(padding);
+            }
+        }
+        else {
+            for (int i = 0; i < remaining; i++) {
+                s.append(padding);
+            }
+            s.append(text);
+        }
+        return s.toString();
+    }
+
+    /**
+     * Parses this field's text from a record.
+     * @param record the record to parse
+     * @return the parsed field text
+     */
+    private String getFieldText(Record record) {
+        String recordText = record.getRecordText();
+
+        int position = getPosition();
+        int recordLength = recordText.length();
+        if (recordLength <= position) {
+            return null;
+        }
+
+        return recordText.substring(position, Math.min(recordLength, position + length));
+    }
+
+    /**
+     * Removes padding from the field text.
+     * @param fieldText the field text to remove padding
+     * @return the unpadded field text
+     */
+    private String unpad(String fieldText) {
+        int start = 0;
+        int end = length - 1;
+        boolean modified = false;
+
+        if (justification == LEFT) {
+            while (end > start && fieldText.charAt(end) == padding) {
+                modified = true;
+                --end;
+            }
+        }
+        else {
+            while (start < end && fieldText.charAt(start) == padding) {
+                modified = true;
+                ++start;
+            }
+        }
+
+        if (!modified) {
+            return fieldText;
+        }
+        else if (start == end) {
+            return "";
+        }
+        else {
+            return fieldText.substring(start, end + 1);
+        }
+    }
+
+    /**
+     * Returns the length of this field.
+     * @return the field length
+     */
+    public int getLength() {
+        return length;
+    }
+
+    /**
+     * Sets the length of this field
+     * @param length the field length
+     */
+    public void setLength(int length) {
+        this.length = length;
+    }
+
+    /**
+     * Returns the character used to pad this field.
+     * @return the padding character
+     */
+    public char getPadding() {
+        return padding;
+    }
+
+    /**
+     * Sets the character used to pad this field.
+     * @param padding the padding character
+     */
+    public void setPadding(char padding) {
+        this.padding = padding;
+    }
+
+    /**
+     * Returns the text justification for this field.
+     * @return the text justification, {@link #LEFT} or {@link #RIGHT}
+     */
+    public char getJustification() {
+        return justification;
+    }
+
+    /**
+     * Sets the text justification for this field.
+     * @param justification the text justification, {@link #LEFT} or {@link #RIGHT}
+     */
+    public void setJustification(char justification) {
+        if (justification != LEFT && justification != RIGHT) {
+            throw new IllegalArgumentException("Invalid justification: " + justification);
+        }
+        this.justification = justification;
+    }
 }

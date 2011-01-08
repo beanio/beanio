@@ -50,4 +50,16 @@ public class FixedLengthWriterTest {
         out.write("value1  value2");
         assertEquals("value1  value2", text.toString());
     }    
+    
+    @Test
+    public void testFlushAndClose() throws IOException {
+        FixedLengthWriterFactory factory = new FixedLengthWriterFactory();
+        factory.setLineSeparator("");
+        StringWriter text = new StringWriter();
+        RecordWriter out = factory.createWriter(new BufferedWriter(text));
+        out.write("v");
+        out.flush();
+        assertEquals("v", text.toString());
+        out.close();
+    }
 }

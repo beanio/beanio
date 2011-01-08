@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,113 +28,108 @@ import org.beanio.stream.*;
  */
 public class DelimitedReaderFactory implements RecordReaderFactory {
 
-	private char delimiter = '\t';
-	private char escapeCharacter = '\\';
-	private char lineContinuationCharacter = '\\';
-	private boolean escapeEnabled = false; 
-	private boolean lineContinuationEnabled = false;
-	
-	/*
-	 * (non-Javadoc)
-	 * @see org.beanio.stream.RecordReaderFactory#createReader(java.io.Reader)
-	 */
-	public RecordReader createReader(Reader in) {
-		if (escapeEnabled && delimiter == escapeCharacter)
-			throw new IllegalArgumentException("Delimiter cannot match the escape character");
-		if (lineContinuationEnabled && delimiter == lineContinuationCharacter)
-			throw new IllegalArgumentException("Delimiter cannot match the line continuation character");
-		
-		Character escape = null;
-		if (escapeEnabled) {
-			escape = escapeCharacter;
-		}
-		Character lineContinuation = null;
-		if (lineContinuationEnabled) {
-			lineContinuation = lineContinuationCharacter;
-		}
-		
-		return new DelimitedReader(in, delimiter, escape, lineContinuation);
-	}
+    private char delimiter = '\t';
+    private char escape = '\\';
+    private char lineContinuationCharacter = '\\';
+    private boolean escapeEnabled = false;
+    private boolean lineContinuationEnabled = false;
 
-	/**
-	 * Returns the field delimiting character.  Defaults to tab.
-	 * @return the record delimiter
-	 */
-	public char getDelimiter() {
-		return delimiter;
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.stream.RecordReaderFactory#createReader(java.io.Reader)
+     */
+    public RecordReader createReader(Reader in) {
+        Character e = null;
+        if (escapeEnabled) {
+            e = escape;
+        }
+        Character lineContinuation = null;
+        if (lineContinuationEnabled) {
+            lineContinuation = lineContinuationCharacter;
+        }
 
-	/**
-	 * Sets the field delimiting character to use.
-	 * @param delimiter the record delimiting character
-	 */
-	public void setDelimiter(char delimiter) {
-		this.delimiter = delimiter;
-	}
+        return new DelimitedReader(in, delimiter, e, lineContinuation);
+    }
 
-	/**
-	 * Returns the character used by the input stream to escape delimiters and itself.
-	 * The default escape character is the backslash, '\'. 
-	 * @return the escape character
-	 */
-	public char getEscapeCharacter() {
-		return escapeCharacter;
-	}
+    /**
+     * Returns the field delimiting character.  Defaults to tab.
+     * @return the record delimiter
+     */
+    public char getDelimiter() {
+        return delimiter;
+    }
 
-	/**
-	 * Sets the character used by the input stream to escape delimiters and itself.
-	 * @param escapeCharacter the new escape character
-	 */
-	public void setEscapeCharacter(char escapeCharacter) {
-		this.escapeCharacter = escapeCharacter;
-	}
+    /**
+     * Sets the field delimiting character to use.
+     * @param delimiter the record delimiting character
+     */
+    public void setDelimiter(char delimiter) {
+        this.delimiter = delimiter;
+    }
 
-	/**
-	 * Returns the line continuation character.  By default, the line continuation
-	 * character is the backslash.
-	 * @return the line continuation character
-	 */
-	public char getLineContinuationCharacter() {
-		return lineContinuationCharacter;
-	}
+    /**
+     * Returns the character used by the input stream to escape delimiters and itself.
+     * The default escape character is the backslash, '\'. 
+     * @return the escape character
+     */
+    public char getEscape() {
+        return escape;
+    }
 
-	/**
-	 * Sets the line continuation character.
-	 * @param lineContinuationCharacter the line continuation character
-	 */
-	public void setLineContinuationCharacter(char lineContinuationCharacter) {
-		this.lineContinuationCharacter = lineContinuationCharacter;
-	}
+    /**
+     * Sets the character used by the input stream to escape delimiters and itself.
+     * @param escapeCharacter the new escape character
+     */
+    public void setEscape(char escapeCharacter) {
+        this.escape = escapeCharacter;
+    }
 
-	/**
-	 * Returns whether the escape character is enabled.
-	 * @return <tt>true</tt> if enabled, false otherwise
-	 */
-	public boolean isEscapeEnabled() {
-		return escapeEnabled;
-	}
+    /**
+     * Returns the line continuation character.  By default, the line continuation
+     * character is the backslash.
+     * @return the line continuation character
+     */
+    public char getLineContinuationCharacter() {
+        return lineContinuationCharacter;
+    }
 
-	/**
-	 * Sets whether the escape character is enabled.
-	 * @param escapeEnabled set to <tt>true</tt> to enable the escape character
-	 */
-	public void setEscapeEnabled(boolean escapeEnabled) {
-		this.escapeEnabled = escapeEnabled;
-	}
+    /**
+     * Sets the line continuation character.
+     * @param lineContinuationCharacter the line continuation character
+     */
+    public void setLineContinuationCharacter(char lineContinuationCharacter) {
+        this.lineContinuationCharacter = lineContinuationCharacter;
+    }
 
-	/**
-	 * Returns whether the line continuation character is enabled.
-	 * @return <tt>true</tt> if the line continuation character is enabled
-	 */
-	public boolean isLineContinationEnabled() {
-		return lineContinuationEnabled;
-	}
+    /**
+     * Returns whether the escape character is enabled.
+     * @return <tt>true</tt> if enabled, false otherwise
+     */
+    public boolean isEscapeEnabled() {
+        return escapeEnabled;
+    }
 
-	/**
-	 * Sets whether the line continuation character is enabled.
-	 * @param enabled set to <tt>true</tt> to enable the line continuation character
-	 */
-	public void setLineContinuationEnabled(boolean enabled) {
-		this.lineContinuationEnabled = enabled;
-	}
+    /**
+     * Sets whether the escape character is enabled.
+     * @param escapeEnabled set to <tt>true</tt> to enable the escape character
+     */
+    public void setEscapeEnabled(boolean escapeEnabled) {
+        this.escapeEnabled = escapeEnabled;
+    }
+
+    /**
+     * Returns whether the line continuation character is enabled.
+     * @return <tt>true</tt> if the line continuation character is enabled
+     */
+    public boolean isLineContinationEnabled() {
+        return lineContinuationEnabled;
+    }
+
+    /**
+     * Sets whether the line continuation character is enabled.
+     * @param enabled set to <tt>true</tt> to enable the line continuation character
+     */
+    public void setLineContinuationEnabled(boolean enabled) {
+        this.lineContinuationEnabled = enabled;
+    }
 }

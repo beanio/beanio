@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.junit.Test;
 public class CsvWriterTest {
 
     private static final String lineSep = System.getProperty("line.separator");
-    
+
     @Test
     public void testDefaultConfiguration() throws IOException {
         CsvWriterFactory factory = new CsvWriterFactory();
@@ -40,25 +40,25 @@ public class CsvWriterTest {
         out.write(new String[] { "value1", "\"value2\"", "value,3" });
         assertEquals("value1,\"\"\"value2\"\"\",\"value,3\"" + lineSep, text.toString());
     }
-    
+
     @Test
     public void testCustomConfiguration() throws IOException {
         CsvWriterFactory factory = new CsvWriterFactory();
         factory.setDelimiter(':');
         factory.setQuote('\'');
-        factory.setEscapeCharacter('\\');
+        factory.setEscape('\\');
         factory.setLineSeparator("");
         StringWriter text = new StringWriter();
         RecordWriter out = factory.createWriter(text);
         out.write(new String[] { "value1", "'value2'", "value:3" });
         assertEquals("value1:'\\'value2\\'':'value:3'", text.toString());
-    }    
-    
+    }
+
     @Test
     public void testAlwaysQuote() throws IOException {
         CsvWriterFactory factory = new CsvWriterFactory();
         factory.setQuote('\'');
-        factory.setEscapeCharacter('\\');
+        factory.setEscape('\\');
         factory.setLineSeparator("");
         factory.setAlwaysQuote(true);
         StringWriter text = new StringWriter();
@@ -66,16 +66,30 @@ public class CsvWriterTest {
         out.write(new String[] { "value1", "'value2'", "value,3" });
         assertEquals("'value1','\\'value2\\'','value,3'", text.toString());
     }
-    
+
     @Test
     public void testMultiline() throws IOException {
         CsvWriterFactory factory = new CsvWriterFactory();
         factory.setQuote('\'');
-        factory.setEscapeCharacter('\\');
+        factory.setEscape('\\');
         factory.setLineSeparator("");
         StringWriter text = new StringWriter();
         RecordWriter out = factory.createWriter(text);
         out.write(new String[] { "value1", "value\n2", "value\r3", "value\r\n4" });
         assertEquals("value1,'value\n2','value\r3','value\r\n4'", text.toString());
-    }  
+    }
+
+    @Test
+    public void testFlushAndClose() throws IOException {
+        CsvWriterFactory factory = new CsvWriterFactory();
+        factory.setQuote('\'');
+        factory.setEscape('\\');
+        factory.setLineSeparator("");
+        StringWriter text = new StringWriter();
+        RecordWriter out = factory.createWriter(new BufferedWriter(text));
+        out.write(new String[] { "v" });
+        out.flush();
+        assertEquals("v", text.toString());
+        out.close();
+    }
 }

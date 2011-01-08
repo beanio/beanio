@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,44 +23,44 @@ package org.beanio.types;
  */
 public abstract class NumberTypeHandler implements TypeHandler {
 
-	/**
-	 * Parses a <tt>Number</tt> from the given text.
-	 * @param text the text to parse
-	 * @return the parsed Number, or null if <tt>text</tt> was <tt>null</tt>
-	 *    or an empty string
-	 * @throws TypeConversionException if the text is not a valid number
-	 */
-	public final Number parse(String text) throws TypeConversionException {
-		if (text == null || "".equals(text)) {
-			return null;
-		}
-		
-		try {
-			return createNumber(text);
-		}
-		catch (NumberFormatException ex) {
-			throw new TypeConversionException("Invalid number '" + text + "'", ex);
-		}
-	}
-	
-	/**
-	 * Parses the text into a <tt>Number</tt>.
-	 * @param text
-	 * @return
-	 * @throws NumberFormatException
-	 */
-	protected abstract Number createNumber(String text) throws NumberFormatException;
-	
-	/**
-	 * Formats a Number object by calling <tt>toString()</tt>.  If the value is
-	 * null, the empty string is returned.
-	 * @param value the value to format
-	 * @return the formatted value
-	 */
-	public String format(Object value) {
-		if (value == null)
-			return "";
-		else
-			return ((Number)value).toString();
-	}
+    /**
+     * Parses a <tt>Number</tt> from the given text.
+     * @param text the text to parse
+     * @return the parsed Number, or null if <tt>text</tt> was <tt>null</tt>
+     *    or an empty string
+     * @throws TypeConversionException if the text is not a valid number
+     */
+    public final Number parse(String text) throws TypeConversionException {
+        if (text == null || "".equals(text)) {
+            return null;
+        }
+
+        try {
+            return createNumber(text);
+        }
+        catch (NumberFormatException ex) {
+            throw new TypeConversionException("Invalid number '" + text + "'", ex);
+        }
+    }
+
+    /**
+     * Parses a <tt>Number</tt> from text.
+     * @param text the text to convert to a Number
+     * @return the parsed Number
+     * @throws NumberFormatException if the text is not a valid number
+     */
+    protected abstract Number createNumber(String text) throws NumberFormatException;
+
+    /**
+     * Formats a <tt>Number</tt> by calling <tt>toString()</tt>.  If <tt>value</tt> is
+     * null, the empty string is returned.
+     * @param value the number to format
+     * @return the formatted number
+     */
+    public String format(Object value) {
+        if (value == null)
+            return "";
+        else
+            return ((Number) value).toString();
+    }
 }

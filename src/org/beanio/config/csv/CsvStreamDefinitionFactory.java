@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,24 +23,25 @@ import org.beanio.stream.*;
 import org.beanio.stream.csv.*;
 
 /**
+ * Stream definition factory for CSV formatted streams.
  * 
  * @author Kevin Seim
  * @since 1.0
  */
-public class CsvStreamDefinitionFactory extends	DelimitedStreamDefinitionFactory {
+public class CsvStreamDefinitionFactory extends DelimitedStreamDefinitionFactory {
 
-	@Override
-	protected StreamDefinition createStreamDefinition(StreamConfig stream) {
-		return new CsvStreamDefinition();
-	}
+    @Override
+    protected StreamDefinition createStreamDefinition(StreamConfig stream) {
+        return new CsvStreamDefinition();
+    }
 
-	@Override
-	protected RecordReaderFactory createDefaultRecordReaderFactory() {
-		return new CsvReaderFactory();
-	}
-	
-	@Override
-	protected RecordWriterFactory createDefaultRecordWriterFactory() {
-		return new CsvWriterFactory();
-	}	
+    @Override
+    protected RecordReaderFactory createDefaultRecordReaderFactory() {
+        return new CsvReaderFactory();
+    }
+
+    @Override
+    protected RecordWriterFactory createDefaultRecordWriterFactory() {
+        return new CsvWriterFactory();
+    }
 }

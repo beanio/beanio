@@ -121,7 +121,7 @@ public abstract class StreamDefinitionFactory {
                 }
             }
 
-            compileGroupDefinition(config, config.getRootGroupConfig(), definition.getRootGroupContext());
+            compileGroupDefinition(config, config.getRootGroupConfig(), definition.getRootGroupDefinition());
             return definition;
         }
         catch (BeanIOConfigurationException ex) {
@@ -139,11 +139,14 @@ public abstract class StreamDefinitionFactory {
     protected void compileGroupDefinition(StreamConfig streamConfig, GroupConfig groupConfig,
         GroupDefinition definition) {
 
-        // TODO validate each node has at least one required record?
-
+        List<NodeConfig> nodeList = groupConfig.getChildren();
+        if (nodeList.isEmpty()) {
+            throw new BeanIOConfigurationException("Group '" + groupConfig.getName() +
+                "' must contain at least one record or group");
+        }
+        
         // by default, order is incremented for each record
         int lastOrder = 0;
-        List<NodeConfig> nodeList = groupConfig.getNodeList();
         for (NodeConfig child : nodeList) {
             String nodeType = child.getType() == NodeConfig.RECORD ? "record" : "group";
 
@@ -302,17 +305,17 @@ public abstract class StreamDefinitionFactory {
                 }
                 else {
                     // TODO improve the validation to verify the field class and bean property class
-                    // are compatible (primitives, particularly, numbers are a little tricky...)
+                    // are compatible (primitives, particularly numbers, are a little tricky...)
                 }
             }
 
             // determine the type handler based on the named handler or the field class
             TypeHandler handler = null;
-            if (field.getHandler() != null) {
-                handler = typeHandlerFactory.getTypeHandler(field.getHandler());
+            if (field.getTypeHandler() != null) {
+                handler = typeHandlerFactory.getTypeHandler(field.getTypeHandler());
                 if (handler == null) {
                     throw new BeanIOConfigurationException("Type handler not found named '" +
-                            field.getHandler() + "' on field '" + field.getName() + "'");
+                            field.getTypeHandler() + "' on field '" + field.getName() + "'");
                 }
             }
             else if (fieldClass != null) {

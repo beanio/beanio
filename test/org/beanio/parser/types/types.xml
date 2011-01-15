@@ -44,14 +44,14 @@
 
   <stream name="t2" format="csv">
     <record name="record" class="org.beanio.parser.types.PrimitiveRecord">
-      <field name="byteValue" />
-      <field name="shortValue" />
-      <field name="intValue" />
-      <field name="longValue" />
-      <field name="floatValue" />
-      <field name="doubleValue" />
-      <field name="charValue" />
-      <field name="booleanValue" />
+      <field name="byteValue" default="0" />
+      <field name="shortValue" default="0" />
+      <field name="intValue" default="0" />
+      <field name="longValue" default="0" />
+      <field name="floatValue" default="0" />
+      <field name="doubleValue" default="0" />
+      <field name="charValue" default="x" />
+      <field name="booleanValue" default="false" />
     </record>
   </stream>
 
@@ -79,5 +79,11 @@
       <field name="field" trim="false" />
     </record>
   </stream>
-  
+
+  <stream name="t6" format="csv">
+    <record name="record" class="org.beanio.parser.types.PrimitiveRecord">
+      <field name="intValue" />
+    </record>
+  </stream>
+
 </beanio>

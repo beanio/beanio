@@ -30,25 +30,18 @@ public class CsvReaderFactory implements RecordReaderFactory {
 
     private char delimiter = ',';
     private char quote = '"';
-    private char escape = '"';
-    private boolean escapeEnabled = true;
+    private Character escape = '"';
     private boolean multilineEnabled = false;
     private boolean whitespaceAllowed = false;
     private boolean unquotedQuotesAllowed = false;
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.beanio.line.RecordReaderFactory#createReader(java.io.Reader)
      */
     public RecordReader createReader(Reader in) {
-        Character e = null;
-        if (escapeEnabled) {
-            e = this.escape;
-        }
-
-        return new CsvReader(in, delimiter, quote, e, multilineEnabled,
-                whitespaceAllowed, unquotedQuotesAllowed);
+        return new CsvReader(in, delimiter, quote, escape, multilineEnabled, whitespaceAllowed,
+            unquotedQuotesAllowed);
     }
 
     /**
@@ -86,10 +79,11 @@ public class CsvReaderFactory implements RecordReaderFactory {
     /**
      * Sets the escape character. Quotation marks can be escaped within quoted
      * values using the escape character. For example, using the default escape
-     * character, '"Hello ""friend"""' is parsed into 'Hello "friend"'.
+     * character, '"Hello ""friend"""' is parsed into 'Hello "friend"'.  Set
+     * to <tt>null</tt> to disable escaping.
      * @param c new escape character
      */
-    public void setEscape(char c) {
+    public void setEscape(Character c) {
         this.escape = c;
     }
 
@@ -97,29 +91,20 @@ public class CsvReaderFactory implements RecordReaderFactory {
      * Returns the escape character. Quotation marks can be escaped within
      * quoted values using the escape character. For example, using the default
      * escape character, '"Hello ""friend"""' is parsed into 'Hello "friend"'.
-     * @return escape character
+     * Defaults to the quotation mark, <tt>"</tt>.
+     * @return the escape character or <tt>null</tt> if escaping is disabled
      */
-    public char getEscape() {
+    public Character getEscape() {
         return escape;
     }
-
+    
     /**
-     * Set to false to disable the escape character. By default, escaping is
-     * enabled.
-     * @param escapeEnabled boolean
-     * @see #getEscape()
-     */
-    public void setEscapeEnabled(boolean escapeEnabled) {
-        this.escapeEnabled = escapeEnabled;
-    }
-
-    /**
-     * Returns whether the escaping is enabled. By default, escaping is enabled.
-     * @return boolean
+     * Returns whether escaping is enabled. By default, escaping is enabled.
+     * @return <tt>true</tt> if an escape character is enabled
      * @see #getEscape()
      */
     public boolean isEscapeEnabled() {
-        return escapeEnabled;
+        return escape != null;
     }
 
     /**
@@ -134,7 +119,7 @@ public class CsvReaderFactory implements RecordReaderFactory {
     /**
      * Sets whether a record may span multiple lines (when quoted).
      * @param multilineEnabled set to true <tt>true</tt> to allow records to
-     *            span multiple lines
+     *   span multiple lines
      */
     public void setMultilineEnabled(boolean multilineEnabled) {
         this.multilineEnabled = multilineEnabled;
@@ -159,7 +144,7 @@ public class CsvReaderFactory implements RecordReaderFactory {
     /**
      * Sets whether unquoted whitespace is ignored.
      * @param whitespaceAllowed set to <tt>true</tt> to ignore unquoted
-     *            whitespace
+     *   whitespace
      */
     public void setWhitespaceAllowed(boolean whitespaceAllowed) {
         this.whitespaceAllowed = whitespaceAllowed;
@@ -181,7 +166,7 @@ public class CsvReaderFactory implements RecordReaderFactory {
     /**
      * Sets wheter quotes are allowed to appear in an unquoted field.
      * @param unquotedQuotesAllowed set to <tt>true</tt> if quotes may appear in
-     *            an unquoted field
+     *   an unquoted field
      */
     public void setUnquotedQuotesAllowed(boolean unquotedQuotesAllowed) {
         this.unquotedQuotesAllowed = unquotedQuotesAllowed;

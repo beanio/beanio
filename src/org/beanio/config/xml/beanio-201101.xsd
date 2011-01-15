@@ -108,7 +108,7 @@
     <attribute name="literal" type="xsd:string" use="optional" /> 
     <attribute name="type" type="xsd:string" use="optional" />
     <attribute name="typeHandler" type="xsd:string" use="optional" />
-    <attribute name="ignored" type="xsd:boolean" use="optional" />
+    <attribute name="ignore" type="xsd:boolean" use="optional" />
     <attribute name="trim" type="xsd:boolean" use="optional" />
     <attribute name="length" type="xsd:positiveInteger" use="optional" />
     <attribute name="padding" type="xsd:string" use="optional" />

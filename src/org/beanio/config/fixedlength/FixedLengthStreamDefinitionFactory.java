@@ -63,7 +63,11 @@ public class FixedLengthStreamDefinitionFactory extends StreamDefinitionFactory 
                 position[i] = position[i - 1] + width[i - 1];
             }
             if (width[i] < 0) {
-                if (i < (fieldCount - 1) && position[i + 1] > 0) {
+                String literal = fieldArray[i].getLiteral();
+                if (literal != null) {
+                    width[i] = literal.length(); 
+                }
+                else if (i < (fieldCount - 1) && position[i + 1] > 0) {
                     width[i] = position[i + 1] - position[i];
                 }
                 if (width[i] < 0) {

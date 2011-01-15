@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,39 +29,40 @@ import org.beanio.stream.RecordWriter;
  */
 public abstract class AbstractBeanWriter implements BeanWriter {
 
-	protected RecordWriter out;
-	
-	/**
-	 * Constructs a new <tt>AbstractBeanWriter</tt>.
-	 * @param out the output stream to write to
-	 */
-	public AbstractBeanWriter(RecordWriter out) {
-		this.out = out;
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see org.beanio.BeanWriter#flush()
-	 */
-	public void flush() {
-		try {
-			out.flush();
-		} catch (IOException e) {
-			throw new BeanWriterIOException("IOException caught flushing output stream", e);
-		}
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see org.beanio.BeanWriter#close()
-	 */
-	public void close() {
-		try {
-			out.close();
-		}
-		catch (IOException e) {
-			throw new BeanWriterIOException("IOException caught closing output stream", e);
-		}
-	}
+    protected RecordWriter out;
+
+    /**
+     * Constructs a new <tt>AbstractBeanWriter</tt>.
+     * @param out the output stream to write to
+     */
+    public AbstractBeanWriter(RecordWriter out) {
+        this.out = out;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.BeanWriter#flush()
+     */
+    public void flush() {
+        try {
+            out.flush();
+        }
+        catch (IOException e) {
+            throw new BeanWriterIOException("IOException caught flushing output stream", e);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.BeanWriter#close()
+     */
+    public void close() {
+        try {
+            out.close();
+        }
+        catch (IOException e) {
+            throw new BeanWriterIOException("IOException caught closing output stream", e);
+        }
+    }
 
 }

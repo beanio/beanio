@@ -15,8 +15,20 @@
  */
 package org.beanio.config;
 
+/**
+ * Stores configuration settings for field.  Fields are used
+ * to define the layout of a record.
+ * 
+ * @author Kevin Seim
+ * @since 1.0
+ */
 public class FieldConfig {
 
+    /** Left justification setting */
+    public static final String LEFT = "left";
+    /** Right justification setting */
+    public static final String RIGHT = "right";
+    
     private String name;
     private int position = -1;
     private Integer minLength;
@@ -34,7 +46,7 @@ public class FieldConfig {
     private String defaultValue;
     private int length = -1;
     private char padding = ' ';
-    private String justify = "left";
+    private String justify = LEFT;
 
     /**
      * Returns the default textual representation of the value of
@@ -46,8 +58,14 @@ public class FieldConfig {
         return defaultValue;
     }
 
-    public void setDefault(String s) {
-        this.defaultValue = s;
+    /**
+     * Sets the default textual representation of the value of
+     * this field when the field is not present in the input stream.
+     * May be <tt>null</tt>.
+     * @param text the default value (as text)
+     */
+    public void setDefault(String text) {
+        this.defaultValue = text;
     }
 
     /**
@@ -60,6 +78,12 @@ public class FieldConfig {
         return name;
     }
 
+    /**
+     * Sets the name of this field.  The name of the field is
+     * used to get and set the property value from the record bean
+     * when a <tt>getter</tt> and <tt>setter</tt> are not set.
+     * @param name the field name
+     */
     public void setName(String name) {
         this.name = name;
     }
@@ -75,6 +99,13 @@ public class FieldConfig {
         return position;
     }
 
+    /**
+     * Sets the position of this field.  For delimited record formats,
+     * the position is the index (beginning at 0) of this field in the 
+     * record.  For fixed length record formats, the position is the index
+     * of the first character in the field.
+     * @param position the field position
+     */
     public void setPosition(int position) {
         this.position = position;
     }
@@ -88,45 +119,67 @@ public class FieldConfig {
         return minLength;
     }
 
+    /**
+     * Sets the minimum length of this field in characters, or <tt>null</tt>
+     * if a minimum length should not be enforced.
+     * @param minLength the minimum length, or <tt>null</tt> if not enforced
+     */
     public void setMinLength(Integer minLength) {
         this.minLength = minLength;
     }
 
     /**
-     * Returns the maximum length of this field in characters, or <tt>null</tt>
-     * if a maximum length should not be enforced.
+     * Returns the maximum length of this field in characters.  Returns
+     * <tt>null</tt> if a maximum length will not be enforced.
      * @return the maximum length, or <tt>null</tt> if not enforced
      */
     public Integer getMaxLength() {
         return maxLength;
     }
 
+    /**
+     * Sets the maximum length of this field in characters.  Set to 
+     * <tt>null</tt> if a maximum length should not be enforced.
+     * @param maxLength the maximum length, or <tt>null</tt> if not enforced
+     */
     public void setMaxLength(Integer maxLength) {
         this.maxLength = maxLength;
     }
 
     /**
-     * Returns <tt>true</tt> if this field's text will be trimmed.
-     * @return <tt>true</tt> if field text should be trimmed
+     * Returns <tt>true</tt> if field text will be trimmed before validation
+     * and type conversion.
+     * @return <tt>true</tt> if field text will be trimmed
      */
     public boolean isTrim() {
         return trim;
     }
 
+    /**
+     * Set to <tt>true</tt> if field text should be trimmed before validation
+     * and type conversion.
+     * @param trim <tt>true</tt> if field text will be trimmed
+     */
     public void setTrim(boolean trim) {
         this.trim = trim;
     }
 
     /**
-     * Returns <tt>true</tt> if this field is used to identify the record type.
-     * @return <tt>true</tt> if this field is used to identify the record type.
+     * Returns <tt>true</tt> if this field is used to identify the type
+     * of record.
+     * @return <tt>true</tt> if this field is used to identify the record
      */
     public boolean isRecordIdentifier() {
         return recordIdentifier;
     }
 
-    public void setRecordIdentifier(boolean key) {
-        this.recordIdentifier = key;
+    /**
+     * Set to <tt>true</tt> if this field is used to identify the type
+     * of record.
+     * @param b <tt>true</tt> if this field is used to identify the record
+     */
+    public void setRecordIdentifier(boolean b) {
+        this.recordIdentifier = b;
     }
 
     /**
@@ -137,6 +190,10 @@ public class FieldConfig {
         return ignored;
     }
 
+    /**
+     * Set to <tt>true</tt> if this field is not a bean property.
+     * @param ignore <tt>true</tt> if this field is not a bean property.
+     */
     public void setIgnored(boolean ignore) {
         this.ignored = ignore;
     }
@@ -144,21 +201,28 @@ public class FieldConfig {
     /**
      * Returns the static text for this field, or <tt>null</tt> if
      * the field text is not static.  If defined, the field text must
-     * match the literal value when reading the input stream, and the
-     * likewise, the literal value will be written to the output stream.
-     * @return the literal value of the field
+     * match the literal value when reading an input stream, and
+     * likewise, the literal value will be written to an output stream.
+     * @return the literal text of the field
      */
     public String getLiteral() {
         return literal;
     }
 
+    /**
+     * Sets the static text for this field.  Set to <tt>null</tt> if
+     * the field text is not static.  If defined, the field text must
+     * match the literal value when reading an input stream, and
+     * likewise, the literal value will be written to an output stream.
+     * @param literal the literal text of the field
+     */
     public void setLiteral(String literal) {
         this.literal = literal;
     }
 
     /**
-     * Returns the regular expression pattern for validating this field's textual
-     * value when read from an input stream.  Field text is only validated if its
+     * Returns the regular expression pattern for validating this field's text
+     * when read from an input stream.  Field text is only validated if its
      * not the empty string after trimming (if enabled). 
      * @return the regular expression pattern
      */
@@ -166,8 +230,14 @@ public class FieldConfig {
         return regex;
     }
 
-    public void setRegex(String regex) {
-        this.regex = regex;
+    /**
+     * Sets the regular expression pattern for validating this field's text
+     * when read from an input stream.  Field text is only validated if its
+     * not the empty string after trimming (if enabled). 
+     * @param pattern the regular expression pattern
+     */
+    public void setRegex(String pattern) {
+        this.regex = pattern;
     }
 
     /**
@@ -181,6 +251,13 @@ public class FieldConfig {
         return required;
     }
 
+    /**
+     * Set to <tt>true</tt> if this field is required when parsing an input
+     * stream.  Required fields must have at least one character (after
+     * trimming, if enabled).  If this field is not required and no text
+     * is parsed from the input stream, no further validations are performed. 
+     * @param required <tt>true</tt> if this field is required
+     */
     public void setRequired(boolean required) {
         this.required = required;
     }
@@ -194,6 +271,12 @@ public class FieldConfig {
         return getter;
     }
 
+
+    /**
+     * Sets the name of the getter method to use to retrieve this field's
+     * value from the record bean when writing to an output stream.
+     * @param getter the getter method for this field
+     */
     public void setGetter(String getter) {
         this.getter = getter;
     }
@@ -207,46 +290,105 @@ public class FieldConfig {
         return setter;
     }
 
+    /**
+     * Sets the name of the setter method to use when setting this field's
+     * value on the record bean while reading from an input stream.
+     * @param setter the setter method for this field
+     */
     public void setSetter(String setter) {
         this.setter = setter;
     }
 
+    /**
+     * Returns the fully qualified class name or type alias of this field's
+     * value.  By default, <tt>null</tt> is returned and the field value type
+     * is detected through bean introspection.
+     * @return the class name of this field value
+     */
     public String getType() {
         return type;
     }
 
+    /**
+     * Sets the fully qualified class name or type alias of this field's
+     * value.  If set to <tt>null</tt>, the field value type is detected 
+     * through bean introspection.
+     * @param type the class name of this field value
+     */
     public void setType(String type) {
         this.type = type;
     }
 
-    public String getHandler() {
+    /**
+     * Returns the name of the custom type handler used for type 
+     * conversion by this field, or <tt>null</tt> if the default
+     * type handler is sufficient.
+     * @return the name of the custom type handler
+     */
+    public String getTypeHandler() {
         return handler;
     }
 
-    public void setHandler(String handler) {
+    /**
+     * Sets the name of the custom type handler to use for type 
+     * conversion by this field.  Set to <tt>null</tt> if the default
+     * type handler is sufficient.
+     * @param handler the name of the custom type handler
+     */
+    public void setTypeHandler(String handler) {
         this.handler = handler;
     }
 
+    /**
+     * Returns the length of this field in characters.  Applies to
+     * fixed length formatted streams only.  
+     * @return the length of this field
+     */
     public int getLength() {
         return length;
     }
 
+    /**
+     * Sets the length of this field in characters.  Applies to
+     * fixed length formatted streams only.
+     * @param length the length of this field
+     */
     public void setLength(int length) {
         this.length = length;
     }
 
+    /**
+     * Returns the character used to pad this field.  Applies to
+     * fixed length formatted streams only.
+     * @return the character used to pad this field
+     */
     public char getPadding() {
         return padding;
     }
 
+    /**
+     * Sets the character used to pad this field.  Applies to
+     * fixed length formatted streams only.
+     * @param padding the character used to pad this field
+     */
     public void setPadding(char padding) {
         this.padding = padding;
     }
 
+    /**
+     * Returns the justification of this field.  Defaults to <tt>left</tt>.  
+     * Applies to fixed length formatted streams only.
+     * @return {@link #LEFT} or {@link #RIGHT}
+     */
     public String getJustify() {
         return justify;
     }
 
+    /**
+     * Sets the justification of this field.  Applies to
+     * fixed length formatted streams only.
+     * @param justify {@link #LEFT} or {@link #RIGHT}
+     */
     public void setJustify(String justify) {
         this.justify = justify;
     }

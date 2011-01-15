@@ -56,6 +56,8 @@ public class FixedLengthParserTest extends ParserTest {
             StringWriter text = new StringWriter();
             BeanWriter out = factory.createWriter("f1", text);
             out.write(map);
+            out.flush();
+            out.close();
             assertEquals(" value    0000012345valuexxxxx          value", text.toString());
         }
         finally {
@@ -125,5 +127,38 @@ public class FixedLengthParserTest extends ParserTest {
         finally {
             in.close();
         }
+    }
+    
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test
+    public void testReader() {
+        BeanReader in = factory.createReader("f3", new InputStreamReader(
+            getClass().getResourceAsStream("f3_valid.txt")));
+        try {
+            Map map = (Map) in.read();
+            assertEquals("00001", map.get("field1"));
+            assertEquals("", map.get("field2"));
+            assertEquals("XXXXX", map.get("field3"));
+            
+            StringWriter text = new StringWriter();
+            factory.createWriter("f3", text).write(map);
+            assertEquals("00001     XXXXX" + lineSeparator, text.toString());
+            
+            map = (Map) in.read();
+            assertEquals("00002", map.get("field1"));
+            assertEquals("Val2", map.get("field2"));
+            
+            map.put("field2", "Value2");
+            
+            text = new StringWriter();
+            factory.createWriter("f3", text).write(map);
+            assertEquals("00002Value" + lineSeparator, text.toString());
+            
+            in.read();
+        }
+        finally {
+            in.close();
+        }
+        
     }
 }

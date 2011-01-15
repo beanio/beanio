@@ -36,9 +36,9 @@ public class FixedLengthFieldDefinition extends FieldDefinition {
     private char justification = LEFT;
 
     @Override
-    public boolean isMatch(Record record) {
+    public boolean matches(Record record) {
         String text = getFieldText(record);
-        if (text.length() != length) {
+        if (text.length() != getLength()) {
             return false;
         }
         else {

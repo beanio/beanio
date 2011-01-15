@@ -60,7 +60,51 @@
       <record name="t2" minOccurs="1" maxOccurs="1">
         <field name="type" rid="true" literal="T2" />
       </record>
+      <record name="t2" minOccurs="0" maxOccurs="1">
+        <field name="type" rid="true" literal="TT2" />
+      </record>
     </group>
+    <record name="t" order="3" minOccurs="1" maxOccurs="1">
+      <field name="type" rid="true" literal="T" />
+    </record>
+  </stream>
+
+  <stream name="g3" format="csv">
+    <record name="h" order="1" minOccurs="1" maxOccurs="1">
+      <field name="type" rid="true" literal="H" />
+    </record>
+    <record name="1" order="2" minOccurs="1" maxOccurs="2">
+      <field name="type" rid="true" literal="1" />
+    </record>
+    <record name="2" order="2" minOccurs="0" maxOccurs="unbounded">
+      <field name="type" rid="true" literal="2" />
+    </record>
+    <record name="3" order="2" minOccurs="0" maxOccurs="2">
+      <field name="type" rid="true" literal="3" />
+    </record>
+    <record name="t" order="3" minOccurs="1" maxOccurs="1">
+      <field name="type" rid="true" literal="T" />
+    </record>
+  </stream>
+
+  <stream name="g4" format="csv" minOccurs="1" maxOccurs="unbounded">
+    <record name="h" order="1" minOccurs="1" maxOccurs="1">
+      <field name="type" rid="true" literal="H" />
+    </record>
+    <group name="batch" order="2" minOccurs="0" maxOccurs="3">
+      <record name="h" minOccurs="0" maxOccurs="1">
+        <field name="type" rid="true" literal="BH" />
+      </record>
+      <record name="d" minOccurs="0" maxOccurs="unbounded">
+        <field name="type" rid="true" literal="BD" />
+      </record>
+      <record name="t1" minOccurs="0" maxOccurs="1">
+        <field name="type" rid="true" literal="BT" />
+      </record>
+    </group>
+    <record name="o" order="2" minOccurs="0" maxOccurs="unbounded">
+      <field name="type" rid="true" literal="O" />
+    </record>
     <record name="t" order="3" minOccurs="1" maxOccurs="1">
       <field name="type" rid="true" literal="T" />
     </record>

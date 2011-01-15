@@ -143,9 +143,10 @@ public class CsvReader implements RecordReader {
     }
 
     /**
-     * 
-     * @return
-     * @throws IOException
+     * Reads the next record from this input stream.
+     * @return the array of field values that make up the next record
+     *   read from the stream
+     * @throws IOException if an I/O error occurs
      */
     public String[] read() throws IOException, RecordIOException {
         // fieldList is set to null when the end of stream is reached

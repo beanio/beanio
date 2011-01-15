@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,77 +18,72 @@ package org.beanio.parser;
 import java.util.*;
 
 /**
+ * Holds state information for records being read from a input stream.
  * 
  * @author Kevin Seim
  * @since 1.0
  */
 class RecordNode extends Node {
 
-	private RecordDefinition context;
-	private int recordCount;
-	
-	public RecordNode(RecordDefinition context) {
-		this.context = context;
-	}
-	
-	
-	public RecordDefinition getRecordContext() {
-		return context;
-	}
-	
-	@Override
-	protected NodeDefinition getNodeContext() {
-		return context;
-	}
+    private RecordDefinition definition;
+    private int recordCount;
 
-	@Override
-	public List<Node> getChildren() {
-		return Arrays.<Node>asList(this);
-	}
-	
-	@Override
-	public Node close() {
-		return getGroupCount() < getMinOccurs() ? this : null;
-	}
-	
-	@Override
-	public Node matchAny(Record record) {
-		return context.matches(record) ? this : null;
-	}
+    /**
+     * Constructs a new <tt>RecordNode</tt>.
+     * @param definition the record definition
+     */
+    public RecordNode(RecordDefinition context) {
+        this.definition = context;
+    }
 
-	@Override
-	public Node matchNext(Record record) {
-		
-		if (context.matches(record)) {
-			recordCount++;
-			groupCount++;
-			return this;
-		}
-		
-		return null;
-	}
-	
-	@Override
-	public void reset() {
-		super.reset();
-		groupCount = 0;
-	}
-	
-	@Override
-	public boolean isRecord() {
-		return true;
-	}
-	
-	public int getRecordCount() {
-		return recordCount;
-	}
-	public void setRecordCount(int recordCount) {
-		this.recordCount = recordCount;
-	}
-	
-	protected void print(int level) {
-		for (int i=0; i<level; i++)
-			System.out.print(" ");
-		System.out.println(this);
-	}
+    /**
+     * Returns the record definition of this node.
+     * @return the record definition
+     */
+    public RecordDefinition getRecordDefinition() {
+        return definition;
+    }
+
+    @Override
+    protected NodeDefinition getNodeContext() {
+        return definition;
+    }
+
+    @Override
+    public List<Node> getChildren() {
+        return Arrays.<Node> asList(this);
+    }
+
+    @Override
+    public Node close() {
+        return getGroupCount() < getMinOccurs() ? this : null;
+    }
+
+    @Override
+    public Node matchAny(Record record) {
+        return definition.matches(record) ? this : null;
+    }
+
+    @Override
+    public Node matchNext(Record record) {
+        if (definition.matches(record)) {
+            recordCount++;
+            groupCount++;
+            return this;
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isRecord() {
+        return true;
+    }
+
+    /**
+     * Returns the number of records matched by this node.
+     * @return the number of records matched by this node
+     */
+    public int getRecordCount() {
+        return recordCount;
+    }
 }

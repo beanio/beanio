@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,28 +24,28 @@ package org.beanio.types;
  */
 public class CharacterTypeHandler implements TypeHandler {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.beanio.types.TypeHandler#parse(java.lang.String)
-	 */
-	public Character parse(String text) throws TypeConversionException {
-		if (text == null || "".equals(text))
-			return null;
-		
-		if (text.length() > 1) {
-			throw new TypeConversionException("Invalid character '" + text + "'");
-		}
-		
-		return text.charAt(0);
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.types.TypeHandler#parse(java.lang.String)
+     */
+    public Character parse(String text) throws TypeConversionException {
+        if (text == null || "".equals(text))
+            return null;
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.beanio.types.TypeHandler#format(java.lang.Object)
-	 */
-	public String format(Object value) {
-		if (value == null)
-			return "";
-		return value.toString();
-	}
+        if (text.length() > 1) {
+            throw new TypeConversionException("Invalid character");
+        }
+
+        return text.charAt(0);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.types.TypeHandler#format(java.lang.Object)
+     */
+    public String format(Object value) {
+        if (value == null)
+            return "";
+        return value.toString();
+    }
 }

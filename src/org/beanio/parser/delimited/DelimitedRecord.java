@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,38 +26,38 @@ import org.beanio.parser.Record;
  */
 public class DelimitedRecord extends Record {
 
-	private String[] fields;
-	
-	/**
-	 * Constructs a new <tt>DelimitedRecord</tt>.
-	 */
-	public DelimitedRecord() { }
-	
-	@Override
-	public void clear() {
-		super.clear();
-		fields = null;
-	}
-	
-	@Override
-	public void setValue(Object value) {
-		this.fields = (String[]) value;
-	}
-	
-	/**
-	 * Returns the number of fields read from the input stream.
-	 * @return the number of fields
-	 */
-	public int getFieldCount() {
-		return fields.length;
-	}
-	
-	/**
-	 * Returns the field text at the given position in the record.
-	 * @param position the position of the field wihin the record
-	 * @return the field text
-	 */
-	public String getFieldText(int position) {
-		return fields[position];
-	}
+    private String[] fields;
+
+    /**
+     * Constructs a new <tt>DelimitedRecord</tt>.
+     */
+    public DelimitedRecord() { }
+
+    @Override
+    public void clear() {
+        super.clear();
+        fields = null;
+    }
+
+    @Override
+    public void setValue(Object value) {
+        this.fields = (String[]) value;
+    }
+
+    /**
+     * Returns the number of fields read from the input stream.
+     * @return the number of fields
+     */
+    public int getFieldCount() {
+        return fields.length;
+    }
+
+    /**
+     * Returns the field text at the given position in the record.
+     * @param position the position of the field wihin the record
+     * @return the field text
+     */
+    public String getFieldText(int position) {
+        return fields[position];
+    }
 }

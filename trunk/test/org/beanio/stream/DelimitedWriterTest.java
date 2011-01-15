@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.*;
 
-import org.beanio.stream.delimited.DelimitedWriterFactory;
+import org.beanio.stream.delimited.*;
 import org.junit.Test;
 
 /**
@@ -31,33 +31,62 @@ import org.junit.Test;
 public class DelimitedWriterTest {
 
     private static final String lineSep = System.getProperty("line.separator");
-    
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDelimiterIsEscape() {
+        new DelimitedWriter(new StringWriter(), ',', ',');
+    }
+
     @Test
     public void testDefaultConfiguration() throws IOException {
+        StringWriter text = new StringWriter();
+        RecordWriter out = new DelimitedWriter(text);
+        out.write(new String[] { "value1", "value\t2" });
+        assertEquals("value1\tvalue\t2" + lineSep, text.toString());
+    }
+
+    @Test
+    public void testCustomDelimiter() throws IOException {
+        StringWriter text = new StringWriter();
+        RecordWriter out = new DelimitedWriter(text, ',');
+        out.write(new String[] { "value1", "value2\t", "" });
+        assertEquals("value1,value2\t," + lineSep, text.toString());
+    }
+
+    @Test
+    public void testCustomDelimiterAndEscape() throws IOException {
+        StringWriter text = new StringWriter();
+        RecordWriter out = new DelimitedWriter(text, ',', '\\');
+        out.write(new String[] { "value1", "value2," });
+        assertEquals("value1,value2\\," + lineSep, text.toString());
+    }
+
+    @Test
+    public void testDefaultFactoryConfiguration() throws IOException {
         DelimitedWriterFactory factory = new DelimitedWriterFactory();
         StringWriter text = new StringWriter();
         RecordWriter out = factory.createWriter(text);
         out.write(new String[] { "value1", "value\t2" });
         assertEquals("value1\tvalue\t2" + lineSep, text.toString());
     }
-    
+
     @Test
-    public void testCustomConfiguration() throws IOException {
+    public void testCustomFactoryConfiguration() throws IOException {
         DelimitedWriterFactory factory = new DelimitedWriterFactory();
         factory.setDelimiter(',');
-        factory.setEscapeEnabled(true);
+        factory.setEscape('\\');
         factory.setLineSeparator("");
         StringWriter text = new StringWriter();
         RecordWriter out = factory.createWriter(text);
         out.write(new String[] { "value1", "value,2" });
         assertEquals("value1,value\\,2", text.toString());
     }
-    
+
     @Test
     public void testFlushAndClose() throws IOException {
         DelimitedWriterFactory factory = new DelimitedWriterFactory();
         factory.setDelimiter(',');
-        factory.setEscapeEnabled(true);
+        factory.setEscape('\\');
         factory.setLineSeparator("");
         StringWriter text = new StringWriter();
         RecordWriter out = factory.createWriter(new BufferedWriter(text));

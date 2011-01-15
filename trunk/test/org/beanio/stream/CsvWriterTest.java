@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.*;
 
-import org.beanio.stream.csv.CsvWriterFactory;
+import org.beanio.stream.csv.*;
 import org.junit.Test;
 
 /**
@@ -74,9 +74,11 @@ public class CsvWriterTest {
         factory.setEscape('\\');
         factory.setLineSeparator("");
         StringWriter text = new StringWriter();
-        RecordWriter out = factory.createWriter(text);
+        CsvWriter out = (CsvWriter) factory.createWriter(text);
         out.write(new String[] { "value1", "value\n2", "value\r3", "value\r\n4" });
         assertEquals("value1,'value\n2','value\r3','value\r\n4'", text.toString());
+        out.write(new String[] { "value1", "value2" });
+        assertEquals(5, out.getLineNumber());
     }
 
     @Test

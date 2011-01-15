@@ -106,13 +106,35 @@ public class GroupParserTest extends ParserTest {
         test("g2", "g2_twoLayout.txt");
     }
 
+    @Test
+    public void testUnorderedMaxOccurs() {
+        test("g3", "g3_valid.txt");
+    }
+
+    @Test
+    public void testRepeatingGroupWithOptionalHeader() {
+        test("g4", "g4_repeatingGroup.txt");
+    }
+
+    /**
+     * Tests the final return null in GroupNode.matchNext.
+     */
+    @Test
+    public void testEndOfGroup() {
+        test("g4", "g4_endOfGroup.txt");
+    }
+    
+    @Test(expected = UnexpectedRecordException.class)
+    public void testTooManyGroupsWithOptionalRecords() {
+        test("g4", "g4_tooManyGroups.txt", 8);
+    }
+
     /**
      * Fully parses the given file.
      * @param name the name of the stream
      * @param filename the name of the file to test
-     * @throws BeanIOException
      */
-    protected void test(String name, String filename) throws BeanIOException {
+    protected void test(String name, String filename) {
         test(name, filename, -1);
     }
 
@@ -121,9 +143,8 @@ public class GroupParserTest extends ParserTest {
      * @param name the name of the stream
      * @param filename the name of the file to test
      * @param errorLineNumber
-     * @throws BeanIOException
      */
-    protected void test(String name, String filename, int errorLineNumber) throws BeanIOException {
+    protected void test(String name, String filename, int errorLineNumber) {
         BeanReader in = factory.createReader(name, new InputStreamReader(
             getClass().getResourceAsStream(filename)));
         try {

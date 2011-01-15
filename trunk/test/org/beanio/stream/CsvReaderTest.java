@@ -178,7 +178,6 @@ public class CsvReaderTest {
         CsvReaderFactory factory = new CsvReaderFactory();
         factory.setQuote('\'');
         factory.setEscape('\\');
-        factory.setEscapeEnabled(true);
         String[] expected = new String[] { "1", " '23\\4' ", "5\\\\" };
         CsvReader in = createReader(factory, "'1',' \\'23\\\\4\\' ',5\\\\\n");
         assertArrayEquals(in.read(), expected);
@@ -190,7 +189,6 @@ public class CsvReaderTest {
         CsvReaderFactory factory = new CsvReaderFactory();
         factory.setQuote('\'');
         factory.setMultilineEnabled(true);
-        factory.setEscapeEnabled(true);
         String[] expected = new String[] { "12\n3", "4\r\n5" };
         CsvReader in = createReader(factory, "'12\n3','4\r\n5'\n'6',7");
         assertArrayEquals(in.read(), expected);
@@ -205,7 +203,6 @@ public class CsvReaderTest {
         CsvReaderFactory factory = new CsvReaderFactory();
         factory.setQuote('\'');
         factory.setWhitespaceAllowed(true);
-        factory.setEscapeEnabled(true);
         String[] expected = new String[] { "1", "2" };
         CsvReader in = createReader(factory, " '1' , '2'  \n");
         assertArrayEquals(in.read(), expected);
@@ -215,8 +212,8 @@ public class CsvReaderTest {
     @Test
     public void testEscapeDisabled() throws IOException {
         CsvReaderFactory factory = new CsvReaderFactory();
+        factory.setEscape(null);
         factory.setQuote('\'');
-        factory.setEscapeEnabled(false);
         String[] expected = new String[] { "1\"", "2" };
         CsvReader in = createReader(factory, "'1\"','2'\n");
         assertArrayEquals(in.read(), expected);

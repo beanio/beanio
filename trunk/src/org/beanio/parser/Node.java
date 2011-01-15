@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,142 +26,126 @@ import java.util.List;
  */
 abstract class Node {
 
-	protected int groupCount = 0;
-	
-	/**
-	 * Constructs a new <tt>Node</tt>.
-	 */
-	public Node() { }
-	
-	/**
-	 * Returns a list of child nodes.
-	 * @return the list of child nodes
-	 */
-	public abstract List<Node> getChildren();
-	
-	/**
-	 * Tests if the max occurs has been reached for this node.
-	 * @return true if max occurs has been reached
-	 */
-	public boolean isMaxOccursReached() {
-		return getMaxOccurs() > 0 && groupCount >= getMaxOccurs();
-	}
+    protected int groupCount = 0;
 
-	/**
-	 * Finds the child node that matches a record, based on the current state of each node.
-	 * @param record the record to match
-	 * @return the matched node, or null if no match was found
-	 */
-	public abstract Node matchNext(Record record);
-	
-	/**
-	 * Finds the child node that matches a record, ignoring the current state of each node.
-	 * @param record the record to match
-	 * @return the matching leaf node, or <tt>null</tt> if the record could not be matched
-	 */
-	public abstract Node matchAny(Record record);
-	
-	/**
-	 * Checks for missing records.  This method is called when the end of the
-	 * stream has been reached.
-	 */
-	public abstract Node close();
-	
-	/**
-	 * Called by its parent to reset node statistics.
-	 */
-	public void reset() { }
-	
-	/**
-	 * Returns <tt>true</tt> if this node is a leaf node / record.
-	 * @return <tt>true</tt> if this node is a record
-	 */
-	public boolean isRecord() {
-		return false;
-	}
-	
-	/**
-	 * Returns this nodes's definition.
-	 * @return the node definition
-	 */
-	protected abstract NodeDefinition getNodeContext();
-	
-	/**
-	 * Returns the minimum number of times this node must appear within
-	 * the context of its parent.
-	 * @return the minimum number of occurrences
-	 */
-	public int getMinOccurs() {
-		return getNodeContext().getMinOccurs();
-	}
-	
-	/**
-	 * Returns the maximum number of time this node must appear within
-	 * the context of its parent, or -1 for unbounded.
-	 * @return the maximum number of occurrences
-	 */
-	public int getMaxOccurs() {
-		return getNodeContext().getMaxOccurs();
-	}
-	
-	/**
-	 * Returns the order in which this node must appear within the context
-	 * of its parent.  Multiple nodes may have the same order if they
-	 * can appear in any order. 
-	 * @return the node order
-	 */
-	public int getOrder() {
-		return getNodeContext().getOrder();
-	}
-	
-	/**
-	 * Returns the name of this node.
-	 * @return the node name
-	 */
-	public String getName() {
-		return getNodeContext().getName();
-	}
+    /**
+     * Constructs a new <tt>Node</tt>.
+     */
+    public Node() { }
 
-	/**
-	 * Returns the number of times this node has repeated within its parent.
-	 * @return the number of times this node has repeated
-	 */
-	public int getGroupCount() {
-		return groupCount;
-	}
-	
-	/**
-	 * Sets the number of times this node has repeated within its parent.
-	 * @param groupCount the new number of times this node has repeated
-	 */
-	public void setGroupCount(int groupCount) {
-		this.groupCount = groupCount;
-	}
-	
-	public void print() {
-		print(0);
-	}
-	
-	protected void print(int level) {
-		for (int i=0; i<level; i++)
-			System.out.print(" ");
-		System.out.println(this);
-		level += 2;
-		
-		if (level > 10)
-			return;
-		
-		for (Node g : getChildren()) {
-			g.print(level);
-		}
-	}
-	
-	public String toString() {
-		return getClass().getSimpleName() + 
-			"[name=" + getName() + 
-			", order=" + getOrder() +
-			", minOccurs=" + getMinOccurs() +
-			", maxOccurs=" + getMaxOccurs() +
-			"]";
-	}
+    /**
+     * Returns a list of child nodes.
+     * @return the list of child nodes
+     */
+    public abstract List<Node> getChildren();
+
+    /**
+     * Tests if the max occurs has been reached for this node.
+     * @return true if max occurs has been reached
+     */
+    public boolean isMaxOccursReached() {
+        return getMaxOccurs() > 0 && groupCount >= getMaxOccurs();
+    }
+
+    /**
+     * Finds the child node that matches a record, based on the current state of each node.
+     * @param record the record to match
+     * @return the matched node, or null if no match was found
+     */
+    public abstract Node matchNext(Record record);
+
+    /**
+     * Finds the child node that matches a record, ignoring the current state of each node.
+     * @param record the record to match
+     * @return the matching leaf node, or <tt>null</tt> if the record could not be matched
+     */
+    public abstract Node matchAny(Record record);
+
+    /**
+     * Checks for missing records.  This method is called when the end of the
+     * stream has been reached.
+     */
+    public abstract Node close();
+
+    /**
+     * Called by its parent to reset node statistics.
+     */
+    public void reset() { }
+
+    /**
+     * Returns <tt>true</tt> if this node is a leaf node / record.
+     * @return <tt>true</tt> if this node is a record
+     */
+    public boolean isRecord() {
+        return false;
+    }
+
+    /**
+     * Returns this nodes's definition.
+     * @return the node definition
+     */
+    protected abstract NodeDefinition getNodeContext();
+
+    /**
+     * Returns the minimum number of times this node must appear within
+     * the context of its parent.
+     * @return the minimum number of occurrences
+     */
+    public int getMinOccurs() {
+        return getNodeContext().getMinOccurs();
+    }
+
+    /**
+     * Returns the maximum number of time this node must appear within
+     * the context of its parent, or -1 for unbounded.
+     * @return the maximum number of occurrences
+     */
+    public int getMaxOccurs() {
+        return getNodeContext().getMaxOccurs();
+    }
+
+    /**
+     * Returns the order in which this node must appear within the context
+     * of its parent.  Multiple nodes may have the same order if they
+     * can appear in any order. 
+     * @return the node order
+     */
+    public int getOrder() {
+        return getNodeContext().getOrder();
+    }
+
+    /**
+     * Returns the name of this node.
+     * @return the node name
+     */
+    public String getName() {
+        return getNodeContext().getName();
+    }
+
+    /**
+     * Returns the number of times this node has repeated within its parent.
+     * @return the number of times this node has repeated
+     */
+    public int getGroupCount() {
+        return groupCount;
+    }
+
+    /**
+     * Sets the number of times this node has repeated within its parent.
+     * @param groupCount the new number of times this node has repeated
+     */
+    public void setGroupCount(int groupCount) {
+        this.groupCount = groupCount;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() +
+            "[name=" + getName() +
+            ", order=" + getOrder() +
+            ", minOccurs=" + getMinOccurs() +
+            ", maxOccurs=" + getMaxOccurs() +
+            ", groupCount=" + getGroupCount() +
+            "]";
+    }
 }

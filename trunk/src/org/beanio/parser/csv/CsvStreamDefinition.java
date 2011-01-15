@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,28 +30,20 @@ import org.beanio.stream.csv.*;
  */
 public class CsvStreamDefinition extends DelimitedStreamDefinition {
 
-	/**
-	 * Constructs a new <tt>CsvStreamDefinition</tt>.
-	 */
-	public CsvStreamDefinition() { 
-		super("csv");
-	}
-	
-	/**
-	 * Constructs a new <tt>CsvStreamDefinition</tt>.
-	 * @param format the stream format
-	 */
-	protected CsvStreamDefinition(String format) { 
-		super(format);
-	}	
-	
-	@Override
-	protected RecordReader createDefaultReader(Reader in) {
-		return new CsvReader(in);
-	}
+    /**
+     * Constructs a new <tt>CsvStreamDefinition</tt>.
+     */
+    public CsvStreamDefinition() {
+        super("csv");
+    }
 
-	@Override
-	protected RecordWriter createDefaultWriter(Writer out) {
-		return new CsvWriter(out);
-	}	
+    @Override
+    protected RecordReader createDefaultReader(Reader in) {
+        return new CsvReader(in);
+    }
+
+    @Override
+    protected RecordWriter createDefaultWriter(Writer out) {
+        return new CsvWriter(out);
+    }
 }

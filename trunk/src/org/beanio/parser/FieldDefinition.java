@@ -43,7 +43,6 @@ public abstract class FieldDefinition {
     private String literal = null;
     private Pattern regex;
 
-    private Class<?> propertyClass;
     private PropertyDescriptor propertyDescriptor;
     private TypeHandler handler;
     private Object defaultValue;
@@ -53,7 +52,7 @@ public abstract class FieldDefinition {
      * @param record the record containing the field to test
      * @return <tt>true</tt> if the text is a match
      */
-    public abstract boolean isMatch(Record record);
+    public abstract boolean matches(Record record);
 
     /**
      * Returns <tt>true</tt> if the provided field text is a match for this field
@@ -65,11 +64,11 @@ public abstract class FieldDefinition {
     protected boolean isMatch(String text) {
         if (text == null)
             return false;
-        if (literal != null && literal.equals(text))
-            return true;
-        if (regex != null && regex.matcher(text).matches())
-            return true;
-        return false;
+        if (literal != null && !literal.equals(text))
+            return false;
+        if (regex != null && !regex.matcher(text).matches())
+            return false;
+        return true;
     }
 
     /**
@@ -112,13 +111,14 @@ public abstract class FieldDefinition {
             text = text.trim();
         }
 
-        if (text == null || "".equals(text)) {
+        if (text == null) {
+            // null field text means the field was not present in the record
+            // and therefore the required validation rule does not apply
+        }
+        else if ("".equals(text)) {
             if (required) {
                 record.addFieldError(name, text, "required");
                 valid = false;
-            }
-            if (defaultValue != null) {
-                return defaultValue;
             }
         }
         else {
@@ -144,16 +144,33 @@ public abstract class FieldDefinition {
             }
         }
 
-        if (valid) {
-            try {
-                return handler == null ? text : handler.parse(text);
-            }
-            catch (TypeConversionException ex) {
-                record.addFieldError(name, text, "type", ex.getMessage());
-            }
+        // type conversion is skipped if the text does not pass other validations
+        if (!valid) {
+            return null;
         }
-
-        return null;
+        
+        // if there is no type handler, assume its a String
+        if (handler == null) {
+            return text;
+        }
+        
+        // perform type conversion and return the result
+        try {
+            Object value = handler.parse(text);
+            if (value == null) {
+                value = defaultValue;
+            }
+            return value;
+        }
+        catch (TypeConversionException ex) {
+            record.addFieldError(name, text, "type", ex.getMessage());
+            return null;
+        }
+        catch (Exception ex) {
+            throw new BeanReaderIOException(record.getContext(), 
+                "Type conversion failed for field '" + getName() + 
+                "' while parsing text '" + text + "'", ex);
+        }
     }
 
     /**
@@ -165,43 +182,45 @@ public abstract class FieldDefinition {
      */
     @SuppressWarnings("rawtypes")
     public String formatValue(boolean isMap, Object bean) {
-        if (literal != null)
+        if (literal != null) {
             return literal;
+        }
 
         Object value;
         if (isMap) {
             value = ((Map) bean).get(name);
         }
         else {
+            // determine the getter method to use
             Method getter = null;
             if (propertyDescriptor != null) {
                 getter = propertyDescriptor.getReadMethod();
             }
             if (getter == null) {
-                throw new BeanWriterIOException("No getter found for field '" + name + "'");
+                throw new BeanWriterIOException("No getter found for field '" + name + 
+                    "' on bean class '" + bean.getClass().getName() + "'");
             }
 
+            // user the getter method to extract the field value from the bean class
             try {
                 value = getter.invoke(bean);
             }
-            catch (IllegalArgumentException e) {
-                throw new BeanIOException(e);
-            }
-            catch (IllegalAccessException e) {
-                throw new BeanIOException(e);
-            }
-            catch (InvocationTargetException e) {
-                throw new BeanIOException(e);
+            catch (Exception ex) {
+                throw new BeanWriterIOException("Failed to get field '" + getName() +
+                    "' from bean class '" + bean.getClass().getName() + "' using " +
+                    "getter method '" + getter.getName() + "'", ex);
             }
         }
 
+        // format the field value 
         String text = null;
         if (handler != null) {
             try {
                 text = handler.format(value);
             }
             catch (Exception ex) {
-                throw new BeanIOException(ex);
+                throw new BeanWriterIOException("Type conversion failed for field '" +
+                    getName() + "' while formatting value '" + value + "'", ex);
             }
         }
         else if (value != null) {
@@ -460,21 +479,5 @@ public abstract class FieldDefinition {
      */
     public void setDefaultValue(Object defaultValue) {
         this.defaultValue = defaultValue;
-    }
-
-    /**
-     * Returns the field type parsed by this field definition.
-     * @return the field value class
-     */
-    public Class<?> getFieldClass() {
-        return propertyClass;
-    }
-
-    /**
-     * Sets the field type parsed by this field definition.
-     * @param fieldClass the field value class
-     */
-    public void setFieldClass(Class<?> fieldClass) {
-        this.propertyClass = fieldClass;
     }
 }

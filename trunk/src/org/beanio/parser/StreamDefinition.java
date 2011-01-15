@@ -325,11 +325,11 @@ public abstract class StreamDefinition implements MessageFactory {
     }
 
     /**
-     * Returns the top level or root group context for this stream, to which all
+     * Returns the top level or root group definition for this stream, to which all
      * child records and subgroups were added.
      * @return the root group context
      */
-    public final GroupDefinition getRootGroupContext() {
+    public final GroupDefinition getRootGroupDefinition() {
         return root;
     }
 
@@ -488,9 +488,9 @@ public abstract class StreamDefinition implements MessageFactory {
                     }
                 }
 
-                RecordDefinition recordContext = node.getRecordContext();
-                record.setRecordName(recordContext.getName());
-                bean = recordContext.parseBean(record);
+                RecordDefinition recordDefinition = node.getRecordDefinition();
+                record.setRecordName(recordDefinition.getName());
+                bean = recordDefinition.parseBean(record);
             }
             return bean;
         }
@@ -526,22 +526,22 @@ public abstract class StreamDefinition implements MessageFactory {
             return record.getRecordLineNumber();
         }
 
-        private GroupNode buildTree(StreamDefinition context) {
-            GroupNode root = new GroupNode(context.getRootGroupContext());
-            buildTree(context.getRootGroupContext(), root);
+        private GroupNode buildTree(StreamDefinition streamDefinition) {
+            GroupNode root = new GroupNode(streamDefinition.getRootGroupDefinition());
+            buildTree(streamDefinition.getRootGroupDefinition(), root);
             return root;
         }
 
-        private void buildTree(NodeDefinition context, GroupNode group) {
-            for (NodeDefinition childCtx : context.getChildren()) {
-                if (childCtx.isRecordDefinition()) {
-                    RecordNode child = new RecordNode((RecordDefinition) childCtx);
+        private void buildTree(NodeDefinition nodeDefinition, GroupNode group) {
+            for (NodeDefinition definition : nodeDefinition.getChildren()) {
+                if (definition.isRecordDefinition()) {
+                    RecordNode child = new RecordNode((RecordDefinition) definition);
                     group.addChild(child);
                 }
                 else {
-                    GroupNode child = new GroupNode((GroupDefinition) childCtx);
+                    GroupNode child = new GroupNode((GroupDefinition) definition);
                     group.addChild(child);
-                    buildTree(childCtx, child);
+                    buildTree(definition, child);
                 }
             }
         }
@@ -572,9 +572,11 @@ public abstract class StreamDefinition implements MessageFactory {
             }
 
             // search for a matching record context
-            RecordDefinition definition = (RecordDefinition) getRootGroupContext().findDefinitionFor(bean);
+            RecordDefinition definition = (RecordDefinition) getRootGroupDefinition()
+                .findDefinitionFor(bean);
             if (definition == null) {
-                throw new BeanWriterIOException("No record mapping found for class '" + bean.getClass() + "'");
+                throw new BeanWriterIOException("No record mapping found for class '"
+                    + bean.getClass() + "'");
             }
 
             write(definition, bean);
@@ -586,14 +588,15 @@ public abstract class StreamDefinition implements MessageFactory {
          */
         public void write(String recordName, Object bean) throws BeanWriterException {
             if (recordDefinitionMap == null) {
-                for (RecordDefinition rd : getRootGroupContext().getRecordDefinitionAncestors()) {
+                for (RecordDefinition rd : getRootGroupDefinition().getRecordDefinitionAncestors()) {
                     recordDefinitionMap.put(rd.getName(), rd);
                 }
             }
 
             RecordDefinition definition = recordDefinitionMap.get(recordName);
             if (definition == null) {
-                throw new BeanWriterIOException("No record mapping found named '" + recordName + "'");
+                throw new BeanWriterIOException("No record mapping found named '" + recordName
+                    + "'");
             }
 
             write(definition, bean);

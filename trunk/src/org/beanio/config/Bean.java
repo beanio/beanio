@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,47 @@ package org.beanio.config;
 
 import java.util.Properties;
 
-
+/**
+ * Stores bean information.  A <tt>Bean</tt> object is generically used
+ * to instantiate configurable components.
+ * 
+ * @author Kevin Seim
+ * @since 1.0
+ */
 public class Bean {
-	
-	private String className;
-	private Properties properties;
-	
-	public String getClassName() {
-		return className;
-	}
-	public void setClassName(String className) {
-		this.className = className;
-	}
-	public Properties getProperties() {
-		return properties;
-	}
-	public void setProperties(Properties properties) {
-		this.properties = properties;
-	}
+
+    private String className;
+    private Properties properties;
+
+    /**
+     * Returns the fully qualified class name of the bean.
+     * @return the bean class name
+     */
+    public String getClassName() {
+        return className;
+    }
+
+    /**
+     * Sets the fully qualified class name of the bean.
+     * @param className the bean class name
+     */
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    /**
+     * Returns bean properties.
+     * @return the bean properties
+     */
+    public Properties getProperties() {
+        return properties;
+    }
+
+    /**
+     * Sets bean properties.
+     * @param properties the new bean properties
+     */
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
 }

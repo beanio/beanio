@@ -28,51 +28,40 @@ import org.beanio.stream.*;
  */
 public class FixedLengthReaderFactory implements RecordReaderFactory {
 
-	private char lineContinuationCharacter = '\\';
-	private boolean lineContinuationEnabled = false;
-	
-	/*
-	 * (non-Javadoc)
-	 * @see org.beanio.stream.RecordReaderFactory#createReader(java.io.Reader)
-	 */
-	public RecordReader createReader(Reader in) {
-		Character c = null;
-		if (lineContinuationEnabled) {
-			c = lineContinuationCharacter;
-		}
-		return new FixedLengthReader(in, c);
-	}
-	
-	/**
-	 * Returns the line continuation character.  By default, the line continuation
-	 * character is the backslash.
-	 * @return the line continuation character
-	 */
-	public char getLineContinuationCharacter() {
-		return lineContinuationCharacter;
-	}
+    private Character lineContinuationCharacter = null;
 
-	/**
-	 * Sets the line continuation character.
-	 * @param lineContinuationCharacter the line continuation character
-	 */
-	public void setLineContinuationCharacter(char lineContinuationCharacter) {
-		this.lineContinuationCharacter = lineContinuationCharacter;
-	}
-	
-	/**
-	 * Returns whether the line continuation character is enabled.
-	 * @return <tt>true</tt> if the line continuation character is enabled
-	 */
-	public boolean isLineContinationEnabled() {
-		return lineContinuationEnabled;
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.stream.RecordReaderFactory#createReader(java.io.Reader)
+     */
+    public RecordReader createReader(Reader in) {
+        return new FixedLengthReader(in, lineContinuationCharacter);
+    }
 
-	/**
-	 * Sets whether the line continuation character is enabled.
-	 * @param enabled set to <tt>true</tt> to enable the line continuation character
-	 */
-	public void setLineContinuationEnabled(boolean enabled) {
-		this.lineContinuationEnabled = enabled;
-	}
+    /**
+     * Returns the line continuation character.  By default, line continuation
+     * is disabled and <tt>null</tt> is returned.
+     * @return the line continuation character or <tt>null</tt> if disabled
+     */
+    public Character getLineContinuationCharacter() {
+        return lineContinuationCharacter;
+    }
+
+    /**
+     * Sets the line continuation character.  Set to <tt>null</tt> to disable
+     * line continuation.
+     * @param lineContinuationCharacter the line continuation character
+     */
+    public void setLineContinuationCharacter(Character lineContinuationCharacter) {
+        this.lineContinuationCharacter = lineContinuationCharacter;
+    }
+
+    /**
+     * Returns whether the line continuation character is enabled.  By default,
+     * line continuation is disabled.
+     * @return <tt>true</tt> if the line continuation character is enabled
+     */
+    public boolean isLineContinationEnabled() {
+        return lineContinuationCharacter != null;
+    }
 }

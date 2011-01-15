@@ -29,26 +29,15 @@ import org.beanio.stream.*;
 public class DelimitedReaderFactory implements RecordReaderFactory {
 
     private char delimiter = '\t';
-    private char escape = '\\';
-    private char lineContinuationCharacter = '\\';
-    private boolean escapeEnabled = false;
-    private boolean lineContinuationEnabled = false;
+    private Character escape = null;
+    private Character lineContinuationCharacter = null;
 
     /*
      * (non-Javadoc)
      * @see org.beanio.stream.RecordReaderFactory#createReader(java.io.Reader)
      */
     public RecordReader createReader(Reader in) {
-        Character e = null;
-        if (escapeEnabled) {
-            e = escape;
-        }
-        Character lineContinuation = null;
-        if (lineContinuationEnabled) {
-            lineContinuation = lineContinuationCharacter;
-        }
-
-        return new DelimitedReader(in, delimiter, e, lineContinuation);
+        return new DelimitedReader(in, delimiter, escape, lineContinuationCharacter);
     }
 
     /**
@@ -69,52 +58,46 @@ public class DelimitedReaderFactory implements RecordReaderFactory {
 
     /**
      * Returns the character used by the input stream to escape delimiters and itself.
-     * The default escape character is the backslash, '\'. 
-     * @return the escape character
+     * By default, escaping is disabled.
+     * @return the escape character or <tt>null</tt> if escaping is disabled
      */
-    public char getEscape() {
+    public Character getEscape() {
         return escape;
     }
 
     /**
      * Sets the character used by the input stream to escape delimiters and itself.
+     * If set to null, escaping is disabled.
      * @param escapeCharacter the new escape character
      */
-    public void setEscape(char escapeCharacter) {
+    public void setEscape(Character escapeCharacter) {
         this.escape = escapeCharacter;
     }
 
     /**
-     * Returns the line continuation character.  By default, the line continuation
-     * character is the backslash.
-     * @return the line continuation character
+     * Returns the line continuation character or <tt>null</tt> if line
+     * continuation is disabled.  By default, line continuation is disabled.
+     * @return the line continuation character or <tt>null</tt> if disabled
      */
-    public char getLineContinuationCharacter() {
+    public Character getLineContinuationCharacter() {
         return lineContinuationCharacter;
     }
 
     /**
-     * Sets the line continuation character.
+     * Sets the line continuation character.  May be set to <tt>null</tt> to
+     * disable line continuation.
      * @param lineContinuationCharacter the line continuation character
      */
-    public void setLineContinuationCharacter(char lineContinuationCharacter) {
+    public void setLineContinuationCharacter(Character lineContinuationCharacter) {
         this.lineContinuationCharacter = lineContinuationCharacter;
     }
 
     /**
-     * Returns whether the escape character is enabled.
+     * Returns whether an escape character is enabled.
      * @return <tt>true</tt> if enabled, false otherwise
      */
     public boolean isEscapeEnabled() {
-        return escapeEnabled;
-    }
-
-    /**
-     * Sets whether the escape character is enabled.
-     * @param escapeEnabled set to <tt>true</tt> to enable the escape character
-     */
-    public void setEscapeEnabled(boolean escapeEnabled) {
-        this.escapeEnabled = escapeEnabled;
+        return escape != null;
     }
 
     /**
@@ -122,14 +105,6 @@ public class DelimitedReaderFactory implements RecordReaderFactory {
      * @return <tt>true</tt> if the line continuation character is enabled
      */
     public boolean isLineContinationEnabled() {
-        return lineContinuationEnabled;
-    }
-
-    /**
-     * Sets whether the line continuation character is enabled.
-     * @param enabled set to <tt>true</tt> to enable the line continuation character
-     */
-    public void setLineContinuationEnabled(boolean enabled) {
-        this.lineContinuationEnabled = enabled;
+        return lineContinuationCharacter  != null;
     }
 }

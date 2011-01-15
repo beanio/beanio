@@ -20,8 +20,9 @@
   <property name="version" value="1.0-SNAPSHOT" />
   <property name="emma.enabled" value="true" />
 
-  <target name="clean">
-
+  <!-- Delete all build artifacts -->
+  <target name="clean" description="Delete all build artifacts">
+    <delete dir="${target}" />
   </target>
 
   <target name="init">
@@ -34,14 +35,15 @@
   </target>
 
   <!-- Compile main source files (src -> target/classes/main) -->
-  <target name="compile" depends="init">
-    <delete dir="${classes.main}" failonerror="false" />
+  <target name="compile" depends="init" 
+  	description="Compiles Java source files under src/">
     <mkdir dir="${classes.main}" />
-    <javac srcdir="src" destdir="${classes.main}" includeantruntime="false" debug="true" source="1.5" target="1.5" />
+    <javac srcdir="src" destdir="${classes.main}" includeantruntime="false" 
+      debug="true" source="1.5" target="1.5" />
   </target>
 
   <!-- Create the beanio jar -->
-  <target name="jar" depends="init">
+  <target name="jar" depends="compile" description="Creates beanio.jar">
     <!-- TODO valiate manifest file -->
     <jar destfile="${target}/beanio.jar">
       <fileset dir="${classes.main}" />
@@ -70,24 +72,25 @@
       <link href="http://download.oracle.com/javase/6/docs/api/" />
     </javadoc>
   </target>
-  <target name="docs" depends="docs-init,docs-api" />
+  <target name="docs" depends="docs-init,docs-api" 
+    description="Runs javadoc for Java source file under src/" />
 
-	<!-- Create the release ZIP -->
-	<target name="package">
-	  <property name="parent" value="beanio-${version}" />
-	  <zip destfile="${target}/beanio-${version}.zip">
-	    <zipfileset dir="${target}" prefix="${parent}">
-	      <include name="beanio.jar" />
-	      <include name="docs/**" />
-	    </zipfileset>
-	    <zipfileset dir="." prefix="${parent}">
-	      <include name="src/**" />
-	      <include name="test/**" />
-	      <include name="*.txt" />
-	      <include name="*.xml" />
-	    </zipfileset>
-	  </zip>
-	</target>
+  <!-- Create the release ZIP -->
+  <target name="package" depends="jar,docs" description="Creates the release ZIP">
+	<property name="parent" value="beanio-${version}" />
+	<zip destfile="${target}/beanio-${version}.zip">
+	  <zipfileset dir="${target}" prefix="${parent}">
+	    <include name="beanio.jar" />
+	    <include name="docs/**" />
+	  </zipfileset>
+	  <zipfileset dir="." prefix="${parent}">
+	    <include name="src/**" />
+	    <include name="test/**" />
+	    <include name="*.txt" />
+	    <include name="*.xml" />
+	  </zipfileset>
+	</zip>
+  </target>
 
   <!-- Prepare for test execution -->
   <target name="test-init" depends="init">
@@ -101,7 +104,6 @@
     </path>
 
     <!-- Compile test classes -->
-    <delete dir="${classes.test}" failonerror="false" />
     <mkdir dir="${classes.test}" />
     <javac srcdir="test" destdir="${classes.test}" debug="true" includeAntRuntime="false" classpathref="classpath.test" />
 
@@ -181,7 +183,8 @@
     </emma>
   </target>
 
-  <target name="test" depends="compile,jar,test-init,test-junit,test-emma" />
+  <target name="test" depends="compile,jar,test-init,test-junit,test-emma"
+    description="Executes JUnit test cases, generates Emma converage report if enabled" />
   <target name="build" depends="compile,jar,docs,package" />
 
 </project>

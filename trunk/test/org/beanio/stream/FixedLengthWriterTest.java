@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.*;
 
-import org.beanio.stream.fixedlength.FixedLengthWriterFactory;
+import org.beanio.stream.fixedlength.*;
 import org.junit.Test;
 
 /**
@@ -31,26 +31,34 @@ import org.junit.Test;
 public class FixedLengthWriterTest {
 
     private static final String lineSep = System.getProperty("line.separator");
-    
+
     @Test
     public void testDefaultConfiguration() throws IOException {
+        StringWriter text = new StringWriter();
+        FixedLengthWriter out = new FixedLengthWriter(text);
+        out.write("value1  value2");
+        assertEquals("value1  value2" + lineSep, text.toString());
+    }
+    
+    @Test
+    public void testDefaultFactoryConfiguration() throws IOException {
         FixedLengthWriterFactory factory = new FixedLengthWriterFactory();
         StringWriter text = new StringWriter();
         RecordWriter out = factory.createWriter(text);
         out.write("value1  value2");
         assertEquals("value1  value2" + lineSep, text.toString());
     }
-    
+
     @Test
-    public void testCustomConfiguration() throws IOException {
+    public void testCustomFactoryConfiguration() throws IOException {
         FixedLengthWriterFactory factory = new FixedLengthWriterFactory();
         factory.setLineSeparator("");
         StringWriter text = new StringWriter();
         RecordWriter out = factory.createWriter(text);
         out.write("value1  value2");
         assertEquals("value1  value2", text.toString());
-    }    
-    
+    }
+
     @Test
     public void testFlushAndClose() throws IOException {
         FixedLengthWriterFactory factory = new FixedLengthWriterFactory();

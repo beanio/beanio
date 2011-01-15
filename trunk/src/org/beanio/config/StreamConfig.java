@@ -78,13 +78,13 @@ public class StreamConfig {
 		return root;
 	}
 	public void addNode(NodeConfig node) {
-		root.addNode(node);
+		root.addChild(node);
 	}
 	public void setNodeList(List<NodeConfig> nodeList) {
-		root.setNodeList(nodeList);
+		root.setChildren(nodeList);
 	}
 	public List<NodeConfig> getNodeList() {
-		return root.getNodeList();
+		return root.getChildren();
 	}
 
 	public Bean getReaderFactory() {

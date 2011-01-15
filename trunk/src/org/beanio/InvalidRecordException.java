@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,32 @@
 package org.beanio;
 
 /**
+ * Exception thrown when a record or one of its fields does not pass
+ * validation. 
  * 
  * @author Kevin Seim
  * @since 1.0
  */
 public class InvalidRecordException extends BeanReaderException {
 
-	private static final long serialVersionUID = -4089824405961469844L;
+    private static final long serialVersionUID = 1;
 
-	public InvalidRecordException(BeanReaderContext context, String message, Throwable cause) {
-		super(context, message, cause);
-	}
+    /**
+     * Constructs a new <tt>InvalidRecordException</tt>.
+     * @param context the current context of the reader
+     * @param message the error message
+     * @param cause the root cause
+     */
+    public InvalidRecordException(BeanReaderContext context, String message, Throwable cause) {
+        super(context, message, cause);
+    }
 
-	public InvalidRecordException(BeanReaderContext context, String message) {
-		super(context, message);
-	}
-
+    /**
+     * Constructs a new <tt>InvalidRecordException</tt>.
+     * @param context the current context of the reader
+     * @param message the error message
+     */
+    public InvalidRecordException(BeanReaderContext context, String message) {
+        super(context, message);
+    }
 }

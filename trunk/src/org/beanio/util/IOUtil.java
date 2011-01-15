@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,53 +25,53 @@ import java.io.*;
  */
 public class IOUtil {
 
-	private IOUtil() { };
-	
-	/**
-	 * Closes an input stream and quietly ignores any exception.
-	 * @param in the stream to close
-	 */
-	public static void closeQuietly(Reader in) {
-		try {
-			if (in != null)
-				in.close();
-		}
-		catch (IOException ex) { }
-	}
-	
-	/**
-	 * Closes an output stream and quietly ignores any exception.
-	 * @param out the stream to close
-	 */
-	public static void closeQuietly(Writer out) {
-		try {
-			if (out != null)
-				out.close();
-		}
-		catch (IOException ex) { }
-	}
-	
-	/**
-	 * Closes an input stream and quietly ignores any exception.
-	 * @param in the stream to close
-	 */
-	public static void closeQuietly(InputStream in) {
-		try {
-			if (in != null)
-				in.close();
-		}
-		catch (IOException ex) { }
-	}
-	
-	/**
-	 * Closes an output stream and quietly ignores any exception.
-	 * @param out the stream to close
-	 */
-	public static void closeQuietly(OutputStream out) {
-		try {
-			if (out != null)
-				out.close();
-		}
-		catch (IOException ex) { }
-	}
+    private IOUtil() { }
+
+    /**
+     * Closes an input stream and quietly ignores any exception.
+     * @param in the stream to close
+     */
+    public static void closeQuietly(Reader in) {
+        try {
+            if (in != null)
+                in.close();
+        }
+        catch (IOException ex) { }
+    }
+
+    /**
+     * Closes an output stream and quietly ignores any exception.
+     * @param out the stream to close
+     */
+    public static void closeQuietly(Writer out) {
+        try {
+            if (out != null)
+                out.close();
+        }
+        catch (IOException ex) { }
+    }
+
+    /**
+     * Closes an input stream and quietly ignores any exception.
+     * @param in the stream to close
+     */
+    public static void closeQuietly(InputStream in) {
+        try {
+            if (in != null)
+                in.close();
+        }
+        catch (IOException ex) { }
+    }
+
+    /**
+     * Closes an output stream and quietly ignores any exception.
+     * @param out the stream to close
+     */
+    public static void closeQuietly(OutputStream out) {
+        try {
+            if (out != null)
+                out.close();
+        }
+        catch (IOException ex) { }
+    }
 }

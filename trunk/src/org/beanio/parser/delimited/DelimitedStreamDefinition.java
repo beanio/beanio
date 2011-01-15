@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,36 +28,35 @@ import org.beanio.stream.delimited.*;
  * @author Kevin Seim
  * @since 1.0
  */
-public class DelimitedStreamDefinition extends StreamDefinition {	
-	
-	/**
-	 * Constructs a new <tt>DelimitedStreamDefinition</tt>.
-	 */
-	public DelimitedStreamDefinition() { 
-		super("delimited");
-	}
-	
-	/**
-	 * Constructs a new <tt>DelimitedStreamDefinition</tt>.
-	 * @param format the stream format
-	 */
-	protected DelimitedStreamDefinition(String format) { 
-		super(format);
-	}	
-	
-	
-	@Override
-	protected Record createRecord() {
-		return new DelimitedRecord();
-	}
+public class DelimitedStreamDefinition extends StreamDefinition {
 
-	@Override
-	protected RecordReader createDefaultReader(Reader in) {
-		return new DelimitedReader(in);
-	}
+    /**
+     * Constructs a new <tt>DelimitedStreamDefinition</tt>.
+     */
+    public DelimitedStreamDefinition() {
+        super("delimited");
+    }
 
-	@Override
-	protected RecordWriter createDefaultWriter(Writer out) {
-		return new DelimitedWriter(out);
-	}	
+    /**
+     * Constructs a new <tt>DelimitedStreamDefinition</tt>.
+     * @param format the stream format
+     */
+    protected DelimitedStreamDefinition(String format) {
+        super(format);
+    }
+
+    @Override
+    protected Record createRecord() {
+        return new DelimitedRecord();
+    }
+
+    @Override
+    protected RecordReader createDefaultReader(Reader in) {
+        return new DelimitedReader(in);
+    }
+
+    @Override
+    protected RecordWriter createDefaultWriter(Writer out) {
+        return new DelimitedWriter(out);
+    }
 }

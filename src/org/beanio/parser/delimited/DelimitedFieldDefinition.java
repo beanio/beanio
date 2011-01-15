@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 package org.beanio.parser.delimited;
 
-import java.util.regex.Pattern;
-
 import org.beanio.parser.*;
 
 /**
@@ -29,23 +27,8 @@ import org.beanio.parser.*;
 public class DelimitedFieldDefinition extends FieldDefinition {
 
 	@Override
-	public boolean isMatch(Record record) {
-		String text = getFieldText(record);
-		if (text == null) {
-			return false;
-		}
-		
-		String literal = getLiteral();
-		if (literal != null && !literal.equals(text)) {
-			return false;
-		}
-		
-		Pattern p = getRegexPattern();
-		if (p != null && !p.matcher(text).matches()) {
-			return false;
-		}
-			
-		return true;
+	public boolean matches(Record record) {
+		return isMatch(getFieldText(record));
 	}
 	
 	@Override
@@ -55,7 +38,6 @@ public class DelimitedFieldDefinition extends FieldDefinition {
 		record.setFieldText(getName(), text);
 		return text;
 	}
-	
 	
 	private String getFieldText(Record record) {
 		DelimitedRecord rec = ((DelimitedRecord)record);

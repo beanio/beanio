@@ -29,8 +29,7 @@ import org.beanio.stream.*;
 public class DelimitedWriterFactory implements RecordWriterFactory {
 
     private char delimiter = '\t';
-    private char escape = '\\';
-    private boolean escapeEnabled = false;
+    private Character escape = null;
     private String lineSeparator = null;
 
     /*
@@ -38,15 +37,7 @@ public class DelimitedWriterFactory implements RecordWriterFactory {
      * @see org.beanio.stream.RecordWriterFactory#createWriter(java.io.Writer)
      */
     public RecordWriter createWriter(Writer out) {
-        if (escapeEnabled && delimiter == escape)
-            throw new IllegalArgumentException("Delimiter cannot match the escape character");
-
-        Character e = null;
-        if (escapeEnabled) {
-            e = escape;
-        }
-
-        return new DelimitedWriter(out, delimiter, e, lineSeparator);
+        return new DelimitedWriter(out, delimiter, escape, lineSeparator);
     }
 
     /**
@@ -66,38 +57,28 @@ public class DelimitedWriterFactory implements RecordWriterFactory {
     }
 
     /**
-     * Set to <tt>false</tt> to disable the escape character.  By default, escaping is enabled.
-     * @param escapeEnabled set to <tt>true</tt> to enable escaping or <tt>false</tt> to disable it
-     * @see #getEscape()
-     */
-    public void setEscapeEnabled(boolean escapeEnabled) {
-        this.escapeEnabled = escapeEnabled;
-    }
-
-    /**
-     * Returns whether the escaping is enabled.  By default, escaping is enabled.
+     * Returns whether escaping is enabled.  By default, escaping is disabled.
      * @return boolean <tt>true</tt> if escaping is enabled
      * @see #getEscape()
      */
     public boolean isEscapeEnabled() {
-        return escapeEnabled;
+        return escape != null;
     }
 
     /**
-     * Sets the escape character.  Quotation marks are escaped within quoted values
-     * using the escape character.
+     * Sets the escape character.  The escape character can only be used to
+     * escape the delimiter or itself.  Set to null to disable escaping.
      * @param c the new escape character
      */
-    public void setEscape(char c) {
+    public void setEscape(Character c) {
         this.escape = c;
     }
 
     /**
-     * Returns the escape character.  Quotation marks are escaped within quoted values
-     * using the escape character.
-     * @return the escape character
+     * Returns the escape character.
+     * @return the escape character or null if escaping is disabled
      */
-    public char getEscape() {
+    public Character getEscape() {
         return escape;
     }
 

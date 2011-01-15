@@ -45,4 +45,19 @@
     </record>
   </stream>
 
+  <stream name="f3" format="fixedlength" ordered="false">
+    <record name="record0" class="map">
+      <field name="field1" rid="true" literal="1000" />
+    </record>
+    <record name="record1" class="map">
+      <field name="field1" rid="true" length="5" literal="00001"/>
+      <field name="field2" length="5" />
+      <field name="field3" length="5" />
+    </record>
+    <record name="record2" class="map">
+      <field name="field1" rid="true" length="5" literal="00002"/>
+      <field name="field2" length="5" />
+    </record>
+  </stream>
+
 </beanio>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,119 +42,124 @@ import org.beanio.stream.*;
  */
 public class DelimitedWriter implements RecordWriter {
 
-	private char delim = '\t';
-	private char escapeChar = '\\';
-	private boolean escapeEnabled = true;
+    private char delim = '\t';
+    private char escapeChar = '\\';
+    private boolean escapeEnabled = true;
     private String lineSeparator;
-    
-	private Writer out;
-	
-	/**
-	 * Constructs a new <tt>DelimitedWriter</tt>.
-	 * @param out the output stream to write to
-	 */
-	public DelimitedWriter(Writer out) {
-		this(out, '\t');
-	}
 
-	/**
-	 * Constructs a new <tt>DelimitedWriter</tt>.  By default, the 
-	 * escape character is disabled.
-	 * @param out the output stream to write to
-	 * @param delimiter the field delimiting character
-	 */
-	public DelimitedWriter(Writer out, char delimiter) {
-		this(out, delimiter, null);
-	}
-	
-	/**
-	 * Constructs a new <tt>DelimitedWriter</tt>.
-	 * @param out the output stream to write to
-	 * @param delimiter the field delimiting character
-	 * @param escape the escape character, or <tt>null</tt> to disable escaping
-	 */
-	public DelimitedWriter(Writer out, char delimiter, Character escape) {
-		this(out, delimiter, escape, null);
-	}
+    private Writer out;
 
-	/**
-	 * Constructs a new <tt>DelimitedWriter</tt>.
-	 * @param out the output stream to write to
-	 * @param delimiter the field delimiting character
-	 * @param escape the escape character, or <tt>null</tt> to disable escaping
-	 * @param lineSeparator the termination sequence to use at the end of each line
-	 */
-	public DelimitedWriter(Writer out, char delimiter, Character escape, 
-		String lineSeparator) {
-		this.out = out;
-		this.delim = delimiter;
-		if (escape == null) {
-			this.escapeEnabled = false;
-		}
-		else {
-			this.escapeEnabled = true;
-			this.escapeChar = escape;
-		}
-		if (lineSeparator == null) {
-			lineSeparator = System.getProperty("line.separator");
-		}
-		this.lineSeparator = lineSeparator;
-	}
-	
-	/* 
-	 * (non-Javadoc)
-	 * @see org.beanio.line.RecordWriter#write(java.lang.Object)
-	 */
-	public void write(Object value) throws IOException, RecordIOException {
-		write((String[])value);
-	}
-	
-	/**
-	 * Writes a record to the output stream.
-	 * @param record the record to write
-	 * @throws IOException if an I/O error occurs
-	 */
-	public void write(String [] record) throws IOException {
-		if (escapeEnabled) {
-			int pos = 0;
-			for (String field : record) {
-				if (pos++ > 0)
-					out.write(delim);
-				
-				char [] cs = field.toCharArray();
-				for (int i=0,j=cs.length; i<j; i++) {
-					if (cs[i] == delim || cs[i] == escapeChar)
-						out.write(escapeChar);
-					out.write(cs[i]);
-				}
-			}
-		}
-		else {
-			int pos = 0;
-			for (String field : record) {
-				if (pos++ > 0)
-					out.write(delim);
-				out.write(field);
-			}
-		}
-		
-		out.write(lineSeparator);
-	}
+    /**
+     * Constructs a new <tt>DelimitedWriter</tt>.
+     * @param out the output stream to write to
+     */
+    public DelimitedWriter(Writer out) {
+        this(out, '\t');
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.beanio.line.RecordWriter#flush()
-	 */
-	public void flush() throws IOException {
-		out.flush();
-	}
+    /**
+     * Constructs a new <tt>DelimitedWriter</tt>.  By default, the 
+     * escape character is disabled.
+     * @param out the output stream to write to
+     * @param delimiter the field delimiting character
+     */
+    public DelimitedWriter(Writer out, char delimiter) {
+        this(out, delimiter, null);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.beanio.line.RecordWriter#close()
-	 */
-	public void close() throws IOException {
-		out.close();
-	}
+    /**
+     * Constructs a new <tt>DelimitedWriter</tt>.
+     * @param out the output stream to write to
+     * @param delimiter the field delimiting character
+     * @param escape the escape character, or <tt>null</tt> to disable escaping
+     */
+    public DelimitedWriter(Writer out, char delimiter, Character escape) {
+        this(out, delimiter, escape, null);
+    }
 
+    /**
+     * Constructs a new <tt>DelimitedWriter</tt>.
+     * @param out the output stream to write to
+     * @param delimiter the field delimiting character
+     * @param escape the escape character, or <tt>null</tt> to disable escaping
+     * @param lineSeparator the termination sequence to use at the end of each line
+     */
+    public DelimitedWriter(Writer out, char delimiter, Character escape, String lineSeparator) {
+
+        this.out = out;
+        this.delim = delimiter;
+        if (escape == null) {
+            this.escapeEnabled = false;
+        }
+        else {
+            this.escapeEnabled = true;
+            this.escapeChar = escape;
+
+            if (delimiter == escape) {
+                throw new IllegalArgumentException("Delimiter cannot match the escape character");
+            }
+        }
+        if (lineSeparator == null) {
+            lineSeparator = System.getProperty("line.separator");
+        }
+        this.lineSeparator = lineSeparator;
+    }
+
+    /* 
+     * (non-Javadoc)
+     * @see org.beanio.line.RecordWriter#write(java.lang.Object)
+     */
+    public void write(Object value) throws IOException, RecordIOException {
+        write((String[]) value);
+    }
+
+    /**
+     * Writes a record to the output stream.
+     * @param record the record to write
+     * @throws IOException if an I/O error occurs
+     */
+    public void write(String[] record) throws IOException {
+        if (escapeEnabled) {
+            int pos = 0;
+            for (String field : record) {
+                if (pos++ > 0)
+                    out.write(delim);
+
+                char[] cs = field.toCharArray();
+                for (int i = 0, j = cs.length; i < j; i++) {
+                    if (cs[i] == delim || cs[i] == escapeChar) {
+                        out.write(escapeChar);
+                    }
+                    out.write(cs[i]);
+                }
+            }
+        }
+        else {
+            int pos = 0;
+            for (String field : record) {
+                if (pos++ > 0) {
+                    out.write(delim);
+                }
+                out.write(field);
+            }
+        }
+
+        out.write(lineSeparator);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.line.RecordWriter#flush()
+     */
+    public void flush() throws IOException {
+        out.flush();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.line.RecordWriter#close()
+     */
+    public void close() throws IOException {
+        out.close();
+    }
 }

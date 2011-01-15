@@ -48,7 +48,8 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
      * (non-Javadoc)
      * @see org.beanio.config.ConfigurationLoader#loadConfiguration(java.io.InputStream)
      */
-    public BeanIOConfig loadConfiguration(InputStream in) throws IOException, BeanIOConfigurationException {
+    public BeanIOConfig loadConfiguration(InputStream in) throws IOException,
+        BeanIOConfigurationException {
         DocumentBuilderFactory factory = createDocumentBuilderFactory();
 
         try {
@@ -111,7 +112,7 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
             Element child = (Element) node;
             String name = child.getTagName();
             if ("typeHandler".equals(name)) {
-                config.addHandler(createHandlerConfig(child));
+                config.addTypeHandler(createHandlerConfig(child));
             }
             else if ("stream".equals(name)) {
                 config.addStream(createStreamConfig(child));
@@ -181,19 +182,19 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
      * @param element the DOM element to parse
      * @return the new <tt>StreamConfig</tt>
      */
-    protected StreamConfig createStreamConfig(Element stream) {
+    protected StreamConfig createStreamConfig(Element element) {
         StreamConfig config = new StreamConfig();
-        config.setName(getAttribute(stream, "name"));
-        config.setFormat(getAttribute(stream, "format"));
-        config.setOrdered(getBooleanAttribute(stream, "ordered", true));
-        config.setResourceBundle(getAttribute(stream, "resourceBundle"));
-        config.setMinOccurs(getIntAttribute(stream, "minOccurs", 0));
-        Integer maxOccurs = getUnboundedIntegerAttribute(stream, "maxOccurs", -1);
+        config.setName(getAttribute(element, "name"));
+        config.setFormat(getAttribute(element, "format"));
+        config.setOrdered(getBooleanAttribute(element, "ordered", true));
+        config.setResourceBundle(getAttribute(element, "resourceBundle"));
+        config.setMinOccurs(getIntAttribute(element, "minOccurs", 0));
+        Integer maxOccurs = getUnboundedIntegerAttribute(element, "maxOccurs", -1);
         if (maxOccurs == null)
             maxOccurs = 1;
         config.setMaxOccurs(maxOccurs);
 
-        NodeList children = stream.getChildNodes();
+        NodeList children = element.getChildNodes();
         for (int i = 0, j = children.getLength(); i < j; i++) {
             Node node = children.item(i);
             if (node.getNodeType() != Node.ELEMENT_NODE)
@@ -242,10 +243,10 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
             Element child = (Element) node;
             String name = child.getTagName();
             if ("record".equals(name)) {
-                config.addNode(createRecordConfig(child));
+                config.addChild(createRecordConfig(child));
             }
             else if ("group".equals(name)) {
-                config.addNode(createGroupConfig(child));
+                config.addChild(createGroupConfig(child));
             }
         }
 
@@ -298,13 +299,14 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
         config.setLiteral(getAttribute(element, "literal"));
         config.setGetter(getAttribute(element, "getter"));
         config.setSetter(getAttribute(element, "setter"));
-        config.setHandler(getAttribute(element, "typeHandler"));
+        config.setTypeHandler(getAttribute(element, "typeHandler"));
         config.setType(getAttribute(element, "type"));
         config.setDefault(getAttribute(element, "default"));
         config.setRequired(getBooleanAttribute(element, "required", config.isRequired()));
         config.setTrim(getBooleanAttribute(element, "trim", config.isTrim()));
-        config.setRecordIdentifier(getBooleanAttribute(element, "rid", config.isRecordIdentifier()));
-        config.setIgnored(getBooleanAttribute(element, "ignored", config.isIgnored()));
+        config.setRecordIdentifier(getBooleanAttribute(element, "rid", 
+            config.isRecordIdentifier()));
+        config.setIgnored(getBooleanAttribute(element, "ignore", config.isIgnored()));
         config.setLength(getIntAttribute(element, "length", config.getLength()));
         config.setPadding(getCharAttribute(element, "padding", config.getPadding()));
         config.setJustify(getAttribute(element, "justify"));
@@ -343,7 +345,8 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
     }
 
     private static class DefaultEntityResolver implements EntityResolver {
-        public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+        public InputSource resolveEntity(String publicId, String systemId) throws SAXException,
+            IOException {
             if (BEANIO_XMLNS.equals(systemId)) {
                 return new InputSource(XmlConfigurationLoader.class.getResourceAsStream(BEANIO_XSD));
             }

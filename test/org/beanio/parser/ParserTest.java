@@ -30,6 +30,8 @@ import org.beanio.util.IOUtil;
  */
 public class ParserTest {
 
+    protected static String lineSeparator = System.getProperty("line.separator");
+    
     /**
      * 
      * @param config

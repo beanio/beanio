@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,25 +24,33 @@ package org.beanio.types;
  */
 public class BooleanTypeHandler implements TypeHandler {
 
-	/**
-	 * Parses a Boolean object from the given text.
-	 * @param text the text to parse
-	 * @return new Boolean
-	 */
-	public Boolean parse(String text) throws TypeConversionException {
-		if (text == null || "".equals(text))
-			return null;
-		
-		return new Boolean(text);
-	}
+    /**
+     * Parses a Boolean object from the given text.
+     * @param text the text to parse
+     * @return new Boolean
+     */
+    public Boolean parse(String text) throws TypeConversionException {
+        if (text == null || "".equals(text))
+            return null;
 
-	/**
-	 * Returns {@link Boolean#toString()}, or the empty string if <tt>value</tt>
-	 * is <tt>null</tt>.
-	 */
-	public String format(Object value) {
-		if (value == null)
-			return "";
-		return value.toString();
-	}
+        return new Boolean(text);
+    }
+
+    /**
+     * Returns {@link Boolean#toString()}, or the empty string if <tt>value</tt>
+     * is <tt>null</tt>.
+     */
+    public String format(Object value) {
+        if (value == null)
+            return "";
+        return value.toString();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.types.TypeHandler#getType()
+     */
+    public Class<?> getType() {
+        return Boolean.class;
+    }
 }

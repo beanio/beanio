@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,16 @@ package org.beanio.types;
  */
 public class LongTypeHandler extends NumberTypeHandler {
 
-	@Override
-	protected Long createNumber(String text) throws NumberFormatException {
-		return new Long(text);
-	}
+    @Override
+    protected Long createNumber(String text) throws NumberFormatException {
+        return new Long(text);
+    }
 
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.types.TypeHandler#getType()
+     */
+    public Class<?> getType() {
+        return Long.class;
+    }
 }

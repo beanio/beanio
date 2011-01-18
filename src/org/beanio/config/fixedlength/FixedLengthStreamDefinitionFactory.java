@@ -108,27 +108,27 @@ public class FixedLengthStreamDefinitionFactory extends StreamDefinitionFactory 
     }
 
     @Override
-    protected FieldDefinition createFieldDefinition(FieldConfig field) {
+    protected FieldDefinition newFieldDefinition(FieldConfig field) {
         return new FixedLengthFieldDefinition();
     }
 
     @Override
-    protected RecordDefinition createRecordDefinition(RecordConfig record) {
+    protected RecordDefinition newRecordDefinition(RecordConfig record) {
         return new FixedLengthRecordDefinition();
     }
 
     @Override
-    protected StreamDefinition createStreamDefinition(StreamConfig stream) {
+    protected StreamDefinition newStreamDefinition(StreamConfig stream) {
         return new FixedLengthStreamDefinition();
     }
 
     @Override
-    protected RecordReaderFactory createDefaultRecordReaderFactory() {
+    protected RecordReaderFactory newRecordReaderFactory() {
         return new FixedLengthReaderFactory();
     }
 
     @Override
-    protected RecordWriterFactory createDefaultRecordWriterFactory() {
+    protected RecordWriterFactory newRecordWriterFactory() {
         return new FixedLengthWriterFactory();
     }
 }

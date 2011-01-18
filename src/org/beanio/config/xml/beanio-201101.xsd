@@ -98,6 +98,8 @@
   
   <complexType name="Field">
     <attribute name="name" type="xsd:string" use="required" />
+    <attribute name="setter" type="xsd:string" use="optional" />
+    <attribute name="getter" type="xsd:string" use="optional" />
     <attribute name="rid" type="xsd:boolean" use="optional" />
     <attribute name="position" type="xsd:int" use="optional" />
     <attribute name="required" type="xsd:boolean" use="optional" />

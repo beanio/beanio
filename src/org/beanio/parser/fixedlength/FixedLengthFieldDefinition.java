@@ -64,8 +64,8 @@ public class FixedLengthFieldDefinition extends FieldDefinition {
     }
 
     @Override
-    public String formatValue(boolean isMap, Object bean) {
-        String text = super.formatValue(isMap, bean);
+    public String formatValue(Object value) {
+        String text = super.formatValue(value);
 
         int textWidth = text.length();
         if (textWidth > length) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,16 @@ package org.beanio.types;
  */
 public class FloatTypeHandler extends NumberTypeHandler {
 
-	@Override
-	protected Float createNumber(String text) throws NumberFormatException {
-		return new Float(text);
-	}
+    @Override
+    protected Float createNumber(String text) throws NumberFormatException {
+        return new Float(text);
+    }
 
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.types.TypeHandler#getType()
+     */
+    public Class<?> getType() {
+        return Float.class;
+    }
 }

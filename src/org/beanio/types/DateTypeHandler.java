@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,80 +28,86 @@ import java.util.Date;
  */
 public class DateTypeHandler implements TypeHandler {
 
-	private String pattern = "MMddyyyy";
-	private boolean lenient = false;
-	
-	/**
-	 * Constructs a new <tt>DateTypeHandler</tt> using the default
-	 * pattern '<tt>MMddyyyy</tt>' and setting <tt>lenient</tt> to
-	 * <tt>false</tt>.
-	 */
-	public DateTypeHandler() {
-		
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see org.beanio.types.TypeHandler#parse(java.lang.String)
-	 */
-	public Date parse(String text) throws TypeConversionException {
-		if ("".equals(text))
-			return null;
-		
-		SimpleDateFormat sdf = new SimpleDateFormat(pattern);
-		sdf.setLenient(lenient);
-		
-		ParsePosition pp = new ParsePosition(0);
-		Date date = sdf.parse(text, pp);
-		if (pp.getErrorIndex() >= 0) {
-			throw new TypeConversionException("Invalid date");
-		}
-		if (pp.getIndex() != text.length()) {
-			throw new TypeConversionException("Invalid date");
-		}
-		return date;
-	}
+    private String pattern = "MMddyyyy";
+    private boolean lenient = false;
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.beanio.types.TypeHandler#format(java.lang.Object)
-	 */
-	public String format(Object value) {
-		if (value == null)
-			return "";
-		else
-			return new SimpleDateFormat(pattern).format(value);
-	}
+    /**
+     * Constructs a new <tt>DateTypeHandler</tt> using the default
+     * pattern '<tt>MMddyyyy</tt>' and setting <tt>lenient</tt> to
+     * <tt>false</tt>.
+     */
+    public DateTypeHandler() { }
 
-	/**
-	 * Returns the date pattern used by the <tt>SimpleDateFormat</tt>.
-	 * @return the date pattern
-	 */
-	public String getPattern() {
-		return pattern;
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.types.TypeHandler#parse(java.lang.String)
+     */
+    public Date parse(String text) throws TypeConversionException {
+        if ("".equals(text))
+            return null;
 
-	/**
-	 * Sets the date pattern used by the <tt>SimpleDateFormat</tt>.
-	 * @param pattern the date pattern
-	 */
-	public void setPattern(String pattern) {
-		this.pattern = pattern;
-	}
+        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+        sdf.setLenient(lenient);
 
-	/**
-	 * Returns whether the <tt>SimpleDateFormat</tt> is lenient.
-	 * @return <tt>true</tt> if lenient, <tt>false</tt> otherwise
-	 */
-	public boolean isLenient() {
-		return lenient;
-	}
+        ParsePosition pp = new ParsePosition(0);
+        Date date = sdf.parse(text, pp);
+        if (pp.getErrorIndex() >= 0) {
+            throw new TypeConversionException("Invalid date");
+        }
+        if (pp.getIndex() != text.length()) {
+            throw new TypeConversionException("Invalid date");
+        }
+        return date;
+    }
 
-	/**
-	 * Sets whether the <tt>SimpleDateFormat</tt> is lenient.
-	 * @param lenient <tt>true</tt> if lenient, <tt>false</tt> otherwise
-	 */
-	public void setLenient(boolean lenient) {
-		this.lenient = lenient;
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.types.TypeHandler#format(java.lang.Object)
+     */
+    public String format(Object value) {
+        if (value == null)
+            return "";
+        else
+            return new SimpleDateFormat(pattern).format(value);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.types.TypeHandler#getType()
+     */
+    public Class<?> getType() {
+        return Date.class;
+    }
+
+    /**
+     * Returns the date pattern used by the <tt>SimpleDateFormat</tt>.
+     * @return the date pattern
+     */
+    public String getPattern() {
+        return pattern;
+    }
+
+    /**
+     * Sets the date pattern used by the <tt>SimpleDateFormat</tt>.
+     * @param pattern the date pattern
+     */
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
+    }
+
+    /**
+     * Returns whether the <tt>SimpleDateFormat</tt> is lenient.
+     * @return <tt>true</tt> if lenient, <tt>false</tt> otherwise
+     */
+    public boolean isLenient() {
+        return lenient;
+    }
+
+    /**
+     * Sets whether the <tt>SimpleDateFormat</tt> is lenient.
+     * @param lenient <tt>true</tt> if lenient, <tt>false</tt> otherwise
+     */
+    public void setLenient(boolean lenient) {
+        this.lenient = lenient;
+    }
 }

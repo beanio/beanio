@@ -122,7 +122,7 @@ public class FixedLengthParserTest extends ParserTest {
             assertRecordError(in, 1, "record", "minLength, 1, Record Label, 12345, 10, 20");
             assertRecordError(in, 2, "record",
                 "maxLength, 2, Record Label, 123456789012345678901, 10, 20");
-            assertFieldError(in, 3, "record", "field3", "val", "Expected field length of 5 characters");
+            assertFieldError(in, 3, "record", "field3", "val", "Invalid field length, expected 5 characters");
         }
         finally {
             in.close();

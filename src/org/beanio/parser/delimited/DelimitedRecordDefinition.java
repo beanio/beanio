@@ -52,7 +52,7 @@ public class DelimitedRecordDefinition extends RecordDefinition {
         String[] record = new String[fieldList.size()];
         int index = 0;
         for (FieldDefinition field : getFieldList()) {
-            record[index++] = field.formatValue(isBeanClassMap(), bean);
+            record[index++] = field.formatValue(getFieldValue(field, bean));
         }
         return record;
     }

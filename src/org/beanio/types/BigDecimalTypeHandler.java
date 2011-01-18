@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,16 @@ import java.math.BigDecimal;
  */
 public class BigDecimalTypeHandler extends NumberTypeHandler {
 
-	@Override
-	protected BigDecimal createNumber(String text) throws NumberFormatException {
-		return new BigDecimal(text);
-	}
+    @Override
+    protected BigDecimal createNumber(String text) throws NumberFormatException {
+        return new BigDecimal(text);
+    }
 
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.types.TypeHandler#getType()
+     */
+    public Class<?> getType() {
+        return BigDecimal.class;
+    }
 }

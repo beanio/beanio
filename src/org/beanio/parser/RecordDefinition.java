@@ -90,6 +90,7 @@ public abstract class RecordDefinition extends NodeDefinition {
             if (beanClass != null && 
                 !isBeanClassMap && 
                 value == null &&
+                !record.hasFieldErrors(fieldContext.getName()) &&
                 fieldContext.isProperty() &&
                 fieldContext.getPropertyDescriptor().getPropertyType().isPrimitive()) {
                 
@@ -173,23 +174,79 @@ public abstract class RecordDefinition extends NodeDefinition {
 
     @Override
     public NodeDefinition findDefinitionFor(Object bean) {
-        if (beanClass != null) {
-            Class<?> clazz = bean.getClass();
-            if (isBeanClassMap && Map.class.isAssignableFrom(clazz)) {
-                @SuppressWarnings("rawtypes")
-                Map map = (Map) bean;
-                for (FieldDefinition field : fieldList) {
-                    if (field.isRecordIdentifier() && !field.isMatch(map.get(field.getName()))) {
-                        return null;
-                    }
+        if (beanClass == null) {
+            return null;
+        }
+        
+        if (isMatchForRecordType(bean)) {
+            for (FieldDefinition field : fieldList) {
+                if (!field.isRecordIdentifier()) {
+                    continue;
                 }
-                return this;
+                if (!field.isMatch(getFieldValue(field, bean))) {
+                    return null;   
+                }
             }
-            else if (beanClass.isAssignableFrom(clazz)) {
-                return this;
+            return this;
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Returns the field value from a record's bean object.
+     * @param field the field to extract from the bean
+     * @param bean the bean to extract the field from
+     * @return the field value
+     */
+    @SuppressWarnings("rawtypes")
+    protected Object getFieldValue(FieldDefinition field, Object bean) {
+        if (!field.isProperty()) {
+            return null;
+        }
+        else if (isBeanClassMap) {
+            return ((Map) bean).get(field.getName());
+        }
+        else {
+            // determine the getter method to use
+            Method getter = null;
+            PropertyDescriptor propertyDescriptor = field.getPropertyDescriptor();
+            if (propertyDescriptor != null) {
+                getter = propertyDescriptor.getReadMethod();
+            }
+            if (getter == null) {
+                throw new BeanWriterIOException("No getter found for field '" + field.getName() + 
+                    "' on bean class '" + bean.getClass().getName() + "'");
+            }
+
+            // user the getter method to extract the field value from the bean class
+            try {
+                return getter.invoke(bean);
+            }
+            catch (Exception ex) {
+                throw new BeanWriterIOException("Failed to get field '" + getName() +
+                    "' from bean class '" + bean.getClass().getName() + "' using " +
+                    "getter method '" + getter.getName() + "'", ex);
             }
         }
-        return null;
+    }
+    
+    /**
+     * Returns <tt>true</tt> if the bean object matches the bean type of this record.
+     * @param bean the bean object to test
+     * @return <tt>true</tt> if the bean object is assignable from the bean type of
+     *   this class
+     */
+    private boolean isMatchForRecordType(Object bean) {
+        if (isBeanClassMap) {
+            return Map.class.isAssignableFrom(bean.getClass());
+        }
+        else if (beanClass != null) {
+            return beanClass.isAssignableFrom(bean.getClass());
+        }
+        else {
+            return false;
+        }
     }
 
     /**

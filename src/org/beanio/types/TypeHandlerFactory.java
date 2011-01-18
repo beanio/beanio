@@ -18,6 +18,8 @@ package org.beanio.types;
 import java.math.*;
 import java.util.*;
 
+import org.beanio.util.TypeUtil;
+
 /**
  * A <tt>TypeHandlerFactory</tt> is used to find a <tt>TypeHandler</tt> for 
  * converting field text to a field value object.
@@ -136,6 +138,10 @@ public class TypeHandlerFactory {
      * @param handler the type handler to register
      */
     public void registerHandler(String name, TypeHandler handler) {
+        if (name == null) {
+            throw new NullPointerException();
+        }
+        
         handlerMap.put("name:" + name, handler);
     }
 
@@ -143,8 +149,20 @@ public class TypeHandlerFactory {
      * Registers a type handler in this factory.
      * @param clazz the target class to register the type handler under
      * @param handler the type handler to register
+     * @throws IllegalArgumentException if the handler type is not assignable from
+     *   the registered class type
      */
-    public void registerHandler(Class<?> clazz, TypeHandler handler) {
+    public void registerHandler(Class<?> clazz, TypeHandler handler) throws IllegalArgumentException {
+        if (clazz == null) {
+            throw new NullPointerException();
+        }
+        
+        if (!TypeUtil.isAssignable(clazz, handler.getType())) {
+            throw new IllegalArgumentException("Type handler type '" +
+                handler.getType().getName() + "' is not assignable from configured " +
+                "type '" + clazz.getName() + "'");
+        }
+        
         handlerMap.put("class:" + clazz.getName(), handler);
     }
 

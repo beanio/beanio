@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,38 @@ package org.beanio;
 
 import org.beanio.BeanIOException;
 
+/**
+ * Exception thrown when an invalid BeanIO mapping configuration file is loaded.
+ * 
+ * @author Kevin Seim
+ * @since 1.0
+ */
 public class BeanIOConfigurationException extends BeanIOException {
 
-	private static final long serialVersionUID = -6076076791754385778L;
+    private static final long serialVersionUID = 1L;
 
-	public BeanIOConfigurationException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    /**
+     * Constructs a new <tt>BeanIOConfigurationException</tt>.
+     * @param message the error message
+     * @param cause the root cause
+     */
+    public BeanIOConfigurationException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public BeanIOConfigurationException(String message) {
-		super(message);
-	}
+    /**
+     * Constructs a new <tt>BeanIOConfigurationException</tt>.
+     * @param message the error message
+     */
+    public BeanIOConfigurationException(String message) {
+        super(message);
+    }
 
-	public BeanIOConfigurationException(Throwable cause) {
-		super(cause);
-	}
-
+    /**
+     * Constructs a new <tt>BeanIOConfigurationException</tt>.
+     * @param cause the root cause
+     */
+    public BeanIOConfigurationException(Throwable cause) {
+        super(cause);
+    }
 }

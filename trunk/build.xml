@@ -15,10 +15,9 @@
     limitations under the License.
 -->
 <project name="beanio">
-
-  <property name="target" location="target" />
-  <property name="version" value="1.0-SNAPSHOT" />
-  <property name="emma.enabled" value="true" />
+ 
+  <!-- Load build properties -->
+  <property file="build.properties" />
 
   <!-- Delete all build artifacts -->
   <target name="clean" description="Delete all build artifacts">
@@ -44,17 +43,20 @@
 
   <!-- Create the beanio jar -->
   <target name="jar" depends="compile" description="Creates beanio.jar">
-    <!-- TODO valiate manifest file -->
     <jar destfile="${target}/beanio.jar">
+      <manifest>
+        <attribute name="Implementation-Title" value="BeanIO ${version}" />
+        <attribute name="Implementation-Version" value="${version}" />
+      </manifest>
+      <metainf dir="${basedir}">
+        <include name="LICENSE.txt" />
+        <include name="NOTICE.txt" />
+      </metainf>
       <fileset dir="${classes.main}" />
       <fileset dir="src">
         <exclude name="**/*.java" />
         <exclude name="**/package.html" />
       </fileset>
-      <manifest>
-        <attribute name="Implementation-Title" value="BeanIO ${version}" />
-        <attribute name="Implementation-Version" value="${version}" />
-      </manifest>
     </jar>
   </target>
 
@@ -83,11 +85,13 @@
 	    <include name="beanio.jar" />
 	    <include name="docs/**" />
 	  </zipfileset>
-	  <zipfileset dir="." prefix="${parent}">
+	  <zipfileset dir="${basedir}" prefix="${parent}">
+	    <include name="docs/**" />
 	    <include name="src/**" />
 	    <include name="test/**" />
 	    <include name="*.txt" />
 	    <include name="*.xml" />
+	    <include name="*.properties" />
 	  </zipfileset>
 	</zip>
   </target>

@@ -16,10 +16,14 @@
 package org.beanio;
 
 /**
- * A <tt>BeanReader</tt> reads Java beans from an underlying input stream.
+ * Interface for readers capable of reading bean objects from an input stream.
+ * 
+ * <p>A <tt>BeanReader</tt> is created using a <tt>StreamFactory</tt> and 
+ * a mapping file.</p>
  * 
  * @author Kevin Seim
  * @since 1.0
+ * @see StreamFactory
  */
 public interface BeanReader {
 
@@ -56,4 +60,9 @@ public interface BeanReader {
 	 */
     public void close() throws BeanReaderIOException;
 
+    /**
+     * Sets the error handler to delegate bean reader exceptions to.
+     * @param errorHandler the error handler to delegate exceptions to
+     */
+    public void setErrorHandler(BeanReaderErrorHandler errorHandler);
 }

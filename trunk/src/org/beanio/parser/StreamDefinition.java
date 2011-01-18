@@ -388,7 +388,8 @@ public abstract class StreamDefinition implements MessageFactory {
         private Node layout;
         private Record record;
         private RecordReader in;
-
+        private BeanReaderErrorHandler errorHandler;
+        
         /**
          * Constructs a new <tt>BeanReaderImpl</tt>.
          * @param reader the record reader to read from
@@ -405,94 +406,102 @@ public abstract class StreamDefinition implements MessageFactory {
          * @see org.beanio.BeanReader#read()
          */
         public Object read() {
-            if (layout == null)
+            if (layout == null) {
                 return null;
+            }
 
             Object bean = null;
             while (bean == null) {
-
-                RecordNode node = null;
-                while (node == null) {
-                    // clear the last record
-                    record.clear();
-
-                    // read the next record
-                    Object recordValue;
-                    try {
-                        recordValue = in.read();
-                        record.setRecordText(in.getRecordText());
-                        record.setLineNumber(in.getRecordLineNumber());
-                    }
-                    catch (RecordIOException e) {
-                        record.setLineNumber(in.getRecordLineNumber());
-                        record.setRecordText(in.getRecordText());
-                        record.addRecordError("malformed", e.getMessage());
-                        throw new MalformedRecordException(record.getContext(),
-                            "Malformed record at line " + in.getRecordLineNumber());
-                    }
-                    catch (IOException e) {
-                        throw new BeanReaderIOException(record.getContext(),
-                            "IOException caught reading from input stream", e);
-                    }
-
-                    // check for end of file
-                    if (recordValue == null) {
-                        try {
-                            // calling close will determine if all min occurs have been met
-                            Node unsatisfied = layout.close();
-                            if (unsatisfied != null) {
-                                record.addRecordError("unexpected");
-                                throw new UnexpectedRecordException(record.getContext(),
-                                    "End of stream reached at line " + record.getRecordLineNumber()
-                                        + ", expected record '" + unsatisfied.getName() + "'");
-                            }
-                            return null;
-                        }
-                        finally {
-                            layout = null;
-                        }
-                    }
-
-                    // set the value of the record (which is implementation specific) on the record
-                    record.setValue(recordValue);
-
-                    try {
-                        node = (RecordNode) layout.matchNext(record);
-                    }
-                    catch (UnexpectedRecordException ex) {
-                        if (layout.matchAny(record) == null) {
-                            record.addRecordError("unidentified");
-                            throw new UnidentifiedRecordException(record.getContext(),
-                                "Unidentified record type at line " + record.getRecordLineNumber());
-                        }
-                        else {
-                            record.addRecordError("unexpected");
-                            throw ex;
-                        }
-                    }
+                try {
+                    // find the next matching record node
+                    RecordNode node = nextRecord();
+                    
+                    // node is null when the end of the stream is reached
                     if (node == null) {
-                        // determine if the record matches any record type in order to throw
-                        // the correct exception type
-                        node = (RecordNode) layout.matchAny(record);
-                        if (node != null) {
+                        break;
+                    }
+
+                    RecordDefinition recordDefinition = node.getRecordDefinition();
+                    record.setRecordName(recordDefinition.getName());
+                    bean = recordDefinition.parseBean(record);
+                }
+                catch (BeanReaderException ex) {
+                    handleError(ex);
+                }
+            }
+            return bean;
+        }
+        
+        /**
+         * Reads the next record from the input stream and returns the matching record node.
+         * @return the next matching record node, or <tt>null</tt> if the end of the stream
+         *   was reached
+         * @throws BeanReaderException if the next node cannot be determined
+         */
+        private RecordNode nextRecord() throws BeanReaderException {
+            RecordNode node = null;
+            while (node == null) {
+                // clear the last record
+                record.clear();
+
+                // read the next record
+                Object recordValue;
+                try {
+                    recordValue = in.read();
+                    record.setRecordText(in.getRecordText());
+                    record.setLineNumber(in.getRecordLineNumber());
+                }
+                catch (RecordIOException e) {
+                    record.setRecordText(in.getRecordText());
+                    record.setLineNumber(in.getRecordLineNumber());
+                    String message = record.addRecordError("malformed", e.getMessage());
+                    throw new MalformedRecordException(record.getContext(), message);
+                }
+                catch (IOException e) {
+                    throw new BeanReaderIOException(record.getContext(),
+                        "IOException caught reading from input stream", e);
+                }
+
+                // check for end of file
+                if (recordValue == null) {
+                    try {
+                        // calling close will determine if all min occurs have been met
+                        Node unsatisfied = layout.close();
+                        if (unsatisfied != null) {
                             record.addRecordError("unexpected");
                             throw new UnexpectedRecordException(record.getContext(),
-                                "Unexpeced record type '" + node.getName() + "' found at line "
-                                    + record.getRecordLineNumber());
+                                "End of stream reached at line " + record.getRecordLineNumber()
+                                    + ", expected record '" + unsatisfied.getName() + "'");
                         }
-                        else {
-                            record.addRecordError("unidentified");
-                            throw new UnidentifiedRecordException(record.getContext(),
-                                "Unidentified record type at line " + record.getRecordLineNumber());
-                        }
+                        return null;
+                    }
+                    finally {
+                        layout = null;
                     }
                 }
 
-                RecordDefinition recordDefinition = node.getRecordDefinition();
-                record.setRecordName(recordDefinition.getName());
-                bean = recordDefinition.parseBean(record);
-            }
-            return bean;
+                // set the value of the record (which is implementation specific) on the record
+                record.setValue(recordValue);
+
+                try {
+                    node = (RecordNode) layout.matchNext(record);
+                }
+                catch (UnexpectedRecordException ex) { 
+                    // when thrown, node is null and the error is handled below
+                }
+                
+                if (node == null) {
+                    if (layout.matchAny(record) != null) {
+                        String message = record.addRecordError("unexpected");
+                        throw new UnexpectedRecordException(record.getContext(), message);
+                    }
+                    else {
+                        String message = record.addRecordError("unidentified");
+                        throw new UnidentifiedRecordException(record.getContext(), message);
+                    }
+                }
+            }      
+            return node;
         }
 
         /*
@@ -524,6 +533,27 @@ public abstract class StreamDefinition implements MessageFactory {
          */
         public int getLineNumber() {
             return record.getRecordLineNumber();
+        }
+        
+        public void setErrorHandler(BeanReaderErrorHandler errorHandler) {
+            this.errorHandler = errorHandler;
+        }
+        
+        private void handleError(BeanReaderException ex) {
+            if (errorHandler == null)
+                throw ex;
+            else {
+                try { 
+                    errorHandler.handleError(ex);
+                }
+                catch (BeanReaderException e) {
+                    throw e;
+                }
+                catch (Exception e) {
+                    throw new BeanReaderIOException(ex.getContext(), 
+                        "Error handler exception caught", e);
+                }
+            }
         }
 
         private GroupNode buildTree(StreamDefinition streamDefinition) {
@@ -588,6 +618,7 @@ public abstract class StreamDefinition implements MessageFactory {
          */
         public void write(String recordName, Object bean) throws BeanWriterException {
             if (recordDefinitionMap == null) {
+                recordDefinitionMap = new HashMap<String,RecordDefinition>();
                 for (RecordDefinition rd : getRootGroupDefinition().getRecordDefinitionAncestors()) {
                     recordDefinitionMap.put(rd.getName(), rd);
                 }

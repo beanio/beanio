@@ -25,7 +25,7 @@ package org.beanio;
  */
 public class BeanReaderIOException extends BeanReaderException {
 
-    private static final long serialVersionUID = -5299347391279699842L;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Constructs a new <tt>BeanReaderIOException</tt>.

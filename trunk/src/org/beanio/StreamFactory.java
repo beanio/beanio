@@ -41,10 +41,23 @@ public abstract class StreamFactory {
 
     /**
      * Creates a new <tt>BeanReader</tt> for reading from a file.
-     * @param name the stream configuration name to use for reading the stream
+     * @param name the configured stream mapping name
+     * @param filename the name of the file to read
+     * @return the new <tt>BeanReader</tt>
+     * @throws IllegalArgumentException if there is no stream configured for the given name
+     * @throws BeanIOException if the file is not found
+     */
+    public BeanReader createReader(String name, String filename) throws BeanIOException {
+        return createReader(name, new File(filename));
+    }
+    
+    /**
+     * Creates a new <tt>BeanReader</tt> for reading from a file.
+     * @param name the configured stream mapping name
      * @param file the file to read
-     * @return the new BeanReader
-     * @throws BeanIOException if there is no stream configured for the given name
+     * @return the new <tt>BeanReader</tt>
+     * @throws IllegalArgumentException if there is no stream configured for the given name
+     * @throws BeanIOException if the file is not found
      */
     public BeanReader createReader(String name, File file) throws BeanIOException {
         validateStreamName(name);
@@ -65,9 +78,9 @@ public abstract class StreamFactory {
 
     /**
      * Creates a new <tt>BeanReader</tt> for reading from the given input stream.
-     * @param name the stream configuration name to use for reading the stream
+     * @param name the configured stream mapping name
      * @param in the input stream to read from
-     * @return the new BeanReader
+     * @return the new <tt>BeanReader</tt>
      * @throws IllegalArgumentException if there is no stream configured for the given name
      */
     public BeanReader createReader(String name, Reader in) throws IllegalArgumentException {
@@ -75,11 +88,11 @@ public abstract class StreamFactory {
     }
 
     /**
-     * Creates a new <tt>BeanReader</tt> for reading from the given input stream.
-     * @param name the stream configuration name to use for reading the stream
+     * Creates a new <tt>BeanReader</tt> for reading from a stream.
+     * @param name the configured stream mapping name
      * @param in the input stream to read from
      * @param locale the locale used to format error messages 
-     * @return the new BeanReader
+     * @return the new <tt>BeanReader</tt>
      * @throws IllegalArgumentException if there is no stream configured for the given name
      */
     public abstract BeanReader createReader(String name, Reader in, Locale locale)
@@ -87,9 +100,9 @@ public abstract class StreamFactory {
 
     /**
      * Creates a new <tt>BeanWriter</tt> for writing to the given file.
-     * @param name the stream configuration name to use for writing to the stream
+     * @param name the configured stream mapping name
      * @param file the file to write to
-     * @return the new BeanWriter
+     * @return the new <tt>BeanReader</tt>
      * @throws IllegalArgumentException if there is no stream configured for the given name
      */
     public BeanWriter createWriter(String name, File file) throws IllegalArgumentException {
@@ -108,8 +121,8 @@ public abstract class StreamFactory {
     }
 
     /**
-     * Creates a new <tt>BeanWriter</tt> for writing to the given output stream.
-     * @param name the stream configuration name to use for writing to the stream
+     * Creates a new <tt>BeanWriter</tt> for writing to a stream.
+     * @param name the configured stream mapping name
      * @param out the output stream to write to
      * @return the new BeanWriter
      * @throws IllegalArgumentException if there is no stream configured for the given name
@@ -117,6 +130,41 @@ public abstract class StreamFactory {
     public abstract BeanWriter createWriter(String name, Writer out)
         throws IllegalArgumentException;
 
+    /**
+     * Loads a BeanIO configuration file from the application classpath.
+     * @param resource the configuration resource name
+     * @throws BeanIOException if an IOException or other fatal error is caught while
+     *   loading the file
+     * @throws BeanIOConfigurationException if the configuration is invalid
+     */
+    public void loadResource(String resource) throws BeanIOException, BeanIOConfigurationException {
+        
+        ClassLoader cl = null;
+        try {
+            cl = Thread.currentThread().getContextClassLoader();
+        }
+        catch (Throwable ex) { }
+        
+        if (cl == null) {
+            cl = StreamFactory.class.getClassLoader();
+        }
+        
+        InputStream in = null;
+        try {
+            in = cl.getResourceAsStream(resource);
+            if (in == null) {
+                throw new BeanIOException("BeanIO configuration not found on classpath '" + resource + "'");
+            }
+            load(in);
+        }
+        catch (IOException ex) {
+            throw new BeanIOException("IOException caught loading resource '" + resource + "'", ex);
+        }
+        finally {
+            IOUtil.closeQuietly(in);
+        }
+    }
+    
     /**
      * Loads a BeanIO configuration file and adds the configured streams to this factory.
      * If the given file name is not found in the file system, the file will be loaded
@@ -127,26 +175,7 @@ public abstract class StreamFactory {
      * @throws BeanIOConfigurationException if the configuration is invalid
      */
     public void load(String filename) throws BeanIOException, BeanIOConfigurationException {
-        File file = new File(filename);
-        if (file.exists()) {
-            load(file);
-            return;
-        }
-        InputStream in = null;
-        try {
-            in = getClass().getResourceAsStream(filename);
-            if (in == null) {
-                throw new BeanIOException("BeanIO configuration not found '" + filename + "'");
-            }
-            
-            load(in);
-        }
-        catch (IOException ex) {
-            throw new BeanIOException("IOException caught reading configuration file: " + file, ex);
-        }
-        finally {
-            IOUtil.closeQuietly(in);
-        }
+        load(new File(filename));
     }
 
     /**

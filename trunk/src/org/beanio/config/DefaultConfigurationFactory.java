@@ -22,7 +22,7 @@ import org.beanio.BeanIOConfigurationException;
 import org.beanio.config.xml.XmlConfigurationLoader;
 import org.beanio.parser.*;
 import org.beanio.types.*;
-import org.beanio.util.Settings;
+import org.beanio.util.*;
 
 /**
  * Default configuration factory implementation.
@@ -87,10 +87,10 @@ public class DefaultConfigurationFactory implements ConfigurationFactory {
             TypeHandlerFactory typeHandlerFactory = getTypeHandlerFactory(
                 globalTypeHandlerFactory, streamConfig.getHandlerList());
 
-            StreamDefinitionFactory factory = createStreamDefinitionFactory(streamConfig
-                .getFormat());
+            StreamDefinitionFactory factory = createStreamDefinitionFactory(
+                streamConfig.getFormat());
             factory.setTypeHandlerFactory(typeHandlerFactory);
-            streamContextList.add(factory.compileStreamDefinition(streamConfig));
+            streamContextList.add(factory.createStreamDefinition(streamConfig));
         }
         return streamContextList;
     }
@@ -109,7 +109,13 @@ public class DefaultConfigurationFactory implements ConfigurationFactory {
                 " is not configured for format '" + format + "'");
         }
 
-        return (StreamDefinitionFactory) BeanUtil.createBean(clazz);
+        Object factory = BeanUtil.createBean(clazz);
+        if (!StreamDefinitionFactory.class.isAssignableFrom(factory.getClass())) {
+            throw new BeanIOConfigurationException("Configured stream definition factory '" +
+                clazz + "' does not implement '" + StreamDefinitionFactory.class.getName() + "'");
+        }
+        
+        return (StreamDefinitionFactory) factory;
     }
 
     /**
@@ -159,12 +165,17 @@ public class DefaultConfigurationFactory implements ConfigurationFactory {
             }
 
             if (hc.getType() != null) {
-                Class<?> clazz = TypeHandlerFactory.toType(hc.getType());
-                if (clazz == null) {
+                Class<?> type = TypeHandlerFactory.toType(hc.getType());
+                if (type == null) {
                     throw new BeanIOConfigurationException("Invalid type handler type '"
                         + hc.getType() + "'");
                 }
-                handlerFactory.registerHandler(clazz, h);
+                try {
+                    handlerFactory.registerHandler(type, h);
+                }
+                catch (IllegalArgumentException ex) {
+                    throw new BeanIOConfigurationException("Invalid type handler configuration", ex);
+                }
             }
         }
         return handlerFactory;

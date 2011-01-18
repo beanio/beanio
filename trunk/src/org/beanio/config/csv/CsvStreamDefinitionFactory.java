@@ -31,17 +31,17 @@ import org.beanio.stream.csv.*;
 public class CsvStreamDefinitionFactory extends DelimitedStreamDefinitionFactory {
 
     @Override
-    protected StreamDefinition createStreamDefinition(StreamConfig stream) {
+    protected StreamDefinition newStreamDefinition(StreamConfig stream) {
         return new CsvStreamDefinition();
     }
 
     @Override
-    protected RecordReaderFactory createDefaultRecordReaderFactory() {
+    protected RecordReaderFactory newRecordReaderFactory() {
         return new CsvReaderFactory();
     }
 
     @Override
-    protected RecordWriterFactory createDefaultRecordWriterFactory() {
+    protected RecordWriterFactory newRecordWriterFactory() {
         return new CsvWriterFactory();
     }
 }

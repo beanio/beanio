@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,16 @@ package org.beanio.types;
  */
 public class DoubleTypeHandler extends NumberTypeHandler {
 
-	@Override
-	protected Double createNumber(String text) throws NumberFormatException {
-		return new Double(text);
-	}
+    @Override
+    protected Double createNumber(String text) throws NumberFormatException {
+        return new Double(text);
+    }
 
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.types.TypeHandler#getType()
+     */
+    public Class<?> getType() {
+        return Double.class;
+    }
 }

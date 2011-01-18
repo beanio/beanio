@@ -40,7 +40,7 @@ public class FixedLengthRecordDefinition extends RecordDefinition {
                 record.append(filler);
             }
 
-            record.append(field.formatValue(isBeanClassMap(), bean));
+            record.append(field.formatValue(getFieldValue(field, bean)));
         }
         return record;
     }

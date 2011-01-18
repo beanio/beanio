@@ -44,16 +44,16 @@ public class Record {
     private MessageFactory messageContext;
 
     /**
-     * Constructs a <tt>Record</tt>.
+     * Constructs a new <tt>Record</tt>.
      */
-    public Record() {
-    }
+    public Record() { }
 
     /**
      * Clears the current state of the record before the next record is read.
      */
     public void clear() {
         this.recordText = null;
+        this.recordName = null;
         this.fieldMap.clear();
         this.fieldErrors = null;
         this.recordErrors = null;
@@ -64,8 +64,7 @@ public class Record {
      * @param value the record value read by a record reader
      * @see RecordReader
      */
-    public void setValue(Object value) {
-    }
+    public void setValue(Object value) { }
 
     /**
      * Returns the current state of the bean reader stored by this class.
@@ -95,6 +94,19 @@ public class Record {
     public boolean hasFieldErrors() {
         return fieldErrors != null && !fieldErrors.isEmpty();
     }
+    
+    /**
+     * Returns <tt>true</tt> if a field error was reported for a specific field.
+     * @param fieldName the name of the field to check
+     * @return <tt>true</tt> if an error was reported for the field
+     */
+    public boolean hasFieldErrors(String fieldName) {
+        if (fieldErrors == null)
+            return false;
+        
+        Collection<String> errors = fieldErrors.get(fieldName);
+        return errors != null && !errors.isEmpty();
+    }
 
     /**
      * Returns <tt>true</tt> if a record level error was reported while parsing
@@ -111,15 +123,16 @@ public class Record {
      * @param fieldText the invalid field text
      * @param rule the name of the failed validation rule
      * @param params an optional list of parameters for formatting the error message 
+     * @return the formatted field error message 
      */
-    public void addFieldError(String fieldName, String fieldText, String rule, Object... params) {
+    public String addFieldError(String fieldName, String fieldText, String rule, Object... params) {
         String recordLabel = messageContext.getRecordLabel(recordName);
         String fieldLabel = messageContext.getFieldLabel(recordName, fieldName);
 
         if (recordLabel == null)
-            recordLabel = "'" + recordName + "' record";
+            recordLabel = "'" + recordName + "'";
         if (fieldLabel == null)
-            fieldLabel = "'" + fieldName + "' field";
+            fieldLabel = "'" + fieldName + "'";
 
         Object[] messageParams;
         if (params.length == 0) {
@@ -134,20 +147,23 @@ public class Record {
             System.arraycopy(params, 0, messageParams, 4, params.length);
         }
 
-        String message = messageContext.getFieldErrorMessage(recordName, fieldName, rule);
-        MessageFormat mf = new MessageFormat(message, locale);
-        addFieldErrorMessage(fieldName, mf.format(messageParams));
+        String pattern = messageContext.getFieldErrorMessage(recordName, fieldName, rule);
+        MessageFormat mf = new MessageFormat(pattern, locale);
+        String message = mf.format(messageParams);
+        addFieldErrorMessage(fieldName, message);
+        return message;
     }
 
     /**
      * Adds a record level error to this record.
      * @param rule the name of the failed validation rule
-     * @param params an optional list of parameters for formatting the error message 
+     * @param params an optional list of parameters for formatting the error message
+     * @return the formatted record error message 
      */
-    public void addRecordError(String rule, Object... params) {
+    public String addRecordError(String rule, Object... params) {
         String recordLabel = messageContext.getRecordLabel(recordName);
         if (recordLabel == null) {
-            recordLabel = "'" + recordName + "' record";
+            recordLabel = "'" + recordName + "'";
         }
 
         Object[] messageParams;
@@ -162,9 +178,11 @@ public class Record {
             System.arraycopy(params, 0, messageParams, 3, params.length);
         }
 
-        String message = messageContext.getRecordErrorMessage(recordName, rule);
-        MessageFormat mf = new MessageFormat(message, locale);
-        addRecordError(mf.format(messageParams));
+        String pattern = messageContext.getRecordErrorMessage(recordName, rule);
+        MessageFormat mf = new MessageFormat(pattern, locale);
+        String message = mf.format(messageParams);
+        addRecordErrorMessage(message);
+        return message;
     }
 
     /**
@@ -191,7 +209,7 @@ public class Record {
      * Adds a record level error message.
      * @param message the error message to add
      */
-    protected void addRecordError(String message) {
+    protected void addRecordErrorMessage(String message) {
         if (recordErrors == null) {
             recordErrors = new ArrayList<String>(3);
         }

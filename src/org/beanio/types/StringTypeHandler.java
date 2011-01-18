@@ -55,6 +55,14 @@ public class StringTypeHandler implements TypeHandler {
         return value.toString();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.types.TypeHandler#getType()
+     */
+    public Class<?> getType() {
+        return String.class;
+    }
+
     /**
      * Returns <tt>true</tt> if <tt>parse(String)</tt> should trim the text.
      * By default, <tt>trim</tt> is <tt>false</tt> which allows trimming to

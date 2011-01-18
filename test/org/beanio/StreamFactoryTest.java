@@ -40,7 +40,7 @@ public class StreamFactoryTest {
         File file = new File(filename);
         factory.load(file);
         factory.load(filename);
-        factory.load("/org/beanio/mapping.xml");
+        factory.loadResource("org/beanio/mapping.xml");
     }
     
     @Test(expected=BeanIOException.class)
@@ -82,7 +82,7 @@ public class StreamFactoryTest {
     @Test
     public void testCreateReaderForFile() {
         StreamFactory factory = StreamFactory.newInstance();
-        factory.load("/org/beanio/mapping.xml");
+        factory.loadResource("org/beanio/mapping.xml");
         
         File file = new File("test/org/beanio/file.txt");
         BeanReader in = factory.createReader("stream1", file);
@@ -104,7 +104,7 @@ public class StreamFactoryTest {
     @Test
     public void testCreateWriterForFile() throws IOException {
         StreamFactory factory = StreamFactory.newInstance();
-        factory.load("/org/beanio/mapping.xml");
+        factory.loadResource("org/beanio/mapping.xml");
         
         File file = File.createTempFile("temp", "txt");
         file.deleteOnExit();

@@ -15,8 +15,6 @@
  */
 package org.beanio;
 
-import java.util.*;
-
 /**
  * A subclass of <tt>BeanReaderException</tt> is thrown for any exception
  * that occurs while using a <tt>BeanReader</tt> to read from an input stream.
@@ -52,41 +50,10 @@ public abstract class BeanReaderException extends BeanIOException {
     }
 
     /**
-     * Returns the current context of the bean reader.
+     * Returns the current state of the bean reader.
      * @return bean reader context
      */
     public BeanReaderContext getContext() {
         return context;
-    }
-
-    @Override
-    public String toString() {
-        String message = super.toString();
-        if (context == null || !(context.hasFieldErrors() || context.hasRecordErrors())) {
-            return message;
-        }
-
-        StringBuffer s = new StringBuffer(message);
-
-        if (context.hasRecordErrors()) {
-            for (String error : context.getRecordErrors()) {
-                s.append("\n  ==> Invalid '");
-                s.append(context.getRecordName());
-                s.append("' record: ");
-                s.append(error);
-            }
-        }
-        if (context.hasFieldErrors()) {
-            for (Map.Entry<String, Collection<String>> entry : context.getFieldErrors().entrySet()) {
-                String fieldName = entry.getKey();
-                for (String error : entry.getValue()) {
-                    s.append("\n  ==> Invalid '");
-                    s.append(fieldName);
-                    s.append("' field: ");
-                    s.append(error);
-                }
-            }
-        }
-        return s.toString();
     }
 }

@@ -16,25 +16,29 @@
 package org.beanio;
 
 /**
- * A <tt>BeanWriter</tt> is used to write Java bean objects to an output stream.
+ * Interface for writers capable of writing bean objects to an output stream.
+ * 
+ * <p>A <tt>BeanWriter</tt> is created using a <tt>StreamFactory</tt> and 
+ * a mapping file.</p>
  * 
  * @author Kevin Seim
  * @since 1.0
+ * @see StreamFactory
  */
 public interface BeanWriter {
 
     /**
      * Writes a Java bean object to this output stream.
      * @param bean the bean object to write
-     * @throws BeanIOException if an IOException or other fatal error is caught
+     * @throws BeanWriterException if an I/O error or other fatal error is caught
      */
-    public void write(Object bean) throws BeanWriterIOException;
+    public void write(Object bean) throws BeanWriterException;
 
     /**
      * Writes a Java bean object to this output stream.
      * @param recordName the name of the record definition for formatting the bean object
      * @param bean the bean object to write
-     * @throws BeanWriterException
+     * @throws BeanWriterException if an I/O error or other fatal error is caught
      */
     public void write(String recordName, Object bean) throws BeanWriterException;
 

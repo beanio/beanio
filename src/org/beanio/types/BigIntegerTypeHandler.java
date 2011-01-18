@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package org.beanio.types;
 
-import java.math.BigInteger;
+import java.math.*;
 
 /**
  * A type handler implementation for the <tt>BigInteger</tt> class, that
@@ -26,9 +26,16 @@ import java.math.BigInteger;
  */
 public class BigIntegerTypeHandler extends NumberTypeHandler {
 
-	@Override
-	protected BigInteger createNumber(String text) throws NumberFormatException {
-		return new BigInteger(text);
-	}
+    @Override
+    protected BigInteger createNumber(String text) throws NumberFormatException {
+        return new BigInteger(text);
+    }
 
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.types.TypeHandler#getType()
+     */
+    public Class<?> getType() {
+        return BigInteger.class;
+    }
 }

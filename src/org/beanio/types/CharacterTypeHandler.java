@@ -48,4 +48,12 @@ public class CharacterTypeHandler implements TypeHandler {
             return "";
         return value.toString();
     }
+
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.types.TypeHandler#getType()
+     */
+    public Class<?> getType() {
+        return Character.class;
+    }
 }

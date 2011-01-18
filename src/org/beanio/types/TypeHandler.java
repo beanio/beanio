@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,19 +26,25 @@ package org.beanio.types;
  */
 public interface TypeHandler {
 
-	/**
-	 * Parses field text into a Java object.
-	 * @param text the field text to parse, which may be null if the field was not passed in the record
-	 * @return the parsed Java object
-	 * @throws TypeConversionException if the text cannot be parsed
-	 */
-	public Object parse(String text) throws TypeConversionException;
-	
-	/**
-	 * Formats a Java object into field text.
-	 * @param value the Java object to format, which may be null
-	 * @return the formatted field text
-	 */
-	public String format(Object value);
+    /**
+     * Parses field text into a Java object.
+     * @param text the field text to parse, which may be null if the field was not passed in the record
+     * @return the parsed Java object
+     * @throws TypeConversionException if the text cannot be parsed
+     */
+    public Object parse(String text) throws TypeConversionException;
 
+    /**
+     * Formats a Java object into field text.
+     * @param value the Java object to format, which may be null
+     * @return the formatted field text
+     */
+    public String format(Object value);
+
+    /**
+     * Returns the class type supported by this handler.  Primitive types should not be
+     * returned by this method- use the object equivalent instead.
+     * @return the class type supported by this handler
+     */
+    public Class<?> getType();
 }

@@ -16,12 +16,11 @@
 package org.beanio.parser;
 
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.*;
-import java.util.Map;
 import java.util.regex.*;
 
 import org.beanio.*;
 import org.beanio.types.*;
+import org.beanio.util.TypeUtil;
 
 /**
  * A <tt>FieldDefinition</tt> is used to parse and format the fields that makeup
@@ -44,6 +43,7 @@ public abstract class FieldDefinition {
     private Pattern regex;
 
     private PropertyDescriptor propertyDescriptor;
+    private Class<?> propertyType;
     private TypeHandler handler;
     private Object defaultValue;
 
@@ -77,10 +77,16 @@ public abstract class FieldDefinition {
      * @return <tt>true</tt> if the value matched, <tt>false</tt> otherwise
      */
     public boolean isMatch(Object value) {
-        if (value == null)
+        if (value == null) {
             return false;
-
-        return isMatch(value.toString());
+        }
+        
+        if (!TypeUtil.isAssignable(propertyType, value.getClass())) {
+            return false;
+        }
+        
+        String text = (handler == null) ? value.toString() : handler.format(value);
+        return isMatch(text);
     }
 
     /**
@@ -102,7 +108,7 @@ public abstract class FieldDefinition {
 
         // parse the field text from the record
         String text = parseField(record);
-        if (record.hasFieldErrors()) {
+        if (record.hasFieldErrors(getName())) {
             return null;
         }
 
@@ -174,45 +180,15 @@ public abstract class FieldDefinition {
     }
 
     /**
-     * Derives the field value from a bean and formats the field text.
-     * @param isMap set to <tt>true</tt> if the record bean is assignable
-     *   to <tt>Map</tt> 
-     * @param bean the record bean
+     * Formats a field value.
+     * @param value the field value to format
      * @return the formatted field text
      */
-    @SuppressWarnings("rawtypes")
-    public String formatValue(boolean isMap, Object bean) {
+    public String formatValue(Object value) {
         if (literal != null) {
             return literal;
         }
-
-        Object value;
-        if (isMap) {
-            value = ((Map) bean).get(name);
-        }
-        else {
-            // determine the getter method to use
-            Method getter = null;
-            if (propertyDescriptor != null) {
-                getter = propertyDescriptor.getReadMethod();
-            }
-            if (getter == null) {
-                throw new BeanWriterIOException("No getter found for field '" + name + 
-                    "' on bean class '" + bean.getClass().getName() + "'");
-            }
-
-            // user the getter method to extract the field value from the bean class
-            try {
-                value = getter.invoke(bean);
-            }
-            catch (Exception ex) {
-                throw new BeanWriterIOException("Failed to get field '" + getName() +
-                    "' from bean class '" + bean.getClass().getName() + "' using " +
-                    "getter method '" + getter.getName() + "'", ex);
-            }
-        }
-
-        // format the field value 
+        
         String text = null;
         if (handler != null) {
             try {
@@ -479,5 +455,13 @@ public abstract class FieldDefinition {
      */
     public void setDefaultValue(Object defaultValue) {
         this.defaultValue = defaultValue;
+    }
+
+    public Class<?> getPropertyType() {
+        return propertyType;
+    }
+
+    public void setPropertyType(Class<?> propertyClass) {
+        this.propertyType = propertyClass;
     }
 }

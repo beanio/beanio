@@ -157,7 +157,9 @@ public class CsvReader implements RecordReader {
         }
 
         ++lineNumber;
-        int lineOffset = 0;
+        
+        // the record line number is set to the first line of the record
+        recordLineNumber = lineNumber;
 
         // clear the field list
         fieldList.clear();
@@ -260,13 +262,12 @@ public class CsvReader implements RecordReader {
                     if (multilineEnabled) {
                         skipLF = (c == '\r');
                         ++lineNumber;
-                        ++lineOffset;
                         text.append(c);
                         field.append(c);
                     }
                     else {
                         throw new RecordIOException(
-                            "Expected end quotation character '" + endQuote + "' before end of line at line "
+                            "Expected end quotation character '" + endQuote + "' before end of line "
                                 + lineNumber);
                     }
                 }
@@ -329,9 +330,6 @@ public class CsvReader implements RecordReader {
                 break;
             }
         }
-
-        // update the record line number
-        recordLineNumber = lineNumber - lineOffset;
 
         // if eol is true, we're done; if not, then the end of file was reached 
         // and further validation is needed

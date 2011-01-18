@@ -15,6 +15,8 @@
  */
 package org.beanio;
 
+import java.util.*;
+
 /**
  * Exception thrown when a record or one of its fields does not pass
  * validation. 
@@ -24,7 +26,7 @@ package org.beanio;
  */
 public class InvalidRecordException extends BeanReaderException {
 
-    private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Constructs a new <tt>InvalidRecordException</tt>.
@@ -43,5 +45,36 @@ public class InvalidRecordException extends BeanReaderException {
      */
     public InvalidRecordException(BeanReaderContext context, String message) {
         super(context, message);
+    }
+    
+    @Override
+    public String toString() {
+        BeanReaderContext context = super.getContext();
+        
+        String message = super.toString();
+        if (context == null || !(context.hasFieldErrors() || context.hasRecordErrors())) {
+            return message;
+        }
+
+        StringBuffer s = new StringBuffer(message);
+
+        if (context.hasRecordErrors()) {
+            for (String error : context.getRecordErrors()) {
+                s.append("\n ==> ");
+                s.append(error);
+            }
+        }
+        if (context.hasFieldErrors()) {
+            for (Map.Entry<String, Collection<String>> entry : context.getFieldErrors().entrySet()) {
+                String fieldName = entry.getKey();
+                for (String error : entry.getValue()) {
+                    s.append("\n ==> Invalid '");
+                    s.append(fieldName);
+                    s.append("':  ");
+                    s.append(error);
+                }
+            }
+        }
+        return s.toString();
     }
 }

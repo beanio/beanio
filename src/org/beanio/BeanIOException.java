@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,39 +16,37 @@
 package org.beanio;
 
 /**
- * The <tt>BeanIOException</tt> class is the base class for all exceptions thrown
- * by the BeanIO framework.
+ * Base class for all exceptions thrown by the BeanIO framework.
  * 
  * @author Kevin Seim
  * @since 1.0
  */
 public class BeanIOException extends RuntimeException {
 
-	private static final long serialVersionUID = 4919568394618298826L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructs a new <tt>BeanIOException</tt>.
-	 * @param message the error message
-	 * @param cause the root cause
-	 */
-	public BeanIOException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    /**
+     * Constructs a new <tt>BeanIOException</tt>.
+     * @param message the error message
+     * @param cause the root cause
+     */
+    public BeanIOException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	/**
-	 * Constructs a new <tt>BeanIOException</tt>.
-	 * @param message the error message
-	 */
-	public BeanIOException(String message) {
-		super(message);
-	}
+    /**
+     * Constructs a new <tt>BeanIOException</tt>.
+     * @param message the error message
+     */
+    public BeanIOException(String message) {
+        super(message);
+    }
 
-	/**
-	 * Constructs a new <tt>BeanIOException</tt>.
-	 * @param cause the root cause
-	 */
-	public BeanIOException(Throwable cause) {
-		super(cause);
-	}
-
+    /**
+     * Constructs a new <tt>BeanIOException</tt>.
+     * @param cause the root cause
+     */
+    public BeanIOException(Throwable cause) {
+        super(cause);
+    }
 }

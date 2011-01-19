@@ -202,11 +202,17 @@ public abstract class FieldDefinition {
         else if (value != null) {
             text = value.toString();
         }
-        else {
-            text = "";
-        }
 
-        return text;
+        return formatText(text);
+    }
+    
+    /**
+     * Formats field text.  Converts <tt>null</tt> to the empty string.
+     * @param text the field text to format
+     * @return the formatted field text
+     */
+    protected String formatText(String text) {
+        return text == null ? "" : text;
     }
 
     /**

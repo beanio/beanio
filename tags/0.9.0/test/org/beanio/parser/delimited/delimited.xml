@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!-- 
+    Copyright 2010-2011 Kevin Seim
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+       http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<beanio xmlns="http://www.beanio.org/2011/01" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.beanio.org/2011/01 http://www.beanio.org/2011/01">
+
+  <stream name="d1" format="delimited" resourceBundle="org.beanio.parser.delimited.d1_messages">
+    <reader>
+      <property name="delimiter" value="," />
+    </reader>
+    <record name="record1" class="map" minLength="2" maxLength="4">
+      <field name="field1" />
+      <field name="field2" />
+      <field name="field3" />
+      <field name="field4" required="true" />
+    </record>
+  </stream>
+
+</beanio>

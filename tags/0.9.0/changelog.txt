@@ -1,0 +1,6 @@
+Project BeanIO Change Log
+=========================
+
+Changes in version 0.9.0 (2011-01-17)
+-------------------------------------
+* Baseline.  First BeanIO release (beta).

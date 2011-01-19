@@ -53,13 +53,13 @@ public abstract class NumberTypeHandler implements TypeHandler {
 
     /**
      * Formats a <tt>Number</tt> by calling <tt>toString()</tt>.  If <tt>value</tt> is
-     * null, the empty string is returned.
+     * null, <tt>null</tt> is returned.
      * @param value the number to format
      * @return the formatted number
      */
     public String format(Object value) {
         if (value == null)
-            return "";
+            return null;
         else
             return ((Number) value).toString();
     }

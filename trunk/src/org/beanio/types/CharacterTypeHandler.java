@@ -45,7 +45,7 @@ public class CharacterTypeHandler implements TypeHandler {
      */
     public String format(Object value) {
         if (value == null)
-            return "";
+            return null;
         return value.toString();
     }
 

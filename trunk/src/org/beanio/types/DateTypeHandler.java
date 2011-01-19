@@ -66,7 +66,7 @@ public class DateTypeHandler implements TypeHandler {
      */
     public String format(Object value) {
         if (value == null)
-            return "";
+            return null;
         else
             return new SimpleDateFormat(pattern).format(value);
     }

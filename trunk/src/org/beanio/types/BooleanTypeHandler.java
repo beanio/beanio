@@ -37,12 +37,12 @@ public class BooleanTypeHandler implements TypeHandler {
     }
 
     /**
-     * Returns {@link Boolean#toString()}, or the empty string if <tt>value</tt>
+     * Returns {@link Boolean#toString()}, or <tt>null</tt> if <tt>value</tt>
      * is <tt>null</tt>.
      */
     public String format(Object value) {
         if (value == null)
-            return "";
+            return null;
         return value.toString();
     }
 

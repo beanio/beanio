@@ -63,9 +63,15 @@ public class FixedLengthFieldDefinition extends FieldDefinition {
         }
     }
 
+    /**
+     * Formats field text into a fixed length String.  Text will be truncated
+     * if it exceeds the field length, or padded if it doesn't.
+     * @param text the field text to format
+     * @return the formatted field text
+     */
     @Override
-    public String formatValue(Object value) {
-        String text = super.formatValue(value);
+    protected String formatText(String text) {
+        text = super.formatText(text);
 
         int textWidth = text.length();
         if (textWidth > length) {

@@ -46,12 +46,11 @@ public class StringTypeHandler implements TypeHandler {
     /**
      * Formats the value by calling {@link Object#toString()}.
      * @param value the value to format
-     * @return the formatted value, or the empty string if <tt>value</tt>
-     *     is <tt>null</tt>
+     * @return the formatted value, or <tt>null</tt> if <tt>value</tt> is <tt>null</tt>
      */
     public String format(Object value) {
         if (value == null)
-            return "";
+            return null;
         return value.toString();
     }
 

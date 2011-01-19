@@ -46,6 +46,6 @@ public class StringTypeHandlerTest {
     @Test
     public void testFormatNull() {
         StringTypeHandler handler = new StringTypeHandler();
-        assertEquals("", handler.format(null));
+        assertNull(handler.format(null));
     }
 }

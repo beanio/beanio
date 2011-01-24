@@ -43,6 +43,7 @@ public class FieldConfig {
     private String setter;
     private String type;
     private String handler;
+    private String format;
     private String defaultValue;
     private int length = -1;
     private char padding = ' ';
@@ -337,6 +338,22 @@ public class FieldConfig {
      */
     public void setTypeHandler(String handler) {
         this.handler = handler;
+    }
+
+    /**
+     * Returns the format pattern used by date and number type handlers.
+     * @return the date or number format pattern
+     */
+    public String getFormat() {
+        return format;
+    }
+
+    /**
+     * Sets the format pattern used by date and number type handlers.
+     * @param format the date or number format pattern
+     */
+    public void setFormat(String format) {
+        this.format = format;
     }
 
     /**

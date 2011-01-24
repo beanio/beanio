@@ -121,7 +121,7 @@ class BeanUtil {
             String valueText = (String) entry.getValue();
 
             Class<?> propertyClass = descriptor.getPropertyType();
-            TypeHandler typeHandler = typeHandlerFactory.getTypeHandler(propertyClass);
+            TypeHandler typeHandler = typeHandlerFactory.getTypeHandlerFor(propertyClass);
             if (typeHandler == null) {
                 throw new BeanIOConfigurationException("Property type '" + propertyClass +
                     "' not supported for property '" + name + "' on class '" + clazz + "'");

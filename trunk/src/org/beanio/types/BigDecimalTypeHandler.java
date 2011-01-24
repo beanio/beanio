@@ -15,20 +15,28 @@
  */
 package org.beanio.types;
 
-import java.math.BigDecimal;
+import java.math.*;
+import java.text.DecimalFormat;
 
 /**
- * A type handler implementation for the <tt>BigDecimal</tt> class, that
- * simply delegate parsing to its constructor.
+ * A type handler implementation for the <tt>BigDecimal</tt> class.  If <tt>pattern</tt>
+ * is set, a <tt>DecimalFormat</tt> is used to parse and format the value.  Otherwise,
+ * the value is parsed and formatted using the <tt>BigDecimal</tt> class.
  * 
  * @author Kevin Seim
  * @since 1.0
+ * @see DecimalFormat
  */
 public class BigDecimalTypeHandler extends NumberTypeHandler {
 
     @Override
     protected BigDecimal createNumber(String text) throws NumberFormatException {
         return new BigDecimal(text);
+    }
+    
+    @Override
+    protected BigDecimal createNumber(BigDecimal bg) throws ArithmeticException {
+        return bg;
     }
 
     /*

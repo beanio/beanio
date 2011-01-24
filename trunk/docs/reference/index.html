@@ -6,6 +6,7 @@
 <head>
 <title>BeanIO 1.0 Reference Documentation</title>
 <link rel="stylesheet" type="text/css" href="style.css" />
+<link rel="shortcut icon" href="http://www.beanio.org/favicon.ico" />
 </head>
 <body>
 
@@ -126,17 +127,13 @@ mapping file should be placed in the application's working directory or classpat
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.beanio.org/2011/01 http://www.beanio.org/2011/01"&gt;
 
-  &lt;typeHandler type="java.util.Date" class="org.beanio.types.DateTypeHandler"&gt;
-    &lt;property name="pattern" value="MMddyyyy" /&gt;
-  &lt;/typeHandler&gt;
-
   &lt;stream name="employeeFile" format="csv"&gt;
     &lt;record name="employee" class="org.beanio.example.Employee"&gt;
       &lt;field name="firstName" /&gt;
       &lt;field name="lastName" /&gt;
       &lt;field name="title" /&gt;
       &lt;field name="salary" /&gt;
-      &lt;field name="hireDate" /&gt;
+      &lt;field name="hireDate" format="MMddyyyy" /&gt;
     &lt;/record&gt;
   &lt;/stream&gt;
 &lt;/beanio&gt;</pre>
@@ -631,13 +628,15 @@ indefinitely, simply change <tt>maxOccurs</tt> to <tt>unbounded</tt> as shown be
 
 
 <h2><a name="FieldTypeConversion">4.6. Field Type Conversion</a></h2>
-<p>The class type of a field value is typically determined from its record bean class.  However,
-if the record's bean class is of type <tt>Map</tt>, BeanIO will assume the field value is of type
+<p>The property type of a field is determined by introspecting the bean class assigned to the record.
+If the record's bean class is of type <tt>Map</tt>, BeanIO will assume the field type is of type
 <tt>java.lang.String</tt>, unless a field type is explicitly declared using a field's <tt>type</tt>
-attribute.  The <tt>type</tt> attribute may be set to a fully 
-qualified class name, a type alias, or one of the following primitives: <tt>boolean</tt>,
-<tt>byte</tt>, <tt>short</tt>, <tt>int</tt>, <tt>char</tt>, <tt>long</tt>, <tt>float</tt> 
-or <tt>double</tt>.</p>
+attribute.</p>
+<p>A <tt>format</tt> attribute can be used to pass a decimal format for <tt>java.lang.Number</tt> types, and
+for passing a date format for <tt>java.util.Date</tt> types.  In the example below, a 
+<tt>DateTypeHandler</tt> is registered for all <tt>java.util.Date</tt> types and used by the <tt>fileDate</tt> 
+field.  The <tt>hireDate</tt> field overrides the pattern of the default date type handler using
+the <tt>format</tt> attribute.</p>
 <pre class="file">
 &lt;beanio&gt;
 
@@ -655,8 +654,8 @@ or <tt>double</tt>.</p>
       &lt;field name="firstName" /&gt;
       &lt;field name="lastName" /&gt;
       &lt;field name="title" /&gt;
-      &lt;field name="salary" <span class="highlight">type="int"</span> /&gt;
-      &lt;field name="hireDate" <span class="highlight">type="java.util.Date"</span> /&gt;
+      &lt;field name="salary" <span class="highlight">type="int" format="#,##0"</span> /&gt;
+      &lt;field name="hireDate" <span class="highlight">type="date" format="yyyy-MM-dd"</span> /&gt;
     &lt;/record&gt;
     &lt;record name="trailer" minOccurs="1" maxOccurs="1" class="map"&gt;
       &lt;field name="recordType" rid="true" literal="Trailer" /&gt;
@@ -666,21 +665,35 @@ or <tt>double</tt>.</p>
   
 &lt;/beanio&gt;</pre>
 
-<p>In addition to the primitives listed above, BeanIO supports the following types.</p>
+<p>The <tt>type</tt> attribute may be set to any fully qualified class name or to one of the 
+supported type aliases below.  Type aliases are not case sensitive, and the same alias may be
+used for primitive types.  For example, <tt>int</tt> and <tt>java.lang.Integer</tt>
+bean properties will use the same type handler registered for the type <tt>java.lang.Integer</tt>,
+or alias <tt>integer</tt> or <tt>int</tt>.</p>
 <table class="typeTable">
-<tr><th>Class Name</th><th>Alias</th></tr>
-<tr><td>java.lang.String</td><td>String</td></tr>
-<tr><td>java.lang.Boolean</td><td>Byte</td></tr>
-<tr><td>java.lang.Byte</td><td>Byte</td></tr>
-<tr><td>java.lang.Character</td><td>Character</td></tr>
-<tr><td>java.lang.Short</td><td>Short</td></tr>
-<tr><td>java.lang.Integer</td><td>Integer</td></tr>
-<tr><td>java.lang.Long</td><td>Long</td></tr>
-<tr><td>java.lang.Float</td><td>Float</td></tr>
-<tr><td>java.lang.Double</td><td>Double</td></tr>
-<tr><td>java.math.BigInteger</td><td>BigInteger</td></tr>
-<tr><td>java.math.BigDecimal</td><td>BigDecimal</td></tr>
+<tr><th>Class Name</th><th>Primitive</th><th>Alias(es)</th></tr>
+<tr><td>java.lang.String</td><td>-</td><td><tt>string</tt></td></tr>
+<tr><td>java.lang.Boolean</td><td>boolean</td><td><tt>boolean</tt></td></tr>
+<tr><td>java.lang.Byte</td><td>byte</td><td><tt>byte</tt></td></tr>
+<tr><td>java.lang.Character</td><td>char</td><td><tt>character</tt><br /><tt>char</tt></td></tr>
+<tr><td>java.lang.Short</td><td>short</td><td><tt>short</tt></td></tr>
+<tr><td>java.lang.Integer</td><td>int</td><td><tt>integer</tt><br /><tt>int</tt></td></tr>
+<tr><td>java.lang.Long</td><td>long</td><td><tt>long</tt></td></tr>
+<tr><td>java.lang.Float</td><td>float</td><td><tt>float</tt></td></tr>
+<tr><td>java.lang.Double</td><td>double</td><td><tt>double</tt></td></tr>
+<tr><td>java.math.BigInteger</td><td>-</td><td><tt>biginteger</tt></td></tr>
+<tr><td>java.math.BigDecimal</td><td>-</td><td><tt>bigdecimal</tt><br /><tt>decimal</tt></td></tr>
+<tr><td>java.util.Date<sup>1</sup></td><td>-</td>
+  <td>
+    <tt>datetime</tt><br />
+    <tt>date</tt><br />
+    <tt>time</tt>
+  </td>
+</tr>
 </table>
+<p><sup>1</sup> By default, the <tt>date</tt> alias is used for <tt>Date</tt> types that contain date information
+only, and the <tt>time</tt> alias is used for <tt>Date</tt> types that contain only time information.  Only the
+<tt>datetime</tt> alias can be used to replace the default class type handler for <tt>java.util.Date</tt>.</p>
 
 <h2><a name="CustomTypeHandlers">4.7. Custom Type Handlers</a></h2>
 <p>Field type conversion is performed by a <i>type handler</i>.  BeanIO includes type handlers
@@ -725,19 +738,21 @@ In the example below, the <tt>DateTypeHandler</tt> is declared globally, while t
 specific type handlers will override global type handlers when declared with the same
 name or for the same type.</p>
 
-<p>A custom type handler is named using its <tt>name</tt> attribute, or declared for
-all fields of a particular type by settings its <tt>type</tt> attribute to the fully qualified 
-class name or alias supported by the type handler.
-To reference a named type handler, use a field's <tt>typeHandler</tt> attribute when configuring
-the field.  In the example below, the <tt>DateTypeHandler</tt> configuration also shows how a type handler 
-can be configured using one or more <tt>property</tt> elements, where the property 
-<tt>name</tt> is a bean property of the type handler, and the <tt>value</tt> is the property 
+<p>A custom type handler may be named using the <tt>name</tt> attribute, and/or registered for
+all fields of a particular type by setting its <tt>type</tt> attribute, where <tt>type</tt> is
+set to the fully qualified 
+class name or type alias of the class supported by the type handler.  Optionally, a type handler 
+can be configured using one or more <tt>property</tt> elements, where it's 
+<tt>name</tt> attribute is a bean property of the type handler, and <tt>value</tt> is the property 
 value.</p>
+<p>To reference a named type handler, use a field's <tt>typeHandler</tt> attribute when configuring
+the field. </p>
 <pre class="file">
 &lt;beanio&gt;
 
   &lt;typeHandler <span class="highlight">type="java.util.Date"</span> class="org.beanio.types.DateTypeHandler"&gt;
     <span class="highlight">&lt;property name="pattern" value="MMddyyyy" /&gt;</span>
+    <span class="highlight">&lt;property name="lenient" value="true" /&gt;</span>
   &lt;/typeHandler&gt;
 
   &lt;stream name="employeeFile" format="csv"&gt;
@@ -1606,10 +1621,11 @@ their position.</p>
   <td>For delimited and CSV formatted streams, <tt>position</tt> is the index of the field
     within the record, beginning at 0.  Defaults to the next sequential number after the
     previous field, or 0 if this is the first field in the record.
-    <br /><br />
+    <p>
     For fixed length formatted streams, <tt>position</tt> is the index of the first character
     of this field within the record, beginning at 0.  Defaults to the previous field's 
     position plus its length, or 0 if this is the first field in the record.
+    </p>
   </td>
   <td>No</td>
   <td>*</td>
@@ -1669,6 +1685,16 @@ their position.</p>
     BeanIO will derrive the field type from the bean class of the record.  This attribute
     can be used to override the default or may be required if the bean class of the
     record is a <tt>Map</tt>.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>format</tt></td>
+  <td>The decimal format pattern for <tt>Number</tt> field properties, or the date format 
+    pattern for <tt>Date</tt> field properties.
+    <p>The <tt>format</tt> value can accessed by any custom type handler that
+    implements <tt>ConfigurableTypeHandler</tt>.</p>  
+  </td>
   <td>No</td>
   <td>*</td>
 </tr>

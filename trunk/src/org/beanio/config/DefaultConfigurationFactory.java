@@ -165,13 +165,8 @@ public class DefaultConfigurationFactory implements ConfigurationFactory {
             }
 
             if (hc.getType() != null) {
-                Class<?> type = TypeHandlerFactory.toType(hc.getType());
-                if (type == null) {
-                    throw new BeanIOConfigurationException("Invalid type handler type '"
-                        + hc.getType() + "'");
-                }
                 try {
-                    handlerFactory.registerHandler(type, h);
+                    handlerFactory.registerHandlerFor(hc.getType(), h);
                 }
                 catch (IllegalArgumentException ex) {
                     throw new BeanIOConfigurationException("Invalid type handler configuration", ex);

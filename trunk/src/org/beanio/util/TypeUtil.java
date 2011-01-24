@@ -15,13 +15,28 @@
  */
 package org.beanio.util;
 
+import java.math.*;
+import java.util.Date;
+
 /**
- * Utility class for working with Java types.
+ * Utility class for working with Java types supported by BeanIO.
+ * 
  * @author Kevin Seim
  * @since 1.0
  */
 public class TypeUtil {
 
+    /** 
+     * Alias for a <tt>java.util.Date</tt> that includes both date and time information.
+     * If a type handler is registered using this alias, the registered type handler will
+     * become the default type handler for all <tt>Date</tt> classes.
+     */
+    public static final String DATETIME_ALIAS = "datetime";
+    /** Alias for the <tt>java.util.Date</tt> class that includes only date information */
+    public static final String DATE_ALIAS = "date";
+    /** Alias for a <tt>java.util.Date</tt> that only includes only time information */
+    public static final String TIME_ALIAS = "time";
+    
     /**
      * Cannot instantiate.
      */
@@ -35,25 +50,115 @@ public class TypeUtil {
      * @return <tt>true</tt> if <tt>to</tt> is assignable from <tt>from</tt>
      */
     public static boolean isAssignable(Class<?> to, Class<?> from) {
-        Class<?> type = to;
-        if (to.isPrimitive()) {
-            if (int.class.equals(to))
-                type = Integer.class;
-            else if (double.class.equals(to))
-                type = Double.class;
-            else if (char.class.equals(to))
-                type = Character.class;
-            else if (boolean.class.equals(to))
-                type = Boolean.class;
-            else if (long.class.equals(to))
-                type = Long.class;
-            else if (float.class.equals(to))
-                type = Float.class;
-            else if (short.class.equals(to))
-                type = Short.class;
-            else if (byte.class.equals(to))
-                type = Byte.class;
+        return toWrapperClass(to).isAssignableFrom(from);
+    }
+    
+    /**
+     * Converts primitive types to their wrapper counterparts. 
+     * @param type the class type to convert
+     * @return the wrapper equivalent for the primitive type, or if <tt>type</tt>
+     *   was not a primitive, its returned as is
+     */
+    public static Class<?> toWrapperClass(Class<?> type) {
+        if (!type.isPrimitive())
+            return type;
+        else if (int.class.equals(type))
+            return Integer.class;
+        else if (double.class.equals(type))
+            return Double.class;
+        else if (char.class.equals(type))
+            return Character.class;
+        else if (boolean.class.equals(type))
+            return Boolean.class;
+        else if (long.class.equals(type))
+            return Long.class;
+        else if (float.class.equals(type))
+            return Float.class;
+        else if (short.class.equals(type))
+            return Short.class;
+        else if (byte.class.equals(type))
+            return Byte.class;
+        else
+            throw new IllegalArgumentException("Primitive type not supported: " + type.getName());
+    }
+    
+    /**
+     * Returns the <tt>Class</tt> object for a class name or type alias.  A type alias is not
+     * case sensitive.  The following type aliases are supported:
+     * <table>
+     * <tr><th>Alias</th><th>Class or Primitive</th></tr>
+     * <tr><td>string</td><td>java.lang.String</td></tr>
+     * <tr><td>boolean</td><td>java.lang.Boolean</td></tr>
+     * <tr><td>byte</td><td>java.lang.Byte</td></tr>
+     * <tr><td>int</td><td>java.lang.Integer</td></tr>
+     * <tr><td>integer</td><td>java.lang.Integer</td></tr>
+     * <tr><td>short</td><td>java.lang.Short<</td></tr>
+     * <tr><td>char</td><td>java.lang.Character</td></tr>
+     * <tr><td>character</td><td>java.lang.Character</td></tr>
+     * <tr><td>long</td><td>java.lang.Long</td></tr>
+     * <tr><td>float</td><td>java.lang.Float</td></tr>
+     * <tr><td>double</td><td>java.lang.Double</td></tr>
+     * <tr><td>bigdecimal</td><td>java.math.BigDecimal</td></tr>
+     * <tr><td>decimal</td><td>java.math.BigDecimal</td></tr>
+     * <tr><td>biginteger</td><td>java.math.BigInteger</td></tr>
+     * <tr><td>date</td><td>java.util.Date</td></tr>
+     * <tr><td>time</td><td>java.util.Date</td></tr>
+     * <tr><td>datetime</td><td>java.util.Date</td></tr></tr>
+     * </table>
+     * 
+     * @param type the fully qualified class name or type alias
+     * @return the class, or null if the type name is invalid
+     */
+    public static Class<?> toType(String type) {
+        if ("string".equalsIgnoreCase(type))
+            return String.class;
+        else if ("boolean".equalsIgnoreCase(type))
+            return Boolean.class;
+        else if ("byte".equalsIgnoreCase(type))
+            return Byte.class;
+        else if ("char".equalsIgnoreCase(type))
+            return Character.class;
+        else if ("character".equalsIgnoreCase(type))
+            return Character.class;
+        else if ("short".equalsIgnoreCase(type))
+            return Short.class;
+        else if ("int".equalsIgnoreCase(type))
+            return Integer.class;
+        else if ("Integer".equalsIgnoreCase(type))
+            return Integer.class;
+        else if ("long".equalsIgnoreCase(type))
+            return Long.class;
+        else if ("float".equalsIgnoreCase(type))
+            return Float.class;
+        else if ("double".equalsIgnoreCase(type))
+            return Double.class;
+        else if ("bigdecimal".equalsIgnoreCase(type))
+            return BigDecimal.class;
+        else if ("decimal".equalsIgnoreCase(type))
+            return BigDecimal.class;
+        else if ("biginteger".equalsIgnoreCase(type))
+            return BigInteger.class;
+        else if (
+            DATE_ALIAS.equalsIgnoreCase(type) ||
+            TIME_ALIAS.equalsIgnoreCase(type) ||
+            DATETIME_ALIAS.equalsIgnoreCase(type))
+            return Date.class;
+        
+        try {
+            return Class.forName(type);
         }
-        return type.isAssignableFrom(from);
+        catch (ClassNotFoundException e) {
+            return null;
+        }
+    }
+    
+    /**
+     * Returns <tt>true</tt> if the type alias is not used to register a
+     * type handler for its associated class.
+     * @param alias the type alias to check
+     * @return <tt>true</tt> if the type alias is only an alias
+     */
+    public static boolean isAliasOnly(String alias) {
+        return DATE_ALIAS.equalsIgnoreCase(alias) || TIME_ALIAS.equalsIgnoreCase(alias);
     }
 }

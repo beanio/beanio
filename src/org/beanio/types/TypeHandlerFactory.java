@@ -16,70 +16,75 @@
 package org.beanio.types;
 
 import java.math.*;
+import java.text.DateFormat;
 import java.util.*;
 
-import org.beanio.util.TypeUtil;
+import org.beanio.util.*;
 
 /**
- * A <tt>TypeHandlerFactory</tt> is used to find a <tt>TypeHandler</tt> for 
- * converting field text to a field value object.
+ * A factory class used to get a <tt>TypeHandler</tt> for parsing field text 
+ * into field objects, and for formatting field objects into field text.
  * <p>
- * A <tt>TypeHandler</tt> can be retrieved by the target class, or by a configured handler 
- * name.  Note that the same namespace is used for both so that registering a type handler 
- * under the name "<tt>java.lang.Integer</tt>" will replace the handler for the 
- * Integer class.
+ * A <tt>TypeHandler</tt> is registered and retrieved by class, type alias, or name.  
+ * In most cases, registering a type handler by type alias has the same effect as registering the
+ * type handler using the target class associated with the alias.  There are two exceptions: 
+ * type handlers can be specifically registered for '<tt>Date</tt>' and '<tt>Time</tt>' type aliases
+ * without overriding the default Date type handler, which is registered for the class 
+ * <tt>java.util.Date</tt> and type alias '<tt>DateTime</tt>'.
  * <p>
- * By default, a <tt>TypeHandlerFactory</tt> will hold a reference to a parent
+ * If a registered type handler implements the <tt>ConfigurableTypeHandler</tt> interface, 
+ * handler properties can be overridden using a <tt>Properties</tt> object.  When the type handler
+ * is retrieved, the factory calls {@link ConfigurableTypeHandler#newInstance(Properties)} to 
+ * allow the type handler to return a customized version of itself.
+ * <p>
+ * By default, a <tt>TypeHandlerFactory</tt> holds a reference to a parent
  * factory.  If a factory cannot find a type handler, its parent will be checked
- * recursively until there is no parent to check.
+ * recursively until there is no parent left to check.
  * 
  * @author Kevin Seim
  * @since 1.0
+ * @see TypeHandler
+ * @see ConfigurableTypeHandler
  */
 public class TypeHandlerFactory {
 
     private TypeHandlerFactory parent;
     private Map<String, TypeHandler> handlerMap = new HashMap<String, TypeHandler>();
 
+    private static final String NAME_KEY = "name:";
+    private static final String TYPE_KEY = "type:";
+    
     /* The default type handler factory */
     private final static TypeHandlerFactory defaultFactory;
     static {
         defaultFactory = new TypeHandlerFactory(null);
+        defaultFactory.registerHandlerFor(Character.class, new CharacterTypeHandler());
+        defaultFactory.registerHandlerFor(String.class,  new StringTypeHandler());
+        defaultFactory.registerHandlerFor(Byte.class, new ByteTypeHandler());
+        defaultFactory.registerHandlerFor(Short.class, new ShortTypeHandler());
+        defaultFactory.registerHandlerFor(Integer.class, new IntegerTypeHandler());
+        defaultFactory.registerHandlerFor(Long.class, new LongTypeHandler());
+        defaultFactory.registerHandlerFor(Float.class, new FloatTypeHandler());
+        defaultFactory.registerHandlerFor(Double.class, new DoubleTypeHandler());
+        defaultFactory.registerHandlerFor(BigDecimal.class, new BigDecimalTypeHandler());
+        defaultFactory.registerHandlerFor(BigInteger.class, new BigIntegerTypeHandler());
+        defaultFactory.registerHandlerFor(Boolean.class, new BooleanTypeHandler());
 
-        TypeHandler h;
-
-        h = new CharacterTypeHandler();
-        defaultFactory.registerHandler(char.class, h);
-        defaultFactory.registerHandler(Character.class, h);
-        h = new StringTypeHandler();
-        defaultFactory.registerHandler(String.class, h);
-
-        h = new ByteTypeHandler();
-        defaultFactory.registerHandler(byte.class, h);
-        defaultFactory.registerHandler(Byte.class, h);
-        h = new ShortTypeHandler();
-        defaultFactory.registerHandler(short.class, h);
-        defaultFactory.registerHandler(Short.class, h);
-        h = new IntegerTypeHandler();
-        defaultFactory.registerHandler(int.class, h);
-        defaultFactory.registerHandler(Integer.class, h);
-        h = new LongTypeHandler();
-        defaultFactory.registerHandler(long.class, h);
-        defaultFactory.registerHandler(Long.class, h);
-        h = new FloatTypeHandler();
-        defaultFactory.registerHandler(float.class, h);
-        defaultFactory.registerHandler(Float.class, h);
-        h = new DoubleTypeHandler();
-        defaultFactory.registerHandler(double.class, h);
-        defaultFactory.registerHandler(Double.class, h);
-        h = new BigDecimalTypeHandler();
-        defaultFactory.registerHandler(BigDecimal.class, h);
-        h = new BigIntegerTypeHandler();
-        defaultFactory.registerHandler(BigInteger.class, h);
-
-        h = new BooleanTypeHandler();
-        defaultFactory.registerHandler(boolean.class, h);
-        defaultFactory.registerHandler(Boolean.class, h);
+        Settings settings = Settings.getInstance();
+        defaultFactory.registerHandlerFor(TypeUtil.DATETIME_ALIAS, new DateTypeHandler(
+            settings.getProperty(Settings.DEFAULT_DATETIME_FORMAT)));
+        defaultFactory.registerHandlerFor(TypeUtil.DATE_ALIAS, new DateTypeHandler(
+            settings.getProperty(Settings.DEFAULT_DATE_FORMAT)) {
+            protected DateFormat createDefaultDateFormat() {
+                return DateFormat.getDateInstance();
+            }
+        });
+        defaultFactory.registerHandlerFor(TypeUtil.TIME_ALIAS, new DateTypeHandler(
+            settings.getProperty(Settings.DEFAULT_TIME_FORMAT)) {
+            protected DateFormat createDefaultDateFormat() {
+                return DateFormat.getTimeInstance();
+            }
+        });
     }
 
     /**
@@ -99,37 +104,121 @@ public class TypeHandlerFactory {
     }
 
     /**
-     * Returns a named type handler, or null if there is no type handler configured
+     * Returns a named type handler, or <tt>null</tt> if there is no type handler configured
      * for the given name in this factory or any of its ancestors.
-     * @param name the name of type handler
-     * @return the type handler, or null if there is no configured type handler
-     *    for the name
+     * @param name the name of type handler was registered under
+     * @return the type handler, or <tt>null</tt> if there is no configured type handler
+     *    registered for the name
      */
     public TypeHandler getTypeHandler(String name) {
-        return getHandler("name:" + name);
+        return getTypeHandler(name, null);
     }
 
     /**
-     * Returns a type handler for a given class, or null if there is no type handler 
-     * configured for the class name in this factory or any of its ancestors
+     * Returns a named type handler, or <tt>null</tt> if there is no type handler configured
+     * for the given name in this factory or any of its ancestors.
+     * @param name the name the type handler was registered under
+     * @param properties the custom properties for configuring the type handler
+     * @return the type handler, or <tt>null</tt> if there is no configured type handler
+     *    registered for the name
+     * @throws IllegalArgumentException if a custom property value was invalid
+     */
+    public TypeHandler getTypeHandler(String name, Properties properties) throws IllegalArgumentException {
+        if (name == null) {
+            throw new NullPointerException();
+        }
+        return getHandler(NAME_KEY + name, properties);
+    }
+
+    /**
+     * Returns the type handler for the given type, or <tt>null</tt> if there is no type 
+     * handler configured for the type in this factory or any of its ancestors.
+     * @param type the class name or type alias
+     * @return the type handler, or <tt>null</tt> if there is no configured type handler
+     *    registered for the type
+     */
+    public TypeHandler getTypeHandlerFor(String type) {
+        return getTypeHandlerFor(type, null);
+    }
+
+    /**
+     * Returns the type handler for the given type, or <tt>null</tt> if there is no type 
+     * handler configured for the type in this factory or any of its ancestors.
+     * @param type the property type
+     * @param properties the custom properties for configuring the type handler
+     * @return the type handler, or <tt>null</tt> if there is no configured type handler
+     *    registered for the type
+     * @throws IllegalArgumentException if a custom property value was invalid
+     */
+    public TypeHandler getTypeHandlerFor(String type, Properties properties) throws IllegalArgumentException {
+        if (type == null) {
+            throw new NullPointerException();
+        }
+        
+        if (TypeUtil.isAliasOnly(type)) {
+            type = type.toLowerCase();
+        }
+        else {
+            Class<?> clazz = TypeUtil.toType(type);
+            if (clazz == null) {
+                return null;
+            }
+            type = clazz.getName();
+        }
+
+        return getHandler(TYPE_KEY + type, properties);
+    }
+
+    /**
+     * Returns a type handler for a class, or <tt>null</tt> if there is no type 
+     * handler configured for the class in this factory or any of its ancestors
      * @param clazz the target class to find a type handler for
      * @return the type handler, or null if the class is not supported
      */
-    public TypeHandler getTypeHandler(Class<?> clazz) {
-        return getHandler("class:" + clazz.getName());
+    public TypeHandler getTypeHandlerFor(Class<?> clazz) {
+        return getTypeHandlerFor(clazz, null);
+    }
+    
+    /**
+     * Returns a type handler for a class, or <tt>null</tt> if there is no type 
+     * handler configured for the class in this factory or any of its ancestors
+     * @param clazz the target class to find a type handler for
+     * @param properties the custom properties for configuring the type handler
+     * @return the type handler, or null if the class is not supported
+     * @throws IllegalArgumentException if a custom property value was invalid
+     */
+    public TypeHandler getTypeHandlerFor(Class<?> clazz, Properties properties) throws IllegalArgumentException {
+        if (clazz == null) {
+            throw new NullPointerException();
+        }
+        clazz = TypeUtil.toWrapperClass(clazz);
+        return getHandler(TYPE_KEY + clazz.getName(), properties);
     }
 
-    private TypeHandler getHandler(String key) {
+    private TypeHandler getHandler(String key, Properties properties) throws IllegalArgumentException {
         TypeHandler handler = null;
         TypeHandlerFactory factory = this;
         while (factory != null) {
             handler = factory.handlerMap.get(key);
             if (handler != null) {
-                return handler;
+                return getHandler(handler, properties);
             }
             factory = factory.parent;
         }
         return null;
+    }
+
+    private TypeHandler getHandler(TypeHandler handler, Properties properties) throws IllegalArgumentException {
+        if (properties != null && !properties.isEmpty()) {
+            if (handler instanceof ConfigurableTypeHandler) {
+                handler = ((ConfigurableTypeHandler) handler).newInstance(properties);
+            }
+            else {
+                String property = properties.keys().nextElement().toString();
+                throw new IllegalArgumentException("'" + property + "' setting not supported by type handler");
+            }
+        }
+        return handler;
     }
 
     /**
@@ -141,29 +230,58 @@ public class TypeHandlerFactory {
         if (name == null) {
             throw new NullPointerException();
         }
-        
-        handlerMap.put("name:" + name, handler);
+        if (handler == null) {
+            throw new NullPointerException();
+        }
+        handlerMap.put(NAME_KEY + name, handler);
     }
 
     /**
      * Registers a type handler in this factory.
-     * @param clazz the target class to register the type handler under
+     * @param type the fully qualified class name or type alias to register the type handler for
+     * @param handler the type handler to registere
+     * @throws IllegalArgumentException if the type name is invalid or if the handler type is not 
+     *   assignable from the type
+     */
+    public void registerHandlerFor(String type, TypeHandler handler) throws IllegalArgumentException {
+        if (type == null) {
+            throw new NullPointerException();
+        }
+        Class<?> clazz = TypeUtil.toType(type);
+        if (clazz == null) {
+            throw new IllegalArgumentException("Invalid type or type alias '" + type + "'");
+        }
+        if (TypeUtil.isAliasOnly(type)) {
+            type = type.toLowerCase();
+            registerHandlerFor(type, clazz, handler);
+        }
+        else {
+            registerHandlerFor(clazz.getName(), clazz, handler);
+        }
+    }
+
+    /**
+     * Registers a type handler in this factory.
+     * @param clazz the target class to register the type handler for
      * @param handler the type handler to register
      * @throws IllegalArgumentException if the handler type is not assignable from
      *   the registered class type
      */
-    public void registerHandler(Class<?> clazz, TypeHandler handler) throws IllegalArgumentException {
+    public void registerHandlerFor(Class<?> clazz, TypeHandler handler) throws IllegalArgumentException {
         if (clazz == null) {
             throw new NullPointerException();
         }
-        
+        clazz = TypeUtil.toWrapperClass(clazz);
+        registerHandlerFor(clazz.getName(), clazz, handler);
+    }
+
+    private void registerHandlerFor(String type, Class<?> clazz, TypeHandler handler) {
         if (!TypeUtil.isAssignable(clazz, handler.getType())) {
             throw new IllegalArgumentException("Type handler type '" +
                 handler.getType().getName() + "' is not assignable from configured " +
                 "type '" + clazz.getName() + "'");
         }
-        
-        handlerMap.put("class:" + clazz.getName(), handler);
+        handlerMap.put(TYPE_KEY + type, handler);
     }
 
     /**
@@ -172,82 +290,5 @@ public class TypeHandlerFactory {
      */
     public static TypeHandlerFactory getDefault() {
         return defaultFactory;
-    }
-
-    /**
-     * Converts a type or type alias to a class.  The following aliases are
-     * supported:
-     * <table>
-     * <tr><th>Alias</th><th>Class or Primitive</th></tr>
-     * <tr><td>string</td><td>java.lang.String</td></tr>
-     * <tr><td>boolean</td><td>boolean</td></tr>
-     * <tr><td>Booleann</td><td>java.lang.Boolean</td></tr>
-     * <tr><td>byte</td><td>byte</td></tr>
-     * <tr><td>Byte</td><td>java.lang.Byte</td></tr>
-     * <tr><td>int</td><td>int</td></tr>
-     * <tr><td>Integer</td><td>java.lang.Integer</td></tr>
-     * <tr><td>short</td><td>short</td></tr>
-     * <tr><td>short</td><td>java.lang.Short</td></tr>
-     * <tr><td>char</td><td>char</td></tr>
-     * <tr><td>Character</td><td>java.lang.Character</td></tr>
-     * <tr><td>long</td><td>long</td></tr>
-     * <tr><td>Long</td><td>java.lang.Long</td></tr>
-     * <tr><td>float</td><td>float</td></tr>
-     * <tr><td>Float</td><td>java.lang.Float</td></tr>
-     * <tr><td>double</td><td>double</td></tr>
-     * <tr><td>Double</td><td>java.lang.Double</td></tr>
-     * <tr><td>bigdecimal</td><td>java.math.BigDecimal</td></tr>
-     * <tr><td>biginteger</td><td>java.math.BigInteger</td></tr>
-     * </table>
-     * 
-     * @param type the fully qualified class name or type alias
-     * @return the class, or null if the type name is invalid
-     */
-    public static Class<?> toType(String type) {
-        if ("String".equals(type))
-            return String.class;
-        else if ("boolean".equals(type))
-            return boolean.class;
-        else if ("Boolean".equals(type))
-            return Boolean.class;
-        else if ("byte".equals(type))
-            return byte.class;
-        else if ("Byte".equals(type))
-            return Byte.class;
-        else if ("char".equals(type))
-            return char.class;
-        else if ("Character".equals(type))
-            return Character.class;
-        else if ("short".equals(type))
-            return short.class;
-        else if ("Short".equals(type))
-            return Short.class;
-        else if ("int".equals(type))
-            return int.class;
-        else if ("Integer".equals(type))
-            return Integer.class;
-        else if ("long".equals(type))
-            return long.class;
-        else if ("Long".equals(type))
-            return Long.class;
-        else if ("float".equals(type))
-            return float.class;
-        else if ("Float".equals(type))
-            return Float.class;
-        else if ("double".equals(type))
-            return double.class;
-        else if ("Double".equals(type))
-            return Double.class;
-        else if ("BigDecimal".equals(type))
-            return BigDecimal.class;
-        else if ("BigInteger".equals(type))
-            return BigInteger.class;
-
-        try {
-            return Class.forName(type);
-        }
-        catch (ClassNotFoundException e) {
-            return null;
-        }
     }
 }

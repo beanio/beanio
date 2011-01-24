@@ -15,12 +15,17 @@
  */
 package org.beanio.types;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+
 /**
- * A type handler implementation for the <tt>Short</tt> class, that
- * simply delegate parsing to its constructor.
+ * A type handler implementation for the <tt>Short</tt> class.  If <tt>pattern</tt>
+ * is set, a <tt>DecimalFormat</tt> is used to parse and format the value.  Otherwise,
+ * the value is parsed and formatted using the <tt>Short</tt> class.
  * 
  * @author Kevin Seim
  * @since 1.0
+ * @see DecimalFormat
  */
 public class ShortTypeHandler extends NumberTypeHandler {
 
@@ -29,6 +34,11 @@ public class ShortTypeHandler extends NumberTypeHandler {
         return new Short(text);
     }
 
+    @Override
+    protected Short createNumber(BigDecimal bg) throws ArithmeticException {
+        return bg.shortValueExact();
+    }
+    
     /*
      * (non-Javadoc)
      * @see org.beanio.types.TypeHandler#getType()

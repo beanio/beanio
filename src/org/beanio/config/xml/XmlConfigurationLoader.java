@@ -301,6 +301,7 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
         config.setSetter(getAttribute(element, "setter"));
         config.setTypeHandler(getAttribute(element, "typeHandler"));
         config.setType(getAttribute(element, "type"));
+        config.setFormat(getAttribute(element, "format"));
         config.setDefault(getAttribute(element, "default"));
         config.setRequired(getBooleanAttribute(element, "required", config.isRequired()));
         config.setTrim(getBooleanAttribute(element, "trim", config.isTrim()));

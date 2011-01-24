@@ -15,6 +15,10 @@
  */
 package org.beanio.types;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.Properties;
+
 import org.junit.Test;
 
 /**
@@ -30,5 +34,48 @@ public class NumberTypeHandlerTest {
         IntegerTypeHandler handler = new IntegerTypeHandler();
         handler.parse("abc");
     }
+    
+    @Test(expected=TypeConversionException.class)
+    public void testParseInvalidWithPattern() throws TypeConversionException {
+        IntegerTypeHandler handler = new IntegerTypeHandler();
+        handler.setPattern("0x");
+        handler.parse("10");
+    }
+    
+    @Test(expected=TypeConversionException.class)
+    public void testParseInvalidIncomplete() throws TypeConversionException {
+        IntegerTypeHandler handler = new IntegerTypeHandler();
+        handler.setPattern("0");
+        handler.parse("10a");
+    }
+    
+    @Test(expected=TypeConversionException.class)
+    public void testParseInvalidSize() throws TypeConversionException {
+        ByteTypeHandler handler = new ByteTypeHandler();
+        handler.setPattern("0");
+        handler.parse("1000");
+    }
 
+    @Test
+    public void testNewInstance() {
+        IntegerTypeHandler handler = new IntegerTypeHandler();
+        
+        Properties props = new Properties();
+        assertEquals(handler, handler.newInstance(props));
+        props.setProperty(ConfigurableTypeHandler.FORMAT_SETTING, "");
+        assertEquals(handler, handler.newInstance(props));
+        
+        props.setProperty(ConfigurableTypeHandler.FORMAT_SETTING, "0.00");
+        IntegerTypeHandler handler2 = (IntegerTypeHandler) handler.newInstance(props);
+        assertEquals("0.00", handler2.getPattern());
+        
+        handler.setPattern("0.00");
+        assertEquals(handler, handler.newInstance(props));
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void testInvalidPattern() {
+        IntegerTypeHandler handler = new IntegerTypeHandler();
+        handler.setPattern("0.00.00");
+    }
 }

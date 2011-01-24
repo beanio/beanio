@@ -1,6 +1,15 @@
 Project BeanIO Change Log
 =========================
 
+Changes in version 0.9.1 (2011-01-23)
+-------------------------------------
+* Type aliases are no longer case sensitive
+* Added DecimalFormat pattern support for NumberTypeHandler and its subclasses
+* Updated the mapping file schema to allow a 'format' attribute on the field element
+* Improved support for Date types; added aliases 'date', 'time' and 'datetime'
+* Modified TypeHandlerFactory so that primitive and wrapper class types are registered using the same handler 
+* Added org.beanio.types.ConfigurableTypeHandler
+
 Changes in version 0.9.0 (2011-01-17)
 -------------------------------------
 * Baseline.  First BeanIO release (beta).

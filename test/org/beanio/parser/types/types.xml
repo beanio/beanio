@@ -86,4 +86,18 @@
     </record>
   </stream>
 
+  <stream name="t7" format="csv">
+    <record name="record" class="org.beanio.parser.types.ObjectRecord">
+      <field name="byteValue" format="0x" />
+      <field name="shortValue" format="0x" />
+      <field name="integerValue" format="0x" />
+      <field name="longValue" format="0x" />
+      <field name="floatValue" format="0.00x" />
+      <field name="doubleValue" format="0.00x" />
+      <field name="dateValue" format='yyyy-MM-dd' />
+      <field name="bigIntegerValue" format="0x" />
+      <field name="bigDecimalValue" format="0.00x" />
+    </record>
+  </stream>
+
 </beanio>

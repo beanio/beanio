@@ -367,7 +367,10 @@ public abstract class StreamDefinitionFactory {
         // determine the field class
         Class<?> propertyType = null;
         if (config.getType() != null) {
-            propertyType = TypeHandlerFactory.toType(config.getType());
+            propertyType = TypeUtil.toType(config.getType());
+            if (propertyType == null) {
+                throw new BeanIOConfigurationException("Invalid type or type alias '" + config.getType() + "'");
+            }
         }
         
         // set the property descriptor on the field
@@ -387,10 +390,17 @@ public abstract class StreamDefinitionFactory {
         }
         fieldDefinition.setPropertyDescriptor(descriptor);
         
+        // configure type handler properties
+        Properties typeHandlerProperties = null;
+        if (config.getFormat() != null) {
+            typeHandlerProperties = new Properties();
+            typeHandlerProperties.put(ConfigurableTypeHandler.FORMAT_SETTING, config.getFormat());
+        }
+        
         // determine the type handler based on the named handler or the field class
         TypeHandler handler = null;
         if (config.getTypeHandler() != null) {
-            handler = typeHandlerFactory.getTypeHandler(config.getTypeHandler());
+            handler = typeHandlerFactory.getTypeHandler(config.getTypeHandler(), typeHandlerProperties);
             if (handler == null) {
                 throw new BeanIOConfigurationException("No configured type handler named '" +
                     config.getTypeHandler() + "'");
@@ -414,11 +424,23 @@ public abstract class StreamDefinitionFactory {
             }
             
             // get a type handler for the the property type
-            handler = typeHandlerFactory.getTypeHandler(propertyType);
-            if (handler == null) {
-                throw new BeanIOConfigurationException("Type handler not found for type '" +
-                    propertyType.getName() + "'");
+            String typeName = config.getType(); 
+            try {
+                if (typeName == null) {
+                    typeName = propertyType.getName();
+                    handler = typeHandlerFactory.getTypeHandlerFor(propertyType, typeHandlerProperties);
+                }
+                else {
+                    handler = typeHandlerFactory.getTypeHandlerFor(typeName, typeHandlerProperties);
+                }
             }
+            catch (IllegalArgumentException ex) {
+                throw new BeanIOConfigurationException(ex.getMessage(), ex);
+            }
+            if (handler == null) {
+                throw new BeanIOConfigurationException("Type handler not found for type '" + typeName + "'");
+            }
+            
         }
         
         fieldDefinition.setPropertyType(propertyType);

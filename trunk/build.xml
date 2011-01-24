@@ -95,6 +95,21 @@
 	  </zipfileset>
 	</zip>
   </target>
+  
+  <!-- Create website tar -->
+  <target name="site" depends="init,docs" description="Create site tar">
+    <tar destfile="${target}/beanio-site.tar">
+      <tarfileset dir="${basedir}">
+        <include name="docs/**" />
+      </tarfileset>
+      <tarfileset dir="${basedir}/site">
+        <include name="**/*" />
+      </tarfileset>    
+      <tarfileset dir="${target}">
+        <include name="docs/**" />
+      </tarfileset>         
+    </tar>
+  </target>
 
   <!-- Prepare for test execution -->
   <target name="test-init" depends="init">

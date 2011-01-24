@@ -62,4 +62,29 @@ public class DateTypeHandlerTest {
         handler.setPattern("MM-dd-yyyy");
         handler.parse("01-32-2000");
     }
+    
+    @Test
+    public void testNewInstance() {
+        DateTypeHandler handler = new DateTypeHandler();
+        handler.setLenient(true);
+        
+        Properties props = new Properties();
+        assertEquals(handler, handler.newInstance(props));
+        props.setProperty(ConfigurableTypeHandler.FORMAT_SETTING, "");
+        assertEquals(handler, handler.newInstance(props));
+        
+        props.setProperty(ConfigurableTypeHandler.FORMAT_SETTING, "yyyy-MM-dd");
+        DateTypeHandler handler2 = handler.newInstance(props);
+        assertEquals("yyyy-MM-dd", handler2.getPattern());
+        assertEquals(handler.isLenient(), handler2.isLenient());
+        
+        handler.setPattern("yyyy-MM-dd");
+        assertEquals(handler, handler.newInstance(props));
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void testInvalidPattern() {
+        DateTypeHandler handler = new DateTypeHandler();
+        handler.setPattern("xxx");
+    }
 }

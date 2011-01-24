@@ -15,12 +15,17 @@
  */
 package org.beanio.types;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+
 /**
- * A type handler implementation for the <tt>Double</tt> class, that
- * simply delegate parsing to its constructor.
+ * A type handler implementation for the <tt>Double</tt> class.  If <tt>pattern</tt>
+ * is set, a <tt>DecimalFormat</tt> is used to parse and format the value.  Otherwise,
+ * the value is parsed and formatted using the <tt>Double</tt> class.
  * 
  * @author Kevin Seim
  * @since 1.0
+ * @see DecimalFormat
  */
 public class DoubleTypeHandler extends NumberTypeHandler {
 
@@ -29,6 +34,11 @@ public class DoubleTypeHandler extends NumberTypeHandler {
         return new Double(text);
     }
 
+    @Override
+    protected Double createNumber(BigDecimal bg) throws ArithmeticException {
+        return bg.doubleValue();
+    }
+    
     /*
      * (non-Javadoc)
      * @see org.beanio.types.TypeHandler#getType()

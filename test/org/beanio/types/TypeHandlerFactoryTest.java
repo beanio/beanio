@@ -15,11 +15,13 @@
  */
 package org.beanio.types;
 
-import java.math.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+import java.text.DateFormat;
+import java.util.*;
 
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 /**
  * JUnit test cases for the <tt>TypeHandlerFactory</tt> class.
@@ -32,37 +34,96 @@ public class TypeHandlerFactoryTest {
     @Test
     public void testGetHandler() {
         TypeHandlerFactory factory = new TypeHandlerFactory();
-        assertNull(factory.getTypeHandler(getClass()));
-        assertNull(factory.getTypeHandler("notfound"));
+        assertNull(factory.getTypeHandlerFor(getClass()));
+        assertNull(factory.getTypeHandlerFor("invalid_alias"));
+        assertNull(factory.getTypeHandler("invalid_name"));
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void testFormatNotSupported() {
+        Properties props = new Properties();
+        props.setProperty(ConfigurableTypeHandler.FORMAT_SETTING, "yyyy-MM-dd");
+        
+        TypeHandlerFactory factory = new TypeHandlerFactory();
+        factory.getTypeHandlerFor(Character.class, props);
+    }
+    
+    @Test(expected=NullPointerException.class)
+    public void testRegisterWithNullName() {
+        new TypeHandlerFactory().registerHandler(null, new IntegerTypeHandler());
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void testRegisterWithNullHandler() {
+        new TypeHandlerFactory().registerHandler("name", null);
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void testGetHandlerWithNullName() {
+        new TypeHandlerFactory().getTypeHandler((String) null);
+    }
+    
+    @Test(expected=NullPointerException.class)
+    public void testRegisterWithNullType() {
+        new TypeHandlerFactory().registerHandlerFor((String)null, new IntegerTypeHandler());
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testRegisterWithInvalidType() {
+        new TypeHandlerFactory().registerHandlerFor("invalid_type_alias", new IntegerTypeHandler());
+    }
+    
+    @Test(expected=NullPointerException.class)
+    public void testGetHandlerWithNullType() {
+        new TypeHandlerFactory().getTypeHandlerFor((String) null);
+    }
+    
+    @Test(expected=NullPointerException.class)
+    public void testRegisterWithNullClass() {
+        new TypeHandlerFactory().registerHandlerFor((Class<?>)null, new IntegerTypeHandler());
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testRegisterHandlerForWrongClass() {
+        new TypeHandlerFactory().registerHandlerFor(Integer.class, new ByteTypeHandler());
+    }
+    
+    @Test(expected=NullPointerException.class)
+    public void testGetHandlerWithNullClass() {
+        new TypeHandlerFactory().getTypeHandlerFor((Class<?>) null);
     }
     
     @Test
-    public void testToType() {
-        assertEquals(String.class, TypeHandlerFactory.toType("String"));
-        assertEquals(boolean.class, TypeHandlerFactory.toType("boolean"));
-        assertEquals(Boolean.class, TypeHandlerFactory.toType("Boolean"));
-        assertEquals(byte.class, TypeHandlerFactory.toType("byte"));
-        assertEquals(Byte.class, TypeHandlerFactory.toType("Byte"));
-        assertEquals(char.class, TypeHandlerFactory.toType("char"));
-        assertEquals(Character.class, TypeHandlerFactory.toType("Character"));
-        assertEquals(short.class, TypeHandlerFactory.toType("short"));
-        assertEquals(Short.class, TypeHandlerFactory.toType("Short"));
-        assertEquals(int.class, TypeHandlerFactory.toType("int"));
-        assertEquals(Integer.class, TypeHandlerFactory.toType("Integer"));
-        assertEquals(long.class, TypeHandlerFactory.toType("long"));
-        assertEquals(Long.class, TypeHandlerFactory.toType("Long"));
-        assertEquals(float.class, TypeHandlerFactory.toType("float"));
-        assertEquals(Float.class, TypeHandlerFactory.toType("Float"));
-        assertEquals(double.class, TypeHandlerFactory.toType("double"));
-        assertEquals(Double.class, TypeHandlerFactory.toType("Double"));
-        assertEquals(BigDecimal.class, TypeHandlerFactory.toType("BigDecimal"));
-        assertEquals(BigInteger.class, TypeHandlerFactory.toType("BigInteger"));
-        assertEquals(getClass(), TypeHandlerFactory.toType(
-            "org.beanio.types.TypeHandlerFactoryTest"));
-    }
-    
-    @Test
-    public void testToTypeClassNotFound() {
-        assertNull(TypeHandlerFactory.toType("org.beanio.types.NoClass"));
+    public void testDateTypeHandlers() {
+        TypeHandlerFactory factory = new TypeHandlerFactory();
+        
+        Date now = new Date();
+        DateTypeHandler handler = (DateTypeHandler) factory.getTypeHandlerFor("date");
+        assertEquals(DateFormat.getDateInstance().format(now), handler.format(now));
+        handler = (DateTypeHandler) factory.getTypeHandlerFor("time");
+        assertEquals(DateFormat.getTimeInstance().format(now), handler.format(now));
+        handler = (DateTypeHandler) factory.getTypeHandlerFor("datetime");
+        assertEquals(DateFormat.getDateTimeInstance().format(now), handler.format(now));
+        
+        DateTypeHandler dateHandler = new DateTypeHandler();
+        dateHandler.setPattern("MMddyyyy");
+        DateTypeHandler datetimeHandler = new DateTypeHandler();
+        datetimeHandler.setPattern("MMddyyyy HH:mm");        
+        DateTypeHandler timeHandler = new DateTypeHandler();
+        datetimeHandler.setPattern("HH:mm");  
+        
+        factory.registerHandlerFor("datetime", datetimeHandler);
+        factory.registerHandlerFor("date", dateHandler);
+        factory.registerHandlerFor("time", timeHandler);
+        
+        assertEquals(datetimeHandler, factory.getTypeHandlerFor("java.util.Date"));
+        assertEquals(datetimeHandler, factory.getTypeHandlerFor(Date.class));
+        assertEquals(dateHandler, factory.getTypeHandlerFor("DATE"));
+        assertEquals(timeHandler, factory.getTypeHandlerFor("TIME"));
+        
+        Properties props = new Properties();
+        props.setProperty(ConfigurableTypeHandler.FORMAT_SETTING, "yyyy-MM-dd");
+        DateTypeHandler th = (DateTypeHandler) factory.getTypeHandlerFor("date", props);
+        assertEquals("yyyy-MM-dd", th.getPattern());
     }
 }

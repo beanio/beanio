@@ -41,6 +41,13 @@ public class Settings {
     /** This property is set to the fully qualified class name of the default stream factory implementation  */
     public static final String STREAM_FACTORY_CLASS = "org.beanio.streamFactory";
 
+    /** The default date format pattern for fields assigned type alias <tt>Date</tt> */
+    public static final String DEFAULT_DATE_FORMAT = "org.beanio.defaultDateFormat";
+    /** The default date format pattern for fields assigned type alias <tt>DateTime</tt> or of type <tt>java.util.Date</tt> */
+    public static final String DEFAULT_DATETIME_FORMAT = "org.beanio.defaultDateTimeFormat";
+    /** The default date format pattern for fields assigned type alias <tt>Time</tt> */
+    public static final String DEFAULT_TIME_FORMAT = "org.beanio.defaultTimeFormat";
+    
     private static final String DEFAULT_CONFIGURATION_PATH = "/org/beanio/config/beanio.properties";
     private static final String DEFAULT_CONFIGURATION_FILENAME = "beanio.properties";
     private static final String CONFIGURATION_PROPERTY = "org.beanio.configuration";

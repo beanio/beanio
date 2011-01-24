@@ -15,12 +15,17 @@
  */
 package org.beanio.types;
 
+import java.math.*;
+import java.text.DecimalFormat;
+
 /**
- * A type handler implementation for the <tt>Byte</tt> class, that
- * simply delegate parsing to its constructor.
+ * A type handler implementation for the <tt>Byte</tt> class.    If <tt>pattern</tt>
+ * is set, a <tt>DecimalFormat</tt> is used to parse and format the value.  Otherwise,
+ * the value is parsed and formatted using the <tt>Byte</tt> class.
  * 
  * @author Kevin Seim
  * @since 1.0
+ * @see DecimalFormat
  */
 public class ByteTypeHandler extends NumberTypeHandler {
 
@@ -29,6 +34,11 @@ public class ByteTypeHandler extends NumberTypeHandler {
         return new Byte(text);
     }
 
+    @Override
+    protected Byte createNumber(BigDecimal bg) throws ArithmeticException {
+        return bg.byteValueExact();
+    }
+    
     /*
      * (non-Javadoc)
      * @see org.beanio.types.TypeHandler#getType()

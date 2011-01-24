@@ -213,4 +213,33 @@ public class TypesParserTest extends ParserTest {
         assertFieldError(in, 1, "record", "intValue", "", 
             "Type conversion error: Primitive bean property cannot be null");
     }
+    
+    @Test
+    public void testFormats() throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        
+        StringWriter text;
+        BeanReader in = factory.createReader("t7", new InputStreamReader(
+            getClass().getResourceAsStream("t7_valid.txt")));
+        try {
+            ObjectRecord record;
+            record = (ObjectRecord) in.read();
+            assertEquals(new Byte((byte)1), record.getByteValue());
+            assertEquals(new Short((short)2), record.getShortValue());
+            assertEquals(new Integer(-3), record.getIntegerValue());
+            assertEquals(new Long(4), record.getLongValue());
+            assertEquals(new Float("5.1"), record.getFloatValue());
+            assertEquals(new Double("-6.1"), record.getDoubleValue());
+            assertEquals(sdf.parse("2011-01-01"), record.getDateValue());
+            assertEquals(new BigInteger("10"), record.getBigIntegerValue());
+            assertEquals(new BigDecimal("10.5"), record.getBigDecimalValue());
+            
+            text = new StringWriter();
+            factory.createWriter("t7", text).write(record);
+            assertEquals("1x,2x,-3x,4x,5.10x,-6.10x,2011-01-01,10x,10.50x" + lineSep, text.toString());
+        }
+        finally {
+            in.close();
+        }
+    }
 }

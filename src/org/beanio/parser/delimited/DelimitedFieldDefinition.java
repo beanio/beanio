@@ -40,8 +40,9 @@ public class DelimitedFieldDefinition extends FieldDefinition {
 	}
 	
 	private String getFieldText(Record record) {
+	    int pos = getPosition() + record.getFieldIndex();
+	    
 		DelimitedRecord rec = ((DelimitedRecord)record);
-		return (getPosition() < rec.getFieldCount()) ?  
-			rec.getFieldText(getPosition()) : null;
+		return (pos < rec.getFieldCount()) ? rec.getFieldText(pos) : null;
 	}
 }

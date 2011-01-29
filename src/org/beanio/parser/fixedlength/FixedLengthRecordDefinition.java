@@ -15,6 +15,9 @@
  */
 package org.beanio.parser.fixedlength;
 
+import java.lang.reflect.Array;
+import java.util.Collection;
+
 import org.beanio.parser.*;
 
 /**
@@ -31,6 +34,7 @@ public class FixedLengthRecordDefinition extends RecordDefinition {
     private char filler = ' ';
 
     @Override
+    @SuppressWarnings("unchecked")
     public Object formatBean(Object bean) {
         StringBuffer record = new StringBuffer();
         for (FieldDefinition field : getFieldList()) {
@@ -40,7 +44,27 @@ public class FixedLengthRecordDefinition extends RecordDefinition {
                 record.append(filler);
             }
 
-            record.append(field.formatValue(getFieldValue(field, bean)));
+            Object value = getFieldValue(field, bean);
+            if (field.isCollection()) {
+                if (value == null) {
+                    for (int i=0; i<field.getMinOccurs(); i++) {
+                        record.append(field.formatValue(null));
+                    }
+                }
+                else if (field.isArray()) {
+                    for (int i=0, j=Array.getLength(value); i<j; i++) {
+                        record.append(field.formatValue(Array.get(value, i)));
+                    }
+                }
+                else {
+                    for (Object obj : (Collection<Object>)value) {
+                        record.append(field.formatValue(obj));
+                    }
+                }
+            }
+            else {
+                record.append(field.formatValue(value));
+            }
         }
         return record;
     }

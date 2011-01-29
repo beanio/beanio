@@ -48,6 +48,9 @@ public class FieldConfig {
     private int length = -1;
     private char padding = ' ';
     private String justify = LEFT;
+    private String collection;
+    private Integer minOccurs;
+    private Integer maxOccurs;
 
     /**
      * Returns the default textual representation of the value of
@@ -408,5 +411,67 @@ public class FieldConfig {
      */
     public void setJustify(String justify) {
         this.justify = justify;
+    }
+
+    /**
+     * Returns the field collection type, or <tt>null</tt> if the field property
+     * is not a collection or array. 
+     * @return the field collection type
+     */
+    public String getCollection() {
+        return collection;
+    }
+
+    /**
+     * Sets the field collection type.  Set to <tt>null</tt> by default to indicate
+     * the field property is not a collection or array.  The value may be set to the 
+     * fully qualified class name of a <tt>java.util.Collection</tt> subclass or a 
+     * collection type alias, or the value "array" to indicate a Java array.
+     * @param collection the field collection type
+     */
+    public void setCollection(String collection) {
+        this.collection = collection;
+    }
+
+    /**
+     * Returns the minimum number of times this field must appear  in an
+     * input stream.  If <tt>null</tt>, one occurrence is assumed.
+     * @return the minimum required occurrences of this field
+     */
+    public Integer getMinOccurs() {
+        return minOccurs;
+    }
+
+    /**
+     * Sets the minimum number of times this field must appear consecutively in an 
+     * input stream.  If set to <tt>null</tt>, one occurrence is assumed.  If set to anything
+     * other than one, a field collection type is expected.  Must be 0 or greater.
+     * @param minOccurs the minimum required occurrences of this field
+     */
+    public void setMinOccurs(Integer minOccurs) {
+        this.minOccurs = minOccurs;
+    }
+
+    /**
+     * Returns the maximum number of times this field may appear (consecutively) in
+     * an input stream.  If <tt>null</tt>, one occurrence is assumed.
+     * @return the maximum allowed occurrences of this field, or <tt>-1</tt> if there
+     *   is no limit
+     */
+    public Integer getMaxOccurs() {
+        return maxOccurs;
+    }
+
+    /**
+     * Sets the maximum number of times this field may appear (consecutively) in
+     * an input stream.  If set to <tt>null</tt>, one occurrence is assumed.  If set to
+     * anything other than one, a field collection type is expected.  Must be greater
+     * than the minimum occurrences, or set to <tt>-1</tt> to indicate the limit is
+     * unbounded.
+     * @param maxOccurs the maximum allowed occurrences of this field, or <tt>-1</tt> if
+     *   there is no limit
+     */
+    public void setMaxOccurs(Integer maxOccurs) {
+        this.maxOccurs = maxOccurs;
     }
 }

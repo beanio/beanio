@@ -15,7 +15,8 @@
  */
 package org.beanio.parser.delimited;
 
-import java.util.List;
+import java.lang.reflect.Array;
+import java.util.*;
 
 import org.beanio.parser.*;
 
@@ -46,13 +47,58 @@ public class DelimitedRecordDefinition extends RecordDefinition {
         }
     }
 
+    
     @Override
+    @SuppressWarnings("unchecked")
     public Object formatBean(Object bean) {
-        List<FieldDefinition> fieldList = getFieldList();
-        String[] record = new String[fieldList.size()];
         int index = 0;
-        for (FieldDefinition field : getFieldList()) {
-            record[index++] = field.formatValue(getFieldValue(field, bean));
+        List<FieldDefinition> fieldList = getFieldList();
+        Object[] fieldValue = new Object[fieldList.size()];
+        
+        // determine the total number of fields in the delimited record and get field values
+        int size = fieldList.size();
+        for (FieldDefinition field : fieldList) {
+            Object value = getFieldValue(field, bean);
+            if (field.isCollection()) {
+                if (value == null) {
+                    size += field.getMinOccurs() - 1;
+                }
+                else if (field.isArray()) {
+                    size += Array.getLength(value) - 1;
+                }
+                else {
+                    size += ((Collection<?>)value).size() - 1;
+                }
+            }
+            fieldValue[index++] = value;
+        }
+        
+        // format each field value into field text
+        index = 0;
+        int valueIndex = 0;
+        String[] record = new String[size];
+        for (FieldDefinition field : fieldList) {
+            Object value = fieldValue[valueIndex++];
+            if (field.isCollection()) {
+                if (value == null) {
+                    for (int i=0; i<field.getMinOccurs(); i++) {
+                        record[index++] = field.formatValue(null);
+                    }
+                }
+                else if (field.isArray()) {
+                    for (int i=0, j=Array.getLength(value); i<j; i++) {
+                        record[index++] = field.formatValue(Array.get(value, i));
+                    }
+                }
+                else {
+                    for (Object obj : (Collection<Object>)value) {
+                        record[index++] = field.formatValue(obj);
+                    }
+                }
+            }
+            else {
+                record[index++] = field.formatValue(value);
+            }
         }
         return record;
     }

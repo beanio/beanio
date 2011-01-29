@@ -20,7 +20,7 @@
   xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
   elementFormDefault="qualified" 
   targetNamespace="http://www.beanio.org/2011/01"
-  version="1.0">
+  version="1.2">
   
   <element name="beanio">
     <complexType>
@@ -116,6 +116,9 @@
     <attribute name="length" type="xsd:positiveInteger" use="optional" />
     <attribute name="padding" type="xsd:string" use="optional" />
     <attribute name="justify" type="tns:justification" use="optional" />
+    <attribute name="collection" type="xsd:string" use="optional" />
+    <attribute name="minOccurs" type="xsd:nonNegativeInteger" use="optional" />
+    <attribute name="maxOccurs" type="tns:limit" use="optional" />
   </complexType>  
   
   <simpleType name="justification">

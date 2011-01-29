@@ -311,6 +311,9 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
         config.setLength(getIntAttribute(element, "length", config.getLength()));
         config.setPadding(getCharAttribute(element, "padding", config.getPadding()));
         config.setJustify(getAttribute(element, "justify"));
+        config.setCollection(getAttribute(element, "collection"));
+        config.setMinOccurs(getIntegerAttribute(element, "minOccurs"));
+        config.setMaxOccurs(getUnboundedIntegerAttribute(element, "maxOccurs", -1));
         return config;
     }
 

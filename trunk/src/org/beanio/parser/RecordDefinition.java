@@ -71,6 +71,7 @@ public abstract class RecordDefinition extends NodeDefinition {
      * @return the parsed Java bean
      * @throws InvalidRecordException
      */
+    @SuppressWarnings({ "unchecked" })
     public Object parseBean(Record record) throws InvalidRecordException {
         // validate record
         validateRecord(record);
@@ -82,23 +83,10 @@ public abstract class RecordDefinition extends NodeDefinition {
 
         Object[] field = new Object[fieldList.size()];
 
-        // validate each field
+        // validate and parse each field
         int index = 0;
         for (FieldDefinition fieldContext : fieldList) {
-            Object value = fieldContext.parseValue(record);
-
-            if (beanClass != null && 
-                !isBeanClassMap && 
-                value == null &&
-                !record.hasFieldErrors(fieldContext.getName()) &&
-                fieldContext.isProperty() &&
-                fieldContext.getPropertyDescriptor().getPropertyType().isPrimitive()) {
-                
-                record.addFieldError(fieldContext.getName(), null, "type",
-                    "Primitive bean property cannot be null");
-            }
-
-            field[index++] = value;
+            field[index++] = fieldContext.parseValue(record);
         }
 
         // if field errors were detected, throw an exception
@@ -125,7 +113,6 @@ public abstract class RecordDefinition extends NodeDefinition {
 
         // set the bean properties
         if (isBeanClassMap) {
-            @SuppressWarnings("unchecked")
             Map<String, Object> map = (Map<String, Object>) bean;
             for (int i = 0, j = fieldList.size(); i < j; i++) {
                 FieldDefinition fieldContext = fieldList.get(i);
@@ -164,7 +151,7 @@ public abstract class RecordDefinition extends NodeDefinition {
 
         return bean;
     }
-
+    
     /**
      * Performs record level validations.  If a validation error occurs, a record
      * error should be added to the <tt>record</tt>.
@@ -293,7 +280,8 @@ public abstract class RecordDefinition extends NodeDefinition {
     }
 
     /**
-     * Returns the bean class configured for this record type.
+     * Returns the bean class configured for this record type.  May be <tt>null</tt>
+     * if this record is only validated and not returned when reading an input stream.
      * @return the bean class
      */
     public Class<?> getBeanClass() {
@@ -310,8 +298,8 @@ public abstract class RecordDefinition extends NodeDefinition {
     }
 
     /**
-     * Returns true if the bean class is assignable to <tt>Map</tt>.
-     * @return true if the bean class is assignable to <tt>Map</tt>
+     * Returns true if the bean class is assignable to <tt>java.util.Map</tt>.
+     * @return true if the bean class is assignable to <tt>java.util.Map</tt>
      */
     public boolean isBeanClassMap() {
         return isBeanClassMap;

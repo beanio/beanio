@@ -60,13 +60,35 @@ public interface BeanReaderContext {
     public Collection<String> getRecordErrors();
 
     /**
-     * Returns the unparsed text of a field in this record.  Field text may be null
-     * if a record level exception was thrown before a field was parsed.
+     * Returns the unparsed text of a field from the record.  Field text may be null
+     * under the following circumstances:
+     * <ul>
+     * <li>A record level exception was thrown before a field was parsed</li>
+     * <li>The field name is invalid</li>
+     * <li>The field did not exist in the record</li>
+     * </ul>
+     * <p>If the field is a collection, this method returns the field text for
+     * the first occurrence of the field.</p>
      * @param fieldName the name of the field to get the text for
      * @return the unparsed field text
      */
     public String getFieldText(String fieldName);
 
+    /**
+     * Returns the unparsed text of a field from the record.  Field text may be null
+     * under the following circumstances:
+     * <ul>
+     * <li>A record level exception was thrown before a field was parsed</li>
+     * <li>The field name is invalid</li>
+     * <li>The field did not exist in the record</li>
+     * </ul>
+     * @param fieldName the name of the field to get the text for
+     * @param index the index of the field, beginning at 0, for collection type
+     *   fields
+     * @return the unparsed field text
+     */
+    public String getFieldText(String fieldName, int index);
+    
     /**
      * Returns <tt>true</tt> if there are one or more field level errors.
      * @return <tt>true</tt> if there are one or more field level errors.

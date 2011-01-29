@@ -38,22 +38,23 @@ that each copy contains this Copyright Notice, whether distributed in print or e
   <a href="#RecordGrouping">4.5. Record Grouping</a><br />
   <a href="#FieldTypeConversion">4.6. Field Type Conversion</a><br />
   <a href="#CustomTypeHandlers">4.7. Custom Type Handlers</a><br />
-  <a href="#StreamValidation">4.8. Stream Validation</a><br />
+  <a href="#CollectionFields">4.8. Collection Field Types</a><br />
+  <a href="#StreamValidation">4.9. Stream Validation</a><br />
   <div class="toc">
-    <a href="#RecordValidation">4.8.1. Record Validation</a><br />
-    <a href="#FieldValidation">4.8.2. Field Validation</a><br />
+    <a href="#RecordValidation">4.9.1. Record Validation</a><br />
+    <a href="#FieldValidation">4.9.2. Field Validation</a><br />
   </div>
-  <a href="#RecordReader">4.9. The Record Reader</a><br />
+  <a href="#RecordReader">4.10. The Record Reader</a><br />
   <div class="toc">
-    <a href="#CSVRecordReaderFactory">4.9.1. Default CSV Record Reader Factory</a><br />
-    <a href="#DelimitedRecordReaderFactory">4.9.2. Default Delimited Record Reader Factory</a><br />
-    <a href="#FixedLengthRecordReaderFactory">4.9.2. Default Fixed Length Record Reader Factory</a><br />
+    <a href="#CSVRecordReaderFactory">4.10.1. Default CSV Record Reader Factory</a><br />
+    <a href="#DelimitedRecordReaderFactory">4.10.2. Default Delimited Record Reader Factory</a><br />
+    <a href="#FixedLengthRecordReaderFactory">4.10.2. Default Fixed Length Record Reader Factory</a><br />
   </div>
-  <a href="#RecordWriter">4.10. The Record Writer</a><br />
+  <a href="#RecordWriter">4.11. The Record Writer</a><br />
   <div class="toc">
-    <a href="#CSVRecordWriterFactory">4.10.1. Default CSV Record Writer Factory</a><br />
-    <a href="#DelimitedRecordWriterFactory">4.10.2. Default Delimited Record Writer Factory</a><br />
-    <a href="#FixedLengthRecordWriterFactory">4.10.2. Default Fixed Length Record Writer Factory</a><br />
+    <a href="#CSVRecordWriterFactory">4.11.1. Default CSV Record Writer Factory</a><br />
+    <a href="#DelimitedRecordWriterFactory">4.11.2. Default Delimited Record Writer Factory</a><br />
+    <a href="#FixedLengthRecordWriterFactory">4.11.2. Default Fixed Length Record Writer Factory</a><br />
   </div>
 </div>
 <a href="#A">Appendix A: XML Mapping File Reference</a><br />
@@ -771,8 +772,67 @@ the field. </p>
   
 &lt;/beanio&gt;</pre>
 
+<h2><a name="CollectionFields">4.8. Collection Field Types</a></h2>
+<p>Collection and array field property types are also supported by BeanIO.  For example, lets assume our 
+<tt>Employee</tt> bean object contains a list of accounts.</p>
+<pre class="java">
+package org.beanio.example;
+import java.util.Date;
 
-<h2><a name="StreamValidation">4.8. Stream Validation</a></h2>
+public class Employee {
+    String firstName;
+    String lastName;
+    String title;
+    int salary;
+    Date hireDate;
+    <span class="highlight">List&lt;Integer&gt; accounts;</span>
+    
+    <span class="comment">// getters and setters not shown...</span>
+}</pre>
+
+<p>And lets assume our input file now looks like this:</p>
+<pre class="file">
+Joe,Smith,Developer,75000,10012009
+Chris,Johnson,Sales,80000,05292006<span class="highlight">,100012,200034,200045</span>
+Jane,Doe,Architect,80000,01152008
+Jon,Anderson,Manager,85000,03182007<span class="highlight">,333001</span></pre>
+
+<p>In this example, the <tt>accounts</tt> bean property can be defined in the mapping file using a <tt>collection</tt> 
+field attribute.  The <tt>collection</tt> attribute can be set to the fully qualified class name of
+a collection implementation, or to a collection type alias.</p>  
+<p>Collection field types can declare the number of occurrences of the field
+using <tt>minOccurs</tt> and <tt>maxOccurs</tt> field attributes.  If not declared, <tt>minOccurs</tt>
+will default to 1, and <tt>maxOccurs</tt> will default to the <tt>minOccurs</tt> value or 1, whichever
+is greater.  If the number of field occurences is variable (i.e. <tt>maxOccurs</tt> is greater than 
+<tt>minOccurs</tt>), the field must be the last field in the record.
+</p>
+<pre class="file">
+&lt;beanio&gt;
+
+  &lt;stream name="employeeFile" format="csv"&gt;
+    &lt;record name="employee" class="org.beanio.example.Employee"&gt;
+      &lt;field name="firstName" /&gt;
+      &lt;field name="lastName" /&gt;
+      &lt;field name="title" /&gt;
+      &lt;field name="salary" /&gt;
+      &lt;field name="hireDate" format="MMddyyyy" /&gt;
+      &lt;field name="accounts" type="int" <span class="highlight">collection="list" minOccurs="0" maxOccurs="unbounded"</span> /&gt;
+    &lt;/record&gt; 
+  &lt;/stream&gt;
+  
+&lt;/beanio&gt;</pre>
+
+<p>BeanIO supports the following collection type aliases.  For Java array types, <tt>collection</tt> 
+must be set to <tt>array</tt>.  Collection type aliases are not case sensitve.</p>
+<table class="typeTable">
+<tr><th>Class Name</th><th>Alias</th></tr>
+<tr><td>java.util.ArrayList</td><td><tt>list</tt></td></tr>
+<tr><td>java.util.Hashset</td><td><tt>set</tt></td></tr>
+<tr><td>(Java Array)</td><td><tt>array</tt></td></tr>
+</table>
+
+
+<h2><a name="StreamValidation">4.9. Stream Validation</a></h2>
 <p>A <tt>BeanReader</tt> will throw an <tt>InvalidRecordException</tt> if a record or one of 
 its fields fails a configured validation rule.  There are two types of errors reported
 for an invalid record: record level errors and field level errors.  If a record level error occurs, 
@@ -902,7 +962,7 @@ on the validation rule that was violated, different parameters are passed to the
 validation rule.</p>
 
 
-<h3><a name="RecordValidation">4.8.1. Record Validation</a></h3>
+<h3><a name="RecordValidation">4.9.1. Record Validation</a></h3>
 <p>The following record level validation rules may be configured on a <tt>record</tt> element.
 </p>
 <table>
@@ -921,7 +981,7 @@ validation rule.</p>
 </tr>
 </table>
 
-<h3><a name="FieldValidation">4.8.2. Field Validation</a></h3>
+<h3><a name="FieldValidation">4.9.2. Field Validation</a></h3>
 <p>BeanIO supports several common field validation rules when reading an input stream.  All field 
 validation rules are validated against the field text before type conversion.  When field trimming 
 is enabled, <tt>trim="true"</tt>, all validations are performed
@@ -934,7 +994,8 @@ writing to an output stream.
 <tr>
   <td><tt>required</tt></td>
   <td>Boolean</td>
-  <td>When set to <tt>true</tt>, validates the field text is not the empty string.</td>
+  <td>When set to <tt>true</tt>, validates the field is present and the field text is 
+  not the empty string.</td>
 </tr>
 <tr>
   <td><tt>minLength</tt></td>
@@ -956,10 +1017,17 @@ writing to an output stream.
   <td>String</td>
   <td>Validates the field text matches the given regular expression pattern.</td>
 </tr>
+<tr>
+  <td><tt>minOccurs</tt></td>
+  <td>String</td>
+  <td>Applies to collection type fields only.  Validates the minimum occurrences
+    of the field in the stream.  If the field is present in the stream, <tt>minOccurs</tt>
+    is satisfied, and the <tt>required</tt> setting determines whether a value is required.</td>
+</tr>
 </table>
 
 
-<h2><a name="RecordReader">4.9. The Record Reader</a></h2>
+<h2><a name="RecordReader">4.10. The Record Reader</a></h2>
 <p>Before a record is identified, validated and parsed into fields, it is first read from
 an input stream using a <tt>RecordReader</tt>.  The <tt>RecordReader</tt> interface is
 shown below.</p>
@@ -1025,7 +1093,7 @@ character.</p>
 formats. </p>
 
 
-<h3><a name="CSVRecordReaderFactory">4.9.1. Default CSV Record Reader Factory</a></h3>
+<h3><a name="CSVRecordReaderFactory">4.10.1. Default CSV Record Reader Factory</a></h3>
 <p>The default CSV record reader and factory parses CSV streams based on 
 <a href="http://www.ietf.org/rfc/rfc4180.txt">RFC 4180</a> with one exception: by default,
 multi-line records are disabled.  However, this behavour can be overridden along with other
@@ -1082,7 +1150,7 @@ defaults using the following properties.</p>
 </table>
 
 
-<h3><a name="DelimitedRecordReaderFactory">4.9.2. Default Delimited Record Reader Factory</a></h3>
+<h3><a name="DelimitedRecordReaderFactory">4.10.2. Default Delimited Record Reader Factory</a></h3>
 <p>The default record reader factory for delimited streams supports the following properties:</p>
 <table>
 <tr>
@@ -1111,7 +1179,7 @@ defaults using the following properties.</p>
 </table>
 
 
-<h3><a name="FixedLengthRecordReaderFactory">4.9.3. Default Fixed Length Record Reader Factory</a></h3>
+<h3><a name="FixedLengthRecordReaderFactory">4.10.3. Default Fixed Length Record Reader Factory</a></h3>
 <p>The default record reader factory for fixed length formatted streams supports the following properties:</p>
 <table>
 <tr>
@@ -1132,7 +1200,7 @@ defaults using the following properties.</p>
 
 
 
-<h2><a name="RecordWriter">4.10. The Record Writer</a></h2>
+<h2><a name="RecordWriter">4.11. The Record Writer</a></h2>
 <p>Records are written to an output stream using a <tt>RecordWriter</tt>.
 The <tt>RecordWriter</tt> interface is shown below.  Depending on the format of the stream
 a <tt>RecordWriter</tt> will expect the record object to be of a certain type.  CSV and
@@ -1201,7 +1269,7 @@ character.</p>
 formats. </p>
 
 
-<h3><a name="CSVRecordWriterFactory">4.10.1. Default CSV Record Writer Factory</a></h3>
+<h3><a name="CSVRecordWriterFactory">4.11.1. Default CSV Record Writer Factory</a></h3>
 <p>The default CSV record writer and factory formats CSV streams based on 
 <a href="http://www.ietf.org/rfc/rfc4180.txt">RFC 4180</a>.  The default CSV writer
 factory supports the following properties:</p>
@@ -1243,7 +1311,7 @@ factory supports the following properties:</p>
 </tr>
 </table>
 
-<h3><a name="DelimitedRecordWriterFactory">4.10.2. Default Delimited Record Writer Factory</a></h3>
+<h3><a name="DelimitedRecordWriterFactory">4.11.2. Default Delimited Record Writer Factory</a></h3>
 <p>The default record writer factory for delimited streams supports the following properties:</p>
 <table>
 <tr>
@@ -1270,7 +1338,7 @@ factory supports the following properties:</p>
 </tr>
 </table>
 
-<h3><a name="FixedLengthRecordWriterFactory">4.10.3. Default Fixed Length Record Writer Factory</a></h3>
+<h3><a name="FixedLengthRecordWriterFactory">4.11.3. Default Fixed Length Record Writer Factory</a></h3>
 <p>The default record writer factory for fixed length formatted streams supports the following properties:</p>
 <table>
 <tr>
@@ -1681,10 +1749,41 @@ their position.</p>
 </tr>
 <tr>
   <td><tt>type</tt></td>
-  <td>The fully qualified class name or type alias of this field value.  By default,
+  <td>The fully qualified class name or type alias of the field value.  By default,
     BeanIO will derrive the field type from the bean class of the record.  This attribute
     can be used to override the default or may be required if the bean class of the
     record is a <tt>Map</tt>.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>collection</tt></td>
+  <td>If the bean property type of this field is a collection, <tt>collection</tt>
+    is the fully qualified collection class name or collection type alias of the bean
+    property type, and <tt>type</tt> becomes the property type of the collection item.  
+    May be set to <tt>array</tt> if the collection type is a Java array.
+    <p>BeanIO will not derrive the collection type from the record bean object, thus 
+    collection type fields must always be explicitly declared.</p>
+  </td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>minOccurs</tt></td>
+  <td>The minimum consecutive occurrences of this field in a record.  Defaults to 1 and should only
+    be overridden for collection type fields.
+  </td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>maxOccurs</tt></td>
+  <td>The maximum consecutive occurrences of this field in a record.  By default, 
+    <tt>maxOccurs</tt> is set to <tt>minOccurs</tt> or 1, whichever is greater.  If overridden,
+    the value can only exceed <tt>minOccurs</tt> if this is the last field
+    in the record.  The value may be set to <tt>unbounded</tt> if there is no limit to the 
+    number of occurrences of this field.
+  </td>
   <td>No</td>
   <td>*</td>
 </tr>
@@ -1802,7 +1901,7 @@ message for each configurable validation rule.</p>
   <td>Maximum Length</td>
 </tr>
 <tr>
-  <td rowspan="36">Field Error</td>
+  <td rowspan="42">Field Error</td>
   <td rowspan="4"><tt>required</tt></td>
   <td>0</td>
   <td>Line Number</td>
@@ -1952,6 +2051,31 @@ message for each configurable validation rule.</p>
 <tr>
   <td>4</td>
   <td>Literal value</td>
+</tr>
+<tr>
+  <td rowspan="6"><tt>minOccurs</tt></td>
+  <td>0</td>
+  <td>Line Number</td>
+</tr>
+<tr>
+  <td>1</td>
+  <td>Record Label/Name</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td>Field Label/Name</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>-</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>Minimum occurrences</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td>Maximum occurences</td>
 </tr>
 </table>
 

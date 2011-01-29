@@ -60,4 +60,27 @@
     </record>
   </stream>
 
+  <stream name="f4" format="fixedlength" ordered="false">
+    <writer>
+      <property name="lineSeparator" value="" />
+    </writer>
+    <record name="record" class="map">
+      <field name="type" rid="true" literal="INT" />
+      <field name="number" type="int" collection="list" length="5" justify="right" padding="0" maxOccurs="unbounded" />
+    </record>
+    <record name="record" class="map">
+      <field name="type" rid="true" literal="CHA" />
+      <field name="character" type="char" collection="list" length="1" justify="right" padding=" " maxOccurs="unbounded" />
+    </record>
+    <record name="record" class="map">
+      <field name="type" rid="true" literal="STL" />
+      <field name="stringLeft" collection="list" length="3" justify="left" padding=" " maxOccurs="unbounded" />
+    </record>
+    <record name="record" class="map">
+      <field name="type" rid="true" literal="STR" />
+      <field name="stringRight" collection="list" length="3" justify="right" padding=" " maxOccurs="unbounded" />
+    </record>
+  </stream>
+
+
 </beanio>

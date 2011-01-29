@@ -16,6 +16,7 @@
 package org.beanio.config;
 
 import java.beans.*;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.regex.PatternSyntaxException;
 
@@ -253,6 +254,9 @@ public abstract class StreamDefinitionFactory {
             else {
                 try {
                     beanClass = Class.forName(config.getBeanClass());
+                    if (beanClass.isInterface() || Modifier.isAbstract(beanClass.getModifiers())) {
+                        throw new BeanIOConfigurationException("Record class cannot be interface or abstract");
+                    }
                     definition.setBeanClass(beanClass);
                 }
                 catch (ClassNotFoundException ex) {

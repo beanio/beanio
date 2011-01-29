@@ -70,21 +70,26 @@ public class ParserTest {
 
     protected void assertFieldError(BeanReader in, int lineNumber, String recordName,
             String fieldName, String fieldText, String message) {
-        try {
-            in.read();
-            fail("Record expected to fail validation");
-        }
-        catch (InvalidRecordException ex) {
-            assertEquals(recordName, in.getRecordName());
-            assertEquals(lineNumber, in.getLineNumber());
+        assertFieldError(in, lineNumber, recordName, fieldName, 0, fieldText, message);
+    }
+    
+    protected void assertFieldError(BeanReader in, int lineNumber, String recordName,
+        String fieldName, int fieldIndex, String fieldText, String message) {
+    try {
+        in.read();
+        fail("Record expected to fail validation");
+    }
+    catch (InvalidRecordException ex) {
+        assertEquals(recordName, in.getRecordName());
+        assertEquals(lineNumber, in.getLineNumber());
 
-            BeanReaderContext ctx = ex.getContext();
-            assertEquals(recordName, ctx.getRecordName());
-            assertEquals(lineNumber, ctx.getRecordLineNumber());
-            assertEquals(fieldText, ctx.getFieldText(fieldName));
-            for (String s : ctx.getFieldErrors(fieldName)) {
-                assertEquals(message, s);
-            }
+        BeanReaderContext ctx = ex.getContext();
+        assertEquals(recordName, ctx.getRecordName());
+        assertEquals(lineNumber, ctx.getRecordLineNumber());
+        assertEquals(fieldText, ctx.getFieldText(fieldName, fieldIndex));
+        for (String s : ctx.getFieldErrors(fieldName)) {
+            assertEquals(message, s);
         }
     }
+}
 }

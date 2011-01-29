@@ -34,7 +34,8 @@ public class FixedLengthFieldDefinition extends FieldDefinition {
     private int length;
     private char padding = ' ';
     private char justification = LEFT;
-
+    private String defaultText = "";
+    
     @Override
     public boolean matches(Record record) {
         String text = getFieldText(record);
@@ -121,29 +122,71 @@ public class FixedLengthFieldDefinition extends FieldDefinition {
      * @return the unpadded field text
      */
     private String unpad(String fieldText) {
-        int start = 0;
-        boolean modified = false;
-
+        int length = fieldText.length();
+        
         if (justification == LEFT) {
-            int end = length - 1;
-            while (end > start && fieldText.charAt(end) == padding) {
-                modified = true;
-                --end;
+            int index = fieldText.length();
+            while (true) {
+                --index;
+                
+                if (index < 0) {
+                    return defaultText;
+                }
+                else if (fieldText.charAt(index) != padding) {
+                    if (index == (length - 1))
+                        return fieldText;
+                    else
+                        return fieldText.substring(0, index + 1);
+                }
             }
-            
-            if (end == 0)
-                return "";
-            else
-                return modified ? fieldText.substring(start, end + 1) : fieldText;
         }
         else {
-            int end = length;
-            while (start < end && fieldText.charAt(start) == padding) {
-                modified = true;
-                ++start;
+            int index = 0;
+            while (index < length) {
+                if (fieldText.charAt(index) != padding) {
+                    if (index == 0)
+                        return fieldText;
+                    else
+                        return fieldText.substring(index, length);
+                }
+                index++;
             }
-            return modified ? fieldText.substring(start, end) : fieldText;
+            return defaultText;
         }
+    }
+
+    /**
+     * Returns default unpadded text when the entire field is populated by
+     * the padding character.  Returns the empty string by default, or the padding
+     * character if one of the following conditions apply:
+     * <ul>
+     * <li>The field property type extends from <tt>Number</tt> and the padding character
+     *  is a digit.</li>
+     * <li>The field property is of type <tt>Character</tt>.
+     * </ul>
+     * @param type the field property type
+     * @param padding the character used to pad the fixed length field
+     * @return the default text for a fully padded field
+     */
+    protected String getDefaultTextFor(Class<?> type, char padding) {
+        if (type == null) {
+            return "";
+        }
+        else if (Character.class.equals(type)) {
+            return Character.toString(padding);
+        }
+        else if (Number.class.isAssignableFrom(type)) {
+            if (Character.isDigit(padding)) {
+                return Character.toString(padding);
+            }
+        }
+        return "";
+    }
+    
+    @Override
+    public void setPropertyType(Class<?> type) {
+        super.setPropertyType(type);
+        this.defaultText = getDefaultTextFor(type, padding);
     }
 
     /**
@@ -176,6 +219,7 @@ public class FixedLengthFieldDefinition extends FieldDefinition {
      */
     public void setPadding(char padding) {
         this.padding = padding;
+        this.defaultText = getDefaultTextFor(getPropertyType(), padding);
     }
 
     /**

@@ -1,6 +1,14 @@
 Project BeanIO Change Log
 =========================
 
+Changes in version 0.9.2 (2011-01-29)
+-------------------------------------
+* Added support for collection and array type bean properties
+* gc0001 - Fixed parsing of right justified fixed length fields
+* gc0002 - Fixed fixed length position based field length calculation
+* gc0003 - Fixed required field validation when record minLength less than field position 
+* gc0004 - Fixed parsing of fully padded fixed length Number and Character type fields
+
 Changes in version 0.9.1 (2011-01-23)
 -------------------------------------
 * Type aliases are no longer case sensitive

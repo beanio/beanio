@@ -59,6 +59,7 @@ a { border-bottom: 1px dashed #8a0007; text-decoration: none; }
 	font-size: 100%;
 	font-weight: bold;	
 	border-bottom: 1px solid #8a6a6b;
+	margin-top: 30px;
 	margin-bottom: 6px;
 	padding-bottom: 3px;
 }

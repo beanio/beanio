@@ -32,11 +32,17 @@ import org.beanio.stream.RecordReader;
  */
 public class Record {
 
+    /* the line number of the last record read from the stream */
     private int lineNumber;
+    /* the raw record text of the last record read from the stream */
     private String recordText;
+    /* the name of the record last read from the stream, if known */
     private String recordName;
-
+    /* the field collection index of the last parsed field */
+    private int fieldIndex;
+    
     private Map<String, String> fieldMap = new HashMap<String, String>();
+    private Map<String, List<String>> collectionFieldMap = new HashMap<String,List<String>>();
     private Map<String, Collection<String>> fieldErrors;
     private Collection<String> recordErrors;
 
@@ -55,8 +61,10 @@ public class Record {
         this.recordText = null;
         this.recordName = null;
         this.fieldMap.clear();
+        this.collectionFieldMap.clear();
         this.fieldErrors = null;
         this.recordErrors = null;
+        this.fieldIndex = 0;
     }
 
     /**
@@ -78,9 +86,12 @@ public class Record {
         ctx.recordErrors = recordErrors;
         ctx.fieldErrorMap = fieldErrors;
 
-        // the same field map is used over and over by this implementation, so a copy is returned
+        // the same field maps are used over and over by this implementation, so a copy is made for the context
         if (fieldMap != null && !fieldMap.isEmpty()) {
             ctx.fieldTextMap = new HashMap<String, String>(fieldMap);
+        }
+        if (collectionFieldMap != null && !collectionFieldMap.isEmpty()) {
+            ctx.collectionFieldTextMap = new HashMap<String, List<String>>(collectionFieldMap);
         }
 
         return ctx;
@@ -297,16 +308,76 @@ public class Record {
      * @param text the raw field text
      */
     public void setFieldText(String fieldName, String text) {
-        fieldMap.put(fieldName, text);
+        if (fieldIndex == 0) {
+            fieldMap.put(fieldName, text);
+        }
+        else {
+            List<String> list = collectionFieldMap.get(fieldName);
+            if (list == null) {
+                list = new ArrayList<String>();
+                collectionFieldMap.put(fieldName, list);
+            }
+            int index = fieldIndex - 1;
+            if (index < list.size()) {
+                list.set(fieldIndex - 1, text);
+            }
+            else {
+                while (index < list.size()) {
+                    list.add(null);
+                }
+                list.add(text);
+            }
+        }
     }
 
     /**
-     * Returns the raw field text for a named field.
-     * @param fieldName the name of the field
-     * @return the raw field text
+     * Returns the unparsed text of a field from this record (if set).
+     * <p>If the field is a collection, this method returns the field text for
+     * the first occurrence of the field.</p>
+     * @param fieldName the name of the field to get the text for
+     * @param index the index of the field, beginning at 0, for collection type
+     *   fields
+     * @return the unparsed field text
+     * @see #setFieldText(String, String)
      */
     public String getFieldText(String fieldName) {
-        return fieldMap.get(fieldName);
+        return getFieldText(fieldName, 0);
+    }
+    
+    /**
+     * Returns the unparsed text of a field from this record (if set).
+     * @param fieldName the name of the field to get the text for
+     * @param index the index of the field, beginning at 0, for collection type
+     *   fields
+     * @return the unparsed field text
+     * @see #setFieldText(String, String)
+     */
+    public String getFieldText(String fieldName, int index) {
+        if (index == 0) {
+            return fieldMap.get(fieldName);
+        }
+        else {
+            List<String> list = collectionFieldMap.get(fieldName);
+            if (list == null) {
+                return null;
+            }
+            
+            index = index - 1;
+            if (index < list.size()) {
+                return list.get(index);
+            }
+            else {
+                return null;
+            }
+        }
+    }
+    
+    public int getFieldIndex() {
+        return fieldIndex;
+    }
+
+    public void setFieldIndex(int fieldIndex) {
+        this.fieldIndex = fieldIndex;
     }
 
     @Override
@@ -325,6 +396,7 @@ public class Record {
         String recordName;
         Collection<String> recordErrors;
         Map<String, String> fieldTextMap;
+        Map<String, List<String>> collectionFieldTextMap;
         Map<String, Collection<String>> fieldErrorMap;
 
         public int getRecordLineNumber() {
@@ -354,6 +426,29 @@ public class Record {
                 return null;
             else
                 return fieldTextMap.get(fieldName);
+        }
+        
+        public String getFieldText(String fieldName, int index) {
+            if (fieldTextMap == null) {
+                return null;
+            }
+            else if (index == 0) {
+                return fieldTextMap.get(fieldName);
+            }
+            else {
+                List<String> list = collectionFieldTextMap.get(fieldName);
+                if (list == null) {
+                    return null;
+                }
+                
+                index = index - 1;
+                if (index < list.size()) {
+                    return list.get(index);
+                }
+                else {
+                    return null;
+                }
+            }
         }
 
         public boolean hasFieldErrors() {

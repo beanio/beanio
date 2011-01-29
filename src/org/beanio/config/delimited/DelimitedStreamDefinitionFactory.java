@@ -42,40 +42,56 @@ public class DelimitedStreamDefinitionFactory extends StreamDefinitionFactory {
 
         // set field positions
         int lastPosition = -1, index = 0;
-        for (FieldConfig field : config.getFieldList()) {
-            int position = field.getPosition();
+        for (FieldConfig fieldConfig : config.getFieldList()) {
+            FieldDefinition fieldDefinition = fieldList.get(index++);
+            
+            int position = fieldConfig.getPosition();
             if (position < 0) {
                 position = lastPosition + 1;
             }
             else if (position <= lastPosition) {
-                throw new BeanIOConfigurationException("Field definition '" + field.getName() +
+                throw new BeanIOConfigurationException("Field definition '" + fieldConfig.getName() +
                     "' is out of order on record '" + config.getName() + "'");
             }
-            lastPosition = position;
-            fieldList.get(index++).setPosition(position);
+            fieldDefinition.setPosition(position);
+            
+            lastPosition = position + fieldDefinition.getMinOccurs() - 1;
         }
 
+        FieldDefinition lastFieldDefinition = fieldList.get(fieldList.size() - 1);
+        
         // validate and set the minimum length of the record
-        int recordLength = fieldList.get(fieldList.size() - 1).getPosition() + 1;
-        if (config.getMinLength() == null) {
-            definition.setMinLength(recordLength);
+        int minLength = lastFieldDefinition.getPosition() + lastFieldDefinition.getMinOccurs();
+        if (config.getMinLength() != null) { 
+            if (config.getMinLength() < 0) {
+                throw new BeanIOConfigurationException(
+                    "minLength must be at least 0 on record '" + config.getName() + "'");
+            }
+            minLength = config.getMinLength();
         }
-        else if (config.getMinLength() < 0) {
-            throw new BeanIOConfigurationException(
-                "minLength must be at least 0 on record '" + config.getName() + "'");
-        }
-        else {
-            definition.setMinLength(config.getMinLength());
-        }
+        definition.setMinLength(minLength);
 
         // validate and set the maximum length of the record
         if (config.getMaxLength() == null) {
-            definition.setMaxLength(recordLength);
+            if (lastFieldDefinition.getMaxOccurs() == -1) {
+                definition.setMaxLength(-1);
+            }
+            else {
+                definition.setMaxLength(lastFieldDefinition.getPosition() + lastFieldDefinition.getMaxOccurs());
+            }
         }
-        else if (config.getMaxLength() > 0 && config.getMaxLength() < definition.getMinOccurs()) {
-            throw new BeanIOConfigurationException(
-                "maxLength must be greater than or equal to min length on record '"
-                    + config.getName() + "'");
+        // handle unbounded
+        else if (config.getMaxLength() < 0) {
+            definition.setMaxLength(-1);
+        }
+        else if (config.getMaxLength() > 0 && config.getMaxLength() < minLength) {
+            if (config.getMinLength() == null) {
+                throw new BeanIOConfigurationException("maxLength must be at least " + minLength);                
+            }
+            else {
+                throw new BeanIOConfigurationException("maxLength must be greater than or " +
+            		"equal to minLength on record '" + config.getName() + "'");
+            }
         }
         else {
             definition.setMaxLength(config.getMaxLength());

@@ -56,7 +56,7 @@ public class FixedLengthFieldDefinition extends FieldDefinition {
         }
         else if (fieldText.length() != length) {
             record.addFieldError(getName(), fieldText, "length", length);
-            return null;
+            return INVALID;
         }
         else {
             return unpad(fieldText);
@@ -106,7 +106,7 @@ public class FixedLengthFieldDefinition extends FieldDefinition {
     private String getFieldText(Record record) {
         String recordText = record.getRecordText();
 
-        int position = getPosition();
+        int position = getPosition() + record.getFieldIndex() * length;
         int recordLength = recordText.length();
         if (recordLength <= position) {
             return null;
@@ -122,30 +122,27 @@ public class FixedLengthFieldDefinition extends FieldDefinition {
      */
     private String unpad(String fieldText) {
         int start = 0;
-        int end = length - 1;
         boolean modified = false;
 
         if (justification == LEFT) {
+            int end = length - 1;
             while (end > start && fieldText.charAt(end) == padding) {
                 modified = true;
                 --end;
             }
+            
+            if (end == 0)
+                return "";
+            else
+                return modified ? fieldText.substring(start, end + 1) : fieldText;
         }
         else {
+            int end = length;
             while (start < end && fieldText.charAt(start) == padding) {
                 modified = true;
                 ++start;
             }
-        }
-
-        if (!modified) {
-            return fieldText;
-        }
-        else if (start == end) {
-            return "";
-        }
-        else {
-            return fieldText.substring(start, end + 1);
+            return modified ? fieldText.substring(start, end) : fieldText;
         }
     }
 

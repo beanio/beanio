@@ -16,7 +16,7 @@
 package org.beanio.util;
 
 import java.math.*;
-import java.util.Date;
+import java.util.*;
 
 /**
  * Utility class for working with Java types supported by BeanIO.
@@ -36,6 +36,9 @@ public class TypeUtil {
     public static final String DATE_ALIAS = "date";
     /** Alias for a <tt>java.util.Date</tt> that only includes only time information */
     public static final String TIME_ALIAS = "time";
+    
+    /** Class type used to indicate a Java array */
+    public static final Class<? extends Collection<Object>> ARRAY_TYPE = ArrayCollection.class;
     
     /**
      * Cannot instantiate.
@@ -161,4 +164,41 @@ public class TypeUtil {
     public static boolean isAliasOnly(String alias) {
         return DATE_ALIAS.equalsIgnoreCase(alias) || TIME_ALIAS.equalsIgnoreCase(alias);
     }
+    
+    /**
+     * Returns the collection <tt>Class</tt> object for a collection class name or type alias.  
+     * A type alias is not case sensitive.  The following collection type aliases are supported:
+     * <table>
+     * <tr><th>Alias</th><th>Class or Primitive</th></tr>
+     * <tr><td>array</td><td>Java Array</td></tr>
+     * <tr><td>list</td><td>java.util.ArrayList</td></tr>
+     * <tr><td>set</td><td>java.util.HashSet</td></tr>
+     * </table>
+     * 
+     * @param type the fully qualified class name or type alias of the collection
+     * @return the collection class, or {@link #ARRAY_TYPE} for array, 
+     *   or <tt>null</tt> if the type name is invalid
+     */
+    @SuppressWarnings("unchecked")
+    public static Class<? extends Collection<Object>> toCollectionType(String type) {
+        if ("array".equalsIgnoreCase(type))
+            return ARRAY_TYPE;
+        else if ("list".equalsIgnoreCase(type))
+            return (Class<? extends Collection<Object>>) ArrayList.class;
+        else if ("set".equalsIgnoreCase(type))
+            return (Class<? extends Collection<Object>>) HashSet.class;
+        
+        try {
+            Class<?> clazz = Class.forName(type);
+            if (!Collection.class.isAssignableFrom(clazz)) {
+                return null;
+            }
+            return (Class<? extends Collection<Object>>) clazz;
+        }
+        catch (ClassNotFoundException ex) {
+            return null;
+        }
+    }
+    
+    private static interface ArrayCollection extends Collection<Object> { }
 }

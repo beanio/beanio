@@ -39,7 +39,8 @@ public abstract class StreamDefinitionFactory {
     /**
      * Constructs a new <tt>StreamDefinitionFactory</tt>.
      */
-    public StreamDefinitionFactory() { }
+    public StreamDefinitionFactory() {
+    }
 
     /**
      * Creates a new stream definition based on a stream configuration.
@@ -51,7 +52,7 @@ public abstract class StreamDefinitionFactory {
         if (config.getName() == null) {
             throw new BeanIOConfigurationException("stream name not configured");
         }
-        
+
         try {
             StreamDefinition definition = newStreamDefinition(config);
             compileStreamDefinition(config, definition);
@@ -62,14 +63,14 @@ public abstract class StreamDefinitionFactory {
                 "' stream configuration: " + ex.getMessage(), ex);
         }
     }
-    
+
     /**
      * Compiles a stream definition from its configuration.
      * @param config the stream configuration
      * @param definition the stream definition to compile
      * @throws BeanIOConfigurationException if the configuration is invalid
      */
-    protected void compileStreamDefinition(StreamConfig config, StreamDefinition definition) 
+    protected void compileStreamDefinition(StreamConfig config, StreamDefinition definition)
         throws BeanIOConfigurationException {
 
         definition.setName(config.getName());
@@ -155,7 +156,7 @@ public abstract class StreamDefinitionFactory {
         if (nodeList.isEmpty()) {
             throw new BeanIOConfigurationException("At least one record or record group is required.");
         }
-        
+
         // by default, order is incremented for each record
         int lastOrder = 0;
         for (NodeConfig child : nodeList) {
@@ -180,7 +181,7 @@ public abstract class StreamDefinitionFactory {
                 if (child.getOrder() >= 0) {
                     throw new BeanIOConfigurationException(
                         "Invalid '" + child.getName() + "' " + nodeType + " configuration: " +
-                        "Order cannot be set when ordered=\"false\"");
+                            "Order cannot be set when ordered=\"false\"");
                 }
                 order = 1;
             }
@@ -190,13 +191,13 @@ public abstract class StreamDefinitionFactory {
 
             case NodeConfig.RECORD:
                 try {
-                    childDefinition = newRecordDefinition((RecordConfig)child);
+                    childDefinition = newRecordDefinition((RecordConfig) child);
                     compileNodeDefinition(child, childDefinition, order);
                     compileRecordDefinition((RecordConfig) child, (RecordDefinition) childDefinition);
                     compileFieldDefinitions((RecordConfig) child, (RecordDefinition) childDefinition);
                 }
                 catch (BeanIOConfigurationException ex) {
-                    throw new BeanIOConfigurationException("Invalid '" + child.getName() + 
+                    throw new BeanIOConfigurationException("Invalid '" + child.getName() +
                         "' record configuration: " + ex.getMessage(), ex);
                 }
                 break;
@@ -208,7 +209,7 @@ public abstract class StreamDefinitionFactory {
                     compileGroupDefinition(streamConfig, (GroupConfig) child, (GroupDefinition) childDefinition);
                 }
                 catch (BeanIOConfigurationException ex) {
-                    throw new BeanIOConfigurationException("Invalid '" + child.getName() + 
+                    throw new BeanIOConfigurationException("Invalid '" + child.getName() +
                         "' group configuration: " + ex.getMessage(), ex);
                 }
                 break;
@@ -220,7 +221,7 @@ public abstract class StreamDefinitionFactory {
             definition.addChild(childDefinition);
         }
     }
-    
+
     private void compileNodeDefinition(NodeConfig config, NodeDefinition definition, int order) {
         definition.setName(config.getName());
         definition.setOrder(order);
@@ -269,11 +270,13 @@ public abstract class StreamDefinitionFactory {
      * @param recordDefinition the record definition to update
      */
     protected void compileFieldDefinitions(RecordConfig recordConfig, RecordDefinition recordDefinition) {
+        int index = 0;
         for (FieldConfig field : recordConfig.getFieldList()) {
             if (field.getName() == null) {
                 throw new BeanIOConfigurationException("Missing field name");
             }
 
+            ++index;
             try {
                 FieldDefinition fieldDefinition = newFieldDefinition(field);
                 fieldDefinition.setName(field.getName());
@@ -287,12 +290,12 @@ public abstract class StreamDefinitionFactory {
                 catch (PatternSyntaxException ex) {
                     throw new BeanIOConfigurationException("Invalid regex pattern", ex);
                 }
-    
+
                 int minLength = field.getMinLength() != null ? field.getMinLength() : 0;
                 fieldDefinition.setMinLength(minLength);
                 int maxLength = field.getMaxLength() != null ? field.getMaxLength() : -1;
                 fieldDefinition.setMaxLength(maxLength);
-    
+
                 if (maxLength > 0 && maxLength < minLength) {
                     throw new BeanIOConfigurationException("maxLength must be greater than or equal to minLength");
                 }
@@ -305,17 +308,52 @@ public abstract class StreamDefinitionFactory {
                         throw new BeanIOConfigurationException("literal text length is greater than maxLength");
                     }
                 }
-                
+
                 // validate regex or literal is configured for record identifying fields
                 if (fieldDefinition.isRecordIdentifier()) {
                     if (fieldDefinition.getLiteral() == null && fieldDefinition.getRegex() == null) {
-                        throw new BeanIOConfigurationException("literal or regex pattern required " + 
+                        throw new BeanIOConfigurationException("literal or regex pattern required " +
                             " for record identifying fields");
                     }
                 }
-    
-                updateFieldType(field, fieldDefinition, recordDefinition);
                 
+                // validate minOccurs
+                int minOccurs = 1;
+                if (field.getMinOccurs() != null) {
+                    minOccurs = field.getMinOccurs();
+                    
+                    if (minOccurs != 1 && field.getCollection() == null) {
+                        throw new BeanIOConfigurationException(
+                            "minOccurs must be 1, or the field collection type must be set");
+                    }
+                }
+                fieldDefinition.setMinOccurs(minOccurs);
+                
+                // validate the field's maximum occurrences, default is minOccurs
+                int maxOccurs = Math.max(minOccurs, 1);
+                if (field.getMaxOccurs() != null) {
+                    maxOccurs = field.getMaxOccurs();
+                    if (maxOccurs < 0) {
+                        maxOccurs = -1;
+                    }
+                    else if (maxOccurs < minOccurs) {
+                        throw new BeanIOConfigurationException("maxOccurs must be greater than or " +
+                            "equal to minOccurs");
+                    }
+                    if (maxOccurs != minOccurs && index < recordConfig.getFieldList().size()) {
+                        throw new BeanIOConfigurationException("A variable field occurence is " +
+                            "only allowed at the the end of the record");    
+                    }
+                    
+                    if (maxOccurs != 1 && field.getCollection() == null) {
+                        throw new BeanIOConfigurationException(
+                            "maxOccurs must be 1, or the field collection type must be set");
+                    }
+                }
+                fieldDefinition.setMaxOccurs(maxOccurs);
+
+                updateFieldType(field, fieldDefinition, recordDefinition);
+
                 // set the default field value using the configured type handler
                 String defaultText = field.getDefault();
                 if (defaultText != null) {
@@ -333,7 +371,7 @@ public abstract class StreamDefinitionFactory {
                         fieldDefinition.setDefaultValue(defaultText);
                     }
                 }
-                
+
                 recordDefinition.addField(fieldDefinition);
             }
             catch (BeanIOConfigurationException ex) {
@@ -342,7 +380,7 @@ public abstract class StreamDefinitionFactory {
             }
         }
     }
-    
+
     /**
      * Updates a field definition's property type, property descriptor and type handler
      * attributes.
@@ -350,9 +388,9 @@ public abstract class StreamDefinitionFactory {
      * @param fieldDefinition the field definition to update
      * @param recordDefinition the record definition the field belongs to
      */
-    private void updateFieldType(FieldConfig config, FieldDefinition fieldDefinition, 
+    private void updateFieldType(FieldConfig config, FieldDefinition fieldDefinition,
         RecordDefinition recordDefinition) {
-        
+
         // handle ignored fields
         if (config.isIgnored() || recordDefinition.getBeanClass() == null) {
             fieldDefinition.setProperty(false);
@@ -360,11 +398,11 @@ public abstract class StreamDefinitionFactory {
             fieldDefinition.setPropertyDescriptor(null);
             return;
         }
-        
+
         // update the definition to indicate the field is a bean property
         fieldDefinition.setProperty(true);
-        
-        // determine the field class
+
+        // determine the field property type
         Class<?> propertyType = null;
         if (config.getType() != null) {
             propertyType = TypeUtil.toType(config.getType());
@@ -373,30 +411,67 @@ public abstract class StreamDefinitionFactory {
             }
         }
         
+        // determine the field collection type
+        Class<? extends Collection<Object>> collectionType = null;
+        if (config.getCollection() != null) {
+            collectionType = TypeUtil.toCollectionType(config.getCollection());
+            if (collectionType == null) {
+                throw new BeanIOConfigurationException("Invalid collection type or " +
+                    "collection type alias '" + config.getCollection() + "'");
+            }
+        }
+        
         // set the property descriptor on the field
         PropertyDescriptor descriptor = null;
         if (!recordDefinition.isBeanClassMap()) {
             descriptor = getPropertyDescriptor(config, recordDefinition.getBeanClass());
-            
-            if (propertyType == null) {
-                propertyType = descriptor.getPropertyType();
+
+            if (collectionType != null) {
+                if (collectionType == TypeUtil.ARRAY_TYPE) {
+                    if (!descriptor.getPropertyType().isArray()) {
+                        throw new BeanIOConfigurationException("Collection type 'array' does not " +
+                            "match bean property type '" + descriptor.getPropertyType().getName() + "'");
+                    }
+                    
+                    Class<?> arrayType = descriptor.getPropertyType().getComponentType();
+                    if (propertyType == null) {
+                        propertyType = arrayType;
+                    }
+                    else if (!TypeUtil.isAssignable(arrayType, propertyType)) {
+                        throw new BeanIOConfigurationException("Configured field array of type '" + 
+                            config.getType() + "' is not assignable to bean property " +
+                            "array of type '" + arrayType.getName() + "'");
+                    }
+                }
+                else {
+                    if (!descriptor.getPropertyType().isAssignableFrom(collectionType)) {
+                        String arrayType = descriptor.getPropertyType().getComponentType().getName();
+                        throw new BeanIOConfigurationException("Configured collection type '" +
+                            config.getCollection() + "' is not assignable to bean property " +
+                            "type '" + arrayType + "[]'");
+                    }
+                }
             }
             else {
-                if (!TypeUtil.isAssignable(descriptor.getPropertyType(), propertyType)) {
-                    throw new BeanIOConfigurationException("Configured type '" + propertyType.getName() +
-                        "' is not compatible with bean property type '" + descriptor.getPropertyType().getName() + "'");
+                if (propertyType == null) {
+                    propertyType = descriptor.getPropertyType();
+                }
+                else if (!TypeUtil.isAssignable(descriptor.getPropertyType(), propertyType)) {
+                    throw new BeanIOConfigurationException("Configured field type '" + 
+                        config.getType() + "' is not assignable to bean property " +
+                        "type '" + descriptor.getPropertyType().getName() + "'");
                 }
             }
         }
         fieldDefinition.setPropertyDescriptor(descriptor);
-        
+
         // configure type handler properties
         Properties typeHandlerProperties = null;
         if (config.getFormat() != null) {
             typeHandlerProperties = new Properties();
             typeHandlerProperties.put(ConfigurableTypeHandler.FORMAT_SETTING, config.getFormat());
         }
-        
+
         // determine the type handler based on the named handler or the field class
         TypeHandler handler = null;
         if (config.getTypeHandler() != null) {
@@ -405,14 +480,14 @@ public abstract class StreamDefinitionFactory {
                 throw new BeanIOConfigurationException("No configured type handler named '" +
                     config.getTypeHandler() + "'");
             }
-            
+
             // if the property type was not already determine, use the type from the type handler
             if (propertyType == null) {
                 propertyType = handler.getType();
             }
             // otherwise validate the property type is compatible with the type handler
             else if (!TypeUtil.isAssignable(propertyType, handler.getType())) {
-                throw new BeanIOConfigurationException("Field property type '" + 
+                throw new BeanIOConfigurationException("Field property type '" +
                     propertyType.getName() + "' is not compatible " +
                     "with assigned type handler named '" + config.getTypeHandler() + "'");
             }
@@ -422,9 +497,9 @@ public abstract class StreamDefinitionFactory {
             if (propertyType == null) {
                 propertyType = String.class;
             }
-            
+
             // get a type handler for the the property type
-            String typeName = config.getType(); 
+            String typeName = config.getType();
             try {
                 if (typeName == null) {
                     typeName = propertyType.getName();
@@ -440,9 +515,9 @@ public abstract class StreamDefinitionFactory {
             if (handler == null) {
                 throw new BeanIOConfigurationException("Type handler not found for type '" + typeName + "'");
             }
-            
         }
         
+        fieldDefinition.setCollectionType(collectionType);
         fieldDefinition.setPropertyType(propertyType);
         fieldDefinition.setTypeHandler(handler);
     }
@@ -457,7 +532,7 @@ public abstract class StreamDefinitionFactory {
     private PropertyDescriptor getPropertyDescriptor(FieldConfig config, Class<?> beanClass) {
         String setter = config.getSetter();
         String getter = config.getGetter();
-        
+
         try {
             if (setter != null && getter != null) {
                 if ("".equals(setter)) {
@@ -481,7 +556,7 @@ public abstract class StreamDefinitionFactory {
                     }
                 }
                 if (descriptor == null) {
-                    throw new BeanIOConfigurationException("No such property '" + config.getName() + 
+                    throw new BeanIOConfigurationException("No such property '" + config.getName() +
                         "' on class '" + beanClass.getName() + "'");
                 }
                 if (getter != null) {
@@ -492,8 +567,8 @@ public abstract class StreamDefinitionFactory {
                             descriptor.setReadMethod(beanClass.getDeclaredMethod(getter, (Class[]) null));
                     }
                     catch (NoSuchMethodException ex) {
-                        throw new BeanIOConfigurationException("getter method not found: " + 
-                            ex.getMessage() , ex);
+                        throw new BeanIOConfigurationException("getter method not found: " +
+                            ex.getMessage(), ex);
                     }
                 }
                 if (setter != null) {
@@ -501,7 +576,7 @@ public abstract class StreamDefinitionFactory {
                         if ("".equals(setter))
                             descriptor.setWriteMethod(null);
                         else
-                            descriptor.setWriteMethod(beanClass.getDeclaredMethod(setter, 
+                            descriptor.setWriteMethod(beanClass.getDeclaredMethod(setter,
                                 new Class[] { descriptor.getPropertyType() }));
                     }
                     catch (NoSuchMethodException ex) {
@@ -539,7 +614,7 @@ public abstract class StreamDefinitionFactory {
     protected GroupDefinition newGroupDefinition(GroupConfig group) {
         return new GroupDefinition();
     }
-    
+
     /**
      * Creates a new <tt>StreamDefinition</tt>.
      * @param stream the stream configuration

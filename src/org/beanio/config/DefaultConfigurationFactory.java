@@ -80,9 +80,19 @@ public class DefaultConfigurationFactory implements ConfigurationFactory {
             TypeHandlerFactory.getDefault(), config.getTypeHandlerList());
 
         Collection<StreamConfig> streamConfigList = config.getStreamList();
-        Collection<StreamDefinition> streamContextList = new ArrayList<StreamDefinition>(
+        Collection<StreamDefinition> streamDefinitionList = new ArrayList<StreamDefinition>(
             streamConfigList.size());
 
+        // check for duplicate stream names
+        HashSet<String> set = new HashSet<String>();
+        for (StreamConfig streamConfig : streamConfigList) {
+            if (!set.add(streamConfig.getName())) {
+                throw new BeanIOConfigurationException("Duplicate stream name '" + 
+                    streamConfig.getName() + "' in mapping file");
+            }
+        }
+        set = null;
+        
         for (StreamConfig streamConfig : streamConfigList) {
             TypeHandlerFactory typeHandlerFactory = getTypeHandlerFactory(
                 globalTypeHandlerFactory, streamConfig.getHandlerList());
@@ -90,9 +100,9 @@ public class DefaultConfigurationFactory implements ConfigurationFactory {
             StreamDefinitionFactory factory = createStreamDefinitionFactory(
                 streamConfig.getFormat());
             factory.setTypeHandlerFactory(typeHandlerFactory);
-            streamContextList.add(factory.createStreamDefinition(streamConfig));
+            streamDefinitionList.add(factory.createStreamDefinition(streamConfig));
         }
-        return streamContextList;
+        return streamDefinitionList;
     }
 
     /**

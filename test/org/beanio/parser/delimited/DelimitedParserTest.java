@@ -39,18 +39,32 @@ public class DelimitedParserTest extends ParserTest {
         factory = newStreamFactory("delimited.xml");
     }
     
-    @SuppressWarnings("rawtypes")
     @Test
-    public void testOptionalFields() {
+    public void testRequiredField() {
         BeanReader in = factory.createReader("d1", new InputStreamReader(
             getClass().getResourceAsStream("d1_recordErrors.txt")));
         
         try {
             assertRecordError(in, 1, "record1", "Too few fields 2");
             assertRecordError(in, 2, "record1", "Too many fields 4");
-            
+            assertFieldError(in, 3, "record1", "field4", null, "Required field not set");
+        }
+        finally {
+            in.close();
+        }
+    }
+    
+    @Test
+    @SuppressWarnings("rawtypes")
+    public void testOptionalField() {
+        BeanReader in = factory.createReader("d2", new InputStreamReader(
+            getClass().getResourceAsStream("d2_optionalField.txt")));
+        
+        try {
             Map map = (Map) in.read();
-            assertEquals("value3", map.get("field3"));
+            assertEquals("value1", map.get("field1"));
+            assertEquals("value2", map.get("field2"));
+            assertNull(map.get("field3"));
             assertNull(map.get("field4"));
         }
         finally {

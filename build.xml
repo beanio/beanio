@@ -98,7 +98,7 @@
   
   <!-- Create website tar -->
   <target name="site" depends="init,docs" description="Create site tar">
-    <tar destfile="${target}/beanio-site.tar">
+    <tar destfile="${target}/beanio-site.tar.gz" compression="gzip">
       <tarfileset dir="${basedir}">
         <include name="docs/**" />
       </tarfileset>
@@ -108,6 +108,9 @@
       <tarfileset dir="${target}">
         <include name="docs/**" />
       </tarfileset>         
+      <tarfileset dir="${basedir}/src/org/beanio/config/xml" prefix="2011/01">
+        <include name="beanio-201101.xsd" />
+      </tarfileset>
     </tar>
   </target>
 

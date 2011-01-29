@@ -335,8 +335,6 @@ public class Record {
      * <p>If the field is a collection, this method returns the field text for
      * the first occurrence of the field.</p>
      * @param fieldName the name of the field to get the text for
-     * @param index the index of the field, beginning at 0, for collection type
-     *   fields
      * @return the unparsed field text
      * @see #setFieldText(String, String)
      */

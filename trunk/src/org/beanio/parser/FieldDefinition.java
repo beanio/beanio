@@ -178,7 +178,6 @@ public abstract class FieldDefinition {
     /**
      * Parses and validates a field property value from the record.
      * @param record the record to parse
-     * @param index the occurrence of the field to parse
      * @return the parsed field value, or {@link #INVALID} if the field was invalid,
      *   or {@link #MISSING} if the field was not present in the record
      */
@@ -190,7 +189,7 @@ public abstract class FieldDefinition {
         if (fieldText == INVALID) {
             return INVALID;
         }
-        
+
         String text = fieldText;
         
         // null field text means the field was not present in the record

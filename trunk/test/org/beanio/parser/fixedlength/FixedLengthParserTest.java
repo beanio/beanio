@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.io.*;
-import java.util.Map;
+import java.util.*;
 
 import org.beanio.*;
 import org.beanio.parser.ParserTest;
@@ -159,6 +159,45 @@ public class FixedLengthParserTest extends ParserTest {
         finally {
             in.close();
         }
+    }
+    
+    @Test
+    @SuppressWarnings({ "rawtypes" })
+    public void testPadding() {
+        BeanReader in = factory.createReader("f4", new InputStreamReader(
+            getClass().getResourceAsStream("f4_padding.txt")));
         
+        try {
+            Map map = (Map) in.read();
+            assertEquals(Arrays.asList(0, 1, 10, 100, 1000, 10000), map.get("number"));
+            
+            StringWriter text = new StringWriter();
+            factory.createWriter("f4", text).write(map);
+            assertEquals("INT000000000100010001000100010000", text.toString());
+            
+            map = (Map) in.read();
+            assertEquals(Arrays.asList('A', 'B', ' ', 'D'), map.get("character"));
+            
+            text = new StringWriter();
+            factory.createWriter("f4", text).write(map);
+            assertEquals("CHAAB D", text.toString());
+            
+            map = (Map) in.read();
+            assertEquals(Arrays.asList("TXT", "TX" , "T", ""), map.get("stringLeft"));
+
+            text = new StringWriter();
+            factory.createWriter("f4", text).write(map);
+            assertEquals("STLTXTTX T     ", text.toString());
+            
+            map = (Map) in.read();
+            assertEquals(Arrays.asList("TXT", "TX" , "T", ""), map.get("stringRight"));
+            
+            text = new StringWriter();
+            factory.createWriter("f4", text).write(map);
+            assertEquals("STRTXT TX  T   ", text.toString());
+        }
+        finally {
+            in.close();
+        }
     }
 }

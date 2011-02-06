@@ -77,9 +77,10 @@
   </attributeGroup>
   
   <complexType name="Record">
-    <sequence>
+    <choice minOccurs="0" maxOccurs="unbounded">
       <element name="field" minOccurs="0" maxOccurs="unbounded" type="tns:Field" />
-    </sequence>
+      <element name="bean" minOccurs="0" maxOccurs="unbounded" type="tns:Bean" />
+    </choice>
     <attribute name="name" type="xsd:string" use="required" />
     <attribute name="minLength" type="xsd:nonNegativeInteger" use="optional" />
     <attribute name="maxLength" type="tns:limit" use="optional" />    
@@ -99,7 +100,7 @@
   <complexType name="Field">
     <attribute name="name" type="xsd:string" use="required" />
     <attribute name="setter" type="xsd:string" use="optional" />
-    <attribute name="getter" type="xsd:string" use="optional" />
+    <attribute name="getter" type="xsd:string" use="optional" />  
     <attribute name="rid" type="xsd:boolean" use="optional" />
     <attribute name="position" type="xsd:int" use="optional" />
     <attribute name="required" type="xsd:boolean" use="optional" />
@@ -120,6 +121,20 @@
     <attribute name="minOccurs" type="xsd:nonNegativeInteger" use="optional" />
     <attribute name="maxOccurs" type="tns:limit" use="optional" />
   </complexType>  
+
+  <complexType name="Bean">    
+    <choice minOccurs="1" maxOccurs="unbounded">
+      <element name="field" minOccurs="0" maxOccurs="unbounded" type="tns:Field" />
+      <element name="bean" minOccurs="0" maxOccurs="unbounded" type="tns:Bean" />
+    </choice>
+    <attribute name="name" type="xsd:string" use="required" />
+    <attribute name="setter" type="xsd:string" use="optional" />
+    <attribute name="getter" type="xsd:string" use="optional" />  
+    <attribute name="class" type="xsd:string" use="optional" />
+    <attribute name="collection" type="xsd:string" use="optional" />
+    <attribute name="minOccurs" type="xsd:nonNegativeInteger" use="optional" />
+    <attribute name="maxOccurs" type="tns:limit" use="optional" />
+  </complexType>
   
   <simpleType name="justification">
     <restriction base="xsd:string">

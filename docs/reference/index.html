@@ -67,7 +67,8 @@ that each copy contains this Copyright Notice, whether distributed in print or e
   <a href="#writer">A.6. <tt>writer</tt></a><br />
   <a href="#group">A.7. <tt>group</tt></a><br />
   <a href="#record">A.8. <tt>record</tt></a><br />
-  <a href="#field">A.9. <tt>field</tt></a><br />
+  <a href="#bean">A.9. <tt>bean</tt></a><br />
+  <a href="#field">A.10. <tt>field</tt></a><br />
 </div>
 <a href="#B">Appendix B: Error Message Parameters</a><br />
 </div>
@@ -1360,16 +1361,26 @@ factory supports the following properties:</p>
 	
  -->
 <h1><a name="A">Appendix A:  XML Mapping File Reference</a></h1>
+<p>Appendix A is the complete reference for the BeanIO mapping file schema.  The root element
+of a mapping file is <tt><a href="#beanio">beanio</a></tt> with namespace 
+<tt>http://www.beanio.org/2011/01</tt>.  The following notatiion is used to indicate the
+allowed number of child elements:
+ </p>
+<div style="margin-left: 5%">
+	* Zero, one or more<br />
+	+ One or more<br />
+	? Zero or one<br />
+</div>
 
 <h2><a name="beanio">A.1. <tt>beanio</tt></a></h2>
-<p><tt>beanio</tt> is the root element for a BeanIO mapping configuration file.</p>
+<p>The <tt>beanio</tt> element is the root element for a BeanIO mapping configuration file.</p>
 <p>Children: 
 <a href="#typeHandler"><tt>typeHandler</tt></a>*, 
 <a href="#stream"><tt>stream</tt></a>+
 </p>
 
 <h2><a name="typeHandler">A.2. <tt>typeHandler</tt></a></h2>
-<p>A <tt>typeHandler</tt> is used to define custom field type handlers
+<p>A <tt>typeHandler</tt> element is used to define custom field type handlers
 that implement the <tt>org.beanio.types.TypeHandler</tt> interface.</p> 
 <p>Attributes:</p>
 <table>
@@ -1400,7 +1411,7 @@ that implement the <tt>org.beanio.types.TypeHandler</tt> interface.</p>
 </p>
 
 <h2><a name="property">A.3. <tt>property</tt></a></h2>
-<p>A <tt>property</tt> is used to customize other setting elements, such
+<p>A <tt>property</tt> element is used to customize other elements, such
 as a <a href="#typeHandler"><tt>typeHandler</tt></a>.</p>
 <table>
 <tr>
@@ -1422,7 +1433,7 @@ as a <a href="#typeHandler"><tt>typeHandler</tt></a>.</p>
 </table>
 
 <h2><a name="stream">A.4. <tt>stream</tt></a></h2>
-<p>A <tt>stream</tt> defines the record layout of an input or output stream.</p> 
+<p>A <tt>stream</tt> element defines the record layout of an input or output stream.</p> 
 <p>Attributes:</p>
 <table>
 <tr>
@@ -1476,7 +1487,7 @@ as a <a href="#typeHandler"><tt>typeHandler</tt></a>.</p>
 </p>
 
 <h2><a name="reader">A.5. <tt>reader</tt></a></h2>
-<p>A <tt>reader</tt> is used to customize or replace the default record reader factory
+<p>A <tt>reader</tt> element is used to customize or replace the default record reader factory
 for the stream..</p> 
 <p>Attributes:</p>
 <table>
@@ -1503,7 +1514,7 @@ for the stream..</p>
 </p>
 
 <h2><a name="writer">A.6. <tt>writer</tt></a></h2>
-<p>A <tt>writer</tt> is used to customize or replace the default record writer factory
+<p>A <tt>writer</tt> element is used to customize or replace the default record writer factory
 for the stream..</p> 
 <p>Attributes:</p>
 <table>
@@ -1530,7 +1541,7 @@ for the stream..</p>
 </p>
 
 <h2><a name="group">A.7. <tt>group</tt></a></h2>
-<p>A <tt>group</tt> is used to group records together for validating the occurances of
+<p>A <tt>group</tt> element is used to group records together for validating occurrences of
 the group as a whole.</p> 
 <p>Attributes:</p>
 <table>
@@ -1621,7 +1632,7 @@ the group as a whole.</p>
     of fields allowed by this record.  Defaults to the number of fields defined for the record.
     <br /><br />
     If the stream format is <tt>fixedlength</tt>, <tt>maxLength</tt> is the maximum number 
-    of characters allowed by this record.  Defaults to the sum of all field lengths definied for
+    of characters allowed by this record.  Defaults to the sum of all field lengths defined for
     the record.
     </td>
   <td>No</td>
@@ -1640,12 +1651,93 @@ the group as a whole.</p>
 
 <p>Children: 
 <a href="#field"><tt>field</tt></a>*
+<a href="#bean"><tt>bean</tt></a>*
 </p>
 
 
-<h2><a name="field">A.9. <tt>field</tt></a></h2>
-<p>A <tt>field</tt> is used .  All fields within a record must be ordered according to 
-their position.</p> 
+<h2><a name="bean">A.9. <tt>bean</tt></a></h2>
+<p>A <tt>bean</tt> element is used to map fields and other bean objects to a parent bean or record.</p> 
+<p>Attributes:</p>
+<table>
+<tr>
+  <th>Attribute</th>
+  <th>Description</th>
+  <th>Required</th>
+</tr>
+<tr>
+  <td><tt>name</tt></td>
+  <td>The name of bean.  Unless a getter and/or setter is defined, the bean name is used
+    for getting and setting the bean from its parent bean object.</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><tt>getter</tt></td>
+  <td>The getter method used to retrieve the bean property value from the bean class of
+    it's parent.  By default, the getter method is determined through intropection using
+    the bean name.</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><tt>setter</tt></td>
+  <td>The setter method used to set the bean property value on the bean class of
+    it's parent.  By default, the setter method is determined through intropection using
+    the bean name.</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><tt>class</tt></td>
+  <td>The fully qualified class name of the object mapped to this bean. 
+    If set to <tt>map</tt> or any <tt>java.util.Map</tt> implementation, a Map object will 
+    be used with field/bean names for keys and field/bean values for values.
+  </td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><tt>collection</tt></td>
+  <td>If the parent bean property type of this bean is a collection, <tt>collection</tt>
+    is the fully qualified collection class name or collection type alias of it's parent bean
+    property type, and <tt>type</tt> becomes the property type of the collection item.  
+    May be set to <tt>array</tt> if the collection type is a Java array.
+    <p>BeanIO will not derrive the collection type from it's parent bean object, thus 
+    collection type beans must always be explicitly declared.</p>
+    <p>There are a couple limitations specific to beans in any "flat" format (delimited, csv or fixedlength):</p>
+    <ul>
+    <li>Collection bean values must appear in the stream consecutively.</li>
+    <li>A collection type bean cannot contain collection children (fields or other beans) where
+      the length is indeterminate (i.e. where <tt>minOccurs</tt> does not match <tt>maxOccurs</tt>).</li>
+    <li>Bean collections must fully declare all child fields- there can be no gaps in the definition.
+      (However, you can still skip over unwanted values using the <tt>ignore</tt> field attribute.)</li>
+    </ul>
+  </td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><tt>minOccurs</tt></td>
+  <td>The minimum consecutive occurrences of this bean.  Defaults to 1, and should only
+    be overridden for collection type fields.
+  </td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><tt>maxOccurs</tt></td>
+  <td>The maximum consecutive occurrences of this bean.  By default, 
+    <tt>maxOccurs</tt> is set to <tt>minOccurs</tt> or 1, whichever is greater.  If overridden,
+    the value can only exceed <tt>minOccurs</tt> if the bean appears at the end of a record.  
+    If there is no limit to the number of occurrences, the value may be set to <tt>unbounded</tt>.
+  </td>
+  <td>No</td>
+</tr>
+</table>
+
+<p>Children: 
+<a href="#field"><tt>field</tt></a>*
+<a href="#bean"><tt>bean</tt></a>*
+</p>
+
+
+<h2><a name="field">A.10. <tt>field</tt></a></h2>
+<p>A <tt>field</tt> element is used to define and map a field from a record to a bean property
+and vice versa.</p> 
 <p>Attributes:</p>
 <table>
 <tr>
@@ -1687,12 +1779,16 @@ their position.</p>
 <tr>
   <td><tt>position</tt></td>
   <td>For delimited and CSV formatted streams, <tt>position</tt> is the index of the field
-    within the record, beginning at 0.  Defaults to the next sequential number after the
-    previous field, or 0 if this is the first field in the record.
+    within the record, beginning at 0.  And for fixed length formatted streams, <tt>position</tt>
+    is the index of the first character of the field within the record, beginning at 0.
     <p>
-    For fixed length formatted streams, <tt>position</tt> is the index of the first character
-    of this field within the record, beginning at 0.  Defaults to the previous field's 
-    position plus its length, or 0 if this is the first field in the record.
+    If the field is a collection, or the field is a property of a bean that is a collection, 
+    <tt>position</tt> should be set based on the first occurrence of the field in a record.
+    </p>
+    <p>
+    A position must be specified for all fields in a record, or for none at all.  If positions
+    are not specified, BeanIO will automatically calculate field positions based on the order
+    in which the fields are definined in the mapping file.
     </p>
   </td>
   <td>No</td>
@@ -1815,7 +1911,7 @@ their position.</p>
 <tr>
   <td><tt>length</tt></td>
   <td>The length in characters of this fixed length field.</td>
-  <td>Yes</td>
+  <td>Yes<sup>1</sup></td>
   <td><tt>fixedlength</tt></td>
 </tr>
 <tr>
@@ -1832,6 +1928,8 @@ their position.</p>
   <td><tt>fixedlength</tt></td>
 </tr>
 </table>
+<p><sup>1</sup>If a literal value is supplied, <tt>length</tt> will default to the 
+length of the literal value if not supplied.</p> 
 
 
 <h1><a name="B">Appendix B: Error Message Parameters</a></h1>
@@ -2063,7 +2161,7 @@ message for each configurable validation rule.</p>
 </tr>
 <tr>
   <td>2</td>
-  <td>Field Label/Name</td>
+  <td>Field or Bean Label/Name</td>
 </tr>
 <tr>
   <td>3</td>

@@ -27,9 +27,9 @@
       <property name="lineSeparator" value="" />
     </writer>
     <record name="record" class="map">
-      <field name="default" length="10" trim="false" />
-      <field name="number" type="int" length="10" justify="right" padding="0" />
-      <field name="padx" length="10" justify="left" padding="x" trim="false" />
+      <field name="default" position="0" length="10" trim="false" />
+      <field name="number" position="10" type="int" length="10" justify="right" padding="0" />
+      <field name="padx" position="20" length="10" justify="left" padding="x" trim="false" />
       <field name="pos40" position="40" length="5" trim="false" />
     </record>
   </stream>

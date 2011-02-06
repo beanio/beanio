@@ -15,10 +15,14 @@
  */
 package org.beanio.config.fixedlength;
 
+import java.util.List;
+
 import org.beanio.BeanIOConfigurationException;
 import org.beanio.config.*;
+import org.beanio.config.flat.FlatStreamDefinitionFactory;
 import org.beanio.parser.*;
 import org.beanio.parser.fixedlength.*;
+import org.beanio.parser.flat.FlatRecordDefinition;
 import org.beanio.stream.*;
 import org.beanio.stream.fixedlength.*;
 
@@ -29,126 +33,90 @@ import org.beanio.stream.fixedlength.*;
  * @author Kevin Seim
  * @since 1.0
  */
-public class FixedLengthStreamDefinitionFactory extends StreamDefinitionFactory {
-
-    @Override
-    protected void compileFieldDefinitions(RecordConfig recordConfig,
-            RecordDefinition recordDefinition) {
-        
-        super.compileFieldDefinitions(recordConfig, recordDefinition);
-
-        FixedLengthRecordDefinition flRecordDefinition = (FixedLengthRecordDefinition) recordDefinition;
-
-        int fieldCount = recordConfig.getFieldList().size();
-        FieldConfig[] fieldArray = new FieldConfig[fieldCount];
-        recordConfig.getFieldList().toArray(fieldArray);
-        
-        int[] position = new int[fieldCount];
-        int[] length = new int[fieldCount];
-        
-        // initialize position and length values to what was set
-        for (int i = 0; i < fieldCount; i++) {
-            position[i] = fieldArray[i].getPosition();
-            length[i] = fieldArray[i].getLength();
-        }
-        
-        // by default, the first field position is 0 if not set
-        if (position[0] < 0) {
-            position[0] = 0;
-        }
-        
-        FixedLengthFieldDefinition previousDefinition = null;
-        FixedLengthFieldDefinition currentDefinition = null;
-        
-        // try to fill in missing position and length information
-        for (int i = 0; i < fieldCount; i++) {
-            FieldConfig fieldConfig = fieldArray[i];
-            currentDefinition = (FixedLengthFieldDefinition) recordDefinition.getFieldList().get(i);
-            
-            try {
-                // if position is not set, use the information from the previous field 
-                //     position + length * minOccurs
-                if (position[i] < 0) {
-                    position[i] = previousDefinition.getPosition() + 
-                        previousDefinition.getLength() * previousDefinition.getMinOccurs();
-                }
-                
-                // -1 means not set, but 0 was explicitly set and invalid
-                if (length[i] == 0) { 
-                    throw new BeanIOConfigurationException("length must be greater than 0");
-                }
-                
-                // if not set, try to determine the length of the field
-                if (length[i] < 0) {
-                    // if a literal value is set, use the length of the literal
-                    String literal = fieldArray[i].getLiteral();
-                    if (literal != null) {
-                        length[i] = literal.length(); 
-                    }
-                    // if the position of the next field was set, the length is the difference in positions
-                    else if (i < (fieldCount - 1) && position[i + 1] > 0 && currentDefinition.getMinOccurs() == 1) {
-                        length[i] = position[i + 1] - position[i];
-                    }
-                    // give up
-                    if (length[i] < 0) {
-                        throw new BeanIOConfigurationException("length is required");
-                    }
-                }
-                
-                currentDefinition.setPosition(position[i]);
-                currentDefinition.setLength(length[i]);
-                currentDefinition.setPadding(fieldConfig.getPadding());
-                currentDefinition.setJustification("right".equals(fieldConfig.getJustify()) ?
-                    FixedLengthFieldDefinition.RIGHT : FixedLengthFieldDefinition.LEFT);
+public class FixedLengthStreamDefinitionFactory extends FlatStreamDefinitionFactory {
     
-                previousDefinition = currentDefinition;
-            }
-            catch (BeanIOConfigurationException ex) {
-                throw new BeanIOConfigurationException("Invalid '" + fieldConfig.getName() +
-                    "' field configuration: " + ex.getMessage(), ex);
-            }
+    @Override
+    protected void updateFieldDefinition(FieldConfig fieldConfig, FieldDefinition fieldDefinition) {
+        int length = fieldConfig.getLength();
+        // -1 means not set, but 0 was explicitly set and invalid
+        if (length == 0) { 
+            throw new BeanIOConfigurationException("length must be greater than 0");
         }
-
-        // set the minimum length of the record
-        Integer minLength = recordConfig.getMinLength();
-        if (minLength == null) {
-            // calculate the default minimum record length based on minimum record length
-            minLength = currentDefinition.getPosition() + 
-                currentDefinition.getLength() * currentDefinition.getMinOccurs();
-        }
-        else if (minLength < 0) {
-            throw new BeanIOConfigurationException("Invalid minLength"); 
-        }
-        
-        // set the maximum length of the record
-        Integer maxLength = recordConfig.getMaxLength();
-        if (maxLength == null) {
-            // calculate the default maximum record length
-            if (currentDefinition.getMaxOccurs() < 0) {
-                maxLength = -1;
-            }
-            else if (currentDefinition.getMaxOccurs() != 1) {
-                maxLength = currentDefinition.getPosition() + 
-                    currentDefinition.getLength() * currentDefinition.getMaxOccurs();
+        // if not set, try to determine the length of the field
+        else if (length < 0) {
+            // if a literal value is set, use the length of the literal
+            String literal = fieldConfig.getLiteral();
+            if (literal != null) {
+                length = literal.length(); 
             }
             else {
-                maxLength = minLength;
+                throw new BeanIOConfigurationException("length is required");
             }
         }
-        else if (maxLength < 1) {
-            throw new BeanIOConfigurationException("Invalid maxLength");
-        }
-        else if (recordConfig.getMinLength() != null && maxLength < minLength) {
-            throw new BeanIOConfigurationException("maxLength must be greater than or equal to minLength");
-        }
-        
-        flRecordDefinition.setMinLength(minLength);
-        flRecordDefinition.setMaxLength(maxLength);
+        fieldDefinition.setLength(length);
+        fieldDefinition.setPosition(fieldConfig.getPosition());
+        ((FixedLengthFieldDefinition)fieldDefinition).setPadding(fieldConfig.getPadding());
+        ((FixedLengthFieldDefinition)fieldDefinition).setJustification("right".equals(fieldConfig.getJustify()) ?
+            FixedLengthFieldDefinition.RIGHT : FixedLengthFieldDefinition.LEFT);
     }
-
+    
+    @Override
+    protected void assignDefaultFieldPositions(RecordConfig recordConfig, FlatRecordDefinition recordDefinition) {
+        updateFieldPositionAndLength(null, recordConfig.getBean(), recordDefinition.getBeanDefinition());
+    }
+    
+    /*
+     * Recursively updates the position of all fields.
+     */
+    private FixedLengthFieldDefinition updateFieldPositionAndLength(FixedLengthFieldDefinition previousField, BeanConfig beanConfig,
+        BeanDefinition beanDefinition) {
+        
+        int i = 0;
+        List<PropertyConfig> propertyList = beanConfig.getPropertyList();
+        for (PropertyConfig property : propertyList) {
+            if (property.isBean()) {
+                previousField = updateFieldPositionAndLength(previousField, (BeanConfig) property, 
+                    (BeanDefinition) beanDefinition.getProperty(i));
+            }
+            else {
+                FieldConfig field = (FieldConfig) property;
+                FixedLengthFieldDefinition currentDefinition = (FixedLengthFieldDefinition) beanDefinition.getProperty(i);
+                
+                int position = field.getPosition();
+                try {
+                    // if position is not set, use the information from the previous field 
+                    //     position + length * minOccurs
+                    if (position < 0) {
+                        if (previousField == null) {
+                            position = 0;
+                        }
+                        else {
+                            position = previousField.getPosition() + 
+                                previousField.getLength() * previousField.getMinOccurs();
+                        }
+                    }
+                    currentDefinition.setPosition(position);
+                    
+                    previousField = currentDefinition;
+                }
+                catch (BeanIOConfigurationException ex) {
+                    throw new BeanIOConfigurationException("Invalid '" + field.getName() +
+                        "' field configuration: " + ex.getMessage(), ex);
+                }
+            }
+            ++i;
+        }
+        return previousField;
+    }
+    
     @Override
     protected FieldDefinition newFieldDefinition(FieldConfig field) {
         return new FixedLengthFieldDefinition();
+    }
+    
+    @Override
+    protected BeanDefinition newBeanDefinition(BeanConfig bean) {
+        return new FixedLengthBeanDefinition();
     }
 
     @Override

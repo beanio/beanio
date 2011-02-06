@@ -15,7 +15,8 @@
  */
 package org.beanio.parser.delimited;
 
-import org.beanio.parser.*;
+import org.beanio.parser.Record;
+import org.beanio.parser.flat.FlatFieldDefinition;
 
 /**
  * A <tt>DelimitedFieldDefinition</tt> is used to parse and format fields for
@@ -24,10 +25,13 @@ import org.beanio.parser.*;
  * @author Kevin Seim
  * @since 1.0
  */
-public class DelimitedFieldDefinition extends FieldDefinition {
+public class DelimitedFieldDefinition extends FlatFieldDefinition {
 
 	@Override
 	public boolean matches(Record record) {
+	    if (!isRecordIdentifier())
+	        return true;
+	    
 		return isMatch(getFieldText(record));
 	}
 	
@@ -40,9 +44,13 @@ public class DelimitedFieldDefinition extends FieldDefinition {
 	}
 	
 	private String getFieldText(Record record) {
-	    int pos = getPosition() + record.getFieldIndex();
-	    
+	    int pos = getCurrentPosition(record);
 		DelimitedRecord rec = ((DelimitedRecord)record);
 		return (pos < rec.getFieldCount()) ? rec.getFieldText(pos) : null;
 	}
+	
+	@Override
+    public int getLength() {
+        return 1;
+    }
 }

@@ -16,8 +16,6 @@
 package org.beanio.parser;
 
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Array;
-import java.util.*;
 import java.util.regex.*;
 
 import org.beanio.*;
@@ -25,21 +23,15 @@ import org.beanio.types.*;
 import org.beanio.util.TypeUtil;
 
 /**
- * A <tt>FieldDefinition</tt> is used to parse and format the fields that makeup
- * a record. 
+ * A <tt>FieldDefinition</tt> is used to parse and format field values that
+ * make up a record or bean.
  * 
  * @author Kevin Seim
  * @since 1.0
  */
-public abstract class FieldDefinition {
+public abstract class FieldDefinition extends PropertyDefinition {
 
-    /** Constant indicating the field did not pass validation. */
-    protected static final String INVALID = new String();
-    /** Constant indicating the  field was not present in the stream */
-    protected static final String MISSING = new String();
-    
-    private String name;
-    private int position = 0;
+    private int position = -1;
     private boolean recordIdentifier = false;
     private boolean trim = true;
     private boolean required = false;
@@ -49,15 +41,8 @@ public abstract class FieldDefinition {
     private String literal = null;
     private Pattern regex;
 
-    private PropertyDescriptor propertyDescriptor;
-    private Class<?> propertyType;
     private TypeHandler handler;
     private Object defaultValue;
-
-    /* collection support */
-    private Class<? extends Collection<Object>> collectionType;
-    private int minOccurs = 1;
-    private int maxOccurs = 1;  // -1 for unbounded
     
     /**
      * Tests if the field text in the record matches this field definition.
@@ -93,7 +78,7 @@ public abstract class FieldDefinition {
             return false;
         }
         
-        if (!TypeUtil.isAssignable(propertyType, value.getClass())) {
+        if (!TypeUtil.isAssignable(getPropertyType(), value.getClass())) {
             return false;
         }
         
@@ -111,76 +96,12 @@ public abstract class FieldDefinition {
     protected abstract String parseField(Record record);
 
     /**
-     * Validates and parses the value of this field from a record.  If field validation
-     * fails, appropriate field errors are set on the record, and null is returned. 
-     * @param record the record to parse and update with any field errors
-     * @return the field value, or <tt>null</tt> if validation failed or the field
-     *   was not present in the record
-     */
-    public Object parseValue(Record record) {
-        if (!isCollection()) {
-            record.setFieldIndex(0);
-            
-            Object value = parsePropertyValue(record);
-            if (value == INVALID) {
-                value = null;
-            }
-            return value;
-        }
-        
-        Collection<Object> collection = isArray() ?
-            new ArrayList<Object>() : createCollection();
-        
-        int fieldIndex = 0;
-        boolean invalid = false;
-        while (maxOccurs < 0 || fieldIndex < maxOccurs) {
-            record.setFieldIndex(fieldIndex);
-            Object value = parsePropertyValue(record);
-            
-            // abort if the value is missing (i.e. end of record reached)
-            if (value == MISSING) {
-                break;
-            }
-            else if (value != INVALID) {
-                collection.add(value);
-            }
-            else {
-                invalid = true;
-            }
-            ++fieldIndex;
-        }
-        
-        // no need to go further if invalid
-        if (invalid) {
-            return null;
-        }
-        // no need to go further if its not a property
-        else if (!isProperty()) {
-            return null;
-        }
-        else if (isArray()) {
-            Class<?> arrayType = propertyDescriptor == null ? getPropertyType() :
-                propertyDescriptor.getPropertyType().getComponentType();
-            
-            int index = 0;
-            Object array = Array.newInstance(arrayType, collection.size());
-            
-            for (Object obj : collection) {
-                Array.set(array, index++, obj);
-            }
-            return array;
-        }
-        else {
-            return collection;
-        }
-    }
-    
-    /**
      * Parses and validates a field property value from the record.
      * @param record the record to parse
      * @return the parsed field value, or {@link #INVALID} if the field was invalid,
      *   or {@link #MISSING} if the field was not present in the record
      */
+    @Override
     protected Object parsePropertyValue(Record record) {
         boolean valid = true;
 
@@ -194,14 +115,8 @@ public abstract class FieldDefinition {
         
         // null field text means the field was not present in the record
         if (text == null) {
-            // if this field is a collection and we've reached the minimum
-            // occurrences, return MISSING, otherwise add a validation error 
+            // if this field is a collection, return MISSING 
             if (isCollection()) {
-                // validate minimum occurrences have been met
-                if (record.getFieldIndex() < getMinOccurs()) {
-                    record.addFieldError(name, text, "minOccurs", minOccurs, maxOccurs);
-                    return INVALID;
-                }
                 return MISSING;
             }
         }
@@ -214,33 +129,36 @@ public abstract class FieldDefinition {
         if (text == null || "".equals(text)) {
             // validation for required fields
             if (required) {
-                record.addFieldError(name, fieldText, "required");
+                record.addFieldError(getName(), fieldText, "required");
                 valid = false;
             }
             // return the default value if set
             else if (defaultValue != null) {
                 return defaultValue;
             }
+            else if (text == null) {
+                return MISSING;
+            }
         }
         else {
             // validate constant fields
             if (literal != null && !literal.equals(text)) {
-                record.addFieldError(name, fieldText, "literal", literal);
+                record.addFieldError(getName(), fieldText, "literal", literal);
                 valid = false;
             }
             // validate minimum length
             if (minLength > -1 && text.length() < minLength) {
-                record.addFieldError(name, fieldText, "minLength", minLength, maxLength);
+                record.addFieldError(getName(), fieldText, "minLength", minLength, maxLength);
                 valid = false;
             }
             // validate maximum length
             if (maxLength > -1 && text.length() > maxLength) {
-                record.addFieldError(name, fieldText, "maxLength", minLength, maxLength);
+                record.addFieldError(getName(), fieldText, "maxLength", minLength, maxLength);
                 valid = false;
             }
             // validate the regular expression
             if (regex != null && !regex.matcher(text).matches()) {
-                record.addFieldError(name, fieldText, "regex", regex.pattern());
+                record.addFieldError(getName(), fieldText, "regex", regex.pattern());
                 valid = false;
             }
         }
@@ -256,6 +174,7 @@ public abstract class FieldDefinition {
             Object value = (handler == null) ? text : handler.parse(text);
             
             // validate primitive values are not null
+            PropertyDescriptor propertyDescriptor = getPropertyDescriptor();
             if (value == null && isProperty() && propertyDescriptor != null) {
                 if (isArray()) {
                     if (propertyDescriptor.getPropertyType().getComponentType().isPrimitive()) {
@@ -276,8 +195,8 @@ public abstract class FieldDefinition {
             return value;
         }
         catch (TypeConversionException ex) {
-            record.addFieldError(name, fieldText, "type", ex.getMessage());
-            return null;
+            record.addFieldError(getName(), fieldText, "type", ex.getMessage());
+            return INVALID;
         }
         catch (Exception ex) {
             throw new BeanReaderIOException(record.getContext(), 
@@ -286,20 +205,6 @@ public abstract class FieldDefinition {
         }
     }
 
-    /**
-     * Creates a new <tt>Collection</tt> for this field based on the configure collection type.
-     * @return the new <tt>Collection</tt>
-     */
-    private Collection<Object> createCollection() {
-        try {
-            return getCollectionType().newInstance();
-        }
-        catch (Exception ex) {
-            throw new BeanReaderIOException("Failed to instantiate collection '" + 
-                getCollectionType().getName() + "' for field '" + getName() + "'", ex);
-        }
-    }
-    
     /**
      * Formats the field value.
      * @param value the field value to format
@@ -334,22 +239,6 @@ public abstract class FieldDefinition {
      */
     protected String formatText(String text) {
         return text == null ? "" : text;
-    }
-
-    /**
-     * Returns the field name.
-     * @return the field name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Sets the field name.
-     * @param name the new field name
-     */
-    public void setName(String name) {
-        this.name = name;
     }
 
     /**
@@ -437,26 +326,6 @@ public abstract class FieldDefinition {
      */
     public void setTypeHandler(TypeHandler handler) {
         this.handler = handler;
-    }
-
-    /**
-     * Returns the bean property descriptor for getting and setting this field definition's
-     * property value from the record bean class.  May be <tt>null</tt> if the field is not
-     * a property of the record bean.
-     * @return the bean property descriptor
-     */
-    public PropertyDescriptor getPropertyDescriptor() {
-        return propertyDescriptor;
-    }
-
-    /**
-     * Sets the bean property descriptor for getting and setting this field definition's
-     * property value from the record bean class.  May be set to <tt>null</tt> if this field
-     * is not a property of the record bean.
-     * @param propertyDescriptor the bean property descriptor
-     */
-    public void setPropertyDescriptor(PropertyDescriptor propertyDescriptor) {
-        this.propertyDescriptor = propertyDescriptor;
     }
 
     /**
@@ -582,96 +451,5 @@ public abstract class FieldDefinition {
      */
     public void setDefaultValue(Object defaultValue) {
         this.defaultValue = defaultValue;
-    }
-
-    /**
-     * Returns the property type of this field, or if this is a collection, the 
-     * property type of the collection value.  May be <tt>null</tt> if this field is
-     * not a property of the record bean.
-     * @return the property type of this field
-     */
-    public Class<?> getPropertyType() {
-        return propertyType;
-    }
-
-    /**
-     * Sets the property type of this field, or if this field is a collection, the
-     * property type of the collection value.  If this field is not a property of the
-     * record bean, the property type may be set to <tt>null</tt>.
-     * @param type the property type of this field
-     */
-    public void setPropertyType(Class<?> type) {
-        this.propertyType = type;
-    }
-
-    /**
-     * Returns the collection type of this field, or <tt>null</tt> if this field is not
-     * a collection or array.
-     * @return the collection type, or {@link TypeUtil#ARRAY_TYPE} if this field is an array,
-     *   or <tt>null</tt>
-     */
-    public Class<? extends Collection<Object>> getCollectionType() {
-        return collectionType;
-    }
-
-    /**
-     * Sets the collection type of this field.  Or if this field is an array, the collection type 
-     * should be set to {@link TypeUtil#ARRAY_TYPE}.
-     * @param collectionType the collection type of this field, or {@link TypeUtil#ARRAY_TYPE} for arrays
-     */
-    public void setCollectionType(Class<? extends Collection<Object>> collectionType) {
-        this.collectionType = collectionType;
-    }
-    
-    /**
-     * Returns <tt>true</tt> if the field property type is a collection or array.
-     * @return <tt>true</tt> if this field is a collection type
-     */
-    public boolean isCollection() {
-        return collectionType != null;
-    }
-    
-    /**
-     * Returns <tt>true</tt> if the field property type is an array.
-     * @return <tt>true</tt> if this field is an array type
-     */
-    public boolean isArray() {
-        return collectionType == TypeUtil.ARRAY_TYPE;
-    }
-
-    /**
-     * Returns the minimum occurrences of this field in a stream.  Always 1 unless
-     * this field is a collection.
-     * @return the minimum occurrences of this field
-     */
-    public int getMinOccurs() {
-        return minOccurs;
-    }
-
-    /**
-     * Sets the minimum occurrences of this field in a stream.  Must be 1 unless
-     * this field is a collection.
-     * @param minOccurs the minimum occurrences of this field
-     */
-    public void setMinOccurs(int minOccurs) {
-        this.minOccurs = minOccurs;
-    }
-
-    /**
-     * Returns the maximum occurrences of this field in a stream.  Always 1 unless
-     * this field is a collection.
-     * @return the maximum occurrences of this field
-     */
-    public int getMaxOccurs() {
-        return maxOccurs;
-    }
-
-    /**
-     * Sets the maximum occurrences of this field in a stream.  Must be 1 unless
-     * this field is a collection.
-     * @param maxOccurs the maximum occurrences of this field
-     */
-    public void setMaxOccurs(int maxOccurs) {
-        this.maxOccurs = maxOccurs;
     }
 }

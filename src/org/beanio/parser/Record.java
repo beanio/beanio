@@ -38,8 +38,8 @@ public class Record {
     private String recordText;
     /* the name of the record last read from the stream, if known */
     private String recordName;
-    /* the field collection index of the last parsed field */
-    private int fieldIndex;
+    /* stores the current field offset */
+    private LinkedList<Integer> fieldOffsets = new LinkedList<Integer>();
     
     private Map<String, String> fieldMap = new HashMap<String, String>();
     private Map<String, List<String>> collectionFieldMap = new HashMap<String,List<String>>();
@@ -64,7 +64,7 @@ public class Record {
         this.collectionFieldMap.clear();
         this.fieldErrors = null;
         this.recordErrors = null;
-        this.fieldIndex = 0;
+        this.fieldOffsets.clear();
     }
 
     /**
@@ -308,6 +308,7 @@ public class Record {
      * @param text the raw field text
      */
     public void setFieldText(String fieldName, String text) {
+        int fieldIndex = getFieldOffset();
         if (fieldIndex == 0) {
             fieldMap.put(fieldName, text);
         }
@@ -322,7 +323,7 @@ public class Record {
                 list.set(fieldIndex - 1, text);
             }
             else {
-                while (index < list.size()) {
+                while (index > list.size()) {
                     list.add(null);
                 }
                 list.add(text);
@@ -370,12 +371,47 @@ public class Record {
         }
     }
     
-    public int getFieldIndex() {
-        return fieldIndex;
+    /**
+     * Pushes a field onto the stack.
+     */
+    public void pushField() {
+        fieldOffsets.addFirst(0);
     }
-
-    public void setFieldIndex(int fieldIndex) {
-        this.fieldIndex = fieldIndex;
+    
+    /**
+     * Sets the current index of the collection being parsed, from which
+     * all subsequent parsing will be offset.
+     * @param index the current collection index
+     */
+    public void setFieldOffset(int index) {
+        fieldOffsets.set(0, index);
+    }
+    
+    /**
+     * Returns the index (or offset) of the current collection being parsed.
+     * @return the index of the current collection being parsed
+     */
+    public int getFieldOffset() {
+        if (fieldOffsets.isEmpty())
+            return 0;
+        else
+            return fieldOffsets.getFirst();
+    }
+    
+    /**
+     * Pops the last field from the stack. 
+     */
+    public void popField() {
+        fieldOffsets.removeFirst();
+    }
+    
+    /**
+     * Returns the stack of field offsets.  The most recently parsed field is
+     * at the beginning of the list.
+     * @return the field offset stack
+     */
+    public List<Integer> getFieldOffsets() {
+        return fieldOffsets;
     }
 
     @Override

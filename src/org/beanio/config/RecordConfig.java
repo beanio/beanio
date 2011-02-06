@@ -15,8 +15,6 @@
  */
 package org.beanio.config;
 
-import java.util.*;
-
 /**
  * Stores configuration settings for a record.  Records and groups
  * are used to define the layout of stream.
@@ -26,10 +24,9 @@ import java.util.*;
  */
 public class RecordConfig extends NodeConfig {
 
+    private BeanConfig bean;
     private Integer minLength = null;
     private Integer maxLength = null;
-    private String beanClass;
-    private List<FieldConfig> fieldList = new ArrayList<FieldConfig>();
 
     /**
      * Returns {@link NodeConfig#RECORD}
@@ -37,6 +34,22 @@ public class RecordConfig extends NodeConfig {
     @Override
     public char getType() {
         return RECORD;
+    }
+
+    /**
+     * Returns the bean configuration this record is mapped to.
+     * @return the bean configuration
+     */
+    public BeanConfig getBean() {
+        return bean;
+    }
+
+    /**
+     * Sets the bean configuration this record is maps to.
+     * @param bean the bean configuration
+     */
+    public void setBean(BeanConfig bean) {
+        this.bean = bean;
     }
 
     /**
@@ -60,7 +73,7 @@ public class RecordConfig extends NodeConfig {
     }
 
     /**
-     * Returns the maximum length of the field.  Depending on the type of
+     * Returns the maximum length of the record.  Depending on the type of
      * stream, the length may refer to the number of fields or the number
      * of characters.
      * @return the maximum record length, or <tt>null</tt> if not set
@@ -70,63 +83,12 @@ public class RecordConfig extends NodeConfig {
     }
 
     /**
-     * Sets the maximum length of the field.  Depending on the type of
+     * Sets the maximum length of the record.  Depending on the type of
      * stream, the length may refer to the number of fields or the number
      * of characters.
      * @param maxLength the maximum record length, or <tt>null</tt> if not set
      */
     public void setMaxLength(Integer maxLength) {
         this.maxLength = maxLength;
-    }
-
-    /**
-     * Returns the fully qualified class name of the bean object for
-     * this record.  If <tt>null</tt>, matching records are fully validated 
-     * according to its field definition but no bean will be created for 
-     * the record.
-     * @return the bean class, or <tt>null</tt> if bean creation is skipped
-     */
-    public String getBeanClass() {
-        return beanClass;
-    }
-
-    /**
-     * Sets the fully qualified class name of the bean object for this
-     * this record.  If <tt>null</tt>, matching records are fully validated 
-     * according to its field definition but no bean will be created for 
-     * the record.
-     * @param beanClass the bean class, or <tt>null</tt> if bean creation is skipped
-     */
-    public void setBeanClass(String beanClass) {
-        this.beanClass = beanClass;
-    }
-
-    /**
-     * Adds a field to this record.
-     * @param fieldConfig the field configuration
-     */
-    public void addField(FieldConfig fieldConfig) {
-        fieldList.add(fieldConfig);
-    }
-
-    /**
-     * Returns a list of this record's fields.
-     * @return the list of fields that make up this record
-     */
-    public List<FieldConfig> getFieldList() {
-        return fieldList;
-    }
-
-    /**
-     * Sets the list of fields that make up this record.
-     * @param fieldList the list of fields
-     */
-    public void setFieldList(List<FieldConfig> fieldList) {
-        if (fieldList == null) {
-            this.fieldList.clear();
-        }
-        else {
-            this.fieldList = fieldList;
-        }
     }
 }

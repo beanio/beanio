@@ -16,41 +16,33 @@
 package org.beanio.config;
 
 /**
- * Stores configuration settings for field.  Fields are used
- * to define the layout of a record.
+ * Stores configuration settings for a field.  Fields are used to define the layout 
+ * of a record.
  * 
  * @author Kevin Seim
  * @since 1.0
  */
-public class FieldConfig {
+public class FieldConfig extends PropertyConfig {
 
     /** Left justification setting */
     public static final String LEFT = "left";
     /** Right justification setting */
     public static final String RIGHT = "right";
     
-    private String name;
     private int position = -1;
     private Integer minLength;
     private Integer maxLength; // set to -1 for unbounded
     private boolean trim = false;
     private boolean required = false;
     private boolean recordIdentifier = false;
-    private boolean ignored = false;
     private String literal;
     private String regex;
-    private String getter;
-    private String setter;
-    private String type;
     private String handler;
     private String format;
     private String defaultValue;
     private int length = -1;
     private char padding = ' ';
     private String justify = LEFT;
-    private String collection;
-    private Integer minOccurs;
-    private Integer maxOccurs;
 
     /**
      * Returns the default textual representation of the value of
@@ -70,26 +62,6 @@ public class FieldConfig {
      */
     public void setDefault(String text) {
         this.defaultValue = text;
-    }
-
-    /**
-     * Returns the name of this field.  The name of the field is
-     * used to get and set the property value from the record bean
-     * when a <tt>getter</tt> and <tt>setter</tt> are not set.
-     * @return the field name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Sets the name of this field.  The name of the field is
-     * used to get and set the property value from the record bean
-     * when a <tt>getter</tt> and <tt>setter</tt> are not set.
-     * @param name the field name
-     */
-    public void setName(String name) {
-        this.name = name;
     }
 
     /**
@@ -187,22 +159,6 @@ public class FieldConfig {
     }
 
     /**
-     * Returns <tt>true</tt> if this field is not a bean property.
-     * @return <tt>true</tt> if this field is not a bean property.
-     */
-    public boolean isIgnored() {
-        return ignored;
-    }
-
-    /**
-     * Set to <tt>true</tt> if this field is not a bean property.
-     * @param ignore <tt>true</tt> if this field is not a bean property.
-     */
-    public void setIgnored(boolean ignore) {
-        this.ignored = ignore;
-    }
-
-    /**
      * Returns the static text for this field, or <tt>null</tt> if
      * the field text is not static.  If defined, the field text must
      * match the literal value when reading an input stream, and
@@ -264,63 +220,6 @@ public class FieldConfig {
      */
     public void setRequired(boolean required) {
         this.required = required;
-    }
-
-    /**
-     * Returns the name of the getter method to use to retrieve this field's
-     * value from the record bean when writing to an output stream.
-     * @return the getter method for this field
-     */
-    public String getGetter() {
-        return getter;
-    }
-
-
-    /**
-     * Sets the name of the getter method to use to retrieve this field's
-     * value from the record bean when writing to an output stream.
-     * @param getter the getter method for this field
-     */
-    public void setGetter(String getter) {
-        this.getter = getter;
-    }
-
-    /**
-     * Returns the name of the setter method to use when setting this field's
-     * value on the record bean while reading from an input stream.
-     * @return the setter method for this field
-     */
-    public String getSetter() {
-        return setter;
-    }
-
-    /**
-     * Sets the name of the setter method to use when setting this field's
-     * value on the record bean while reading from an input stream.
-     * @param setter the setter method for this field
-     */
-    public void setSetter(String setter) {
-        this.setter = setter;
-    }
-
-    /**
-     * Returns the fully qualified class name or type alias of this field's
-     * value.  By default, <tt>null</tt> is returned and the field value type
-     * is detected through bean introspection.
-     * @return the class name of this field value
-     */
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * Sets the fully qualified class name or type alias of this field's
-     * value.  If set to <tt>null</tt>, the field value type is detected 
-     * through bean introspection.
-     * @param type the class name of this field value
-     */
-    public void setType(String type) {
-        this.type = type;
     }
 
     /**
@@ -411,67 +310,5 @@ public class FieldConfig {
      */
     public void setJustify(String justify) {
         this.justify = justify;
-    }
-
-    /**
-     * Returns the field collection type, or <tt>null</tt> if the field property
-     * is not a collection or array. 
-     * @return the field collection type
-     */
-    public String getCollection() {
-        return collection;
-    }
-
-    /**
-     * Sets the field collection type.  Set to <tt>null</tt> by default to indicate
-     * the field property is not a collection or array.  The value may be set to the 
-     * fully qualified class name of a <tt>java.util.Collection</tt> subclass or a 
-     * collection type alias, or the value "array" to indicate a Java array.
-     * @param collection the field collection type
-     */
-    public void setCollection(String collection) {
-        this.collection = collection;
-    }
-
-    /**
-     * Returns the minimum number of times this field must appear  in an
-     * input stream.  If <tt>null</tt>, one occurrence is assumed.
-     * @return the minimum required occurrences of this field
-     */
-    public Integer getMinOccurs() {
-        return minOccurs;
-    }
-
-    /**
-     * Sets the minimum number of times this field must appear consecutively in an 
-     * input stream.  If set to <tt>null</tt>, one occurrence is assumed.  If set to anything
-     * other than one, a field collection type is expected.  Must be 0 or greater.
-     * @param minOccurs the minimum required occurrences of this field
-     */
-    public void setMinOccurs(Integer minOccurs) {
-        this.minOccurs = minOccurs;
-    }
-
-    /**
-     * Returns the maximum number of times this field may appear (consecutively) in
-     * an input stream.  If <tt>null</tt>, one occurrence is assumed.
-     * @return the maximum allowed occurrences of this field, or <tt>-1</tt> if there
-     *   is no limit
-     */
-    public Integer getMaxOccurs() {
-        return maxOccurs;
-    }
-
-    /**
-     * Sets the maximum number of times this field may appear (consecutively) in
-     * an input stream.  If set to <tt>null</tt>, one occurrence is assumed.  If set to
-     * anything other than one, a field collection type is expected.  Must be greater
-     * than the minimum occurrences, or set to <tt>-1</tt> to indicate the limit is
-     * unbounded.
-     * @param maxOccurs the maximum allowed occurrences of this field, or <tt>-1</tt> if
-     *   there is no limit
-     */
-    public void setMaxOccurs(Integer maxOccurs) {
-        this.maxOccurs = maxOccurs;
     }
 }

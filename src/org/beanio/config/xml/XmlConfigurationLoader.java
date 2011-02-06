@@ -266,7 +266,10 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
         config.setMaxOccurs(getUnboundedIntegerAttribute(record, "maxOccurs", -1));
         config.setMinLength(getIntegerAttribute(record, "minLength"));
         config.setMaxLength(getUnboundedIntegerAttribute(record, "maxLength", -1));
-        config.setBeanClass(getAttribute(record, "class"));
+        
+        BeanConfig beanConfig = new BeanConfig();
+        beanConfig.setName(config.getName());
+        beanConfig.setType(getAttribute(record, "class"));
 
         NodeList children = record.getChildNodes();
         for (int i = 0, j = children.getLength(); i < j; i++) {
@@ -277,10 +280,52 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
             Element child = (Element) node;
             String name = child.getTagName();
             if ("field".equals(name)) {
-                config.addField(createFieldConfig(child));
+                beanConfig.addProperty(createFieldConfig(child));
+            }
+            else if ("bean".equals(name)) {
+                beanConfig.addProperty(createBeanConfig(child));
             }
         }
+        
+        config.setBean(beanConfig);
+        return config;
+    }
+    
+    private void populatePropertyConfig(PropertyConfig config, Element element) {
+        config.setName(getAttribute(element, "name"));
+        config.setGetter(getAttribute(element, "getter"));
+        config.setSetter(getAttribute(element, "setter"));
+        config.setCollection(getAttribute(element, "collection"));
+        config.setMinOccurs(getIntegerAttribute(element, "minOccurs"));
+        config.setMaxOccurs(getUnboundedIntegerAttribute(element, "maxOccurs", -1));
+    }
+    
+    /**
+     * Parses a bean configuration from a DOM element.
+     * @param element the DOM element to parse
+     * @return the parsed bean configuration
+     */
+    protected BeanConfig createBeanConfig(Element element) {
+        BeanConfig config = new BeanConfig();
+        populatePropertyConfig(config, element);
+        config.setType(getAttribute(element, "class"));
+        
+        NodeList children = element.getChildNodes();
+        for (int i = 0, j = children.getLength(); i < j; i++) {
+            Node node = children.item(i);
+            if (node.getNodeType() != Node.ELEMENT_NODE)
+                continue;
 
+            Element child = (Element) node;
+            String name = child.getTagName();
+            if ("field".equals(name)) {
+                config.addProperty(createFieldConfig(child));
+            }
+            else if ("bean".equals(name)) {
+                config.addProperty(createBeanConfig(child));
+            }
+        }
+        
         return config;
     }
 
@@ -291,14 +336,12 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
      */
     protected FieldConfig createFieldConfig(Element element) {
         FieldConfig config = new FieldConfig();
-        config.setName(getAttribute(element, "name"));
+        populatePropertyConfig(config, element);
         config.setPosition(getIntAttribute(element, "position", config.getPosition()));
         config.setMinLength(getIntegerAttribute(element, "minLength"));
         config.setMaxLength(getUnboundedIntegerAttribute(element, "maxLength", -1));
         config.setRegex(getAttribute(element, "regex"));
         config.setLiteral(getAttribute(element, "literal"));
-        config.setGetter(getAttribute(element, "getter"));
-        config.setSetter(getAttribute(element, "setter"));
         config.setTypeHandler(getAttribute(element, "typeHandler"));
         config.setType(getAttribute(element, "type"));
         config.setFormat(getAttribute(element, "format"));
@@ -311,9 +354,6 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
         config.setLength(getIntAttribute(element, "length", config.getLength()));
         config.setPadding(getCharAttribute(element, "padding", config.getPadding()));
         config.setJustify(getAttribute(element, "justify"));
-        config.setCollection(getAttribute(element, "collection"));
-        config.setMinOccurs(getIntegerAttribute(element, "minOccurs"));
-        config.setMaxOccurs(getUnboundedIntegerAttribute(element, "maxOccurs", -1));
         return config;
     }
 

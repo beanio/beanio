@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!-- 
+    Copyright 2010-2011 Kevin Seim
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+       http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<beanio xmlns="http://www.beanio.org/2011/01" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.beanio.org/2011/01 http://www.beanio.org/2011/01">
+
+  <stream name="w1" format="csv">
+    <record name="record1" class="org.beanio.parser.bean.Widget">
+      <field name="id" position="6" />
+      <bean name="top" class="org.beanio.parser.bean.Widget">
+        <field name="id" position="3" />
+        <field name="name" position="4" />
+      </bean> 
+      <bean name="bottom" class="org.beanio.parser.bean.Widget">
+        <field name="id" position="2" />
+        <field name="name" position="1" />
+      </bean>
+      <field name="name" position="5" />
+    </record>
+  </stream>
+  
+  <stream name="w2" format="csv">
+    <record name="record1" class="org.beanio.parser.bean.Widget">
+      <bean name="parts" getter="getPartsList" setter="setPartsList" class="org.beanio.parser.bean.Widget" 
+        collection="list" minOccurs="2" maxOccurs="2">
+        <field name="name" />
+        <field name="model" />
+        <bean name="partsList" class="org.beanio.parser.bean.Widget" collection="list" minOccurs="2" maxOccurs="2">
+          <field name="name" />
+          <field name="model" />
+        </bean>
+      </bean>
+      <field name="name" />
+    </record>
+  </stream>
+
+  <stream name="w3" format="fixedlength">
+    <record name="record1" class="org.beanio.parser.bean.Widget">
+      <field name="id" length="2" justify="right" />
+      <field name="name" length="5" />
+      <field name="model" length = "5" />
+      <bean name="partsList" class="org.beanio.parser.bean.Widget" collection="list" minOccurs="0" maxOccurs="unbounded">
+        <field name="id" length="2" justify="right" />
+        <field name="name" length="5" />
+        <field name="model" length = "5" />
+      </bean>
+    </record>
+  </stream>
+
+  <stream name="w4" format="fixedlength">
+    <record name="record1" class="org.beanio.parser.bean.Widget" minLength="12">
+      <field name="id" length="1" />
+      <field name="name" length="5" />
+      <bean name="partsMap" class="map">
+        <bean name="part1" class="org.beanio.parser.bean.Widget">
+          <field name="id" length="1" />
+          <field name="name" length="5" />
+        </bean>
+        <bean name="part2" class="org.beanio.parser.bean.Widget">
+          <field name="id" length="1" />
+          <field name="name" length="5" />
+        </bean>
+      </bean>
+    </record>
+  </stream>
+
+  <stream name="w5" format="fixedlength">
+    <record name="record1" class="map">
+      <bean name="part1" class="org.beanio.parser.bean.Widget">
+        <field name="id" position="0" length="1" />
+        <field name="name" position="3" length="5" />
+      </bean>
+      <bean name="part2" class="org.beanio.parser.bean.Widget">
+        <field name="id" position="1" length="1" />
+        <field name="name" position="8" length="5" />
+      </bean>
+      <bean name="part3" class="org.beanio.parser.bean.Widget">
+        <field name="id" position="2" length="1" />
+        <field name="name" position="13" length="5" />
+      </bean>
+    </record>
+  </stream>
+
+  <stream name="w6" format="csv">
+    <record name="record1" class="org.beanio.parser.bean.Widget">
+      <bean name="partsList" class="org.beanio.parser.bean.Widget" collection="list" minOccurs="0" maxOccurs="unbounded">
+        <field name="id" length="1" />
+        <field name="name" length="5" />
+      </bean>
+    </record>
+  </stream>
+  
+  <stream name="w7" format="csv">
+    <record name="record1" class="org.beanio.parser.bean.Widget" minLength="1">
+      <field name="id" />
+      <field name="name" />
+      <field name="model" />      
+    </record>
+  </stream>
+  
+  <stream name="w8" format="csv">
+    <record name="record1" class="map">
+      <field name="key" literal="R1" />
+      <bean name="widget" class="org.beanio.parser.bean.Widget">
+        <field name="id" rid="true" literal="1" />
+        <field name="name" />
+      </bean>
+    </record>
+    <record name="record2" class="map">
+      <field name="key" literal="R2" />
+      <bean name="widget" class="org.beanio.parser.bean.Widget">
+        <field name="id" rid="true" literal="2" />
+        <field name="name" />
+      </bean>
+    </record>
+  </stream>
+
+</beanio>

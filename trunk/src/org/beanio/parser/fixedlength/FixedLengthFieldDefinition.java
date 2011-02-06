@@ -15,7 +15,8 @@
  */
 package org.beanio.parser.fixedlength;
 
-import org.beanio.parser.*;
+import org.beanio.parser.Record;
+import org.beanio.parser.flat.FlatFieldDefinition;
 
 /**
  * A <tt>FixedLengthFieldDefinition</tt> is used to parse and format fields for
@@ -24,20 +25,23 @@ import org.beanio.parser.*;
  * @author Kevin Seim
  * @since 1.0
  */
-public class FixedLengthFieldDefinition extends FieldDefinition {
+public class FixedLengthFieldDefinition extends FlatFieldDefinition {
 
     /** Left justification */
     public static final char LEFT = 'L';
     /** Right justification */
     public static final char RIGHT = 'R';
 
-    private int length;
     private char padding = ' ';
     private char justification = LEFT;
     private String defaultText = "";
     
     @Override
-    public boolean matches(Record record) {
+    public boolean matches(Record record) {     
+        if (!isRecordIdentifier()) {
+            return true;
+        }
+        
         String text = getFieldText(record);
         if (text.length() != getLength()) {
             return false;
@@ -55,8 +59,8 @@ public class FixedLengthFieldDefinition extends FieldDefinition {
         if (fieldText == null) {
             return null;
         }
-        else if (fieldText.length() != length) {
-            record.addFieldError(getName(), fieldText, "length", length);
+        else if (fieldText.length() != getLength()) {
+            record.addFieldError(getName(), fieldText, "length", getLength());
             return INVALID;
         }
         else {
@@ -75,15 +79,15 @@ public class FixedLengthFieldDefinition extends FieldDefinition {
         text = super.formatText(text);
 
         int textWidth = text.length();
-        if (textWidth > length) {
-            return text.substring(0, length);
+        if (textWidth > getLength()) {
+            return text.substring(0, getLength());
         }
-        else if (textWidth == length) {
+        else if (textWidth == getLength()) {
             return text;
         }
 
-        int remaining = length - textWidth;
-        StringBuffer s = new StringBuffer(length);
+        int remaining = getLength() - textWidth;
+        StringBuffer s = new StringBuffer(getLength());
         if (justification == LEFT) {
             s.append(text);
             for (int i = 0; i < remaining; i++) {
@@ -107,13 +111,13 @@ public class FixedLengthFieldDefinition extends FieldDefinition {
     private String getFieldText(Record record) {
         String recordText = record.getRecordText();
 
-        int position = getPosition() + record.getFieldIndex() * length;
+        int position = getCurrentPosition(record);
         int recordLength = recordText.length();
         if (recordLength <= position) {
             return null;
         }
 
-        return recordText.substring(position, Math.min(recordLength, position + length));
+        return recordText.substring(position, Math.min(recordLength, position + getLength()));
     }
 
     /**
@@ -187,22 +191,6 @@ public class FixedLengthFieldDefinition extends FieldDefinition {
     public void setPropertyType(Class<?> type) {
         super.setPropertyType(type);
         this.defaultText = getDefaultTextFor(type, padding);
-    }
-
-    /**
-     * Returns the length of this field.
-     * @return the field length
-     */
-    public int getLength() {
-        return length;
-    }
-
-    /**
-     * Sets the length of this field
-     * @param length the field length
-     */
-    public void setLength(int length) {
-        this.length = length;
     }
 
     /**

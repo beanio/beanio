@@ -4,7 +4,7 @@ Project BeanIO Change Log
 Changes in version 0.9.3 (2011-02-07)
 -------------------------------------
 * Added support for mapping child bean objects, and collections of bean objects 
-* A null value for a field whose position is less than the record 'minLength' will not be written to an output stream
+* A null value for a field whose position is greater than the record 'minLength' will not be written to an output stream
 * A fixed length field will no longer default its length based on its position and the position of the field after it
 * Field position must be configured for all fields, or for none of them (in which case position is defaulted based on the order configured)
 * gc0005 - Fixed default record maxLength

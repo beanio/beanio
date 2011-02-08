@@ -18,6 +18,7 @@ package org.beanio.parser.flat;
 import org.beanio.parser.RecordDefinition;
 
 /**
+ * Provides support for validating delimited and fixed length formatted records.
  * 
  * @author Kevin Seim
  * @since 1.0

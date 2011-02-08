@@ -73,3 +73,9 @@ a { border-bottom: 1px dashed #8a0007; text-decoration: none; }
 	color: #8a6a6b;
 	font-size: 85%;
 }
+.news li {
+	margin-top: 10px;	
+}
+tt {
+	font-size: 120%;
+}

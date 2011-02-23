@@ -20,7 +20,7 @@
   xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
   elementFormDefault="qualified" 
   targetNamespace="http://www.beanio.org/2011/01"
-  version="1.2">
+  version="1.4">
   
   <element name="beanio">
     <complexType>
@@ -89,10 +89,10 @@
   </complexType>
   
   <complexType name="Group">
-    <sequence>
-      <element name="record" minOccurs="1" maxOccurs="unbounded" type="tns:Record" />
-      <element name="group" minOccurs="0" maxOccurs="unbounded" type="tns:Group" />
-    </sequence>
+    <choice minOccurs="1" maxOccurs="unbounded">
+      <element name="record" type="tns:Record" />
+      <element name="group" type="tns:Group" />
+    </choice>
     <attribute name="name" type="xsd:string" use="required" />
     <attributeGroup ref="tns:NodeAttributes" />
   </complexType>
@@ -115,7 +115,7 @@
     <attribute name="ignore" type="xsd:boolean" use="optional" />
     <attribute name="trim" type="xsd:boolean" use="optional" />
     <attribute name="length" type="xsd:positiveInteger" use="optional" />
-    <attribute name="padding" type="xsd:string" use="optional" />
+    <attribute name="padding" type="tns:character" use="optional" />
     <attribute name="justify" type="tns:justification" use="optional" />
     <attribute name="collection" type="xsd:string" use="optional" />
     <attribute name="minOccurs" type="xsd:nonNegativeInteger" use="optional" />
@@ -151,6 +151,12 @@
         </restriction>
       </simpleType>
     </union>
+  </simpleType>
+
+  <simpleType name="character">
+    <restriction base="xsd:string">
+      <length value="1" fixed="true" />
+    </restriction>  
   </simpleType>
 
 </schema>

@@ -40,6 +40,13 @@ public class DelimitedStreamDefinitionFactory extends FlatStreamDefinitionFactor
     protected void updateFieldDefinition(FieldConfig fieldConfig, FieldDefinition fieldDefinition) {
         fieldDefinition.setLength(1);
         fieldDefinition.setPosition(fieldConfig.getPosition());
+        
+        if (fieldConfig.getPadding() != null) {
+            fieldDefinition.setPadding(fieldConfig.getPadding());
+            fieldDefinition.setPaddedLength(fieldConfig.getLength());
+            fieldDefinition.setJustification(FieldConfig.RIGHT.equals(fieldConfig.getJustify()) ?
+                FieldDefinition.RIGHT : FieldDefinition.LEFT);
+        }
     }
     
     /*

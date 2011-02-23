@@ -28,33 +28,40 @@ that each copy contains this Copyright Notice, whether distributed in print or e
   <a href="#MappingFiles">3.3. Mapping Files</a><br />
   <a href="#StreamFactory">3.4. StreamFactory</a><br />
   <a href="#ExceptionHandling">3.5. Exception Handling</a><br />
+  <div class="toc">
+  	<a href="#BeanReaderErrorHandler">3.5.1. BeanReaderErrorHandler</a><br />
+  </div>
 </div>
 <a href="#TheMappingFile">4.0. The Mapping File</a>
 <div class="toc">
   <a href="#StreamDefinition">4.1. Stream Definitions</a><br />
+  <div class="toc">
+  	<a href="#RecordReaderWriter">4.1.1. Record Reader and Writer</a><br />
+  	<a href="#CSVStreamFormat">4.1.2. CSV Streams</a><br />
+  	<a href="#DelimitedStreamFormat">4.1.3. Delimited Streams</a><br />
+  	<a href="#FixedLengthStreamFormat">4.1.4. Fixed Length Streams</a><br />
+  </div>
   <a href="#RecordDefinition">4.2. Record Definitions</a><br />
-  <a href="#RecordIdentification">4.3. Record Identification</a><br />
-  <a href="#RecordOrdering">4.4. Record Ordering</a><br />
-  <a href="#RecordGrouping">4.5. Record Grouping</a><br />
-  <a href="#FieldTypeConversion">4.6. Field Type Conversion</a><br />
-  <a href="#CustomTypeHandlers">4.7. Custom Type Handlers</a><br />
-  <a href="#CollectionFields">4.8. Collection Field Types</a><br />
-  <a href="#StreamValidation">4.9. Stream Validation</a><br />
   <div class="toc">
-    <a href="#RecordValidation">4.9.1. Record Validation</a><br />
-    <a href="#FieldValidation">4.9.2. Field Validation</a><br />
+	<a href="#RecordIdentification">4.2.1. Record Identification</a><br />
+	<a href="#RecordOrdering">4.2.2. Record Ordering</a><br />
+	<a href="#RecordGrouping">4.2.3. Record Grouping</a><br />
   </div>
-  <a href="#RecordReader">4.10. The Record Reader</a><br />
+  <a href="#FieldDefinitions">4.3. Field Definitions</a><br />
   <div class="toc">
-    <a href="#CSVRecordReaderFactory">4.10.1. Default CSV Record Reader Factory</a><br />
-    <a href="#DelimitedRecordReaderFactory">4.10.2. Default Delimited Record Reader Factory</a><br />
-    <a href="#FixedLengthRecordReaderFactory">4.10.2. Default Fixed Length Record Reader Factory</a><br />
+	<a href="#FieldTypeConversion">4.3.1. Field Type Conversion</a><br />
+	<a href="#CustomTypeHandlers">4.3.2. Custom Type Handlers</a><br />
+	<a href="#CollectionFields">4.3.3. Collection Type Fields</a><br />
+	<a href="#FixedLengthFields">4.3.4. Fixed Length Fields</a><br />
   </div>
-  <a href="#RecordWriter">4.11. The Record Writer</a><br />
+  <a href="#BeanDefinitions">4.4. Nested Bean Definitions</a><br />
   <div class="toc">
-    <a href="#CSVRecordWriterFactory">4.11.1. Default CSV Record Writer Factory</a><br />
-    <a href="#DelimitedRecordWriterFactory">4.11.2. Default Delimited Record Writer Factory</a><br />
-    <a href="#FixedLengthRecordWriterFactory">4.11.2. Default Fixed Length Record Writer Factory</a><br />
+	<a href="#BeanCollections">4.4.1. Collection Type Beans</a><br />
+  </div>
+  <a href="#StreamValidation">4.5. Stream Validation</a><br />
+  <div class="toc">
+    <a href="#RecordValidation">4.5.1. Record Validation</a><br />
+    <a href="#FieldValidation">4.5.2. Field Validation</a><br />
   </div>
 </div>
 <a href="#A">Appendix A: XML Mapping File Reference</a><br />
@@ -75,27 +82,32 @@ that each copy contains this Copyright Notice, whether distributed in print or e
 
 <h1><a name="Introduction">1.0. Introduction</a></h1>
 <p>BeanIO is an open source Java framework for reading and writing Java beans or plain old java
-objects (POJO's) from a stream.  BeanIO is ideally suited for reading and writing flat files, and
+objects (POJO's) from a flat file or stream.  BeanIO is ideally suited for batch processing, and
 currently supports CSV, delimited and fixed length file formats. BeanIO is licensed under the <a
-  href="http://www.apache.org/licenses/LICENSE-2.0">Apache 2.0 License</a></p>
+  href="http://www.apache.org/licenses/LICENSE-2.0">Apache 2.0 License</a>.</p>
 
 <h1><a name="GettingStarted">2.0. Getting Started</a></h1>
 <p>To get started with BeanIO, download the latest stable version from 
 <a href="http://code.google.com/p/beanio/">Google Code</a>, extract the contents of the ZIP file, 
 and add <tt>beanio.jar</tt> to your application's classpath.  BeanIO requires a version 1.5 JDK or higher.
-No other libraries are needed.</p>
+No other libraries are required.</p>
 
 <h2><a name="MyFirstStream">2.1. My First Stream</a></h2>
 <p>This section explores a simple example that uses BeanIO to read and write
-a flat file containing employee data.  Let's suppose the flat file is in CSV format
-and contains the following field information: </p>
-<ul>
-<li>First Name</li>
-<li>Last Name</li>
-<li>Job Title</li>
-<li>Salary</li>
-<li>Hire Date</li>
-</ul>
+a flat file containing employee data.  Let's suppose the file is in CSV format
+and has the following record layout: </p>
+
+<div class="indent">
+  <table>
+    <tr><th>Position</th><th>Field</th><th>Format</th></tr>
+    <tr><td>0</td><td>First Name</td><td>Text</td></tr>
+    <tr><td>1</td><td>Last Name</td><td>Text</td></tr>
+    <tr><td>2</td><td>Job Title</td><td>Text</td></tr>
+    <tr><td>3</td><td>Salary</td><td>Number</td></tr>
+    <tr><td>4</td><td>Hire Date</td><td>Date (MMDDYYYY)</td></tr>
+  </table>
+</div>
+
 <p>A sample file is shown below.</p>
 <pre class="file">
 Joe,Smith,Developer,75000,10012009
@@ -119,11 +131,11 @@ public class Employee {
     <span class="comment">// getters and setters not shown...</span>
 }</pre>
 
-<p>BeanIO uses an XML configuration file, called
-a mapping file, to parse an input stream into bean objects, and to format bean objects for 
-writing to an output stream.  Below is a mapping file, named <tt>mapping.xml</tt>, that could be
-used to read and write the sample employee file.  The 
-mapping file should be placed in the application's working directory or classpath.</p>
+<p>BeanIO uses an XML configuration file, called a mapping file, to define how bean objects are bound
+to records.  Below is a mapping file, named <tt>mapping.xml</tt>, that could be
+used to read the sample employee file and unmarshall records into <tt>Employee</tt> objects.  The
+same mapping file can be used to write, or marshall, <tt>Employee</tt> objects to a file
+or output stream.</p>
 <pre class="file">
 &lt;beanio xmlns="http://www.beanio.org/2011/01" 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -140,9 +152,9 @@ mapping file should be placed in the application's working directory or classpat
   &lt;/stream&gt;
 &lt;/beanio&gt;</pre>
 
-<p>To read an employee CSV file, a <tt>StreamFactory</tt> is used to load our mapping
-file and create a <tt>BeanReader</tt>, which is used to read <tt>Employee</tt>
-bean objects from the file <tt>employee.csv</tt>.  (For the sake of brevity, proper exception handling 
+<p>To read the employee CSV file, a <tt>StreamFactory</tt> is used to load our mapping
+file and create a <tt>BeanReader</tt>, which is used to unmarshall <tt>Employee</tt>
+objects from the file <tt>employee.csv</tt>.  (For the sake of brevity, proper exception handling 
 is not shown.)</p>
 <pre class="java">
 package org.beanio.example;
@@ -167,8 +179,8 @@ public class BeanReaderExample {
     }
 }</pre>
 
-<p>To write to an employee CSV file, a <tt>StreamFactory</tt> 
-is used to create a <tt>BeanWriter</tt>, which is used to write <tt>Employee</tt> bean objects to
+<p>To write an employee CSV file, the same <tt>StreamFactory</tt> class
+is used to create a <tt>BeanWriter</tt> for marshalling <tt>Employee</tt> bean objects to
 the file <tt>employee.csv</tt>.  In this example, the same mapping configuration file is used for
 both reading and writing an employee file.</p>
 <pre class="java">
@@ -201,7 +213,7 @@ public class BeanWriterExample {
     }
 }</pre>
 
-<p>Running <tt>BeanWriterExample</tt> would produce the following CSV file.</p>
+<p>Running <tt>BeanWriterExample</tt> produces the following CSV file.</p>
 <pre class="file">
 Jennifer,Jones,Marketing,60000,01012011</pre>
 
@@ -210,18 +222,18 @@ Jennifer,Jones,Marketing,60000,01012011</pre>
 <h2><a name="BeanReader">3.1. BeanReader</a></h2>
 <p>The <tt>BeanReader</tt> interface, shown below, is used to read bean objects from
 an input stream.  The method <tt>read()</tt> returns the bean object for the next record
-read from the input stream.  The method <tt>getRecordName()</tt> returns the name of the
-record read from the input stream, as named in the mapping file.  And  
-<tt>getLineNumber()</tt> returns the line number of the record from the input
+read from the input stream, or <tt>null</tt> when the end of the stream is reached.  
+The method <tt>getRecordName()</tt> returns the name of the
+last record read from the input stream, as named in the mapping file.  And  
+<tt>getLineNumber()</tt> returns the line number of the last record from the input
 stream.  The method <tt>setErrorHandler(...)</tt> can be used to register a custom error
-handler.  If an error handler is not configured, <tt>read()</tt> will throw the 
+handler.  If an error handler is not configured, <tt>read()</tt> simply throws the 
 unhandled exception.</p>
 <pre class="file">
 package org.beanio;
 
 public interface BeanReader {
-    public Object read() throws BeanReaderIOException, MalformedRecordException,
-        UnidentifiedRecordException, UnexpectedRecordException, InvalidRecordException;
+    public Object read() throws BeanReaderException;
     
     public String getRecordName();
     
@@ -234,11 +246,10 @@ public interface BeanReader {
 
 <h2><a name="BeanWriter">3.2. BeanWriter</a></h2>
 <p>The <tt>BeanWriter</tt> interface, shown below, is used to write bean objects to
-an output stream.  The method <tt>write(Object)</tt> can be used in most cases to
-format and write bean objects to the output stream.  In some cases where multiple 
-record types are not discernible by class type or record identifying fields, the method
-<tt>write(String,Object)</tt> can be used to explicitly name the record type to
-format and write to the output stream. </p>
+an output stream.  Calling the <tt>write(Object)</tt> method marshalls a bean object to the 
+output stream.  In some cases where multiple record types are not discernible by class type 
+or record identifying fields, the <tt>write(String,Object)</tt> method can be used to 
+explicitly name the record type to marshall. </p>
 <pre class="file">
 package org.beanio;
 
@@ -255,7 +266,7 @@ public interface BeanWriter {
 
 <h2><a name="MappingFiles">3.3. Mapping Files</a></h2>
 <p>BeanIO uses XML configuration files, called mapping files,
-to map a stream layout to Java objects and vice versa.  Multiple stream layouts
+to bind a stream layout to Java objects.  Multiple layouts
 can be configured in a single mapping file using <tt>stream</tt> elements, and 
 each stream is assigned a unique name for referencing the layout.  In addition to
 its name, every stream must declare its format using the <tt>format</tt> attribute.  
@@ -289,8 +300,9 @@ the classpath.</p>
 <pre class="java">
 <span class="comment">// create a StreamFactory</span>
 StreamFactory factory = StreamFactory.newInstance();
-<span class="comment">// load mapping file(s)</span>
+<span class="comment">// load 'mapping-1.xml' from the current working directory</span>
 factory.load("mapping-1.xml");
+<span class="comment">// load 'mapping-2.xml' from the classpath</span>
 factory.loadResource("mapping-2.xml");'
 
 <span class="comment">// create a BeanReader to read from 'in.txt'</span>
@@ -303,12 +315,123 @@ BeanWriter beanWriter = factory.createBeanReader("streamName", out);
 </pre>
 
 <h2><a name="ExceptionHandling">3.5. Exception Handling</a></h2>
-All BeanIO exceptions extend from <tt>BeanIOException</tt>, which
+<p>All BeanIO exceptions extend from <tt>BeanIOException</tt>, which
 extends from <tt>RuntimeException</tt> so that exceptions do not need
-to be explicitly caught unless desired.  <tt>BeanReader</tt> I/O errors always
-throw an <tt>BeanReaderIOException</tt> and <tt>BeanWriter</tt> I/O errors always throw
-an <tt>BeanWriterIOException</tt>.
+to be explicitly caught unless desired.  <tt>BeanReaderException</tt>
+and <tt>BeanWriterException</tt> extend from <tt>BeanIOException</tt>
+and may be thrown by a <tt>BeanReader</tt> or <tt>BeanWriter</tt>
+respectively.  
+</p>
 
+<p>
+A <tt>BeanReaderException</tt> is furhter broken down into
+the following subclasses thrown by the <tt>read()</tt> method. 
+</p>
+<div class="indent">
+<table>
+<tr><th>Exception</th><th>Description</th></tr>
+<tr>
+  <td><tt>BeanReaderIOException</tt></td>
+  <td>Thrown when the underlying input stream throws an <tt>IOException</tt>, or
+    in a few other fatal error scenarios.</td>
+</tr>
+<tr>
+  <td><tt>MalformedRecordException</tt></td>
+  <td>Thrown when the underlying input stream is malformed based on the configured
+    stream format, and therefore the next record could not be accurately read from the
+    stream.  In many cases, further reads from the input stream will be unsuccessful.
+  </td>
+</tr>
+<tr>
+  <td><tt>UnidentifiedRecordException</tt></td>
+  <td>Thrown when a record does not match any record definition configured in the 
+    mapping file.  If the stream layout does not strictly enforce record
+    sequencing, further reads from the input stream are likely to be successful.
+  </td>
+</tr>
+<tr>
+  <td><tt>UnexpectedRecordException</tt></td>
+  <td>Thrown when a record is read out of order.  Once record sequencing is violated,
+    further reads from the input stream are likely to be unsuccessful.
+  </td>
+</tr>
+<tr>
+  <td><tt>InvalidRecordException</tt></td>
+  <td>Thrown when a record is matched, but the record is invalid for one of the following
+    reasons:
+    <ul>
+      <li>A record level validation failed</li>
+      <li>One or more field level validations failed</li>
+      <li>Field type conversion failed</li>
+    </ul>
+    This exception has no effect on the state of the <tt>BeanReader</tt> and further reads 
+    from the input stream can be safely performed.
+  </td>
+</tr>
+</table>
+</div>
+
+<p>When a <tt>BeanReaderException</tt> is thrown, the current state of
+the input stream and any field or record level error messages can be accessed by
+calling <tt>exception.getContext()</tt>, which returns the following <tt>BeanReaderContext</tt>
+interface.  Please refer to the API javadocs for method details.</p>
+
+<pre class="java">
+package org.beanio;
+
+public interface BeanReaderContext {
+    public int getRecordLineNumber();
+    public String getRecordText();
+    public String getRecordName();
+    public boolean hasRecordErrors();
+    public Collection&lt;String&gt; getRecordErrors();
+    public String getFieldText(String fieldName);
+    public String getFieldText(String fieldName, int index);
+    public boolean hasFieldErrors();
+    public Map&lt;String, Collection&lt;String&gt;&gt; getFieldErrors();
+    public Collection&lt;String&gt; getFieldErrors(String fieldName);
+}</pre>
+
+
+<h3><a name="BeanReaderErrorHandler">3.5.1. BeanReaderErrorHandler</a></h3>
+<p>If you need to handle an exception and continue processing, it may be simpler to register
+a <tt>BeanReaderErrorHandler</tt> using the <tt>beanReader.setErrorHandler()</tt> method.  The
+<tt>BeanReaderErrorHandler</tt> interface is shown below.  Any exception thrown by the error
+handler will be rethrown by the <tt>BeanReader</tt>.</p>
+<pre class="java">
+package org.beanio;
+
+public interface BeanReaderErrorHandler {
+    public void handleError(BeanReaderException ex) throws Exception;
+}</pre>
+
+<p>The following example shows how invalid records could be written to a reject file by
+registering an error handler extending <tt>BeanReaderErrorHandlerSupport</tt>,
+a subclass of <tt>BeanReaderErrorHandler</tt>.  All other exceptions are left uncaught and
+will bubble up to the calling method.</p>
+<pre class="java">
+    BeanReader input;
+    BufferedWriter rejects;
+    try {
+        input.setErrorHandler(new BeanReaderErrorHandlerSupport() {
+            public void invalidRecord(InvalidRecordException ex) throws Exception {
+                rejects.write(ex.getContext().getRecordText());
+                rejects.newLine();
+            }
+        });
+        
+        Object record = null;
+        while ((record = input.read()) != null) {
+            <span class="comment">// process a valid record</span>
+        }
+        
+        rejects.flush();
+    }
+    finally {
+        input.close();
+        rejects.close();
+    }
+</pre>
 
 
 <h1><a name="TheMappingFile">4.0. The Mapping File</a></h1>
@@ -316,7 +439,7 @@ an <tt>BeanWriterIOException</tt>.
 <h2><a name="StreamDefinition">4.1. Stream Definitions</a></h2>
 <p>A mapping file must contain one or more stream definitions.  A stream
 definition must have a <tt>name</tt> and <tt>format</tt> attribute configured. The name of the 
-stream is used to refer to the mapping configuration when creating a <tt>BeanReader</tt> or 
+stream is used to reference the layout when creating a <tt>BeanReader</tt> or 
 <tt>BeanWriter</tt> instance using a <tt>StreamFactory</tt>.  Supported
 formats include <tt>csv</tt>, <tt>delimited</tt> and <tt>fixedlength</tt>.  
 </p> 
@@ -335,11 +458,265 @@ formats include <tt>csv</tt>, <tt>delimited</tt> and <tt>fixedlength</tt>.
     
 &lt;/beanio&gt;</pre>
 
+<h3><a name="RecordReaderWriter">4.1.1. RecordReader and RecordWriter</a></h3>
+<p>Internally, BeanIO uses a <tt>RecordReader</tt> to read records from an input stream,
+and a <tt>RecordWriter</tt> to write records to an output stream.</p>
+
+<p>The <tt>RecordReader</tt> interface is shown below.  A record reader is responsible
+for dividing a stream into records.  The actual Java representation of a record is dependent
+on the format of stream.  Delimited record readers (including CSV) parse an input streams into 
+<tt>String</tt> array records, where each value in the array is a delimited field.  
+And fixed length record readers simply parse an input stream into <tt>String</tt> records.</p>
+<pre class="java">
+package org.beanio.stream;
+
+public interface RecordReader {
+    public Object read() throws IOException, RecordIOException;
+    public void close() throws IOException;
+    public int getRecordLineNumber();
+    public String getRecordText();
+}
+</pre>
+
+
+<p>Similarly, the <tt>RecordWriter</tt> interface show below is used to write records to an 
+output stream.  Once again, the Java representation of a record is dependent on the format
+of the stream.  Delimited (and CSV) records use a <tt>String</tt> array, and fixed length
+records simply use a <tt>String</tt>.</p>
+<pre class="java">
+package org.beanio.stream;
+
+public interface RecordWriterFactory {
+	public RecordWriter createWriter(Writer out) throws IllegalArgumentException;
+}
+</pre>
+
+<p>A new <tt>RecordReader</tt> is created for each <tt>BeanReader</tt> using the
+<tt>RecordReaderFactory</tt> interface shown below.</p>
+<pre class="java">
+package org.beanio.stream;
+
+public interface RecordReaderFactory {
+    public RecordReader createReader(Reader in) throws IllegalArgumentException;
+}
+</pre>
+
+<p>And likewise, a new <tt>RecordWriter</tt> is created for each <tt>BeanWriter</tt> using the
+<tt>RecordWriterFactory</tt> interface shown below.</p>
+<pre class="java">
+package org.beanio.stream;
+
+public interface RecordWriterFactory {
+    public RecordWriter createWriter(Writer out) throws IllegalArgumentException;
+}
+</pre>
+
+<p>BeanIO includes default record readers and writers for CSV, delimited and fixed length 
+stream formats.  Default reader and writer settings can be overridden for any stream in
+the mapping file using a <tt>reader</tt> or <tt>writer</tt> element.  Or if necessary,
+you can even replace the default record reader or writer by setting the <tt>class</tt> attribute
+to the fully qualified class name of the record reader or writer factory to use.</p>
+
+<p>In the example mapping file below, the default record reader's delimiter is changed to an astericks,
+while the record writer implementation is completely replaced using the factory class
+<tt>org.beanio.example.MyRecordWriterFactory</tt>.</p>
+<pre class="file">
+&lt;beanio&gt;
+
+  &lt;stream name="employeeFile" format="delimited"&gt;
+    <span class="highlight">&lt;reader&gt;
+      &lt;property name="delimiter" value="*" /&gt;
+    &lt;/reader&gt; </span>
+    <span class="highlight">&lt;writer class="org.beanio.example.MyRecordWriterFactory" /&gt; </span>
+    &lt;record name="employee" class="org.beanio.example.Employee"&gt;
+      &lt;field name="firstName" /&gt;
+      &lt;field name="lastName" /&gt;
+      &lt;field name="title" /&gt;
+      &lt;field name="salary" /&gt;
+      &lt;field name="hireDate" format="MMddyyyy" /&gt;
+    &lt;/record&gt; 
+  &lt;/stream&gt;
+  
+&lt;/beanio&gt;</pre>
+
+
+<h3><a name="CSVStreamFormat">4.1.2. CSV Streams</a></h3>
+<p>The default record reader and writer for CSV formatted streams is based on 
+<a href="http://www.ietf.org/rfc/rfc4180.txt">RFC 4180</a> with one exception:
+multi-line records are disabled (but this can be overridden).</p>
+
+<p>The following properties can be used to customize the default CSV record reader
+and record writer:</p>
+<table class="indent">
+<tr>
+  <th>Property</th>
+  <th>Type</th>
+  <th>Description</th>
+  <th>Reader?</th>
+  <th>Writer?</th>
+</tr>
+<tr>
+  <td><tt>delimiter</tt></td>
+  <td>char</td>
+  <td>The field delimiter.  Defaults to a comma.</td>
+  <td>Yes</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><tt>quote</tt></td>
+  <td>char</td>
+  <td>The quotation mark character used to wrap fields containing a delimiter character, a
+    quotation mark, or new lines.  Defaults to the double quotation mark, ".</td>
+  <td>Yes</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><tt>escape</tt></td>
+  <td>Character</td>
+  <td>The character used to escape a quotation mark in a quoted field.  Defaults to the
+    double quotation mark, ".</td>
+  <td>Yes</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><tt>multilineEnabled</tt></td>
+  <td>boolean</td>
+  <td>If set to <tt>true</tt>, quoted fields may contain new line characters.  Defaults to <tt>false</tt>.</td>
+  <td>Yes</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><tt>whitespaceAllowed</tt></td>
+  <td>boolean</td>
+  <td>If set to <tt>true</tt>, whitespace is ignored and allowed before and after 
+  quoted values.  For example, the following is allowed:
+  <pre>
+    Jennifer, "Jones" ,24</pre>
+  Defaults to <tt>false</tt>.
+  </td>
+  <td>Yes</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><tt>unquotedQuotesAllowed</tt></td>
+  <td>boolean</td>
+  <td>If set to <tt>true</tt>, field text containing quotation marks do not need to 
+    be quoted unless the field text starts with a quotation mark.  For example, the
+    following is allowed:
+    <pre>
+    Jennifer,She said "OK"</pre>
+    Defaults to <tt>false</tt>.
+  </td>  
+  <td>Yes</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><tt>recordTerminator</tt></td>
+  <td>String</td>
+  <td>The character used to signify the end of a record.  By default, any new line character
+    (line feed (LF), carriage return (CR), or CRLF combination) is accepted when reading
+    an input stream, and <tt>System.getProperty("line.separator")</tt> is used when writing
+    to a stream.</td>
+  <td>No</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><tt>alwaysQuote</tt></td>
+  <td>boolean</td>
+  <td>If set to <tt>true</tt>, field text is always quoted.  By default, a field is only quoted
+  if it contains a delimeter, a quotation mark or new line characters.
+  </td>
+  <td>No</td>
+  <td>Yes</td>
+</tr>
+</table>
+
+
+<h3><a name="DelimitedStreamFormat">4.1.3.  Delimited Streams</a></h3>
+<p>The default delimited record reader and writer can be customized using the following properties:</p>
+<table class="indent">
+<tr>
+  <th>Property</th>
+  <th>Type</th>
+  <th>Description</th>
+  <th>Reader?</th>
+  <th>Writer?</th>
+</tr>
+<tr>
+  <td><tt>delimiter</tt></td>
+  <td>char</td>
+  <td>The field delimiter.  Defaults to the tab character.</td>
+  <td>Yes</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><tt>escape</tt></td>
+  <td>Character</td>
+  <td>The escape character allowed to escape a delimiter or itself.  By default, escaping
+    is disabled.</td>
+  <td>Yes</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><tt>lineContinuationCharacter</tt></td>
+  <td>Character</td>
+  <td>If this character is the last character before a new line or carriage return is read,
+    the record will continue reading from the next line.  By default, line continuation
+    is disabled.</td>
+  <td>Yes</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><tt>recordTerminator</tt></td>
+  <td>Character</td>
+  <td>The character used to signify the end of a record.  By default, any new line character
+    (line feed (LF), carriage return (CR), or CRLF combination) is accepted when reading
+    an input stream, and <tt>System.getProperty("line.separator")</tt> is used when writing
+    to a stream.</td>
+  <td>Yes</td>
+  <td>Yes</td>
+</tr>
+</table>
+
+
+<h3><a name="FixedLengthStreamFormat">4.1.4. Fixed Length Streams</a></h3>
+<p>The default fixed length reader and writer can be customized using the following properties:</p>
+<table class="indent">
+<tr>
+  <th>Property</th>
+  <th>Type</th>
+  <th>Description</th>
+  <th>Reader?</th>
+  <th>Writer?</th>
+</tr>
+<tr>
+  <td><tt>lineContinuationCharacter</tt></td>
+  <td>Character</td>
+  <td>If this character is the last character before a new line or carriage return is read,
+    the record will continue reading from the next line.  By default, line continuation
+    is disabled.</td>
+  <td>Yes</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><tt>recordTerminator</tt></td>
+  <td>Character</td>
+  <td>The character used to signify the end of a record.  By default, any new line character
+    (line feed (LF), carriage return (CR), or CRLF combination) is accepted when reading
+    an input stream, and <tt>System.getProperty("line.separator")</tt> is used when writing
+    to a stream.</td>
+  <td>Yes</td>
+  <td>Yes</td>
+</tr>
+</table>
+
+
+
 
 <h2><a name="RecordDefinition">4.2. Record Definitions</a></h2>
-<p>Each record read from an input stream or written to an output stream must be mapped 
-using a <tt>record</tt>.  A stream mapping must include at least one record.  
-A record is used to validate and map the fields that make up the record to a bean object.  
+<p>Each record type read from an input stream or written to an output stream must be mapped 
+using a <tt>record</tt> element.  A stream mapping must include at least one record.  
+The record mapping is used to validate the record and bind field values to a bean object.  
 A simple record configuration is shown below.</p>
 <pre class="file">
 &lt;beanio&gt;
@@ -364,21 +741,6 @@ a <tt>BeanWriter</tt>, its <tt>firstName</tt> and <tt>lastName</tt> attributes
 are read using standard Java bean getter naming conventions (e.g. <tt>getFirstName()</tt>)
 and formatted.</p>
 
-<p>Default getter and setter methods can be overridden using
-<tt>getter</tt> and <tt>setter</tt> attributes as shown below.</p>
-<pre class="file">
-&lt;beanio&gt;
-
-  &lt;stream name="stream1" format="csv"&gt;
-    &lt;record name="record1" class="org.beanio.example.Record"&gt;
-      &lt;field name="firstName" /&gt;
-      &lt;field name="lastName" <span class="highlight">setter="setSurname" getter="getSurname"</span>/&gt;
-      &lt;field name="age" /&gt;
-    &lt;/record&gt;
-  &lt;/stream&gt;
-  
-&lt;/beanio&gt;</pre>
-
 <p>BeanIO also supports Map based records by setting a record's <tt>class</tt>
 attribute to <tt>map</tt>, or to the fully qualified class name of any class assignable
 to <tt>java.util.Map</tt>.  Note that if you plan to use Map based records,
@@ -398,35 +760,16 @@ is further explained in section <a href="#FieldTypeConversion.">4.6. Field Type 
   
 &lt;/beanio&gt;</pre>
 
-<p>Fields found in a stream that do not map to a property of the record's bean object 
-can be documented but ignored using the <tt>ignore</tt> field attribute.  Note that
-any configured validation rules are still applied to ignored fields.</p>
-<pre class="file">
-&lt;beanio&gt;
 
-  &lt;stream name="stream1" format="csv"&gt;
-    &lt;record name="record1" class="org.beanio.example.Record"&gt;
-      &lt;field name="firstName" /&gt;
-      &lt;field name="lastName" /&gt;
-      &lt;field name="age" /&gt;
-      &lt;field name="filler" <span class="highlight">ignore="true"</span> /&gt;
-    &lt;/record&gt;
-  &lt;/stream&gt;
-  
-&lt;/beanio&gt;</pre>
-
-
-
-<h2><a name="RecordIdentification">4.3. Record Identification</a></h2>
+<h3><a name="RecordIdentification">4.2.1. Record Identification</a></h3>
 <p>Oftentimes, a stream is made up of multiple record types.  A typical batch file
 may include one header, one trailer, and zero to many detail records.  BeanIO
 allows a record to be identified by one or more of its fields using expected
 literal values or regular expressions.  By default, BeanIO will validate 
 the order of all records in the input stream.</p>
-<p>To see how a stream can be configured to handle multiple record types, lets
-extend our Employee file (from section TODO), to include a header and trailer
-record.  Each record will include a new record type field that identifies the type
-of record, so that an input file looks like this:</p>
+<p>To see how a stream can be configured to handle multiple record types, let's
+modify our Employee file to include a header and trailer record as shown below.  Each record 
+now includes a record type field that identifies the type of record.</p>
 <pre class="file">
 Header,01012011
 Detail,Joe,Smith,Developer,75000,10012009
@@ -438,14 +781,10 @@ Trailer,3</pre>
 <pre class="file">
 &lt;beanio&gt;
 
-  &lt;typeHandler type="java.util.Date" class="org.beanio.types.DateTypeHandler"&gt;
-    &lt;property name="pattern" value="MMddyyyy" /&gt;
-  &lt;/typeHandler&gt;
-
   &lt;stream name="employeeFile" format="csv"&gt;
     &lt;record name="header" minOccurs="1" maxOccurs="1" class="org.beanio.example.Header"&gt;
       &lt;field name="recordType" rid="true" literal="Header" /&gt;
-      &lt;field name="fileDate" /&gt;
+      &lt;field name="fileDate" format="MMddyyyy" /&gt;
     &lt;/record&gt;
     &lt;record name="employee" minOccurs="0" maxOccurs="unbounded" class="org.beanio.example.Employee"&gt;
       &lt;field name="recordType" rid="true" literal="Detail" /&gt;
@@ -453,7 +792,7 @@ Trailer,3</pre>
       &lt;field name="lastName" /&gt;
       &lt;field name="title" /&gt;
       &lt;field name="salary" /&gt;
-      &lt;field name="hireDate" /&gt;
+      &lt;field name="hireDate" format="MMddyyyy" /&gt;
     &lt;/record&gt;
     &lt;record name="trailer" minOccurs="1" maxOccurs="1" class="org.beanio.example.Trailer"&gt;
       &lt;field name="recordType" rid="true" literal="Trailer" /&gt;
@@ -503,7 +842,7 @@ the number of detail records is unbounded.</p>
     &lt;/record&gt;
 </pre>
 
-<h2><a name="RecordOrdering">4.4. Record Ordering</a></h2>
+<h3><a name="RecordOrdering">4.2.2. Record Ordering</a></h3>
 <p>As explained in the previous section, a stream can support multiple record types.  By default,  
 a <tt>BeanReader</tt> will validate that each record read from a stream appears in the same order
 it was configured.  In the previous example, if a detail record were to appear before the header record,
@@ -519,14 +858,10 @@ file could be changed as follows.</p>
 <pre class="file">
 &lt;beanio&gt;
 
-  &lt;typeHandler type="java.util.Date" class="org.beanio.types.DateTypeHandler"&gt;
-    &lt;property name="pattern" value="MMddyyyy" /&gt;
-  &lt;/typeHandler&gt;
-
   &lt;stream name="employeeFile" format="csv"&gt;
     &lt;record name="header" <span class="highlight">order="1"</span> minOccurs="1" maxOccurs="1" class="org.beanio.example.Header"&gt;
       &lt;field name="recordType" rid="true" literal="Header" /&gt;
-      &lt;field name="fileDate" /&gt;
+      &lt;field name="fileDate" format="MMddyyyy" /&gt;
     &lt;/record&gt;
     &lt;record name="employee" <span class="highlight">order="1"</span> minOccurs="0" maxOccurs="unbounded" class="org.beanio.example.Employee"&gt;
       &lt;field name="recordType" rid="true" literal="Detail" /&gt;
@@ -534,7 +869,7 @@ file could be changed as follows.</p>
       &lt;field name="lastName" /&gt;
       &lt;field name="title" /&gt;
       &lt;field name="salary" /&gt;
-      &lt;field name="hireDate" /&gt;
+      &lt;field name="hireDate" format="MMddyyyy" /&gt;
     &lt;/record&gt;
     &lt;record name="trailer" <span class="highlight">order="2"</span> minOccurs="1" maxOccurs="1" class="org.beanio.example.Trailer"&gt;
       &lt;field name="recordType" rid="true" literal="Trailer" /&gt;
@@ -555,7 +890,7 @@ attribute to <tt>false</tt> as shown below.</p>
   
 &lt;/beanio&gt;</pre>
 
-<h2><a name="RecordGrouping">4.5. Record Grouping</a></h2>
+<h3><a name="RecordGrouping">4.2.3. Record Grouping</a></h3>
 <p>In some cases, a stream may be further divided into batches or groups of records.  
 Continuing with our employee file, lets suppose employee detail records are batched by department,
 where each group of employees has a department header and a department trailer record.  
@@ -580,14 +915,10 @@ before the group may repeat or a different record can be read.  Our mapping file
 <pre class="file">
 &lt;beanio&gt;
 
-  &lt;typeHandler type="java.util.Date" class="org.beanio.types.DateTypeHandler"&gt;
-    &lt;property name="pattern" value="MMddyyyy" /&gt;
-  &lt;/typeHandler&gt;
-
   &lt;stream name="employeeFile" format="csv"&gt;
     &lt;record name="header" minOccurs="1" maxOccurs="1" class="org.beanio.example.Header"&gt;
       &lt;field name="recordType" rid="true" literal="Header" /&gt;
-      &lt;field name="fileDate" /&gt;
+      &lt;field name="fileDate" format="MMddyyyy" /&gt;
     &lt;/record&gt;
     <span class="highlight">&lt;group name="departmentGroup" minOccurs="0" maxOccurs"unbounded"&gt;</span>
       &lt;record name="deptHeader" minOccurs="1" maxOccurs="1" class="org.beanio.example.DeptHeader"&gt;
@@ -600,7 +931,7 @@ before the group may repeat or a different record can be read.  Our mapping file
         &lt;field name="lastName" /&gt;
         &lt;field name="title" /&gt;
         &lt;field name="salary" /&gt;
-        &lt;field name="hireDate" /&gt;
+        &lt;field name="hireDate" format="MMddyyyy" /&gt;
       &lt;/record&gt;
       &lt;record name="deptTrailer" minOccurs="1" maxOccurs="1" class="org.beanio.example.DeptTrailer"&gt;
         &lt;field name="recordType" rid="true" literal="DeptTrailer" /&gt;
@@ -629,22 +960,118 @@ indefinitely, simply change <tt>maxOccurs</tt> to <tt>unbounded</tt> as shown be
 &lt;/beanio&gt;</pre>
 
 
-<h2><a name="FieldTypeConversion">4.6. Field Type Conversion</a></h2>
-<p>The property type of a field is determined by introspecting the bean class assigned to the record.
-If the record's bean class is of type <tt>Map</tt>, BeanIO will assume the field type is of type
+
+<h2><a name="FieldDefinitions">4.3. Field Definitions</a></h2>
+A record is made up of one or more fields, which are validated and bound to bean properties 
+using the <tt>field</tt> element.  All fields must specify a <tt>name</tt> attribute, which  
+by default, is used to get and set the field value from the bean object.
+
+<p>Default getter and setter methods can be overridden using
+<tt>getter</tt> and <tt>setter</tt> attributes as shown below.</p>
+<pre class="file">
+&lt;beanio&gt;
+
+  &lt;stream name="stream1" format="csv"&gt;
+    &lt;record name="record1" class="org.beanio.example.Record"&gt;
+      &lt;field name="firstName" /&gt;
+      &lt;field name="lastName" <span class="highlight">setter="setSurname" getter="getSurname"</span>/&gt;
+      &lt;field name="age" /&gt;
+    &lt;/record&gt;
+  &lt;/stream&gt;
+  
+&lt;/beanio&gt;</pre>
+
+<p>Fields found in a stream that do not map to a bean property can be declared,
+but otherwise ignored, using the <tt>ignore</tt> field attribute.  Note that
+configured validation rules are still applied to ignored fields.</p>
+<pre class="file">
+&lt;beanio&gt;
+
+  &lt;stream name="stream1" format="csv"&gt;
+    &lt;record name="record1" class="org.beanio.example.Record"&gt;
+      &lt;field name="firstName" /&gt;
+      &lt;field name="lastName" /&gt;
+      &lt;field name="age" /&gt;
+      &lt;field name="filler" <span class="highlight">ignore="true"</span> /&gt;
+    &lt;/record&gt;
+  &lt;/stream&gt;
+  
+&lt;/beanio&gt;</pre>
+
+<p>By default, BeanIO expects configured fields in the same order they
+are declared in the mapping file.  If this is not the case, a <tt>position</tt> field attribute
+can be configured for each field.  If a position is declared for one field, a position must be declared
+for all other fields in the same record.  For delimited (and CSV) formatted streams, <tt>position</tt>
+should be set to the index of the first occurrence of the field in the record, beginning at 0.  
+For fixed length formatted streams, <tt>position</tt> should be set to the index of the first character
+of the first occurrence of the field in the record, beginning at 0. </p>
+
+<p>The following example shows how the position attribute can be used.  Although the fields are declared
+in a different order, the record definition is identical to the previous example.  When positions are explicitly
+configured for an input stream, there is no need to declare all fields in a record, unless desired 
+for validation purposes.</p>
+<pre class="file">
+&lt;beanio&gt;
+
+  &lt;stream name="stream1" format="csv"&gt;
+    &lt;record name="record1" class="org.beanio.example.Record"&gt;
+      &lt;field name="filler" <span class="highlight">position="3"</span> ignore="true" /&gt;
+      &lt;field name="lastName" <span class="highlight">position="1"</span> /&gt;
+      &lt;field name="age" <span class="highlight">position="2"</span>/&gt;
+      &lt;field name="firstName" <span class="highlight">position="0"</span> /&gt;
+    &lt;/record&gt;
+  &lt;/stream&gt;
+  
+&lt;/beanio&gt;</pre>
+
+<h3><a name="FieldTypeConversion">4.3.1. Field Type Conversion</a></h3>
+<p>The property type of a field is determined by introspecting the bean object the field belongs to.
+If the bean class is of type <tt>java.util.Map</tt>, BeanIO will assume the field is of type
 <tt>java.lang.String</tt>, unless a field type is explicitly declared using a field's <tt>type</tt>
 attribute.</p>
-<p>A <tt>format</tt> attribute can be used to pass a decimal format for <tt>java.lang.Number</tt> types, and
-for passing a date format for <tt>java.util.Date</tt> types.  In the example below, a 
+<p>The <tt>type</tt> attribute may be set to any supported fully qualified class name or to one of the 
+supported type aliases below.  Type aliases are not case sensitive, and the same alias may be
+used for primitive types.  For example, <tt>int</tt> and <tt>java.lang.Integer</tt>
+bean properties will use the same type handler registered for the type <tt>java.lang.Integer</tt>,
+or alias <tt>integer</tt> or <tt>int</tt>.</p>
+<table class="indent">
+<tr><th>Class Name</th><th>Primitive</th><th>Alias(es)</th></tr>
+<tr><td>java.lang.String</td><td>-</td><td><tt>string</tt></td></tr>
+<tr><td>java.lang.Boolean</td><td>boolean</td><td><tt>boolean</tt></td></tr>
+<tr><td>java.lang.Byte</td><td>byte</td><td><tt>byte</tt></td></tr>
+<tr><td>java.lang.Character</td><td>char</td><td><tt>character</tt><br /><tt>char</tt></td></tr>
+<tr><td>java.lang.Short</td><td>short</td><td><tt>short</tt></td></tr>
+<tr><td>java.lang.Integer</td><td>int</td><td><tt>integer</tt><br /><tt>int</tt></td></tr>
+<tr><td>java.lang.Long</td><td>long</td><td><tt>long</tt></td></tr>
+<tr><td>java.lang.Float</td><td>float</td><td><tt>float</tt></td></tr>
+<tr><td>java.lang.Double</td><td>double</td><td><tt>double</tt></td></tr>
+<tr><td>java.math.BigInteger</td><td>-</td><td><tt>biginteger</tt></td></tr>
+<tr><td>java.math.BigDecimal</td><td>-</td><td><tt>bigdecimal</tt><br /><tt>decimal</tt></td></tr>
+<tr><td>java.util.Date<sup>1</sup></td><td>-</td>
+  <td>
+    <tt>datetime</tt><br />
+    <tt>date</tt><br />
+    <tt>time</tt>
+  </td>
+</tr>
+</table>
+<p class="indent"><sup>1</sup> By default, the <tt>date</tt> alias is used for <tt>java.util.Date</tt> types that 
+contain date information only, and the <tt>time</tt> alias is used for <tt>java.util.Date</tt> types that contain 
+only time information.  Only the <tt>datetime</tt> alias can be used to replace the default class type handler 
+for <tt>java.util.Date</tt>.</p>
+
+<p>Optionally, a <tt>format</tt> attribute can be used to pass a decimal format for <tt>java.lang.Number</tt> types, and
+for passing a date format for <tt>java.util.Date</tt> types.  In the example below, the <tt>hireDate</tt> field
+uses the <tt>SimpleDateFormat</tt> pattern "yyyy-MM-dd", and the <tt>salary</tt> field uses the <tt>DecimalFormat</tt>
+pattern "#,##0".
+
+
+In the example below, a 
 <tt>DateTypeHandler</tt> is registered for all <tt>java.util.Date</tt> types and used by the <tt>fileDate</tt> 
 field.  The <tt>hireDate</tt> field overrides the pattern of the default date type handler using
 the <tt>format</tt> attribute.</p>
 <pre class="file">
 &lt;beanio&gt;
-
-  &lt;typeHandler type="java.util.Date" class="org.beanio.types.DateTypeHandler"&gt;
-    &lt;property name="pattern" value="MMddyyyy" /&gt;
-  &lt;/typeHandler&gt;
 
   &lt;stream name="employeeFile" format="csv"&gt;
     &lt;record name="header" minOccurs="1" maxOccurs="1" class="map"&gt;
@@ -667,57 +1094,28 @@ the <tt>format</tt> attribute.</p>
   
 &lt;/beanio&gt;</pre>
 
-<p>The <tt>type</tt> attribute may be set to any fully qualified class name or to one of the 
-supported type aliases below.  Type aliases are not case sensitive, and the same alias may be
-used for primitive types.  For example, <tt>int</tt> and <tt>java.lang.Integer</tt>
-bean properties will use the same type handler registered for the type <tt>java.lang.Integer</tt>,
-or alias <tt>integer</tt> or <tt>int</tt>.</p>
-<table class="typeTable">
-<tr><th>Class Name</th><th>Primitive</th><th>Alias(es)</th></tr>
-<tr><td>java.lang.String</td><td>-</td><td><tt>string</tt></td></tr>
-<tr><td>java.lang.Boolean</td><td>boolean</td><td><tt>boolean</tt></td></tr>
-<tr><td>java.lang.Byte</td><td>byte</td><td><tt>byte</tt></td></tr>
-<tr><td>java.lang.Character</td><td>char</td><td><tt>character</tt><br /><tt>char</tt></td></tr>
-<tr><td>java.lang.Short</td><td>short</td><td><tt>short</tt></td></tr>
-<tr><td>java.lang.Integer</td><td>int</td><td><tt>integer</tt><br /><tt>int</tt></td></tr>
-<tr><td>java.lang.Long</td><td>long</td><td><tt>long</tt></td></tr>
-<tr><td>java.lang.Float</td><td>float</td><td><tt>float</tt></td></tr>
-<tr><td>java.lang.Double</td><td>double</td><td><tt>double</tt></td></tr>
-<tr><td>java.math.BigInteger</td><td>-</td><td><tt>biginteger</tt></td></tr>
-<tr><td>java.math.BigDecimal</td><td>-</td><td><tt>bigdecimal</tt><br /><tt>decimal</tt></td></tr>
-<tr><td>java.util.Date<sup>1</sup></td><td>-</td>
-  <td>
-    <tt>datetime</tt><br />
-    <tt>date</tt><br />
-    <tt>time</tt>
-  </td>
-</tr>
-</table>
-<p><sup>1</sup> By default, the <tt>date</tt> alias is used for <tt>Date</tt> types that contain date information
-only, and the <tt>time</tt> alias is used for <tt>Date</tt> types that contain only time information.  Only the
-<tt>datetime</tt> alias can be used to replace the default class type handler for <tt>java.util.Date</tt>.</p>
 
-<h2><a name="CustomTypeHandlers">4.7. Custom Type Handlers</a></h2>
+
+
+<h3><a name="CustomTypeHandlers">4.3.2. Custom Type Handlers</a></h3>
 <p>Field type conversion is performed by a <i>type handler</i>.  BeanIO includes type handlers
 for common Java types, or you can create your own type handler by implementing the <tt>TypeHandler</tt> 
 interface shown below.
 When writing a custom type handler, make sure to handle null values and empty strings.
-Only one instance of your type handler is created, so if you plan to read or write
-multiple streams concurrently, make sure your type handler is thread safe.
+Only one instance of your type handler is created, so if you plan to concurrently read or write
+multiple streams, make sure your type handler is thread safe.
 </p>
 <pre class="java">
-public interface TypeHandler {
+package org.beanio.types;
 
+public interface TypeHandler {
     public Object parse(String text) throws TypeConversionException;
-    
     public String format(Object value);
-    
     public Class&lt;?&gt; getType();
 }</pre>
 
-<p>For example, the following type handler could be used to convert
-"Y" or "N" indicators to a boolean and back.</p>
-
+<p>The following example shows a custom type handler for the <tt>Boolean</tt> class
+and <tt>boolean</tt> primitive based on "Y" or "N" indicators.</p>
 <pre class="java">
 import org.beanio.types.TypeHandler;
 
@@ -733,22 +1131,22 @@ public class YNTypeHandler implements TypeHandler {
     }
 }</pre>
 
-<p>Once you've coded your custom type handler, the type handler can be
-declared globally (for all streams in the mapping file) or for a specific stream.
+
+<p>A type handler may be named using the <tt>name</tt> attribute, and/or registered for
+all fields of a particular type by setting its <tt>type</tt> attribute, where <tt>type</tt> is
+set to the fully qualified class name or type alias of the class supported by the type handler.
+To reference a named type handler, use the <tt>typeHandler</tt> field attribute when configuring
+the field.</p>
+
+<p>Many BeanIO included type handlers support customization through the use of 
+one or more <tt>property</tt> elements, where the <tt>name</tt> attribute is a bean property of 
+the type handler, and the <tt>value</tt> attribute is the property value.</p>
+
+<p>Type handlers can be declared globally (for all streams in the mapping file) or for a specific stream.
 In the example below, the <tt>DateTypeHandler</tt> is declared globally, while the
 <tt>YNTypeHandler</tt> is declared only for the 'employeeFile' stream.  Stream
 specific type handlers will override global type handlers when declared with the same
 name or for the same type.</p>
-
-<p>A custom type handler may be named using the <tt>name</tt> attribute, and/or registered for
-all fields of a particular type by setting its <tt>type</tt> attribute, where <tt>type</tt> is
-set to the fully qualified 
-class name or type alias of the class supported by the type handler.  Optionally, a type handler 
-can be configured using one or more <tt>property</tt> elements, where it's 
-<tt>name</tt> attribute is a bean property of the type handler, and <tt>value</tt> is the property 
-value.</p>
-<p>To reference a named type handler, use a field's <tt>typeHandler</tt> attribute when configuring
-the field. </p>
 <pre class="file">
 &lt;beanio&gt;
 
@@ -773,7 +1171,7 @@ the field. </p>
   
 &lt;/beanio&gt;</pre>
 
-<h2><a name="CollectionFields">4.8. Collection Field Types</a></h2>
+<h3><a name="CollectionFields">4.3.3. Collection Type Fields</a></h3>
 <p>Collection and array field property types are also supported by BeanIO.  For example, lets assume our 
 <tt>Employee</tt> bean object contains a list of accounts.</p>
 <pre class="java">
@@ -800,8 +1198,16 @@ Jon,Anderson,Manager,85000,03182007<span class="highlight">,333001</span></pre>
 
 <p>In this example, the <tt>accounts</tt> bean property can be defined in the mapping file using a <tt>collection</tt> 
 field attribute.  The <tt>collection</tt> attribute can be set to the fully qualified class name of
-a collection implementation, or to a collection type alias.</p>  
-<p>Collection field types can declare the number of occurrences of the field
+a <tt>java.util.Collection</tt> subclass, or to one of the collection type aliases below.</p>  
+<table class="indent">
+<tr><th>Class</th><th>Alias</th><th>Default Implementation</th></tr>
+<tr><td>java.util.Collection</td><td><tt>collection</tt></td><td>java.util.ArrayList</td></tr>
+<tr><td>java.util.List</td><td><tt>list</tt></td><td>java.util.ArrayList</td></tr>
+<tr><td>java.util.Set</td><td><tt>set</tt></td><td>java.util.HashSet</td></tr>
+<tr><td>(Java Array)</td><td><tt>array</tt></td><td>N/A</td></tr>
+</table>
+
+<p>Collection type fields can declare the number of occurrences of the field
 using <tt>minOccurs</tt> and <tt>maxOccurs</tt> field attributes.  If not declared, <tt>minOccurs</tt>
 will default to 1, and <tt>maxOccurs</tt> will default to the <tt>minOccurs</tt> value or 1, whichever
 is greater.  If the number of field occurences is variable (i.e. <tt>maxOccurs</tt> is greater than 
@@ -823,17 +1229,268 @@ is greater.  If the number of field occurences is variable (i.e. <tt>maxOccurs</
   
 &lt;/beanio&gt;</pre>
 
-<p>BeanIO supports the following collection type aliases.  For Java array types, <tt>collection</tt> 
-must be set to <tt>array</tt>.  Collection type aliases are not case sensitve.</p>
-<table class="typeTable">
-<tr><th>Class Name</th><th>Alias</th></tr>
-<tr><td>java.util.ArrayList</td><td><tt>list</tt></td></tr>
-<tr><td>java.util.Hashset</td><td><tt>set</tt></td></tr>
-<tr><td>(Java Array)</td><td><tt>array</tt></td></tr>
+
+<h3><a name="FixedLengthFields">4.3.4. Fixed Length Fields</a></h3>
+<p>Fixed length fields require a little extra configuration than their delimited counterparts.  Let's
+redefine our employee file example using the fixed length format below.
+</p>
+<div class="indent">
+  <table>
+    <tr><th>Position</th><th>Field</th><th>Format</th><th>Length</th></tr>
+    <tr><td>0</td><td>First Name</td><td>Text</td><td>10</td></tr>
+    <tr><td>10</td><td>Last Name</td><td>Text</td><td>10</td></tr>
+    <tr><td>20</td><td>Job Title</td><td>Text</td><td>10</td></tr>
+    <tr><td>30</td><td>Salary</td><td>Number</td><td>6</td></tr>
+    <tr><td>36</td><td>Hire Date</td><td>Date (MMDDYYYY)</td><td>8</td></tr>
+  </table>
+</div>
+
+<p>Thus, a fixed length version of the employee file might look like the following:</p>
+<pre class="file">
+Joe       Smith    Developer 07500010012009
+Jane      Doe      Architect 08000001152008
+Jon       Anderson Manager   08500003182007</pre>
+
+<p>The length of a fixed length field must be configured using the <tt>length</tt> field attribute.
+By default, fixed length fields are left justified and padded with spaces, but these settings can
+be overridden using the <tt>padding</tt> and <tt>justify</tt> field attributes.  Field padding can
+be set to any single character, and field justification can be set to <tt>left</tt> or <tt>right</tt>.
+Using these attributes, our mapping file can now be updated as follows:  
+</p>
+<pre class="file">
+&lt;beanio&gt;
+
+  &lt;stream name="employeeFile" format="csv"&gt;
+    &lt;record name="employee" class="org.beanio.example.Employee"&gt;
+      &lt;field name="firstName" <span class="highlight">length="10"</span> /&gt;
+      &lt;field name="lastName" <span class="highlight">length="10"</span> /&gt;
+      &lt;field name="title" <span class="highlight">length="10"</span> /&gt;
+      &lt;field name="salary" <span class="highlight">length="6" padding="0" justify="right"</span> /&gt;
+      &lt;field name="hireDate" <span class="highlight">length="8"</span> format="MMddyyyy" /&gt;
+    &lt;/record&gt; 
+  &lt;/stream&gt;
+  
+&lt;/beanio&gt;</pre>
+
+<p>The configured padding character is removed from the beginning of the field if right justified, or 
+from the end of the field if left justified, until a character is found that does not match the padding
+character.  If the entire field is padded, <tt>Number</tt> property types default to the padding character if 
+it is a digit, and the padding character is ignored for <tt>Character</tt> types.  To illustrate this, 
+some examples are shown in the table below.</p><table class="indent">
+<tr>
+  <th>Justify</th>
+  <th>Type</th>
+  <th>Padding</th>
+  <th>Padded Text</th>
+  <th>Unpadded Text</th>
+</tr>
+<tr>
+  <td rowspan="4"><tt>left</tt></td>
+  <td rowspan="2"><tt>String</tt></td>
+  <td rowspan="2"><tt>"&nbsp;"</tt></td>
+  <td>
+    <tt>"George&nbsp;&nbsp;"</tt>
+  </td>
+  <td><tt>"George"</tt></td>
+</tr>
+<tr>
+  <td><tt>"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"</tt></td>
+  <td><tt>""</tt></td>
+</tr>
+<tr>
+  <td rowspan="2"><tt>Character</tt></td>
+  <td rowspan="2"><tt>"&nbsp;"</tt></td>
+  <td><tt>"A"</tt></td>
+  <td><tt>"A"</tt></td>
+</tr>
+<tr>
+  <td><tt>" "</tt></td>
+  <td><tt>" "</tt></td>
+</tr>
+<tr>
+  <td rowspan="5"><tt>right</tt></td>
+  <td rowspan="5"><tt>Number</tt></td>
+  <td rowspan="2"><tt>"0"</tt></td>
+  <td><tt>"00123"</tt></td>
+  <td><tt>"123"</tt></td>
+</tr>
+<tr>
+  <td><tt>"00000"</tt></td>
+  <td><tt>"0"</tt></td>
+</tr>
+<tr>
+  <td rowspan="2"><tt>"9"</tt></td>
+  <td><tt>"00000"</tt></td>
+  <td><tt>"00000"</tt></td>
+</tr>
+<tr>
+  <td><tt>"99999"</tt></td>
+  <td><tt>"9"</tt></td>
+</tr>
+<tr>
+  <td rowspan="1"><tt>"X"</tt></td>
+  <td><tt>"XXXXX"</tt></td>
+  <td><tt>""</tt></td>
+</tr>
 </table>
 
 
-<h2><a name="StreamValidation">4.9. Stream Validation</a></h2>
+
+
+<h2><a name="BeanDefinitions">4.4. Nested Bean Definitions</a></h2>
+<p>The bean class mapped to a record can be divided into nested bean objects using
+a <tt>bean</tt> element.  First, let's suppose we store an address in our CSV employee
+file, so that the record layout might look like this:</p>
+<table class="indent">
+  <tr><th>Position</th><th>Field</th><th>Format</th></tr>
+  <tr><td>0</td><td>First Name</td><td>Text</td></tr>
+  <tr><td>1</td><td>Last Name</td><td>Text</td></tr>
+  <tr><td>2</td><td>Job Title</td><td>Text</td></tr>
+  <tr><td>3</td><td>Salary</td><td>Number</td></tr>
+  <tr><td>4</td><td>Hire Date</td><td>Date (MMDDYYYY)</td></tr>
+  <tr><td>5</td><td>Street</td><td>Text</td></tr>
+  <tr><td>6</td><td>City</td><td>Text</td></tr>
+  <tr><td>7</td><td>State</td><td>Text</td></tr>
+  <tr><td>8</td><td>Zip</td><td>Text</td></tr>
+</table>
+
+<p>Second, lets suppose we want to store address information in a new <tt>Address</tt>
+bean object like the one below, and add an <tt>Address</tt> reference to our
+<tt>Employee</tt> class.</p>
+<pre class="java">
+package org.beanio.example;
+
+public class Address {
+    String street;
+    String city;
+    String state;
+    String zip;
+    
+    <span class="comment">// getters and setters not shown...</span>
+}</pre>
+<pre class="java">
+package org.beanio.example;
+import java.util.Date;
+
+public class Employee {
+    String firstName;
+    String lastName;
+    String title;
+    int salary;
+    Date hireDate;
+    Address mailingAddress;
+    
+    <span class="comment">// getters and setters not shown...</span>
+}</pre>
+
+<p>With this information, we can now update our employee CSV mapping file to 
+accomodate the nested <tt>Address</tt> object.  A <tt>bean</tt> element must include 
+<tt>name</tt> and <tt>class</tt> attributes.  By default, the <tt>name</tt> attribute is
+used to determine the getter and setter on its parent bean or record.  Optionally, 
+<tt>getter</tt> or <tt>setter</tt> attributes can be used to override the default property
+name similar to a field property.  And the <tt>class</tt> attribute must be set to the fully
+qualified class name of the bean object, or to <tt>map</tt>, or to the class name of 
+any concrete <tt>java.util.Map</tt> implementation.  If the bean class is of type <tt>java.util.Map</tt>,
+field values are stored in the Map under their configured field name.</p>
+<pre class="file">
+&lt;beanio&gt;
+
+  &lt;stream name="employeeFile" format="csv"&gt;
+    &lt;record name="employee" class="org.beanio.example.Employee"&gt;
+      &lt;field name="firstName" /&gt;
+      &lt;field name="lastName" /&gt;
+      &lt;field name="title" /&gt;
+      &lt;field name="salary" /&gt;
+      &lt;field name="hireDate" format="MMddyyyy" /&gt;
+      <span class="highlight">&lt;bean name="mailingAddress" class="org.beanio.example.Address"&gt;
+        &lt;field name="street" /&gt;
+        &lt;field name="city" /&gt;
+        &lt;field name="state" /&gt;      
+        &lt;field name="zip" /&gt;
+      &lt;/bean&gt;</span>
+    &lt;/record&gt; 
+  &lt;/stream&gt;
+  
+&lt;/beanio&gt;</pre>
+
+<p>If needed, nested bean objects can be further divided into other bean objects.  There is no limit
+to the number of nested levels that can be configured in a mapping file.</p>
+
+<h3><a name="BeanCollections">4.4.1. Collection Type Beans</a></h3>
+<p>Similar to collection type fields, BeanIO also supports collection type beans.  Continuing our previous
+example, let's suppose the employee CSV file may contain 1 or more addresses for each employee.  Thus our 
+<tt>Employee</tt> bean object might look like this:</p>
+<pre class="java">
+package org.beanio.example;
+import java.util.Date;
+
+public class Employee {
+    String firstName;
+    String lastName;
+    String title;
+    int salary;
+    Date hireDate;
+    List&lt;Address&gt; addressList;
+    
+    <span class="comment">// getters and setters not shown...</span>
+}</pre>
+
+<p>And our input file might look like this:</p>
+<pre class="file">
+Joe,Smith,Developer,75000,10012009,123 State St,Chicago,IL,60614
+Jane,Doe,Architect,80000,01152008,456 Main St,Chicago,IL,60611,111 Michigan Ave,Chicago,IL,60611
+Jon,Anderson,Manager,85000,03182007,1212 North Ave,Chicago,IL,60614</pre>
+
+<p>In our mapping file, in order to designate a bean as a collection, simply set it's <tt>collection</tt> 
+attribute to the fully qualified class name of a <tt>java.util.Collection</tt> subclass,
+or to one of the collection type aliaes below.</p>
+<table class="indent">
+<tr><th>Class</th><th>Alias</th><th>Default Implementation</th></tr>
+<tr><td>java.util.Collection</td><td><tt>collection</tt></td><td>java.util.ArrayList</td></tr>
+<tr><td>java.util.List</td><td><tt>list</tt></td><td>java.util.ArrayList</td></tr>
+<tr><td>java.util.Set</td><td><tt>set</tt></td><td>java.util.HashSet</td></tr>
+<tr><td>(Java Array)</td><td><tt>array</tt></td><td>N/A</td></tr>
+</table>
+
+<p>Just like a collection type field, collection type beans may declare the number of occurrences
+using <tt>minOccurs</tt> and <tt>maxOccurs</tt> bean attributes.  If not declared, <tt>minOccurs</tt>
+will default to 1, and <tt>maxOccurs</tt> will default to the <tt>minOccurs</tt> value or 1, whichever
+is greater.  If the number of occurences is variable (i.e. <tt>maxOccurs</tt> is greater than 
+<tt>minOccurs</tt>), the bean must be the last segment in the record.
+</p>
+<pre class="file">
+&lt;beanio&gt;
+
+  &lt;stream name="employeeFile" format="csv"&gt;
+    &lt;record name="employee" class="org.beanio.example.Employee"&gt;
+      &lt;field name="firstName" /&gt;
+      &lt;field name="lastName" /&gt;
+      &lt;field name="title" /&gt;
+      &lt;field name="salary" /&gt;
+      &lt;field name="hireDate" format="MMddyyyy" /&gt;
+      &lt;bean name="addressList" <span class="highlight">collection="list" minOccurs="1" maxOccurs="unbounded"</span>
+          class="org.beanio.example.Address"&gt;
+        &lt;field name="street" /&gt;
+        &lt;field name="city" /&gt;
+        &lt;field name="state" /&gt;      
+        &lt;field name="zip" /&gt;
+      &lt;/bean&gt;
+    &lt;/record&gt; 
+  &lt;/stream&gt;
+  
+&lt;/beanio&gt;</pre>
+
+<p>When working with collection type beans, there are a few restrictions to keep in mind:</p>
+<ul>
+  <li>Bean fields must repeat consecutively in the record.</li>
+  <li>All repeating bean fields must be declared.  There can be no field gaps in the bean configuration.</li>
+  <li>A colllection type bean may not contain any collection type descendents with variable occurrences.</li>
+</ul>
+
+
+
+
+<h2><a name="StreamValidation">4.5. Stream Validation</a></h2>
 <p>A <tt>BeanReader</tt> will throw an <tt>InvalidRecordException</tt> if a record or one of 
 its fields fails a configured validation rule.  There are two types of errors reported
 for an invalid record: record level errors and field level errors.  If a record level error occurs, 
@@ -963,7 +1620,7 @@ on the validation rule that was violated, different parameters are passed to the
 validation rule.</p>
 
 
-<h3><a name="RecordValidation">4.9.1. Record Validation</a></h3>
+<h3><a name="RecordValidation">4.5.1. Record Validation</a></h3>
 <p>The following record level validation rules may be configured on a <tt>record</tt> element.
 </p>
 <table>
@@ -982,7 +1639,7 @@ validation rule.</p>
 </tr>
 </table>
 
-<h3><a name="FieldValidation">4.9.2. Field Validation</a></h3>
+<h3><a name="FieldValidation">4.5.2. Field Validation</a></h3>
 <p>BeanIO supports several common field validation rules when reading an input stream.  All field 
 validation rules are validated against the field text before type conversion.  When field trimming 
 is enabled, <tt>trim="true"</tt>, all validations are performed
@@ -1027,334 +1684,8 @@ writing to an output stream.
 </tr>
 </table>
 
-
-<h2><a name="RecordReader">4.10. The Record Reader</a></h2>
-<p>Before a record is identified, validated and parsed into fields, it is first read from
-an input stream using a <tt>RecordReader</tt>.  The <tt>RecordReader</tt> interface is
-shown below.</p>
-
-<pre class="java">
-package org.beanio.stream;
-
-public interface RecordReader {
-
-    public Object read() throws IOException, RecordIOException;
-
-    public void close() throws IOException;
-
-    public int getRecordLineNumber();
-
-    public String getRecordText();
-}
-</pre>
-
-<p>A new <tt>RecordReader</tt> is created for each <tt>BeanReader</tt> using the
-<tt>RecordReaderFactory</tt> interface shown below.</p>
-<pre class="java">
-package org.beanio.stream;
-
-public interface RecordReaderFactory {
-
-    public RecordReader createReader(Reader in) throws IllegalArgumentException;
-	
-}
-</pre>
-
-<p>A <tt>RecordReaderFactory</tt> implementation can be configured for each stream
-in the mapping file using a <tt>reader</tt> element.  An optional 
-<tt>class</tt> attribute can be used to override BeanIO's default <tt>RecordReaderFactory</tt>
-implementation for the stream format.  And similar to a type handler configuration, 
-child <tt>property</tt> elements can be used to customize the <tt>RecordReaderFactory</tt>.
-In the example below, the CSV delimiter is changed from the default comma, to a pipe
-character.</p>
-<pre class="file">
-&lt;beanio&gt;
-
-  &lt;typeHandler type="java.util.Date" class="org.beanio.types.DateTypeHandler"&gt;
-    &lt;property name="pattern" value="MMddyyyy" /&gt;
-  &lt;/typeHandler&gt;
-
-  &lt;stream name="employeeFile" format="csv"&gt;
-    <span class="highlight">&lt;reader class="org.beanio.stream.csv.CsvReaderFactory"&gt;
-      &lt;property name="delimiter" value="|" /&gt;
-    &lt;/reader&gt; </span>
-    &lt;record name="employee" class="map"&gt;
-      &lt;field name="recordType" rid="true" literal="Detail" /&gt;
-      &lt;field name="firstName" /&gt;
-      &lt;field name="lastName" /&gt;
-      &lt;field name="title" /&gt;
-      &lt;field name="salary" /&gt;
-      &lt;field name="hireDate" /&gt;
-    &lt;/record&gt; 
-  &lt;/stream&gt;
-  
-&lt;/beanio&gt;</pre>
-
-<p>BeanIO includes default record readers for CSV, delimited and fixed length stream
-formats. </p>
-
-
-<h3><a name="CSVRecordReaderFactory">4.10.1. Default CSV Record Reader Factory</a></h3>
-<p>The default CSV record reader and factory parses CSV streams based on 
-<a href="http://www.ietf.org/rfc/rfc4180.txt">RFC 4180</a> with one exception: by default,
-multi-line records are disabled.  However, this behavour can be overridden along with other
-defaults using the following properties.</p>
-<table>
-<tr>
-  <th>Property</th>
-  <th>Type</th>
-  <th>Description</th>
-</tr>
-<tr>
-  <td><tt>delimiter</tt></td>
-  <td>char</td>
-  <td>The field delimiter.  Defaults to a comma.</td>
-</tr>
-<tr>
-  <td><tt>quote</tt></td>
-  <td>char</td>
-  <td>The quotation mark character used to wrap fields containing a delimiter character, a
-    quotation mark, or new lines.  Defaults to the double quotation mark, ".</td>
-</tr>
-<tr>
-  <td><tt>escape</tt></td>
-  <td>Character</td>
-  <td>The character used to escape a quotation mark in a quoted field.  Defaults to the
-    double quotation mark, ".</td>
-</tr>
-<tr>
-  <td><tt>multilineEnabled</tt></td>
-  <td>boolean</td>
-  <td>If set to <tt>true</tt>, quoted fields may contain new line characters.  Defaults to <tt>false</tt>.</td>
-</tr>
-<tr>
-  <td><tt>whitespaceAllowed</tt></td>
-  <td>boolean</td>
-  <td>If set to <tt>true</tt>, whitespace is ignored and allowed before and after 
-  quoted values.  For example, the following is allowed:
-  <pre>
-    Jennifer, "Jones" ,24</pre>
-  Defaults to <tt>false</tt>.
-  </td>
-</tr>
-<tr>
-  <td><tt>unquotedQuotesAllowed</tt></td>
-  <td>boolean</td>
-  <td>If set to <tt>true</tt>, field text containing quotation marks do not need to 
-    be quoted unless the field text starts with a quotation mark.  For example, the
-    following is allowed:
-    <pre>
-    Jennifer,She said "OK"</pre>
-    Defaults to <tt>false</tt>.
-  </td>
-</tr>
-</table>
-
-
-<h3><a name="DelimitedRecordReaderFactory">4.10.2. Default Delimited Record Reader Factory</a></h3>
-<p>The default record reader factory for delimited streams supports the following properties:</p>
-<table>
-<tr>
-  <th>Property</th>
-  <th>Type</th>
-  <th>Description</th>
-</tr>
-<tr>
-  <td><tt>delimiter</tt></td>
-  <td>char</td>
-  <td>The field delimiter.  Defaults to the tab character.</td>
-</tr>
-<tr>
-  <td><tt>escape</tt></td>
-  <td>Character</td>
-  <td>The escape character allowed to escape a delimiter or itself.  By default, escaping
-    is disabled.</td>
-</tr>
-<tr>
-  <td><tt>lineContinuationCharacter</tt></td>
-  <td>Character</td>
-  <td>If this character is the last character before a new line or carriage return is read,
-    the record will continue reading from the next line.  By default, line continuation
-    is disabled.</td>
-</tr>
-</table>
-
-
-<h3><a name="FixedLengthRecordReaderFactory">4.10.3. Default Fixed Length Record Reader Factory</a></h3>
-<p>The default record reader factory for fixed length formatted streams supports the following properties:</p>
-<table>
-<tr>
-  <th>Property</th>
-  <th>Type</th>
-  <th>Description</th>
-</tr>
-<tr>
-  <td><tt>lineContinuationCharacter</tt></td>
-  <td>Character</td>
-  <td>If this character is the last character before a new line or carriage return is read,
-    the record will continue reading from the next line.  By default, line continuation
-    is disabled.</td>
-</tr>
-</table>
-
-
-
-
-
-<h2><a name="RecordWriter">4.11. The Record Writer</a></h2>
-<p>Records are written to an output stream using a <tt>RecordWriter</tt>.
-The <tt>RecordWriter</tt> interface is shown below.  Depending on the format of the stream
-a <tt>RecordWriter</tt> will expect the record object to be of a certain type.  CSV and
-delimited record writers use a <tt>String</tt> array, while fixed length records simply
-use <tt>String</tt>.</p>
-
-<pre class="java">
-package org.beanio.stream;
-
-public interface RecordWriter {
-
-    public void write(Object record) throws IOException;
-
-    public void flush() throws IOException;
-
-    public void close() throws IOException;
-}
-</pre>
-
-<p>A new <tt>RecordWriter</tt> is created for each <tt>BeanWriter</tt> using the
-<tt>RecordWriterFactory</tt> interface shown below.</p>
-<pre class="java">
-package org.beanio.stream;
-
-public interface RecordWriterFactory {
-
-	public RecordWriter createWriter(Writer out) throws IllegalArgumentException;
-	
-}
-</pre>
-
-<p>A <tt>RecordWriterFactory</tt> implementation can be configured for each stream
-in a mapping file using a <tt>writer</tt> element.  An optional 
-<tt>class</tt> attribute can be used to override BeanIO's default <tt>RecordWriterFactory</tt>
-implementation for the stream format.  And similar to a type handler configuration, 
-child <tt>property</tt> elements can be used to customize the <tt>RecordWriterFactory</tt>.
-In the example below, the CSV delimiter is changed from the default comma, to a pipe
-character.</p>
-<pre class="file">
-&lt;beanio&gt;
-
-  &lt;typeHandler type="java.util.Date" class="org.beanio.types.DateTypeHandler"&gt;
-    &lt;property name="pattern" value="MMddyyyy" /&gt;
-  &lt;/typeHandler&gt;
-
-  &lt;stream name="employeeFile" format="csv"&gt;
-    &lt;reader class="org.beanio.stream.csv.CsvReaderFactory"&gt;
-      &lt;property name="delimiter" value="|" /&gt;
-    &lt;/reader&gt;
-    <span class="highlight">&lt;writer class="org.beanio.stream.csv.CsvWriterFactory"&gt;
-      &lt;property name="delimiter" value="|" /&gt;
-    &lt;/writer&gt; </span>
-    &lt;record name="employee" class="map"&gt;
-      &lt;field name="recordType" rid="true" literal="Detail" /&gt;
-      &lt;field name="firstName" /&gt;
-      &lt;field name="lastName" /&gt;
-      &lt;field name="title" /&gt;
-      &lt;field name="salary" /&gt;
-      &lt;field name="hireDate" type="java.util.Date" /&gt;
-    &lt;/record&gt; 
-  &lt;/stream&gt;
-  
-&lt;/beanio&gt;</pre>
-
-<p>BeanIO includes default record writers for CSV, delimited and fixed length stream
-formats. </p>
-
-
-<h3><a name="CSVRecordWriterFactory">4.11.1. Default CSV Record Writer Factory</a></h3>
-<p>The default CSV record writer and factory formats CSV streams based on 
-<a href="http://www.ietf.org/rfc/rfc4180.txt">RFC 4180</a>.  The default CSV writer
-factory supports the following properties:</p>
-<table>
-<tr>
-  <th>Property</th>
-  <th>Type</th>
-  <th>Description</th>
-</tr>
-<tr>
-  <td><tt>delimiter</tt></td>
-  <td>char</td>
-  <td>The field delimiter.  Defaults to a comma.</td>
-</tr>
-<tr>
-  <td><tt>quote</tt></td>
-  <td>char</td>
-  <td>The quotation mark character used to wrap fields containing a delimiter character, a
-    quotation mark, or new lines.  Defaults to the double quotation mark, ".</td>
-</tr>
-<tr>
-  <td><tt>escape</tt></td>
-  <td>Character</td>
-  <td>The character used to escape itself and a quotation mark in a quoted field.  Defaults to the
-    double quotation mark, ".</td>
-</tr>
-<tr>
-  <td><tt>lineSeparator</tt></td>
-  <td>String</td>
-  <td>The sequence of characters to write to the output stream after a record is written.  
-    Defaults to <tt>System.getProperty("line.separator")</tt>.</td>
-</tr>
-<tr>
-  <td><tt>alwaysQuote</tt></td>
-  <td>boolean</td>
-  <td>If set to <tt>true</tt>, field text is always quoted.  By default, a field is only quoted
-  if it contains a delimeter, a quotation mark or new line characters.
-  </td>
-</tr>
-</table>
-
-<h3><a name="DelimitedRecordWriterFactory">4.11.2. Default Delimited Record Writer Factory</a></h3>
-<p>The default record writer factory for delimited streams supports the following properties:</p>
-<table>
-<tr>
-  <th>Property</th>
-  <th>Type</th>
-  <th>Description</th>
-</tr>
-<tr>
-  <td><tt>delimiter</tt></td>
-  <td>char</td>
-  <td>The field delimiter.  Defaults to the tab character.</td>
-</tr>
-<tr>
-  <td><tt>escape</tt></td>
-  <td>Character</td>
-  <td>The character used to escape itself and delimiters.  By default, no escaping
-    is performed.</td>
-</tr>
-<tr>
-  <td><tt>lineSeparator</tt></td>
-  <td>String</td>
-  <td>The sequence of characters to write to the output stream after a record is written.  
-    Defaults to <tt>System.getProperty("line.separator")</tt>.</td>
-</tr>
-</table>
-
-<h3><a name="FixedLengthRecordWriterFactory">4.11.3. Default Fixed Length Record Writer Factory</a></h3>
-<p>The default record writer factory for fixed length formatted streams supports the following properties:</p>
-<table>
-<tr>
-  <th>Property</th>
-  <th>Type</th>
-  <th>Description</th>
-</tr>
-<tr>
-  <td><tt>lineSeparator</tt></td>
-  <td>String</td>
-  <td>The sequence of characters to write to the output stream after a record is written.  
-    Defaults to <tt>System.getProperty("line.separator")</tt>.</td>
-</tr>
-</table>
-
+<br />
+<br />
 <!-- 
 
 	APPENDIX A
@@ -1700,7 +2031,7 @@ the group as a whole.</p>
     May be set to <tt>array</tt> if the collection type is a Java array.
     <p>BeanIO will not derrive the collection type from it's parent bean object, thus 
     collection type beans must always be explicitly declared.</p>
-    <p>There are a couple limitations specific to beans in any "flat" format (delimited, csv or fixedlength):</p>
+    <p>There are a few restrictions specific to beans in any "flat" format (delimited, csv or fixedlength):</p>
     <ul>
     <li>Collection bean values must appear in the stream consecutively.</li>
     <li>A collection type bean cannot contain collection children (fields or other beans) where
@@ -1788,7 +2119,7 @@ and vice versa.</p>
     <p>
     A position must be specified for all fields in a record, or for none at all.  If positions
     are not specified, BeanIO will automatically calculate field positions based on the order
-    in which the fields are definined in the mapping file.
+    in which the fields are defined in the mapping file.
     </p>
   </td>
   <td>No</td>
@@ -1910,26 +2241,30 @@ and vice versa.</p>
 </tr>
 <tr>
   <td><tt>length</tt></td>
-  <td>The length in characters of this fixed length field.</td>
+  <td>The padded length of this field measured in characters.  Length is required for fixed
+    length formatted streams, and can be set for fields in other stream formats (along with
+    a padding character) to enable field padding.</td>
   <td>Yes<sup>1</sup></td>
-  <td><tt>fixedlength</tt></td>
+  <td><tt>*</tt></td>
 </tr>
 <tr>
   <td><tt>padding</tt></td>
-  <td>The character used to pad this fixed length field.  Defaults to a space.</td>
+  <td>The character used to pad this field.  For fixed length formatted streams,
+    <tt>padding</tt> defaults to a space.  For non-fixed length formatted streams,
+    padding is disabled unless a padding character and length is specified.</td>
   <td>No</td>
-  <td><tt>fixedlength</tt></td>
+  <td><tt>*</tt></td>
 </tr>
 <tr>
   <td><tt>justify</tt></td>
-  <td>The justification of the field text within this fixed length field.  Either
+  <td>The justification of the field text within this padded field.  Either
     <tt>left</tt> or <tt>right</tt>.  Defaults to <tt>left</tt>.</td>
   <td>No</td>
-  <td><tt>fixedlength</tt></td>
+  <td><tt>*</tt></td>
 </tr>
 </table>
-<p><sup>1</sup>If a literal value is supplied, <tt>length</tt> will default to the 
-length of the literal value if not supplied.</p> 
+<p><sup>1</sup>Only required for fixed length fields.  If a literal value is supplied for 
+a fixed length field, <tt>length</tt> will default to the length of the literal value.</p> 
 
 
 <h1><a name="B">Appendix B: Error Message Parameters</a></h1>

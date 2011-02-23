@@ -491,7 +491,10 @@ public abstract class StreamDefinition implements MessageFactory {
                 }
                 
                 if (node == null) {
-                    if (layout.matchAny(record) != null) {
+                    node = (RecordNode) layout.matchAny(record);
+                    
+                    if (node != null) {
+                        record.setRecordName(node.getName());
                         String message = record.addRecordError("unexpected");
                         throw new UnexpectedRecordException(record.getContext(), message);
                     }

@@ -41,7 +41,7 @@ public class FieldConfig extends PropertyConfig {
     private String format;
     private String defaultValue;
     private int length = -1;
-    private char padding = ' ';
+    private Character padding = null;
     private String justify = LEFT;
 
     /**
@@ -259,8 +259,8 @@ public class FieldConfig extends PropertyConfig {
     }
 
     /**
-     * Returns the length of this field in characters.  Applies to
-     * fixed length formatted streams only.  
+     * Returns the length of this field in characters.  Applies to fixed
+     * length and padded fields.
      * @return the length of this field
      */
     public int getLength() {
@@ -268,8 +268,8 @@ public class FieldConfig extends PropertyConfig {
     }
 
     /**
-     * Sets the length of this field in characters.  Applies to
-     * fixed length formatted streams only.
+     * Sets the length of this field in characters.  Applies to fixed
+     * length and padded fields.
      * @param length the length of this field
      */
     public void setLength(int length) {
@@ -277,26 +277,24 @@ public class FieldConfig extends PropertyConfig {
     }
 
     /**
-     * Returns the character used to pad this field.  Applies to
-     * fixed length formatted streams only.
+     * Returns the character used to pad this field.
      * @return the character used to pad this field
      */
-    public char getPadding() {
+    public Character getPadding() {
         return padding;
     }
 
     /**
-     * Sets the character used to pad this field.  Applies to
-     * fixed length formatted streams only.
+     * Sets the character used to pad this field.
      * @param padding the character used to pad this field
      */
-    public void setPadding(char padding) {
+    public void setPadding(Character padding) {
         this.padding = padding;
     }
 
     /**
      * Returns the justification of this field.  Defaults to <tt>left</tt>.  
-     * Applies to fixed length formatted streams only.
+     * Applies to fixed length and padded fields.
      * @return {@link #LEFT} or {@link #RIGHT}
      */
     public String getJustify() {
@@ -304,8 +302,8 @@ public class FieldConfig extends PropertyConfig {
     }
 
     /**
-     * Sets the justification of this field.  Applies to
-     * fixed length formatted streams only.
+     * Sets the justification of this field.  Applies to fixed length 
+     * and padded fields.
      * @param justify {@link #LEFT} or {@link #RIGHT}
      */
     public void setJustify(String justify) {

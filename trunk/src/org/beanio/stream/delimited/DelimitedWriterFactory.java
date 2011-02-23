@@ -30,14 +30,14 @@ public class DelimitedWriterFactory implements RecordWriterFactory {
 
     private char delimiter = '\t';
     private Character escape = null;
-    private String lineSeparator = null;
+    private String recordTerminator = null;
 
     /*
      * (non-Javadoc)
      * @see org.beanio.stream.RecordWriterFactory#createWriter(java.io.Writer)
      */
     public RecordWriter createWriter(Writer out) {
-        return new DelimitedWriter(out, delimiter, escape, lineSeparator);
+        return new DelimitedWriter(out, delimiter, escape, recordTerminator);
     }
 
     /**
@@ -83,20 +83,41 @@ public class DelimitedWriterFactory implements RecordWriterFactory {
     }
 
     /**
+     * Returns the text used to terminate a record.  By default, the record
+     * terminator is set to the value of the <tt>line.separator</tt> system property.
+     * @return the record termination text
+     */
+    public String getRecordTerminator() {
+        return recordTerminator;
+    }
+
+    /**
+     * Sets the text used to terminate a record.  If set to <tt>null</tt>, the 
+     * the value of the <tt>line.separator</tt> system property is used to terminate
+     * records.
+     * @param lineSeparator the record termination text
+     */
+    public void setRecordTerminator(String recordTerminator) {
+        this.recordTerminator = recordTerminator;
+    }
+    
+    /**
      * Returns the text used to terminate a record.  By default, the
      * line separator is set using the 'line.separator' system property.
      * @return the line separation text
+     * @deprecated
      */
     public String getLineSeparator() {
-        return lineSeparator;
+        return recordTerminator;
     }
 
     /**
      * Sets the text used to terminate a record.  If set to <tt>null</tt>, the default
      * line separator is used based on the 'line.separator' system property.
      * @param lineSeparator the line separation text
+     * @deprecated
      */
     public void setLineSeparator(String lineSeparator) {
-        this.lineSeparator = lineSeparator;
+        this.recordTerminator = lineSeparator;
     }
 }

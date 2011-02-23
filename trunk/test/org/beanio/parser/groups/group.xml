@@ -110,4 +110,36 @@
     </record>
   </stream>
 
+  <stream name="g5" format="csv" minOccurs="1" maxOccurs="unbounded">
+    <record name="controlHeader" order="1" minOccurs="1" maxOccurs="1">
+      <field name="type" rid="true" literal="CH" />
+    </record>
+    
+    <group name="functionGroup" order="2" minOccurs="1" maxOccurs="unbounded">
+      <record name="functionGroupHeader" minOccurs="1" maxOccurs="1">
+        <field name="type" rid="true" literal="FH" />
+      </record>
+      
+      <group name="transactionSet" minOccurs="0" maxOccurs="unbounded">
+        <record name="transactionSetHeader" minOccurs="1" maxOccurs="1">
+          <field name="type" rid="true" literal="TH" />
+        </record>      
+        <record name="transaction" minOccurs="0" maxOccurs="unbounded">
+          <field name="type" rid="true" literal="T" />
+        </record>          
+        <record name="transactionSetTrailer" minOccurs="1" maxOccurs="1">
+          <field name="type" rid="true" literal="TT" />
+        </record>         
+      </group>
+      
+      <record name="functionGroupTrailer" minOccurs="1" maxOccurs="1">
+        <field name="type" rid="true" literal="FT" />
+      </record>
+    </group>
+    
+    <record name="controlTrailer" order="3" minOccurs="1" maxOccurs="1">
+      <field name="type" rid="true" literal="CT" />
+    </record>
+  </stream>
+
 </beanio>

@@ -352,7 +352,7 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
             config.isRecordIdentifier()));
         config.setIgnored(getBooleanAttribute(element, "ignore", config.isIgnored()));
         config.setLength(getIntAttribute(element, "length", config.getLength()));
-        config.setPadding(getCharAttribute(element, "padding", config.getPadding()));
+        config.setPadding(getCharacterAttribute(element, "padding"));
         config.setJustify(getAttribute(element, "justify"));
         return config;
     }
@@ -414,13 +414,22 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
         return Integer.parseInt(text);
     }
 
+    /*
     private char getCharAttribute(Element element, String name, char defaultValue) {
         String text = getAttribute(element, name);
         if (text == null || text.length() == 0)
             return defaultValue;
         return text.charAt(0);
     }
+    */
 
+    private Character getCharacterAttribute(Element element, String name) {
+        String text = getAttribute(element, name);
+        if (text == null || text.length() == 0)
+            return null;
+        return text.charAt(0);
+    }
+    
     private Integer getIntegerAttribute(Element element, String name) {
         String text = getAttribute(element, name);
         if (text == null)

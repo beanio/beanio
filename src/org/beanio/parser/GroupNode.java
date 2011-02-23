@@ -43,7 +43,7 @@ class GroupNode extends Node {
     }
 
     @Override
-    protected NodeDefinition getNodeContext() {
+    protected NodeDefinition getNodeDefinition() {
         return context;
     }
 

@@ -13,11 +13,15 @@ tt {
 .toc {
 	margin-left: 3%;
 }
-
-pre {
-   font-size: 110%; 
+.indent {
+	margin-left: 5%;	
 }
-
+pre {
+    font-size: 110%; 
+}
+.red {
+	 color: red;
+}
 .title {
   font-size: 180%;
   font-weight: bold;

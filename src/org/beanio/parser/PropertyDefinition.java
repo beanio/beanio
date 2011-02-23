@@ -300,8 +300,9 @@ public abstract class PropertyDefinition {
     }
 
     /**
-     * Sets the collection type of this property.  Or if this propery is an array, the collection type 
-     * should be set to {@link TypeUtil#ARRAY_TYPE}.
+     * Sets the collection type of this property.  Or if this property is an array, the collection type 
+     * should be set to {@link TypeUtil#ARRAY_TYPE}.  The collection type must be a concrete Collection
+     * implementation, and cannot be abstract or an interface.
      * @param collectionType the collection type of this property, or {@link TypeUtil#ARRAY_TYPE} for arrays
      */
     public void setCollectionType(Class<? extends Collection<Object>> collectionType) {

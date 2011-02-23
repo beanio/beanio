@@ -84,7 +84,7 @@ abstract class Node {
      * Returns this nodes's definition.
      * @return the node definition
      */
-    protected abstract NodeDefinition getNodeContext();
+    protected abstract NodeDefinition getNodeDefinition();
 
     /**
      * Returns the minimum number of times this node must appear within
@@ -92,7 +92,7 @@ abstract class Node {
      * @return the minimum number of occurrences
      */
     public int getMinOccurs() {
-        return getNodeContext().getMinOccurs();
+        return getNodeDefinition().getMinOccurs();
     }
 
     /**
@@ -101,7 +101,7 @@ abstract class Node {
      * @return the maximum number of occurrences
      */
     public int getMaxOccurs() {
-        return getNodeContext().getMaxOccurs();
+        return getNodeDefinition().getMaxOccurs();
     }
 
     /**
@@ -111,7 +111,7 @@ abstract class Node {
      * @return the node order
      */
     public int getOrder() {
-        return getNodeContext().getOrder();
+        return getNodeDefinition().getOrder();
     }
 
     /**
@@ -119,7 +119,7 @@ abstract class Node {
      * @return the node name
      */
     public String getName() {
-        return getNodeContext().getName();
+        return getNodeDefinition().getName();
     }
 
     /**

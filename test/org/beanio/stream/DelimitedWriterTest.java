@@ -75,7 +75,7 @@ public class DelimitedWriterTest {
         DelimitedWriterFactory factory = new DelimitedWriterFactory();
         factory.setDelimiter(',');
         factory.setEscape('\\');
-        factory.setLineSeparator("");
+        factory.setRecordTerminator("");
         StringWriter text = new StringWriter();
         RecordWriter out = factory.createWriter(text);
         out.write(new String[] { "value1", "value,2" });
@@ -87,7 +87,7 @@ public class DelimitedWriterTest {
         DelimitedWriterFactory factory = new DelimitedWriterFactory();
         factory.setDelimiter(',');
         factory.setEscape('\\');
-        factory.setLineSeparator("");
+        factory.setRecordTerminator("");
         StringWriter text = new StringWriter();
         RecordWriter out = factory.createWriter(new BufferedWriter(text));
         out.write(new String[] { "v" });

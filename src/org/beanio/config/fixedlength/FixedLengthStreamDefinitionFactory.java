@@ -53,11 +53,15 @@ public class FixedLengthStreamDefinitionFactory extends FlatStreamDefinitionFact
                 throw new BeanIOConfigurationException("length is required");
             }
         }
+        
+        Character padding = fieldConfig.getPadding();
+        
         fieldDefinition.setLength(length);
+        fieldDefinition.setPaddedLength(length);
         fieldDefinition.setPosition(fieldConfig.getPosition());
-        ((FixedLengthFieldDefinition)fieldDefinition).setPadding(fieldConfig.getPadding());
-        ((FixedLengthFieldDefinition)fieldDefinition).setJustification("right".equals(fieldConfig.getJustify()) ?
-            FixedLengthFieldDefinition.RIGHT : FixedLengthFieldDefinition.LEFT);
+        fieldDefinition.setPadding(padding != null ? padding : ' ');
+        fieldDefinition.setJustification(FieldConfig.RIGHT.equals(fieldConfig.getJustify()) ?
+            FieldDefinition.RIGHT : FieldDefinition.LEFT);
     }
     
     @Override

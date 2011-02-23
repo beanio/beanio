@@ -24,7 +24,7 @@
 
   <stream name="f1" format="fixedlength">
     <writer>
-      <property name="lineSeparator" value="" />
+      <property name="recordTerminator" value="" />
     </writer>
     <record name="record" class="map">
       <field name="default" position="0" length="10" trim="false" />
@@ -36,7 +36,7 @@
 
   <stream name="f2" format="fixedlength" resourceBundle="org.beanio.parser.fixedlength.f2_messages">
     <writer>
-      <property name="lineSeparator" value="" />
+      <property name="recordTerminator" value="" />
     </writer>
     <record name="record" class="map" minLength="10" maxLength="20">
       <field name="field1" length="5" />
@@ -62,7 +62,7 @@
 
   <stream name="f4" format="fixedlength" ordered="false">
     <writer>
-      <property name="lineSeparator" value="" />
+      <property name="recordTerminator" value="" />
     </writer>
     <record name="record" class="map">
       <field name="type" rid="true" literal="INT" />

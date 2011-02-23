@@ -109,6 +109,20 @@ public class FixedLengthReaderTest {
     }
     
     @Test
+    public void testRecordTerminator() throws IOException {
+        FixedLengthReaderFactory factory = new FixedLengthReaderFactory();
+        factory.setLineContinuationCharacter('\\');
+        factory.setRecordTerminator('*');
+        FixedLengthReader in = createReader(factory, "11\\*22*33\\44*");
+        assertEquals("1122", in.read());
+        assertEquals(0, in.getRecordLineNumber());
+        assertEquals("33\\44", in.read());
+        assertEquals(0, in.getRecordLineNumber());
+        assertNull(in.read());
+        assertEquals(-1, in.getRecordLineNumber());
+    }
+    
+    @Test
     public void testEmpty() throws IOException {
         assertNull(new FixedLengthReader(new StringReader("")).read());
     }

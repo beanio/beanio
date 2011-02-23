@@ -46,7 +46,8 @@ public interface RecordReader {
     /**
      * Returns the line number of the last record from this input stream.  If a
      * record spans multiple lines, the line number at the beginning of the
-     * record is returned.
+     * record is returned.  May return -1 if the end of the stream was reached,
+     * or 0 if new lines are not used to terminate records.
      * @return the beginning line number of the last record read
      */
     public int getRecordLineNumber();

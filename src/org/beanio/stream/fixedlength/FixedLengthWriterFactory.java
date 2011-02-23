@@ -28,31 +28,53 @@ import org.beanio.stream.*;
  */
 public class FixedLengthWriterFactory implements RecordWriterFactory {
 
-    private String lineSeparator;
+    private String recordTerminator;
     
 	/*
 	 * (non-Javadoc)
 	 * @see org.beanio.stream.RecordWriterFactory#createWriter(java.io.Writer)
 	 */
 	public RecordWriter createWriter(Writer out) {
-		return new FixedLengthWriter(out, lineSeparator);
+		return new FixedLengthWriter(out, recordTerminator);
 	}
 
     /**
-     * Returns the text used to terminate a record.  By default, the
-     * line separator is set using the 'line.separator' system property.
+     * Returns the text used to terminate a record.  By default, the record
+     * terminator is set to the value of the  <tt>line.separator</tt> system property.
+     * @return the record termination text
+     */
+    public String getRecordTerminator() {
+        return recordTerminator;
+    }
+
+    /**
+     * Sets the text used to terminate a record.  If set to <tt>null</tt>, the 
+     * the value of the <tt>line.separator</tt> system property is used to terminate
+     * records.
+     * @param lineSeparator the record termination text
+     */
+    public void setRecordTerminator(String recordTerminator) {
+        this.recordTerminator = recordTerminator;
+    }
+	
+    /**
+     * Returns the text used to terminate a record.  By default, the line
+     * separator is set to the value of the  <tt>line.separator</tt> system property.
      * @return the line separation text
+     * @deprecated
      */
 	public String getLineSeparator() {
-		return lineSeparator;
+		return recordTerminator;
 	}
 
 	/**
-	 * Sets the text used to terminate a record.  If set to <tt>null</tt>, the default
-     * line separator is used based on the 'line.separator' system property.
+	 * Sets the text used to terminate a record.  If set to <tt>null</tt>, the 
+	 * the value of the <tt>line.separator</tt> system property is used to terminate
+	 * records.
 	 * @param lineSeparator the line separation text
+	 * @deprecated
 	 */
 	public void setLineSeparator(String lineSeparator) {
-		this.lineSeparator = lineSeparator;
+		this.recordTerminator = lineSeparator;
 	}
 }

@@ -15,9 +15,11 @@
  */
 package org.beanio.parser.delimited;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.Map;
 
 import org.beanio.*;
@@ -66,6 +68,25 @@ public class DelimitedParserTest extends ParserTest {
             assertEquals("value2", map.get("field2"));
             assertNull(map.get("field3"));
             assertNull(map.get("field4"));
+        }
+        finally {
+            in.close();
+        }
+    }
+    
+    @Test
+    @SuppressWarnings("rawtypes")
+    public void testPadding() {
+        BeanReader in = factory.createReader("d3", new InputStreamReader(
+            getClass().getResourceAsStream("d3_padding.txt")));
+        
+        try {
+            Map map = (Map) in.read();
+            assertArrayEquals(new String[] { "1", "2", "3", "" }, (String[]) map.get("field1"));
+            
+            StringWriter out = new StringWriter();
+            factory.createWriter("d3", out).write(map);
+            assertEquals("xx1,xx2,xx3,xxx~", out.toString());
         }
         finally {
             in.close();

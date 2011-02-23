@@ -15,7 +15,6 @@
  */
 package org.beanio.util;
 
-import java.lang.reflect.Modifier;
 import java.math.*;
 import java.util.*;
 
@@ -149,11 +148,7 @@ public class TypeUtil {
             return Date.class;
         
         try {
-            Class<?> clazz = Class.forName(type);
-            if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) {
-                return null;
-            }
-            return clazz;
+            return Class.forName(type);
         }
         catch (ClassNotFoundException e) {
             return null;
@@ -188,16 +183,15 @@ public class TypeUtil {
     public static Class<? extends Collection<Object>> toCollectionType(String type) {
         if ("array".equalsIgnoreCase(type))
             return ARRAY_TYPE;
+        else if ("collection".equalsIgnoreCase(type))
+            return (Class<? extends Collection<Object>>)(Class<?>) Collection.class;
         else if ("list".equalsIgnoreCase(type))
-            return (Class<? extends Collection<Object>>)(Class<?>) ArrayList.class;
+            return (Class<? extends Collection<Object>>)(Class<?>) List.class;
         else if ("set".equalsIgnoreCase(type))
-            return (Class<? extends Collection<Object>>)(Class<?>) HashSet.class;
+            return (Class<? extends Collection<Object>>)(Class<?>) Set.class;
         
         try {
             Class<?> clazz = Class.forName(type);
-            if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) {
-                return null;
-            }
             if (!Collection.class.isAssignableFrom(clazz)) {
                 return null;
             }

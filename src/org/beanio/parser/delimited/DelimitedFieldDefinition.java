@@ -38,9 +38,19 @@ public class DelimitedFieldDefinition extends FlatFieldDefinition {
 	@Override
 	public String parseField(Record record) {
 		String text = getFieldText(record);
+		
 		// update the record with the raw field text
 		record.setFieldText(getName(), text);
-		return text;
+		
+		if (text == null) {
+		    return null;
+		}
+		else if (getPaddedLength() == 0){
+		    return text;
+		}
+		else {
+		    return unpad(text);
+		}
 	}
 	
 	private String getFieldText(Record record) {

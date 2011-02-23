@@ -187,6 +187,22 @@ public class DelimitedReaderTest {
     }
 
     @Test
+    public void testRecordTerminator() throws IOException {
+        DelimitedReaderFactory factory = new DelimitedReaderFactory();
+        factory.setDelimiter(',');
+        factory.setLineContinuationCharacter('\\');
+        factory.setRecordTerminator('*');
+        DelimitedReader in = createReader(factory, "1,2,*,4\n5,6,\\*7*");
+        assertArrayEquals(new String[] { "1", "2", "", }, in.read());
+        assertEquals("1,2,", in.getRecordText());
+        assertEquals(0, in.getRecordLineNumber());
+        assertArrayEquals(new String[] { "", "4\n5", "6", "7" }, in.read());
+        assertEquals(0, in.getRecordLineNumber());
+        assertNull(in.read());
+        assertEquals(-1, in.getRecordLineNumber());
+    }
+    
+    @Test
     public void testClose() throws IOException {
         DelimitedReader in = new DelimitedReader(new StringReader(""));
         in.close();

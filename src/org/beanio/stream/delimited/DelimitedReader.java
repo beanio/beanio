@@ -22,8 +22,10 @@ import org.beanio.stream.*;
 
 /**
  * A <tt>DelimitedReader</tt> is used to parse delimited flat files into
- * records of <tt>String</tt> arrays.  Fields must be delimited by a single configurable
- * character.
+ * records of <tt>String</tt> arrays.  Records must be terminated by a single 
+ * configurable character, or by default, any of the following: line feed (LF), 
+ * carriage return (CR), or CRLF combination.  And fields that make up a record 
+ * must be delimited by a single configurable character.  
  * <p>
  * If an escape character is configured, the delimiting character can be
  * be escaped in a field by placing the escape character immediately before
@@ -35,15 +37,14 @@ import org.beanio.stream.*;
  * The record would be parsed as "Field1", "Field2,Field3", "Field\4", "Field\5"
  * <p>
  * Additionally, if a record may span multiple lines, a single line continuation
- * character can be configured.  The line continuation character will not be
- * included in any field text, but must be the last character on the line being
- * continued (other than a newline or carriage return).
- * For example, using a comma delimiter and backslash line continuation character:
+ * character can be configured.  The line continuation character must immediately 
+ * precede the record termination character. For example, using a comma delimiter 
+ * and backslash line continuation character:
  * <pre>
  * Field1,Field2\
  * Field3
  * <pre>
- * The 2 lines would be parsed in a single record as "Field1", "Field2", "Field3".
+ * The 2 lines would be parsed as a single record with values "Field1", "Field2", "Field3".
  * <p>
  * The same character can be used for line continuation and escaping, but neither
  * can match the delimiter.
@@ -56,6 +57,7 @@ public class DelimitedReader implements RecordReader {
     private char delim = '\t';
     private char escapeChar = '\\';
     private char lineContinuationChar = '\\';
+    private char recordTerminator = 0;
     private boolean multilineEnabled = false;
     private boolean escapeEnabled = false;
 
@@ -98,32 +100,65 @@ public class DelimitedReader implements RecordReader {
      */
     public DelimitedReader(Reader in, char delimiter, Character escapeChar,
         Character lineContinuationCharacter) {
-        if (escapeChar != null && delimiter == escapeChar) {
-            throw new IllegalArgumentException("The field delimiter canot match the escape character");
-        }
-        if (lineContinuationCharacter != null && delimiter == lineContinuationCharacter) {
-            throw new IllegalArgumentException("The field delimiter cannot match the line continuation character");
-        }
+        this(in, delimiter, escapeChar, lineContinuationCharacter, null);
+    }
+    
+    /**
+     * Constructs a new <tt>DelimitedReader</tt>.
+     * @param in the input stream to read from
+     * @param delimiter the field delimiting character
+     * @param escapeChar the escape character, or null to disable escaping
+     * @param lineContinuationCharacter the line continuation character,
+     *   or <tt>null</tt> to disable line continuations
+     * @param recordTerminator the character used to signify the end of the record, or 
+     *   <tt>null</tt> to allow any of LF, CR, or CRLF
+     * @throws IllegalArgumentException if the delimiter matches the escape character or
+     *   or the line continuation character
+     */
+    public DelimitedReader(Reader in, char delimiter, Character escapeChar,
+        Character lineContinuationCharacter, Character recordTerminator) {
 
         this.in = in;
         this.delim = delimiter;
+        
         if (escapeChar != null) {
+            if (delimiter == escapeChar) {
+                throw new IllegalArgumentException("The field delimiter canot match the escape character");
+            }            
             this.escapeEnabled = true;
             this.escapeChar = escapeChar;
         }
+        
         if (lineContinuationCharacter != null) {
+            if (delimiter == lineContinuationCharacter) {
+                throw new IllegalArgumentException("The field delimiter cannot match the line continuation character");
+            }
             this.multilineEnabled = true;
             this.lineContinuationChar = lineContinuationCharacter;
+        }
+        
+        if (recordTerminator != null) {
+            if (recordTerminator == delimiter) {
+                throw new IllegalArgumentException("The record delimiter and record terminator characters cannot match");
+            }
+            if (lineContinuationCharacter != null && recordTerminator == lineContinuationCharacter) {
+                throw new IllegalArgumentException("The line continuation character and record terminator cannot match");
+            }            
+            this.recordTerminator = recordTerminator;
         }
     }
 
     /**
      * Returns the starting line number of the last record record.  A value of
-     * -1 is returned if the end of the stream was reached.
+     * -1 is returned if the end of the stream was reached, or 0 if records are
+     * not terminated by new line characters.
      * @return the starting line number of the last record
      */
     public int getRecordLineNumber() {
-        return recordLineNumber;
+        if (recordLineNumber < 0)
+            return -1;
+        else
+            return recordTerminator == 0 ? recordLineNumber : 0;
     }
 
     /**
@@ -177,15 +212,8 @@ public class DelimitedReader implements RecordReader {
 
                 text.append(c);
 
-                if (c == '\n') {
+                if (endOfRecord(c, true)) {
                     escaped = false;
-                    ++lineNumber;
-                    ++lineOffset;
-                    continue;
-                }
-                else if (c == '\r') {
-                    escaped = false;
-                    skipLF = true;
                     ++lineNumber;
                     ++lineOffset;
                     continue;
@@ -194,7 +222,7 @@ public class DelimitedReader implements RecordReader {
                     field.append(lineContinuationChar);
                 }
             }
-            else if (c != '\n' && c != '\r') {
+            else if (!endOfRecord(c, false)){
                 text.append(c);
             }
 
@@ -230,12 +258,7 @@ public class DelimitedReader implements RecordReader {
                 fieldList.add(field.toString());
                 field = new StringBuffer();
             }
-            else if (c == '\r') {
-                fieldList.add(field.toString());
-                skipLF = true;
-                eol = true;
-            }
-            else if (c == '\n') {
+            else if (endOfRecord(c, true)) {
                 fieldList.add(field.toString());
                 eol = true;
             }
@@ -281,7 +304,30 @@ public class DelimitedReader implements RecordReader {
             return null;
         }
     }
-
+    
+    /**
+     * Returns <tt>true</tt> if the given character matches the record separator.  This
+     * method also updates the internal <tt>skipLF</tt> flag.
+     * @param c the character to test
+     * @param skipLF the value to set <tt>skipLF</tt> if the character is a carriage return
+     * @return <tt>true</tt> if the character signifies the end of the record
+     */
+    private boolean endOfRecord(char c, boolean skipLF) {
+        if (recordTerminator == 0) {
+            if (c == '\r') {
+                this.skipLF = skipLF;
+                return true;
+            }
+            else if (c == '\n') {
+                return true;
+            }
+            return false;
+        }
+        else {
+            return c == recordTerminator;
+        }
+    }
+    
     /*
      * (non-Javadoc)
      * @see org.beanio.stream.RecordReader#close()

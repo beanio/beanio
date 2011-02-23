@@ -280,6 +280,7 @@ public abstract class StreamDefinitionFactory {
                     throw new BeanIOConfigurationException("Invalid collection type or " +
                         "collection type alias '" + config.getCollection() + "'");
                 }
+                collectionType = getConcreteCollectionType(collectionType);
             }
             definition.setCollectionType(collectionType);
             
@@ -574,6 +575,7 @@ public abstract class StreamDefinitionFactory {
                 throw new BeanIOConfigurationException("Invalid collection type or " +
                     "collection type alias '" + config.getCollection() + "'");
             }
+            collectionType = getConcreteCollectionType(collectionType);
         }
         fieldDefinition.setCollectionType(collectionType);
         
@@ -781,6 +783,33 @@ public abstract class StreamDefinitionFactory {
             }
         }
         return beanClass;
+    }
+    
+    /**
+     * Returns the default concrete Collection subclass for a Collection type.
+     * @param collectionType the configured Collection type
+     * @return a concrete Collection subclass
+     */
+    @SuppressWarnings("unchecked")
+    private Class<? extends Collection<Object>> getConcreteCollectionType(
+        Class<? extends Collection<Object>> collectionType) {
+        
+        if (collectionType == null) {
+            return null;
+        }
+        else if (collectionType != TypeUtil.ARRAY_TYPE && 
+            (collectionType.isInterface() || Modifier.isAbstract(collectionType.getModifiers()))) {
+            
+            if (Set.class.isAssignableFrom(collectionType)) {
+                return (Class<? extends Collection<Object>>)(Class<?>) HashSet.class;
+            }
+            else {
+                return (Class<? extends Collection<Object>>)(Class<?>) ArrayList.class;
+            }
+        }
+        else {
+            return collectionType;
+        }
     }
     
     /**

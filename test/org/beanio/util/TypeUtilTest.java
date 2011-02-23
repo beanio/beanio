@@ -51,8 +51,8 @@ public class TypeUtilTest {
         assertEquals(Date.class, TypeUtil.toType("time"));
         assertEquals(Date.class, TypeUtil.toType("datetime"));
         assertEquals(getClass(), TypeUtil.toType("org.beanio.util.TypeUtilTest"));
-        assertNull(TypeUtil.toType("java.util.List"));
-        assertNull(TypeUtil.toType("java.util.AbstractList"));
+        assertEquals(List.class, TypeUtil.toType("java.util.List"));
+        assertEquals(AbstractList.class, TypeUtil.toType("java.util.AbstractList"));
     }
     
     @Test
@@ -62,12 +62,12 @@ public class TypeUtilTest {
     
     @Test
     public void testToCollection() {
-        assertEquals(ArrayList.class, TypeUtil.toCollectionType("list"));
-        assertEquals(HashSet.class, TypeUtil.toCollectionType("set"));
+        assertEquals(List.class, TypeUtil.toCollectionType("list"));
+        assertEquals(Collection.class, TypeUtil.toCollectionType("collection"));
+        assertEquals(Set.class, TypeUtil.toCollectionType("set"));
         assertEquals(TypeUtil.ARRAY_TYPE, TypeUtil.toCollectionType("array"));
         assertEquals(ArrayList.class, TypeUtil.toCollectionType("java.util.ArrayList"));
-        assertNull(TypeUtil.toCollectionType("java.util.List"));
-        assertNull(TypeUtil.toCollectionType("java.util.AbstractList"));
+        assertEquals(AbstractList.class, TypeUtil.toCollectionType("java.util.AbstractList"));
         assertNull(TypeUtil.toCollectionType("java.util.HashMap"));
         assertNull(TypeUtil.toCollectionType("org.beanio.types.NoClass"));
     }

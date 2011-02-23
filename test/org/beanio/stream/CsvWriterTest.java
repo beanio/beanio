@@ -47,7 +47,7 @@ public class CsvWriterTest {
         factory.setDelimiter(':');
         factory.setQuote('\'');
         factory.setEscape('\\');
-        factory.setLineSeparator("");
+        factory.setRecordTerminator("");
         StringWriter text = new StringWriter();
         RecordWriter out = factory.createWriter(text);
         out.write(new String[] { "value1", "'value2'", "value:3" });
@@ -59,7 +59,7 @@ public class CsvWriterTest {
         CsvWriterFactory factory = new CsvWriterFactory();
         factory.setQuote('\'');
         factory.setEscape('\\');
-        factory.setLineSeparator("");
+        factory.setRecordTerminator("");
         factory.setAlwaysQuote(true);
         StringWriter text = new StringWriter();
         RecordWriter out = factory.createWriter(text);
@@ -72,7 +72,7 @@ public class CsvWriterTest {
         CsvWriterFactory factory = new CsvWriterFactory();
         factory.setQuote('\'');
         factory.setEscape('\\');
-        factory.setLineSeparator("");
+        factory.setRecordTerminator("");
         StringWriter text = new StringWriter();
         CsvWriter out = (CsvWriter) factory.createWriter(text);
         out.write(new String[] { "value1", "value\n2", "value\r3", "value\r\n4" });
@@ -86,7 +86,7 @@ public class CsvWriterTest {
         CsvWriterFactory factory = new CsvWriterFactory();
         factory.setQuote('\'');
         factory.setEscape('\\');
-        factory.setLineSeparator("");
+        factory.setRecordTerminator("");
         StringWriter text = new StringWriter();
         RecordWriter out = factory.createWriter(new BufferedWriter(text));
         out.write(new String[] { "v" });

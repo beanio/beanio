@@ -29,7 +29,8 @@ import java.util.*;
 public interface BeanReaderContext {
 
     /**
-     * Returns the line number of the failed record.
+     * Returns the line number of the failed record, or 0 if the stream does not use
+     * new lines to terminate records.
      * @return the line number of the failed record
      */
     public int getRecordLineNumber();

@@ -30,7 +30,7 @@ import org.beanio.stream.*;
 public class FixedLengthWriter implements RecordWriter {
 
 	private Writer out;
-	private String lineSeparator;
+	private String recordTerminator;
 	
 	/**
 	 * Constructs a new <tt>FixedLegthWriter</tt>.
@@ -43,14 +43,14 @@ public class FixedLengthWriter implements RecordWriter {
 	/**
 	 * Constructs a new <tt>FixedLegthWriter</tt>.
 	 * @param out the output stream to write to
-	 * @param lineSeparator the text used to terminate a record
+	 * @param recordTerminator the text used to terminate a record
 	 */
-	public FixedLengthWriter(Writer out, String lineSeparator) {
+	public FixedLengthWriter(Writer out, String recordTerminator) {
 		this.out = out;
-		if (lineSeparator == null) {
-			lineSeparator = System.getProperty("line.separator");
+		if (recordTerminator == null) {
+		    recordTerminator = System.getProperty("line.separator");
 		}
-		this.lineSeparator = lineSeparator;
+		this.recordTerminator = recordTerminator;
 	}
 	
 	/*
@@ -59,7 +59,7 @@ public class FixedLengthWriter implements RecordWriter {
 	 */
 	public void write(Object value) throws IOException, RecordIOException {
 		out.write(value.toString());
-		out.write(lineSeparator);
+		out.write(recordTerminator);
 	}
 
 	/*

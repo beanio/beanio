@@ -52,7 +52,7 @@ public class FixedLengthWriterTest {
     @Test
     public void testCustomFactoryConfiguration() throws IOException {
         FixedLengthWriterFactory factory = new FixedLengthWriterFactory();
-        factory.setLineSeparator("");
+        factory.setRecordTerminator("");
         StringWriter text = new StringWriter();
         RecordWriter out = factory.createWriter(text);
         out.write("value1  value2");
@@ -62,7 +62,7 @@ public class FixedLengthWriterTest {
     @Test
     public void testFlushAndClose() throws IOException {
         FixedLengthWriterFactory factory = new FixedLengthWriterFactory();
-        factory.setLineSeparator("");
+        factory.setRecordTerminator("");
         StringWriter text = new StringWriter();
         RecordWriter out = factory.createWriter(new BufferedWriter(text));
         out.write("v");

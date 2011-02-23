@@ -1,6 +1,15 @@
 Project BeanIO Change Log
 =========================
 
+Changes in version 1.0 (2011-02-22)
+-----------------------------------
+* Added padding support for delimited/CSV fields
+* Added delimited and fixed length record reader support for a customized record terminator
+* Fixed TypeUtil to allow abstract property and collection types
+* Renamed 'lineSeparator' to 'recordTerminator' for all record writers, 'lineSeparator' term is deprecated
+* gc0006 - Fixed mapping file schema to allow record elements after a (sub)group element
+* Renamed method Node.getNodeContext() to Node.getNodeDefinition()
+
 Changes in version 0.9.3 (2011-02-07)
 -------------------------------------
 * Added support for mapping child bean objects, and collections of bean objects 

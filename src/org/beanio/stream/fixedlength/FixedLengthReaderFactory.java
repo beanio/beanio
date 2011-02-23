@@ -29,13 +29,14 @@ import org.beanio.stream.*;
 public class FixedLengthReaderFactory implements RecordReaderFactory {
 
     private Character lineContinuationCharacter = null;
-
+    private Character recordTerminator = null;
+    
     /*
      * (non-Javadoc)
      * @see org.beanio.stream.RecordReaderFactory#createReader(java.io.Reader)
      */
     public RecordReader createReader(Reader in) {
-        return new FixedLengthReader(in, lineContinuationCharacter);
+        return new FixedLengthReader(in, lineContinuationCharacter, recordTerminator);
     }
 
     /**
@@ -63,5 +64,24 @@ public class FixedLengthReaderFactory implements RecordReaderFactory {
      */
     public boolean isLineContinationEnabled() {
         return lineContinuationCharacter != null;
+    }
+    
+    /**
+     * Returns the character used to mark the end of a record.  By default,
+     * a carriage return (CR), line feed (LF), or CRLF sequence is used to
+     * signify the end of the record.
+     * @return the record termination character
+     */
+    public Character getRecordTerminator() {
+        return recordTerminator;
+    }
+
+    /**
+     * Sets the character used to mark the end of a record.  If set to <tt>null</tt>,
+     * a carriage return (CR), line feed (LF), or CRLF sequence is used.
+     * @param recordTerminator the record termination character
+     */
+    public void setRecordTerminator(Character recordTerminator) {
+        this.recordTerminator = recordTerminator;
     }
 }

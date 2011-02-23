@@ -31,6 +31,11 @@ import org.beanio.util.TypeUtil;
  */
 public abstract class FieldDefinition extends PropertyDefinition {
 
+    /** Left justification */
+    public static final char LEFT = 'L';
+    /** Right justification */
+    public static final char RIGHT = 'R';
+
     private int position = -1;
     private boolean recordIdentifier = false;
     private boolean trim = true;
@@ -43,6 +48,12 @@ public abstract class FieldDefinition extends PropertyDefinition {
 
     private TypeHandler handler;
     private Object defaultValue;
+    
+    /* padded field settings */
+    private char padding = ' ';
+    private int paddedLength = 0; // 0 if padding is disabled
+    private char justification = LEFT;
+    private String defaultText = "";
     
     /**
      * Tests if the field text in the record matches this field definition.
@@ -233,14 +244,86 @@ public abstract class FieldDefinition extends PropertyDefinition {
     }
     
     /**
-     * Formats field text.  Converts <tt>null</tt> to the empty string.
+     * Formats field text.  If the padded length of this field is greater than 0, 
+     * text will be truncated if it exceeds the length, or padded with the padding 
+     * character if it doesn't.
      * @param text the field text to format
      * @return the formatted field text
      */
     protected String formatText(String text) {
-        return text == null ? "" : text;
+        if (text == null) {
+            text = "";
+        }
+        
+        int toLength = getPaddedLength();
+        if (toLength <= 0) {
+            return text;
+        }
+    
+        int fromLength = text.length();
+        if (fromLength > toLength) {
+            return text.substring(0, toLength);
+        }
+        else if (fromLength == toLength) {
+            return text;
+        }
+    
+        int remaining = toLength - fromLength;
+        StringBuffer s = new StringBuffer(toLength);
+        if (justification == LEFT) {
+            s.append(text);
+            for (int i = 0; i < remaining; i++) {
+                s.append(padding);
+            }
+        }
+        else {
+            for (int i = 0; i < remaining; i++) {
+                s.append(padding);
+            }
+            s.append(text);
+        }
+        return s.toString();
     }
-
+    
+    /**
+     * Removes padding from the field text.
+     * @param fieldText the field text to remove padding
+     * @return the unpadded field text
+     */
+    protected String unpad(String fieldText) {
+        int length = fieldText.length();
+        
+        if (justification == LEFT) {
+            int index = fieldText.length();
+            while (true) {
+                --index;
+                
+                if (index < 0) {
+                    return defaultText;
+                }
+                else if (fieldText.charAt(index) != padding) {
+                    if (index == (length - 1))
+                        return fieldText;
+                    else
+                        return fieldText.substring(0, index + 1);
+                }
+            }
+        }
+        else {
+            int index = 0;
+            while (index < length) {
+                if (fieldText.charAt(index) != padding) {
+                    if (index == 0)
+                        return fieldText;
+                    else
+                        return fieldText.substring(index, length);
+                }
+                index++;
+            }
+            return defaultText;
+        }
+    }
+        
     /**
      * Returns the position of this field within the record.
      * @return the field position
@@ -451,5 +534,93 @@ public abstract class FieldDefinition extends PropertyDefinition {
      */
     public void setDefaultValue(Object defaultValue) {
         this.defaultValue = defaultValue;
+    }
+    
+    @Override
+    public void setPropertyType(Class<?> type) {
+        super.setPropertyType(type);
+        this.defaultText = getDefaultTextFor(type, padding);
+    }
+
+    /**
+     * Returns the character used to pad this field.
+     * @return the padding character
+     */
+    public char getPadding() {
+        return padding;
+    }
+
+    /**
+     * Sets the character used to pad this field.
+     * @param padding the padding character
+     */
+    public void setPadding(char padding) {
+        this.padding = padding;
+        this.defaultText = getDefaultTextFor(getPropertyType(), padding);
+    }
+
+    /**
+     * Returns the padded length of this field, or 0 if padding
+     * is disabled.
+     * @return the padded length of this field
+     */
+    public int getPaddedLength() {
+        return paddedLength;
+    }
+    
+    /**
+     * Sets the padded length of this field.  If set to 0, padding
+     * is disabled.
+     * @param length the new padded length of this field
+     */
+    public void setPaddedLength(int length) {
+        this.paddedLength = length;
+    }
+    
+    /**
+     * Returns the text justification for this field.
+     * @return the text justification, {@link #LEFT} or {@link #RIGHT}
+     */
+    public char getJustification() {
+        return justification;
+    }
+
+    /**
+     * Sets the text justification for this field.
+     * @param justification the text justification, {@link #LEFT} or {@link #RIGHT}
+     */
+    public void setJustification(char justification) {
+        if (justification != LEFT && justification != RIGHT) {
+            throw new IllegalArgumentException("Invalid justification: " + justification);
+        }
+        this.justification = justification;
+    }
+    
+    /**
+     * Returns default unpadded text when the entire field is populated by
+     * the padding character.  Returns the empty string by default, or the padding
+     * character if one of the following conditions apply:
+     * <ul>
+     * <li>The field property type extends from <tt>Number</tt> and the padding character
+     *  is a digit.</li>
+     * <li>The field property is of type <tt>Character</tt>.
+     * </ul>
+     * @param type the field property type
+     * @param padding the character used to pad the fixed length field
+     * @return the default text for a fully padded field
+     */
+    protected String getDefaultTextFor(Class<?> type, char padding) {
+        if (type == null) {
+            return "";
+        }
+        else if (Character.class.equals(type)) {
+            return Character.toString(padding);
+        }
+        else if (Number.class.isAssignableFrom(type)) {
+            if (Character.isDigit(padding)) {
+                return Character.toString(padding);
+            }
+        }
+        return "";
     }
 }

@@ -129,6 +129,11 @@ public class GroupParserTest extends ParserTest {
         test("g4", "g4_tooManyGroups.txt", 8);
     }
 
+    @Test
+    public void testSubgroups() {
+        test("g5", "g5_subgroups.txt");
+    }
+    
     /**
      * Fully parses the given file.
      * @param name the name of the stream

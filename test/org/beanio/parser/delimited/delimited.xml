@@ -42,4 +42,18 @@
     </record>
   </stream>
 
+  <stream name="d3" format="delimited" resourceBundle="org.beanio.parser.delimited.d1_messages">
+    <reader>
+      <property name="delimiter" value="," />
+      <property name="recordTerminator" value="~" />
+    </reader>
+    <writer>
+      <property name="delimiter" value="," />
+      <property name="recordTerminator" value="~" />
+    </writer>
+    <record name="record1" class="map">
+      <field name="field1" collection="array" minOccurs="0" maxOccurs="unbounded" length="3" padding="x" justify="right" />
+    </record>
+  </stream>
+
 </beanio>

@@ -22,12 +22,14 @@ import org.beanio.stream.*;
 /**
  * A <tt>FixedLengthReader</tt> is used to read records from a fixed length
  * file or input stream.  A fixed length record is represented using the
- * {@link String} class. 
+ * {@link String} class.  Records must be terminated by a single 
+ * configurable character, or by default, any of the following: line feed (LF), 
+ * carriage return (CR), or CRLF combination.
  * <p>
  * If a record may span multiple lines, a single line continuation
- * character may be configured.  The line continuation character will not be
- * included in the record text. The character must be the last character on the 
- * line being continued (other than a newline or carriage return).
+ * character may be configured.  The line continuation character must immediately 
+ * precede the record termination character.  Note that line continuation characters 
+ * are not included in the record text. 
  * 
  * @author Kevin Seim
  * @since 1.0
@@ -36,7 +38,8 @@ public class FixedLengthReader implements RecordReader {
 
     private char lineContinuationChar = '\\';
     private boolean multilineEnabled = false;
-
+    private char recordTerminator = 0;
+    
     private transient Reader in;
     private transient String recordText;
     private transient int recordLineNumber;
@@ -56,16 +59,36 @@ public class FixedLengthReader implements RecordReader {
     /**
      * Constructs a new <tt>FixedLengthReader</tt>.
      * @param in the input stream to read from
-     * @param lineContinuationCharacter
+     * @param lineContinuationCharacter the line continuation character,
+     *   or <tt>null</tt> to disable line continuations
      */
     public FixedLengthReader(Reader in, Character lineContinuationCharacter) {
+        this(in, lineContinuationCharacter, null);
+    }
+    
+    /**
+     * Constructs a new <tt>FixedLengthReader</tt>.
+     * @param in the input stream to read from
+     * @param lineContinuationCharacter the line continuation character,
+     *   or <tt>null</tt> to disable line continuations
+     * @param recordTerminator the character used to signify the end of a record
+     */
+    public FixedLengthReader(Reader in, Character lineContinuationCharacter, Character recordTerminator) {
         this.in = in;
+        
         if (lineContinuationCharacter == null) {
             this.multilineEnabled = false;
         }
         else {
+            if (recordTerminator != null && lineContinuationCharacter == recordTerminator) {
+                throw new IllegalArgumentException("The line continuation character and recrod terminator cannot match.");
+            }    
             this.multilineEnabled = true;
             this.lineContinuationChar = lineContinuationCharacter;
+        }
+        
+        if (recordTerminator != null) {
+            this.recordTerminator = recordTerminator;
         }
     }
 
@@ -74,7 +97,10 @@ public class FixedLengthReader implements RecordReader {
      * @see org.beanio.line.RecordReader#getRecordLineNumber()
      */
     public int getRecordLineNumber() {
-        return recordLineNumber;
+        if (recordLineNumber < 0) {
+            return recordLineNumber;
+        }
+        return recordTerminator == 0 ? recordLineNumber : 0;
     }
 
     /*
@@ -122,16 +148,10 @@ public class FixedLengthReader implements RecordReader {
 
                 text.append(c);
 
-                if (c == '\n') {
+                if (endOfRecord(c)) {
                     ++lineNumber;
                     ++lineOffset;
-                    continue;
-                }
-                else if (c == '\r') {
-                    skipLF = true;
-                    ++lineNumber;
-                    ++lineOffset;
-                    continue;
+                    continue;                    
                 }
                 else {
                     record.append(lineContinuationChar);
@@ -141,11 +161,7 @@ public class FixedLengthReader implements RecordReader {
             if (multilineEnabled && c == lineContinuationChar) {
                 continued = true;
             }
-            else if (c == '\r') {
-                skipLF = true;
-                eol = true;
-            }
-            else if (c == '\n') {
+            else if (endOfRecord(c)) {
                 eol = true;
             }
             else {
@@ -170,6 +186,8 @@ public class FixedLengthReader implements RecordReader {
 
         if (recordText.length() == 0) {
             eof = true;
+            recordText = null;
+            recordLineNumber = -1;
             return null;
         }
         else {
@@ -178,6 +196,28 @@ public class FixedLengthReader implements RecordReader {
         }
     }
 
+    /**
+     * Returns <tt>true</tt> if the given character matches the record separator.  This
+     * method also updates the internal <tt>skipLF</tt> flag.
+     * @param c the character to test
+     * @return <tt>true</tt> if the character signifies the end of the record
+     */
+    private boolean endOfRecord(char c) {
+        if (recordTerminator == 0) {
+            if (c == '\r') {
+                skipLF = true;
+                return true;
+            }
+            else if (c == '\n') {
+                return true;
+            }
+            return false;
+        }
+        else {
+            return c == recordTerminator;
+        }
+    }
+    
     /*
      * (non-Javadoc)
      * @see org.beanio.line.RecordReader#close()

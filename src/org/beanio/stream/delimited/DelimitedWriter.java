@@ -45,7 +45,7 @@ public class DelimitedWriter implements RecordWriter {
     private char delim = '\t';
     private char escapeChar = '\\';
     private boolean escapeEnabled = true;
-    private String lineSeparator;
+    private String recordTerminator;
 
     private Writer out;
 
@@ -82,9 +82,9 @@ public class DelimitedWriter implements RecordWriter {
      * @param out the output stream to write to
      * @param delimiter the field delimiting character
      * @param escape the escape character, or <tt>null</tt> to disable escaping
-     * @param lineSeparator the termination sequence to use at the end of each line
+     * @param recordTerminator the termination sequence to use at the end of each record
      */
-    public DelimitedWriter(Writer out, char delimiter, Character escape, String lineSeparator) {
+    public DelimitedWriter(Writer out, char delimiter, Character escape, String recordTerminator) {
 
         this.out = out;
         this.delim = delimiter;
@@ -99,10 +99,10 @@ public class DelimitedWriter implements RecordWriter {
                 throw new IllegalArgumentException("Delimiter cannot match the escape character");
             }
         }
-        if (lineSeparator == null) {
-            lineSeparator = System.getProperty("line.separator");
+        if (recordTerminator == null) {
+            recordTerminator = System.getProperty("line.separator");
         }
-        this.lineSeparator = lineSeparator;
+        this.recordTerminator = recordTerminator;
     }
 
     /* 
@@ -144,7 +144,7 @@ public class DelimitedWriter implements RecordWriter {
             }
         }
 
-        out.write(lineSeparator);
+        out.write(recordTerminator);
     }
 
     /*

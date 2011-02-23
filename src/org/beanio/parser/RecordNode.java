@@ -45,7 +45,7 @@ class RecordNode extends Node {
     }
 
     @Override
-    protected NodeDefinition getNodeContext() {
+    protected NodeDefinition getNodeDefinition() {
         return definition;
     }
 

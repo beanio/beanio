@@ -95,7 +95,7 @@ public class DelimitedWriterFactory implements RecordWriterFactory {
      * Sets the text used to terminate a record.  If set to <tt>null</tt>, the 
      * the value of the <tt>line.separator</tt> system property is used to terminate
      * records.
-     * @param lineSeparator the record termination text
+     * @param recordTerminator the record termination text
      */
     public void setRecordTerminator(String recordTerminator) {
         this.recordTerminator = recordTerminator;

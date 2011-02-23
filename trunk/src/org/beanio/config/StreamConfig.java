@@ -186,7 +186,7 @@ public class StreamConfig {
 
     /**
      * Sets the record writer factory configuration bean.
-     * @param readerFactory the record writer factory configuration bean
+     * @param writerFactory the record writer factory configuration bean
      */
     public void setWriterFactory(Bean writerFactory) {
         this.writerFactory = writerFactory;

@@ -14,14 +14,20 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<project name="beanio">
+<project name="beanio" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
  
   <!-- Load build properties -->
   <property file="build.properties" />
 
+  <!-- Load Maven Ant tasks -->
+  <path id="maven-ant-tasks.classpath" path="lib/maven-ant-tasks-2.1.1.jar" />
+  <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+    uri="antlib:org.apache.maven.artifact.ant"
+  	classpathref="maven-ant-tasks.classpath" />
+	
   <!-- Delete all build artifacts -->
   <target name="clean" description="Delete all build artifacts">
-    <delete dir="${target}" />
+    <delete dir="${taget}" />
   </target>
 
   <target name="init">
@@ -205,6 +211,71 @@
     </emma>
   </target>
 
+  <!-- Create beanio JAR's for a Maven repository -->
+  <target name="maven-jars" depends="jar,docs-api" description="Creates Maven repository JAR's">
+  	<property name="maven.jar" value="${target}/${maven.artifactId}-${version}.jar" />
+  	<property name="maven.sources.jar" value="${target}/${maven.artifactId}-${version}-sources.jar" />
+  	<property name="maven.javadoc.jar" value="${target}/${maven.artifactId}-${version}-javadoc.jar" />
+  	<copy file="${target}/beanio.jar" toFile="${maven.jar}" />
+    <jar destfile="${maven.sources.jar}">
+      <manifest>
+        <attribute name="Implementation-Title" value="BeanIO ${version}" />
+        <attribute name="Implementation-Version" value="${version}" />
+      </manifest>
+      <metainf dir="${basedir}">
+        <include name="LICENSE.txt" />
+        <include name="NOTICE.txt" />
+      </metainf>    	
+      <fileset dir="src">
+      	<exclude name="**/package.html" />
+      </fileset>
+    </jar>
+    <jar destfile="${maven.javadoc.jar}">
+      <manifest>
+        <attribute name="Implementation-Title" value="BeanIO ${version}" />
+        <attribute name="Implementation-Version" value="${version}" />
+      </manifest>
+      <metainf dir="${basedir}">
+        <include name="LICENSE.txt" />
+        <include name="NOTICE.txt" />
+      </metainf>  
+      <fileset dir="${target}/docs/api" />
+    </jar>
+  </target>
+	
+  <!-- Deploy Maven beanio JAR's to the configured repository -->
+  <target name="maven-deploy" depends="maven-jars" description="Deploy to Maven repository">
+    <!-- sign and deploy the main artifact -->
+    <artifact:mvn>
+      <arg value="org.apache.maven.plugins:maven-gpg-plugin:1.1:sign-and-deploy-file" />
+      <arg value="-Durl=${maven.repository.url}" />
+      <arg value="-DrepositoryId=${maven.repository.id}" />
+      <arg value="-DpomFile=pom.xml" />
+      <arg value="-Dfile=${maven.jar}" />
+	  <arg value="-Pgpg" />
+    </artifact:mvn>
+    <!-- sign and deploy the sources artifact -->
+    <artifact:mvn>
+      <arg value="org.apache.maven.plugins:maven-gpg-plugin:1.1:sign-and-deploy-file" />
+      <arg value="-Durl=${maven.repository.url}" />
+      <arg value="-DrepositoryId=${maven.repository.id}" />
+      <arg value="-DpomFile=pom.xml" />
+      <arg value="-Dfile=${maven.sources.jar}" />
+      <arg value="-Dclassifier=sources" />
+	  <arg value="-Pgpg" />
+    </artifact:mvn>
+    <!-- sign and deploy the javadoc artifact -->
+    <artifact:mvn>
+      <arg value="org.apache.maven.plugins:maven-gpg-plugin:1.1:sign-and-deploy-file" />
+      <arg value="-Durl=${maven.repository.url}" />
+      <arg value="-DrepositoryId=${maven.repository.id}" />
+      <arg value="-DpomFile=pom.xml" />
+      <arg value="-Dfile=${maven.javadoc.jar}" />
+      <arg value="-Dclassifier=javadoc" />
+	  <arg value="-Pgpg" />
+    </artifact:mvn>
+  </target>
+	
   <target name="test" depends="compile,jar,test-init,test-junit,test-emma"
     description="Executes JUnit test cases, generates Emma converage report if enabled" />
   <target name="build" depends="compile,jar,docs,package" />

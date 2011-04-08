@@ -129,4 +129,15 @@
     </record>
   </stream>
 
+  <stream name="w9" format="fixedlength">
+    <record name="record1" class="org.beanio.parser.bean.Widget">
+      <field name="id" length="2" justify="right" />
+      <bean name="partsList" class="org.beanio.parser.bean.Widget" collection="list" minOccurs="2" maxOccurs="2">
+        <field name="id" length="2" justify="right" />
+        <field name="name" length="5" />
+      </bean>
+      <field name="name" length="5" />
+    </record>
+  </stream>
+
 </beanio>

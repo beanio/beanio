@@ -66,21 +66,23 @@ public class FixedLengthStreamDefinitionFactory extends FlatStreamDefinitionFact
     
     @Override
     protected void assignDefaultFieldPositions(RecordConfig recordConfig, FlatRecordDefinition recordDefinition) {
-        updateFieldPositionAndLength(null, recordConfig.getBean(), recordDefinition.getBeanDefinition());
+        updateFieldPositionAndLength(0, recordConfig.getBean(), recordDefinition.getBeanDefinition());
     }
     
     /*
      * Recursively updates the position of all fields.
      */
-    private FixedLengthFieldDefinition updateFieldPositionAndLength(FixedLengthFieldDefinition previousField, BeanConfig beanConfig,
+    private int updateFieldPositionAndLength(int nextPosition, BeanConfig beanConfig,
         BeanDefinition beanDefinition) {
         
         int i = 0;
+        int startPosition = nextPosition;
         List<PropertyConfig> propertyList = beanConfig.getPropertyList();
         for (PropertyConfig property : propertyList) {
             if (property.isBean()) {
-                previousField = updateFieldPositionAndLength(previousField, (BeanConfig) property, 
-                    (BeanDefinition) beanDefinition.getProperty(i));
+                BeanDefinition childBeanDefinition = (BeanDefinition) beanDefinition.getProperty(i);
+                nextPosition = updateFieldPositionAndLength(nextPosition, (BeanConfig) property, 
+                    childBeanDefinition);
             }
             else {
                 FieldConfig field = (FieldConfig) property;
@@ -88,20 +90,12 @@ public class FixedLengthStreamDefinitionFactory extends FlatStreamDefinitionFact
                 
                 int position = field.getPosition();
                 try {
-                    // if position is not set, use the information from the previous field 
-                    //     position + length * minOccurs
+                    // if position is not set, use the next position
                     if (position < 0) {
-                        if (previousField == null) {
-                            position = 0;
-                        }
-                        else {
-                            position = previousField.getPosition() + 
-                                previousField.getLength() * previousField.getMinOccurs();
-                        }
+                        position = nextPosition;
                     }
                     currentDefinition.setPosition(position);
-                    
-                    previousField = currentDefinition;
+                    nextPosition = nextPosition + currentDefinition.getLength() * currentDefinition.getMinOccurs();
                 }
                 catch (BeanIOConfigurationException ex) {
                     throw new BeanIOConfigurationException("Invalid '" + field.getName() +
@@ -110,7 +104,13 @@ public class FixedLengthStreamDefinitionFactory extends FlatStreamDefinitionFact
             }
             ++i;
         }
-        return previousField;
+        
+        // adjust next position for recurring beans
+        if (beanDefinition.getMinOccurs() > 1) {
+            nextPosition += (nextPosition - startPosition) * (beanDefinition.getMinOccurs() - 1);
+        }
+        
+        return nextPosition;
     }
     
     @Override

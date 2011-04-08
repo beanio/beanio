@@ -262,4 +262,22 @@ public class BeanParserTest extends ParserTest {
         catch (BeanWriterIOException ex) { }
     }
     
+    @Test
+    public void testFixedLengthCollection() {
+        BeanReader in = factory.createReader("w9", new InputStreamReader(
+            getClass().getResourceAsStream("w9_flcollections.txt")));
+            
+        try {
+            Widget w = (Widget) in.read();
+            assertEquals(1, w.getId());
+            assertEquals("name", w.getName());
+            
+            StringWriter text = new StringWriter();
+            factory.createWriter("w9", text).write(w);
+            assertEquals(" 1 1part1 2part2name " + lineSeparator, text.toString());
+        }
+        finally {
+            in.close();
+        }
+    }
 }

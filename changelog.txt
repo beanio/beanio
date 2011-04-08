@@ -1,6 +1,11 @@
 Project BeanIO Change Log
 =========================
 
+Changes in version 1.0.1 (TBD)
+------------------------------
+* Modified build script to deploy to a Maven repository 
+* gc0007 - Fixed default position calculation for bean collections in a fixed length stream
+
 Changes in version 1.0 (2011-02-22)
 -----------------------------------
 * Added padding support for delimited/CSV fields

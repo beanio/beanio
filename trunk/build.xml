@@ -27,7 +27,7 @@
 	
   <!-- Delete all build artifacts -->
   <target name="clean" description="Delete all build artifacts">
-    <delete dir="${taget}" />
+    <delete dir="${target}" />
   </target>
 
   <target name="init">

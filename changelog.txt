@@ -1,9 +1,10 @@
 Project BeanIO Change Log
 =========================
 
-Changes in version 1.0.1 (TBD)
-------------------------------
+Changes in version 1.0.1 (2011-04-18)
+-------------------------------------
 * Modified build script to deploy to a Maven repository 
+* Fixed the ant build 'clean' task
 * gc0007 - Fixed default position calculation for bean collections in a fixed length stream
 
 Changes in version 1.0 (2011-02-22)

@@ -92,7 +92,7 @@ public class TypeHandlerFactory {
      * for its parent.
      */
     public TypeHandlerFactory() {
-        parent = getDefault();
+        setParent(getDefault());
     }
 
     /**
@@ -100,7 +100,7 @@ public class TypeHandlerFactory {
      * @param parent the parent <tt>TypeHandlerFactory</tt>
      */
     public TypeHandlerFactory(TypeHandlerFactory parent) {
-        this.parent = parent;
+        setParent(parent);
     }
 
     /**
@@ -273,6 +273,15 @@ public class TypeHandlerFactory {
         }
         clazz = TypeUtil.toWrapperClass(clazz);
         registerHandlerFor(clazz.getName(), clazz, handler);
+    }
+    
+    /**
+     * Sets the parent <tt>TypeHandlerFactory</tt>.
+     * @param parent the parent <tt>TypeHandlerFactory</tt>
+     * @since 1.1
+     */
+    public void setParent(TypeHandlerFactory parent) {
+        this.parent = parent;
     }
 
     private void registerHandlerFor(String type, Class<?> clazz, TypeHandler handler) {

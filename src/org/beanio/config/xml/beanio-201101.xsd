@@ -20,7 +20,7 @@
   xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
   elementFormDefault="qualified" 
   targetNamespace="http://www.beanio.org/2011/01"
-  version="1.4">
+  version="2.0">
   
   <element name="beanio">
     <complexType>
@@ -34,7 +34,7 @@
   <complexType name="Stream">
     <sequence>
       <element name="reader" minOccurs="0" maxOccurs="1" type="tns:Factory" />
-      <element name="writer" minOccurs="0" maxOccurs="1" type="tns:Factory" />
+      <element name="writer" minOccurs="0" maxOccurs="1" type="tns:WriterFactory" />
       <element name="typeHandler" minOccurs="0" maxOccurs="unbounded" type="tns:TypeHandler" />
       <choice minOccurs="1" maxOccurs="unbounded">
         <element name="record" type="tns:Record"/>
@@ -47,6 +47,10 @@
     <attribute name="minOccurs" type="xsd:nonNegativeInteger" use="optional" />
     <attribute name="maxOccurs" type="tns:limit" use="optional" />
     <attribute name="resourceBundle" type="xsd:string" use="optional" />
+    <attribute name="xmlType" type="xsd:string" use="optional" />
+    <attribute name="xmlName" type="xsd:string" use="optional" />
+    <attribute name="xmlNamespace" type="xsd:string" use="optional" />
+    <attribute name="xmlPrefix" type="xsd:string" use="optional" />
    </complexType>
 
   <complexType name="TypeHandler">
@@ -65,6 +69,21 @@
     <attribute name="class" type="xsd:string" use="optional" />
   </complexType>
 
+  <complexType name="WriterFactory">
+    <complexContent>
+      <extension base="tns:Factory">
+        <sequence>
+          <element name="namespace" minOccurs="0" maxOccurs="unbounded" type="tns:Namespace" />
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  
+  <complexType name="Namespace">
+    <attribute name="prefix" type="xsd:string" use="required" />
+    <attribute name="uri" type="xsd:string" use="required" />
+  </complexType>
+
   <complexType name="Property">
     <attribute name="name" type="xsd:string" use="required" />
     <attribute name="value" type="xsd:string" use="required" />
@@ -74,6 +93,9 @@
     <attribute name="minOccurs" type="xsd:nonNegativeInteger" use="optional" default="1" />
     <attribute name="maxOccurs" type="tns:limit" use="optional" />
     <attribute name="order" type="xsd:positiveInteger" use="optional" />  
+    <attribute name="xmlName" type="xsd:string" use="optional" />
+    <attribute name="xmlNamespace" type="xsd:string" use="optional" />
+    <attribute name="xmlPrefix" type="xsd:string" use="optional" />
   </attributeGroup>
   
   <complexType name="Record">
@@ -94,6 +116,7 @@
       <element name="group" type="tns:Group" />
     </choice>
     <attribute name="name" type="xsd:string" use="required" />
+    <attribute name="xmlType" type="xsd:string" use="optional" />
     <attributeGroup ref="tns:NodeAttributes" />
   </complexType>
   
@@ -120,6 +143,11 @@
     <attribute name="collection" type="xsd:string" use="optional" />
     <attribute name="minOccurs" type="xsd:nonNegativeInteger" use="optional" />
     <attribute name="maxOccurs" type="tns:limit" use="optional" />
+    <attribute name="xmlType" type="xsd:string" use="optional" />
+    <attribute name="xmlName" type="xsd:string" use="optional" />
+    <attribute name="xmlNamespace" type="xsd:string" use="optional" />
+    <attribute name="xmlPrefix" type="xsd:string" use="optional" />
+    <attribute name="nillable" type="xsd:boolean" use="optional" />
   </complexType>  
 
   <complexType name="Bean">    
@@ -134,6 +162,11 @@
     <attribute name="collection" type="xsd:string" use="optional" />
     <attribute name="minOccurs" type="xsd:nonNegativeInteger" use="optional" />
     <attribute name="maxOccurs" type="tns:limit" use="optional" />
+    <attribute name="xmlType" type="xsd:string" use="optional" />
+    <attribute name="xmlName" type="xsd:string" use="optional" />
+    <attribute name="xmlNamespace" type="xsd:string" use="optional" />
+    <attribute name="xmlPrefix" type="xsd:string" use="optional" />
+    <attribute name="nillable" type="xsd:boolean" use="optional" />
   </complexType>
   
   <simpleType name="justification">

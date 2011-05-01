@@ -76,8 +76,9 @@ public class DefaultConfigurationFactory implements ConfigurationFactory {
             throw new BeanIOConfigurationException("null configuration");
         }
 
+        TypeHandlerFactory defaultTypeHandlerFactory = TypeHandlerFactory.getDefault();
         TypeHandlerFactory globalTypeHandlerFactory = getTypeHandlerFactory(
-            TypeHandlerFactory.getDefault(), config.getTypeHandlerList());
+            null, config.getTypeHandlerList());
 
         Collection<StreamConfig> streamConfigList = config.getStreamList();
         Collection<StreamDefinition> streamDefinitionList = new ArrayList<StreamDefinition>(
@@ -94,11 +95,22 @@ public class DefaultConfigurationFactory implements ConfigurationFactory {
         set = null;
         
         for (StreamConfig streamConfig : streamConfigList) {
+            StreamDefinitionFactory factory = createStreamDefinitionFactory(streamConfig.getFormat());
+            
+            // allow the stream factory to override default type handlers...
+            TypeHandlerFactory parentTypeHandlerFactory = factory.getDefaultTypeHandlerFactory();
+            if (parentTypeHandlerFactory == null) {
+                parentTypeHandlerFactory = defaultTypeHandlerFactory;
+            }
+            if (globalTypeHandlerFactory != null) {
+                globalTypeHandlerFactory.setParent(parentTypeHandlerFactory);
+                parentTypeHandlerFactory = globalTypeHandlerFactory;
+            }
+            
+            // create the stream specific type factory
             TypeHandlerFactory typeHandlerFactory = getTypeHandlerFactory(
-                globalTypeHandlerFactory, streamConfig.getHandlerList());
-
-            StreamDefinitionFactory factory = createStreamDefinitionFactory(
-                streamConfig.getFormat());
+                parentTypeHandlerFactory, streamConfig.getHandlerList());
+            
             factory.setTypeHandlerFactory(typeHandlerFactory);
             streamDefinitionList.add(factory.createStreamDefinition(streamConfig));
         }

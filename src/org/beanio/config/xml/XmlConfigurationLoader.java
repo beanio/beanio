@@ -193,7 +193,12 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
         if (maxOccurs == null)
             maxOccurs = 1;
         config.setMaxOccurs(maxOccurs);
-
+        
+        config.getRootGroupConfig().setXmlName(getAttribute(element, "xmlName"));
+        config.getRootGroupConfig().setXmlNamespace(getOptionalAttribute(element, "xmlNamespace"));
+        config.getRootGroupConfig().setXmlPrefix(getOptionalAttribute(element, "xmlPrefix"));
+        config.getRootGroupConfig().setXmlType(getOptionalAttribute(element, "xmlType"));
+        
         NodeList children = element.getChildNodes();
         for (int i = 0, j = children.getLength(); i < j; i++) {
             Node node = children.item(i);
@@ -233,7 +238,11 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
         config.setOrder(getIntAttribute(element, "order", -1));
         config.setMinOccurs(getIntegerAttribute(element, "minOccurs"));
         config.setMaxOccurs(getUnboundedIntegerAttribute(element, "maxOccurs", -1));
-
+        config.setXmlName(getAttribute(element, "xmlName"));
+        config.setXmlNamespace(getOptionalAttribute(element, "xmlNamespace"));
+        config.setXmlPrefix(getOptionalAttribute(element, "xmlPrefix"));
+        config.setXmlType(getOptionalAttribute(element, "xmlType"));
+        
         NodeList children = element.getChildNodes();
         for (int i = 0, j = children.getLength(); i < j; i++) {
             Node node = children.item(i);
@@ -270,7 +279,10 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
         BeanConfig beanConfig = new BeanConfig();
         beanConfig.setName(config.getName());
         beanConfig.setType(getAttribute(record, "class"));
-
+        beanConfig.setXmlName(getAttribute(record, "xmlName"));
+        beanConfig.setXmlNamespace(getOptionalAttribute(record, "xmlNamespace"));
+        beanConfig.setXmlPrefix(getOptionalAttribute(record, "xmlPrefix"));
+        
         NodeList children = record.getChildNodes();
         for (int i = 0, j = children.getLength(); i < j; i++) {
             Node node = children.item(i);
@@ -309,6 +321,11 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
         BeanConfig config = new BeanConfig();
         populatePropertyConfig(config, element);
         config.setType(getAttribute(element, "class"));
+        config.setXmlName(getAttribute(element, "xmlName"));
+        config.setXmlNamespace(getOptionalAttribute(element, "xmlNamespace"));
+        config.setXmlPrefix(getOptionalAttribute(element, "xmlPrefix"));
+        config.setXmlType(getOptionalAttribute(element, "xmlType"));
+        config.setNillable(getBooleanAttribute(element, "nillable", config.isNillable()));
         
         NodeList children = element.getChildNodes();
         for (int i = 0, j = children.getLength(); i < j; i++) {
@@ -354,6 +371,11 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
         config.setLength(getIntAttribute(element, "length", config.getLength()));
         config.setPadding(getCharacterAttribute(element, "padding"));
         config.setJustify(getAttribute(element, "justify"));
+        config.setXmlType(getAttribute(element, "xmlType"));
+        config.setXmlName(getAttribute(element, "xmlName"));
+        config.setXmlNamespace(getOptionalAttribute(element, "xmlNamespace"));
+        config.setXmlPrefix(getOptionalAttribute(element, "xmlPrefix"));
+        config.setNillable(getBooleanAttribute(element, "nillable", config.isNillable()));
         return config;
     }
 
@@ -399,7 +421,17 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
             }
         }
     }
-
+    
+    private String getOptionalAttribute(Element element, String name) {
+        Attr att = element.getAttributeNode(name);
+        if (att == null) {
+            return null;
+        }
+        else {
+            return att.getTextContent();
+        }
+    }
+    
     private String getAttribute(Element element, String name) {
         String value = element.getAttribute(name);
         if ("".equals(value))

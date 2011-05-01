@@ -38,6 +38,12 @@ public abstract class PropertyConfig {
     private Integer minOccurs;
     private Integer maxOccurs;
     
+    private String xmlType;
+    private String xmlName;
+    private String xmlNamespace;
+    private String xmlPrefix;
+    private boolean nillable;
+    
     /**
      * Returns whether this property defines a bean class with its own list
      * of properties.
@@ -199,5 +205,101 @@ public abstract class PropertyConfig {
      */
     public void setMaxOccurs(Integer maxOccurs) {
         this.maxOccurs = maxOccurs;
+    }
+    
+    /**
+     * Returns the XML node type of this property.
+     * @return the XML node type
+     * @since 1.1
+     * @see XmlTypeConstants
+     */
+    public String getXmlType() {
+        return xmlType;
+    }
+
+    /**
+     * Sets the XML node type of this property.
+     * @param xmlType the XML node type
+     * @since 1.1
+     * @see XmlTypeConstants
+     */
+    public void setXmlType(String xmlType) {
+        this.xmlType = xmlType;
+    }
+
+    /**
+     * Returns XML element or attribute name of this property.
+     * @return the XML element or attribute name
+     * @since 1.1
+     */
+    public String getXmlName() {
+        return xmlName;
+    }
+
+    /**
+     * Sets the XML element or attribute name of this property.  If set to <tt>null</tt> 
+     * (default), the XML name defaults to the property name.
+     * @param xmlName the XML element or attribute name
+     * @since 1.1
+     */
+    public void setXmlName(String xmlName) {
+        this.xmlName = xmlName;
+    }
+
+    /**
+     * Returns the XML namespace for this property element or attribute.
+     * @return the XML namespace
+     * @since 1.1
+     */
+    public String getXmlNamespace() {
+        return xmlNamespace;
+    }
+
+    /**
+     * Sets the XML namespace for this property element or attribute.  If set to <tt>null</tt>
+     * (default), the namespace is inherited from its parent.
+     * @param xmlNamespace the XML namespace
+     * @since 1.1
+     */
+    public void setXmlNamespace(String xmlNamespace) {
+        this.xmlNamespace = xmlNamespace;
+    }
+
+    /**
+     * Returns the XML prefix for the namespace assigned to this property element or attribute.
+     * @return the XML namespace prefix
+     * @since 1.1
+     */
+    public String getXmlPrefix() {
+        return xmlPrefix;
+    }
+
+    /**
+     * Sets the XML prefix for the namespace assigned to this property element or attribute.  If 
+     * set to <tt>null</tt> and a namespace is set, the namespace will replace the default namespace
+     * when marshaling the property.  If a namespace is not set, the prefix is ignored.
+     * @param xmlPrefix the XML namespace prefix
+     * @since 1.1
+     */
+    public void setXmlPrefix(String xmlPrefix) {
+        this.xmlPrefix = xmlPrefix;
+    }
+
+    /**
+     * Returns whether this property is nillable.
+     * @return <tt>true</tt> if this property is nillable
+     * @since 1.1
+     */
+    public boolean isNillable() {
+        return nillable;
+    }
+
+    /**
+     * Sets whether this property is nillable.
+     * @param nillable <tt>true</tt> if this property is nillable
+     * @since 1.1
+     */
+    public void setNillable(boolean nillable) {
+        this.nillable = nillable;
     }
 }

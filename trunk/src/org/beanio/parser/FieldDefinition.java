@@ -114,14 +114,24 @@ public abstract class FieldDefinition extends PropertyDefinition {
      */
     @Override
     protected Object parsePropertyValue(Record record) {
-        boolean valid = true;
-
         // parse the field text from the record
         String fieldText = parseField(record);
         if (fieldText == INVALID) {
             return INVALID;
         }
 
+        return parsePropertyValue(record, fieldText);
+    }
+    
+    /**
+     * Parses and validates a field property value from the given field text.
+     * @param record the record being parsed
+     * @param fieldText the field text to parse
+     * @return the parsed field value, or {@link #INVALID} if the field was invalid,
+     *   or {@link #MISSING} if the field was not present in the record
+     */
+    protected Object parsePropertyValue(Record record, String fieldText) {
+        boolean valid = true;
         String text = fieldText;
         
         // null field text means the field was not present in the record

@@ -105,7 +105,7 @@ public abstract class StreamDefinitionFactory {
             }
             else {
                 Object object = BeanUtil.createBean(writerFactoryBean.getClassName());
-                if (!RecordReaderFactory.class.isAssignableFrom(object.getClass())) {
+                if (!RecordWriterFactory.class.isAssignableFrom(object.getClass())) {
                     throw new BeanIOConfigurationException("Configured writer factory class '" +
                         writerFactoryBean.getClassName() + "' does not implement RecordWriterFactory");
                 }
@@ -140,8 +140,20 @@ public abstract class StreamDefinitionFactory {
             }
         }
 
+        updateStreamDefinition(config, definition);
+        
+        updateGroupDefinition(null, config.getRootGroupConfig(), definition.getRootGroupDefinition());
         compileGroupDefinition(config, config.getRootGroupConfig(), definition.getRootGroupDefinition());
     }
+    
+    /**
+     * This method is called by <tt>compileStreamDefinition</tt> to allow the configuration
+     * of stream specific stream configuration settings.
+     * @param config the stream configuration
+     * @param definition the stream definition
+     * @since 1.1
+     */
+    protected void updateStreamDefinition(StreamConfig config, StreamDefinition definition) { }
 
     /**
      * Compiles a group definition from its configuration.
@@ -193,7 +205,7 @@ public abstract class StreamDefinitionFactory {
                 try {
                     childDefinition = newRecordDefinition((RecordConfig) child);
                     compileNodeDefinition(child, childDefinition, order);
-                    compileRecordDefinition((RecordConfig) child, (RecordDefinition) childDefinition);
+                    compileRecordDefinition(definition, (RecordConfig) child, (RecordDefinition) childDefinition);
                     compileFieldDefinitions((RecordConfig) child, (RecordDefinition) childDefinition);
                 }
                 catch (BeanIOConfigurationException ex) {
@@ -206,6 +218,7 @@ public abstract class StreamDefinitionFactory {
                 try {
                     childDefinition = newGroupDefinition((GroupConfig) child);
                     compileNodeDefinition(child, childDefinition, order);
+                    updateGroupDefinition(definition, (GroupConfig) child, (GroupDefinition) childDefinition);
                     compileGroupDefinition(streamConfig, (GroupConfig) child, (GroupDefinition) childDefinition);
                 }
                 catch (BeanIOConfigurationException ex) {
@@ -220,6 +233,18 @@ public abstract class StreamDefinitionFactory {
 
             definition.addChild(childDefinition);
         }
+    }
+    
+    /**
+     * This method is called by <tt>compileGroupDefinition</tt> to allow the configuration
+     * of stream specific group configuration settings.
+     * @param parent the parent group definition
+     * @param config the group configuration
+     * @param definition the group definition
+     * @since 1.1
+     */
+    protected void updateGroupDefinition(GroupDefinition parent, GroupConfig config, GroupDefinition definition) {
+        
     }
 
     private void compileNodeDefinition(NodeConfig config, NodeDefinition definition, int order) {
@@ -243,10 +268,11 @@ public abstract class StreamDefinitionFactory {
      * @param config the record configuration
      * @param recordDefinition the record definition
      */
-    protected void compileRecordDefinition(RecordConfig config, RecordDefinition recordDefinition) {
+    protected void compileRecordDefinition(GroupDefinition group, RecordConfig config, RecordDefinition recordDefinition) {
         BeanDefinition beanDefinition = newBeanDefinition(config.getBean());
         beanDefinition.setName(recordDefinition.getName());
         beanDefinition.setPropertyType(getBeanClass(config.getBean()));
+        updateBeanDefinition(config.getBean(), beanDefinition);
         recordDefinition.setBeanDefinition(beanDefinition);
     }
     
@@ -334,7 +360,7 @@ public abstract class StreamDefinitionFactory {
             if (config.getMinOccurs() != null) {
                 minOccurs = config.getMinOccurs();
                 
-                if (minOccurs != 1 && config.getCollection() == null) {
+                if (minOccurs != 1 && config.getCollection() == null && !isOptionalBeanEnabled()) {
                     throw new BeanIOConfigurationException(
                         "minOccurs must be 1, or collection type must be set");
                 }
@@ -359,6 +385,8 @@ public abstract class StreamDefinitionFactory {
             }
             definition.setMaxOccurs(maxOccurs);
             
+            updateBeanDefinition(config, definition);
+            
             compileFieldDefinitions(config, definition);
             
             // update the parent bean definition
@@ -376,6 +404,25 @@ public abstract class StreamDefinitionFactory {
                 "' bean configuration: " + ex.getMessage(), ex);
         }
     }
+    
+    /**
+     * Returns whether this stream format allows beans with zero minimum occurrences.  Returns
+     * <tt>false</tt> by default.
+     * @return <tt>true</tt> if the stream format allows optional beans
+     * @since 1.1
+     */
+    protected boolean isOptionalBeanEnabled() {
+        return false;
+    }
+    
+    /**
+     * This method is called by <tt>compileBeanDefinition</tt> to allow the configuration
+     * of format specific bean configuration settings.
+     * @param beanConfig the bean configuration
+     * @param beanDefinition the bean definition
+     * @since 1.1
+     */
+    protected void updateBeanDefinition(BeanConfig beanConfig, BeanDefinition beanDefinition) { }
     
     /**
      * Compiles field definitions for a record.  The compiled field definitions are
@@ -459,7 +506,7 @@ public abstract class StreamDefinitionFactory {
                 if (field.getMinOccurs() != null) {
                     minOccurs = field.getMinOccurs();
                     
-                    if (minOccurs != 1 && field.getCollection() == null) {
+                    if (minOccurs != 1 && field.getCollection() == null && !isOptionalFieldEnabled()) {
                         throw new BeanIOConfigurationException(
                             "minOccurs must be 1, or the field collection type must be set");
                     }
@@ -533,8 +580,23 @@ public abstract class StreamDefinitionFactory {
         }
     }
     
-    protected void updateFieldDefinition(FieldConfig fieldConfig, FieldDefinition fieldDefinition) {
-        
+    /**
+     * This method is called by <tt>compileFieldDefinitions</tt> to allow the configuration
+     * of format specific field configuration settings.
+     * @param fieldConfig the field configuration
+     * @param fieldDefinition the field definition
+     * @since 1.1
+     */
+    protected void updateFieldDefinition(FieldConfig fieldConfig, FieldDefinition fieldDefinition) { }
+    
+    /**
+     * Returns whether this stream format allows fields with zero minimum occurrences.  Returns
+     * <tt>false</tt> by default.
+     * @return <tt>true</tt> if the stream format allows optional fields
+     * @since 1.1
+     */
+    protected boolean isOptionalFieldEnabled() {
+        return false;
     }
     
     /**
@@ -868,5 +930,15 @@ public abstract class StreamDefinitionFactory {
      */
     public void setTypeHandlerFactory(TypeHandlerFactory typeHandlerFactory) {
         this.typeHandlerFactory = typeHandlerFactory;
+    }
+    
+    /**
+     * Returns the type handler factory for this stream format, thus allowing a stream
+     * format to override default type handlers.  
+     * @return the type handler factory
+     * @since 1.1
+     */
+    public TypeHandlerFactory getDefaultTypeHandlerFactory() {
+        return null;
     }
 }

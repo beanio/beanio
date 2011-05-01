@@ -47,6 +47,8 @@ public class Settings {
     public static final String DEFAULT_DATETIME_FORMAT = "org.beanio.defaultDateTimeFormat";
     /** The default date format pattern for fields assigned type alias <tt>Time</tt> */
     public static final String DEFAULT_TIME_FORMAT = "org.beanio.defaultTimeFormat";
+    /** The default XML type for a field definition, set to <tt>element</tt> or <tt>attribute</tt>. */
+    public static final String DEFAULT_XML_TYPE = "org.beanio.defaultXmlType";
     
     private static final String DEFAULT_CONFIGURATION_PATH = "/org/beanio/config/beanio.properties";
     private static final String DEFAULT_CONFIGURATION_FILENAME = "beanio.properties";

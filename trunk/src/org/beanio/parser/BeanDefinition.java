@@ -76,7 +76,7 @@ public abstract class BeanDefinition extends PropertyDefinition {
 
         // validate and parse each property of this bean
         int index = 0;
-        boolean exists = false;
+        boolean exists = isBeanExistenceKnown();
         for (PropertyDefinition property : propertyList) {
             Object value = property.parseValue(record);
 
@@ -159,6 +159,16 @@ public abstract class BeanDefinition extends PropertyDefinition {
         }
 
         return bean;
+    }
+    
+    /**
+     * Returns <tt>true</tt> if a bean is known to exist before parsing its child
+     * fields.  If <tt>false</tt> is returned, at least one bean field must exist
+     * in the stream before the bean is created.
+     * @return <tt>true</tt> if a bean is known to exist before parsing its fields
+     */
+    protected boolean isBeanExistenceKnown() {
+        return false;
     }
 
     /**

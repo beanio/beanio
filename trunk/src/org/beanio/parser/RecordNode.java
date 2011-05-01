@@ -23,7 +23,7 @@ import java.util.*;
  * @author Kevin Seim
  * @since 1.0
  */
-class RecordNode extends Node {
+public class RecordNode extends Node {
 
     private RecordDefinition definition;
     private int recordCount;
@@ -32,8 +32,8 @@ class RecordNode extends Node {
      * Constructs a new <tt>RecordNode</tt>.
      * @param definition the record definition
      */
-    public RecordNode(RecordDefinition context) {
-        this.definition = context;
+    public RecordNode(RecordDefinition definition) {
+        this.definition = definition;
     }
 
     /**

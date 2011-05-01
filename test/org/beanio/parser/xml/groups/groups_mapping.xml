@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!-- 
+    Copyright 2011 Kevin Seim
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+       http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<beanio xmlns="http://www.beanio.org/2011/01" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.beanio.org/2011/01 http://www.beanio.org/2011/01">
+
+  <stream name="stream" format="xml" xmlName="stream">
+    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <group name="contact" order="1" minOccurs="1" maxOccurs="unbounded">
+      <record name="contactRecord" xmlName="person" class="org.beanio.parser.xml.Person" minOccurs="1" maxOccurs="1">
+        <field name="type" rid="true" xmlType="none" literal="C" default="C" />
+        <field name="firstName" xmlType="text" />
+      </record>
+      <record name="address" class="org.beanio.parser.xml.Address" minOccurs="0" maxOccurs="1">
+        <field name="state" xmlType="text" />
+      </record>      
+      <group name="parents" minOccurs="0">
+        <record name="parent" xmlName="person" class="org.beanio.parser.xml.Person" minOccurs="0" maxOccurs="2">
+          <field name="type" rid="true" xmlType="none" literal="P" default="P" />
+          <field name="firstName" xmlType="text" />
+        </record>
+      </group>
+    </group>
+    <group name="friends" order="1" minOccurs="0" maxOccurs="unbounded">
+      <record name="friend" class="org.beanio.parser.xml.Person" minOccurs="1" maxOccurs="unbounded">
+        <field name="type" rid="true" xmlType="none" literal="F" default="F" />
+        <field name="firstName" xmlType="text" />
+      </record>    
+    </group>
+  </stream>
+
+  <stream name="stream2" xmlName="stream" format="xml">
+    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <group name="contacts" order="1" minOccurs="1" maxOccurs="unbounded" xmlType="none">
+      <record name="person" class="org.beanio.parser.xml.Person" minOccurs="1" maxOccurs="1">
+        <field name="type" rid="true" xmlType="attribute" literal="C" />
+        <field name="firstName" xmlType="text" />
+      </record>
+      <record name="address" class="org.beanio.parser.xml.Address" minOccurs="1" maxOccurs="1">
+        <field name="state" xmlType="text" />
+      </record>
+    </group>
+    <group name="friends" order="1" minOccurs="0" maxOccurs="unbounded" xmlType="none">
+      <record name="person" class="org.beanio.parser.xml.Person" minOccurs="1" maxOccurs="1">
+        <field name="type" rid="true" xmlType="attribute" literal="F" />
+        <field name="firstName" xmlType="text" />
+      </record>
+    </group>
+  </stream>
+
+  <stream name="stream3" format="xml" xmlType="none">
+    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <group name="contact" order="1" minOccurs="1" maxOccurs="unbounded">
+      <record name="person" class="org.beanio.parser.xml.Person" minOccurs="1" maxOccurs="1">
+        <field name="firstName" xmlType="text" />
+        <bean name="address" class="org.beanio.parser.xml.Address">
+          <field name="state" xmlType="text" />
+        </bean>
+      </record>
+    </group>
+  </stream>
+
+</beanio>

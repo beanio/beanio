@@ -34,7 +34,7 @@
   <complexType name="Stream">
     <sequence>
       <element name="reader" minOccurs="0" maxOccurs="1" type="tns:Factory" />
-      <element name="writer" minOccurs="0" maxOccurs="1" type="tns:WriterFactory" />
+      <element name="writer" minOccurs="0" maxOccurs="1" type="tns:Factory" />
       <element name="typeHandler" minOccurs="0" maxOccurs="unbounded" type="tns:TypeHandler" />
       <choice minOccurs="1" maxOccurs="unbounded">
         <element name="record" type="tns:Record"/>
@@ -67,21 +67,6 @@
       <element name="property" minOccurs="0" maxOccurs="unbounded" type="tns:Property" />
     </sequence>
     <attribute name="class" type="xsd:string" use="optional" />
-  </complexType>
-
-  <complexType name="WriterFactory">
-    <complexContent>
-      <extension base="tns:Factory">
-        <sequence>
-          <element name="namespace" minOccurs="0" maxOccurs="unbounded" type="tns:Namespace" />
-        </sequence>
-      </extension>
-    </complexContent>
-  </complexType>
-  
-  <complexType name="Namespace">
-    <attribute name="prefix" type="xsd:string" use="required" />
-    <attribute name="uri" type="xsd:string" use="required" />
   </complexType>
 
   <complexType name="Property">

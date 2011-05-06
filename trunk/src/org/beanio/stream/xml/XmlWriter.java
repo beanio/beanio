@@ -22,6 +22,7 @@ import javax.xml.XMLConstants;
 import javax.xml.stream.*;
 
 import org.beanio.stream.RecordWriter;
+import org.beanio.util.Settings;
 import org.w3c.dom.*;
 
 /**
@@ -71,9 +72,13 @@ public class XmlWriter implements RecordWriter {
     /* String used to indent new lines of XML */
     private String indentation = "";
     
-    private transient int level = 0;
-    private transient Stack stack;
-
+    private int level = 0;
+    private Stack stack;
+    /* whether a XML header needs to be output before writing a record */
+    private boolean outputHeader = false;
+    /* the number of auto generated namespace prefixes */
+    private int namespaceCount = 0;
+    
     /**
      * Constructs a new <tt>XmlWriter</tt>.
      * @param writer the output stream to write to
@@ -126,6 +131,9 @@ public class XmlWriter implements RecordWriter {
             }
             this.indentation = b.toString();
         }
+        
+        this.outputHeader = config.isHeaderEnabled();
+        this.namespaceMap = new HashMap<String,String>(config.getNamespaceMap());
     }
     
     /*
@@ -134,6 +142,21 @@ public class XmlWriter implements RecordWriter {
      */
     public void write(Object record) throws IOException {
         try {
+            // write the XMl header if needed
+            if (outputHeader) {
+                String encoding = config.getEncoding();
+                if (encoding != null) {
+                    out.writeStartDocument(encoding, config.getVersion());
+                }
+                else {
+                    out.writeStartDocument(config.getVersion());
+                }
+                if (config.isIndentationEnabled()) {
+                    out.writeCharacters(config.getLineSeparator());
+                }
+                outputHeader = false;
+            }
+            
             // a null record indicates we need to close an element
             if (record == null) {
                 if (stack != null) {
@@ -189,9 +212,9 @@ public class XmlWriter implements RecordWriter {
                 push(namespace);
             }
             
-            if (config.isXsiDeclared()) {
-                out.writeNamespace(config.getXsiPrefix(), XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
-                stack.addNamespace(config.getXsiPrefix(), XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+            for (Map.Entry<String,String> ns : namespaceMap.entrySet()) {
+                out.writeNamespace(ns.getKey(), ns.getValue());
+                stack.addNamespace(ns.getKey(), ns.getValue());
             }
         }
         else {
@@ -199,10 +222,11 @@ public class XmlWriter implements RecordWriter {
                 newLine();
             }
             
+            empty = !element.hasChildNodes();
+            
             if (ignoreNamespace || (stack.isNamesapce(namespace)) && prefix == null) {
-                if (!element.hasChildNodes()) {
-                    empty = true;
-                    out.writeEmptyElement(name);
+                if (empty) {
+                    out.writeEmptyElement(name);   
                 }
                 else {
                     out.writeStartElement(name);
@@ -210,21 +234,32 @@ public class XmlWriter implements RecordWriter {
                 push(stack.ns);
             }
             else {
-                boolean add = false;
+                boolean addNamespace = false;
                 if (prefix == null) {
                     prefix = stack.findPrefix(namespace);
                 }
                 else {
-                    add = true;
+                    addNamespace = true;
                 }
                 
                 if (prefix == null) {
-                    out.writeStartElement(name);
+                    if (empty) {
+                        out.writeEmptyElement(name);
+                    }
+                    else {
+                        out.writeStartElement(name);
+                    }
                     out.writeNamespace("", namespace);
                     push(namespace);
                 }
                 else {
-                    out.writeStartElement(prefix, name, namespace);
+                    if (empty) {
+                        out.writeEmptyElement(prefix, name, namespace);
+                    }
+                    else {
+                        out.writeStartElement(prefix, name, namespace);
+                    }
+                    
                     // if the element uses its own prefix, push the parent namespace again
                     if ("".equals(prefix)) {
                         push(namespace);
@@ -234,7 +269,7 @@ public class XmlWriter implements RecordWriter {
                     }
                 }
                 
-                if (add) {
+                if (addNamespace) {
                     stack.addNamespace(prefix, namespace);
                 }
             }
@@ -257,9 +292,7 @@ public class XmlWriter implements RecordWriter {
                 if (attPrefix == null) {
                     attPrefix = namespaceMap.get(attNamespace);
                     if (attPrefix == null) {
-                        // TODO improve namespace generation algorithm
-                        attPrefix = "ns" + namespaceMap.size();
-                        namespaceMap.put(attNamespace, attPrefix);
+                        attPrefix = createNamespace(attNamespace);
                     }
                     out.writeAttribute(attPrefix, attNamespace, attName, att.getValue());
                 }
@@ -336,6 +369,28 @@ public class XmlWriter implements RecordWriter {
         catch (XMLStreamException e) {
             throw (IOException) new IOException(e.getMessage()).initCause(e);
         }
+    }
+    
+    /**
+     * Auto generates a prefix for a given namespace uri.
+     * @param uri the namespace uri
+     * @return the unique auto generated namespace prefix
+     */
+    private String createNamespace(String uri) {
+        String prefix;
+        if (XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI.equals(uri)) {
+            prefix = Settings.getInstance().getProperty(Settings.DEFAULT_XSI_NAMESPACE_PREFIX);
+        }
+        else {
+            prefix = "ns" + (++namespaceCount);
+        }
+        
+        while (namespaceMap.containsValue(prefix)) {
+            prefix = "ns" + (++namespaceCount);
+        } 
+        
+        namespaceMap.put(uri, prefix);
+        return prefix;
     }
     
     /**

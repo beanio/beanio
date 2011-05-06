@@ -4,10 +4,10 @@
     <lastName>Smith</lastName>
   </person>
   <person gender="F">
-    <firstName xmlns:ns0="http://www.w3.org/2001/XMLSchema-instance" ns0:nil="true"/>
+    <firstName xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
     <lastName>Smith</lastName>
   </person>
   <person gender="M">
-    <firstName xmlns:ns0="http://www.w3.org/2001/XMLSchema-instance" ns0:nil="true"/>
+    <firstName xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
   </person>
 </stream>

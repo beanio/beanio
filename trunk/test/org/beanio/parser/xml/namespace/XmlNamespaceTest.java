@@ -36,7 +36,7 @@ public class XmlNamespaceTest extends ParserTest {
 
     @Before
     public void setup() throws Exception {
-        factory = newStreamFactory("mapping.xml");
+        factory = newStreamFactory("namespace_mapping.xml");
     }
     
     /**
@@ -243,7 +243,7 @@ public class XmlNamespaceTest extends ParserTest {
     }
     
     /**
-     * Test namespace prefix set at record level.
+     * Test a namespace prefix set at the record level.
      */
     @Test
     public void testNamespacePrefixRecord() throws Exception {
@@ -262,7 +262,7 @@ public class XmlNamespaceTest extends ParserTest {
     }
     
     /**
-     * Test namespace prefix set at field level.
+     * Test a namespace prefix set at the field level.
      */
     @Test
     public void testNamespacePrefixField() throws Exception {
@@ -278,7 +278,8 @@ public class XmlNamespaceTest extends ParserTest {
     }
     
     /**
-     * Test namespace prefix set at stream level.
+     * Test a namespace prefix set at the stream level.  Also test XML header
+     * with overriden values.
      */
     @Test
     public void testNamespacePrefixStream() throws Exception {
@@ -294,7 +295,8 @@ public class XmlNamespaceTest extends ParserTest {
     }
     
     /**
-     * Test namespace prefix set at stream level.
+     * Test a namespace prefix set at the group level.  Also test XML header without
+     * encoding.
      */
     @Test
     public void testNamespacePrefixGroup() throws Exception {
@@ -307,6 +309,23 @@ public class XmlNamespaceTest extends ParserTest {
         out.flush();
         
         assertEquals(load("ns9_out.xml"), s.toString());
+    }
+    
+    /**
+     * Test namespace declarations on the root element.  Also test default XML
+     * header values.
+     */
+    @Test
+    public void testEagerNamespaceDeclaration() throws Exception {
+        StringWriter s = new StringWriter();
+        BeanWriter out = factory.createWriter("stream10", s);
+        
+        Person person = new Person();
+        person.setLastName("Smith");
+        out.write(person);
+        out.flush();
+        
+        assertEquals(load("ns10_out.xml"), s.toString());
     }
     
     public String load(String filename) throws IOException {

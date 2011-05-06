@@ -15,22 +15,28 @@
  */
 package org.beanio.stream.xml;
 
+import java.util.*;
+
 /**
+ * Stores XML writer configuration settings.
+ * <p>
+ * By default, indentation is disabled and no XML header will be written to an output stream.
  * 
  * @author Kevin Seim
  * @since 1.1
+ * @see XmlWriter
  */
 public class XmlWriterConfiguration implements Cloneable {
 
     private int indentation = -1;
     private String lineSeparator = null;
     
-    private String xsiPrefix = "xsi";
-    private boolean xsiDeclared = false;
-    
     private boolean headerEnabled = false;
     private String version = "1.0";
     private String encoding = "utf-8";
+    
+    /* Map of namespace prefixes to namespace uri's */
+    private Map<String,String> namespaceMap = new HashMap<String,String>();
     
     /**
      * Constructs a new <tt>XmlWriterConfiguration</tt>.
@@ -85,50 +91,114 @@ public class XmlWriterConfiguration implements Cloneable {
         this.lineSeparator = lineSeparator;
     }
 
-    public String getXsiPrefix() {
-        return xsiPrefix;
-    }
-
-    public void setXsiPrefix(String xsiPrefix) {
-        this.xsiPrefix = xsiPrefix;
-    }
-
-    public boolean isXsiDeclared() {
-        return xsiDeclared;
-    }
-
-    public void setXsiDeclared(boolean xsiDeclared) {
-        this.xsiDeclared = xsiDeclared;
-    }
-
+    /**
+     * Returns whether a XML header will be written to the stream.
+     * @return <tt>true</tt> if a XML header will be written to the stream
+     */
     public boolean isHeaderEnabled() {
         return headerEnabled;
     }
 
+    /**
+     * Sets whether a XML header will be written to the stream.
+     * @param headerEnabled <tt>true</tt> to write a XML header to the stream
+     */
     public void setHeaderEnabled(boolean headerEnabled) {
         this.headerEnabled = headerEnabled;
     }
 
+    /**
+     * Returns the XML version to include in the document header.
+     * @return the XML version
+     */
     public String getVersion() {
         return version;
     }
 
+    /**
+     * Sets the XML version to include in the document header.  Defaults to <tt>1.0</tt>.
+     * May not be set to <tt>null</tt>.
+     * @param version the XML version
+     */
     public void setVersion(String version) {
+        if (version == null) {
+            throw new IllegalArgumentException("null version");
+        }
         this.version = version;
     }
 
+    /**
+     * Returns the XML character encoding to include in the document header.
+     * @return the XML character encoding
+     */
     public String getEncoding() {
         return encoding;
     }
 
+    /**
+     * Sets the XML character encoding to include in the document header.  Defaults
+     * to '<tt>utf-8</tt>'.  If set to <tt>null</tt> the document header will not
+     * include the encoding setting. 
+     * @param encoding the XML character encoding
+     */
     public void setEncoding(String encoding) {
         this.encoding = encoding;
+    }
+    
+    /**
+     * Adds a namespace to be set on the root element.
+     * @param prefix the namespace prefix
+     * @param uri the namespace URI
+     */
+    public void addNamespace(String prefix, String uri) {
+        if (prefix == null) {
+            throw new IllegalArgumentException("null prefix");
+        }
+        if (uri == null) {
+            throw new IllegalArgumentException("null uri");
+        }
+        namespaceMap.put(uri, prefix);
+    }
+    
+    /**
+     * Sets the list of namespaces to be set on the root element.  The list should be formatted
+     * as a space delimited list of alternating prefixes and uri's.  For example,
+     * <pre>
+     * setNamespaces("xsd http://www.w3.org/2001/XMLSchema b http://www.beanio.org/2011/01");
+     * </pre>
+     * @param list the space delimited list of namespaces
+     */
+    public void setNamespaces(String list) {
+        namespaceMap.clear();
+        
+        if (list == null) {
+            return;
+        }
+
+        String [] s = list.trim().split("\\s+");
+        if (s.length % 2 != 0) {
+            throw new IllegalArgumentException(
+                "Invalid namespaces setting.  Must follow 'prefix uri prefix uri' pattern.");
+        }
+        
+        for (int i=0; i<s.length; i+=2) {
+            addNamespace(s[i+1], s[i]);
+        }
+    }
+    
+    /**
+     * Returns a map of namespace URI's to prefixes to be set on the root element.
+     * @return the map of namespace prefixes to URI's
+     */
+    public Map<String,String> getNamespaceMap() {
+        return namespaceMap;
     }
     
     @Override
     protected XmlWriterConfiguration clone() {
         try {
-            return (XmlWriterConfiguration) super.clone();
+            XmlWriterConfiguration config = (XmlWriterConfiguration) super.clone();
+            return config;
         }
         catch (CloneNotSupportedException ex) {
             throw new IllegalStateException();

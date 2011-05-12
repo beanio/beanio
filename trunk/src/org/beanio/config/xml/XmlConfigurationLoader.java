@@ -35,7 +35,7 @@ import org.xml.sax.*;
 public class XmlConfigurationLoader implements ConfigurationLoader {
 
     private static final String BEANIO_XMLNS = "http://www.beanio.org/2011/01";
-    private static final String BEANIO_XSD = "beanio-201101.xsd";
+    private static final String BEANIO_XSD = "/org/beanio/xsd/2011/01/mapping.xsd";
 
     private static final EntityResolver defaultEntityResolver = new DefaultEntityResolver();
 
@@ -413,7 +413,8 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
     private static class DefaultEntityResolver implements EntityResolver {
         public InputSource resolveEntity(String publicId, String systemId) throws SAXException,
             IOException {
-            if (BEANIO_XMLNS.equals(systemId)) {
+            if (publicId == null && (BEANIO_XMLNS.equals(systemId) ||
+                (BEANIO_XMLNS + "/mapping.xsd").equals(systemId))) {
                 return new InputSource(XmlConfigurationLoader.class.getResourceAsStream(BEANIO_XSD));
             }
             else {

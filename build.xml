@@ -114,8 +114,8 @@
       <tarfileset dir="${target}">
         <include name="docs/**" />
       </tarfileset>         
-      <tarfileset dir="${basedir}/src/org/beanio/config/xml" prefix="2011/01">
-        <include name="beanio-201101.xsd" />
+      <tarfileset dir="${basedir}/src/org/beanio/xsd">
+        <include name="**/*" />
       </tarfileset>
     </tar>
   </target>
@@ -251,6 +251,7 @@
       <arg value="-Durl=${maven.repository.url}" />
       <arg value="-DrepositoryId=${maven.repository.id}" />
       <arg value="-DpomFile=pom.xml" />
+      <arg value="-Dversion=${version}" />
       <arg value="-Dfile=${maven.jar}" />
 	  <arg value="-Pgpg" />
     </artifact:mvn>
@@ -260,6 +261,7 @@
       <arg value="-Durl=${maven.repository.url}" />
       <arg value="-DrepositoryId=${maven.repository.id}" />
       <arg value="-DpomFile=pom.xml" />
+      <arg value="-Dversion=${version}" />
       <arg value="-Dfile=${maven.sources.jar}" />
       <arg value="-Dclassifier=sources" />
 	  <arg value="-Pgpg" />
@@ -270,6 +272,7 @@
       <arg value="-Durl=${maven.repository.url}" />
       <arg value="-DrepositoryId=${maven.repository.id}" />
       <arg value="-DpomFile=pom.xml" />
+      <arg value="-Dversion=${version}" />
       <arg value="-Dfile=${maven.javadoc.jar}" />
       <arg value="-Dclassifier=javadoc" />
 	  <arg value="-Pgpg" />

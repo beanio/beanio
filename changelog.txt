@@ -1,6 +1,13 @@
 Project BeanIO Change Log
 =========================
 
+Changes in version 1.0.2 (TBD)
+-------------------------------------
+* gc0008 - Fixed XmlConfigurationLoader to correctly validate the writer class type
+* gc0009 - Fixed build.xml to tar the site to deploy the mapping XSD to http://www.beanio.org/2011/01/mapping.xsd
+* Improved mapping XSD with documentation annotations and moved it to src/org/beanio/xsd/2010/01/mapping.xsd
+* Modified build.xml and pom.xml to dynamically populate the version in the POM
+
 Changes in version 1.0.1 (2011-04-18)
 -------------------------------------
 * Modified build script to deploy to a Maven repository 

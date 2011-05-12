@@ -105,7 +105,7 @@ public abstract class StreamDefinitionFactory {
             }
             else {
                 Object object = BeanUtil.createBean(writerFactoryBean.getClassName());
-                if (!RecordReaderFactory.class.isAssignableFrom(object.getClass())) {
+                if (!RecordWriterFactory.class.isAssignableFrom(object.getClass())) {
                     throw new BeanIOConfigurationException("Configured writer factory class '" +
                         writerFactoryBean.getClassName() + "' does not implement RecordWriterFactory");
                 }

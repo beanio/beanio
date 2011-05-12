@@ -16,7 +16,7 @@
 -->
 <beanio xmlns="http://www.beanio.org/2011/01" 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.beanio.org/2011/01 http://www.beanio.org/2011/01">
+  xsi:schemaLocation="http://www.beanio.org/2011/01 http://www.beanio.org/2011/01/mapping.xsd">
 
   <stream name="g1" format="csv">
     <record name="h" order="1" minOccurs="1" maxOccurs="1">

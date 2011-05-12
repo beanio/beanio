@@ -16,7 +16,7 @@
 -->
 <beanio xmlns="http://www.beanio.org/2011/01" 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.beanio.org/2011/01 ../../../../../../src/org/beanio/config/xml/beanio-201101.xsd">
+  xsi:schemaLocation="http://www.beanio.org/2011/01 http://www.beanio.org/2011/01/mapping.xsd">
 
   <stream name="stream" format="xml" xmlName="stream">
     <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />

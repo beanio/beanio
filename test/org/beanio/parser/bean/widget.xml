@@ -16,7 +16,7 @@
 -->
 <beanio xmlns="http://www.beanio.org/2011/01" 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.beanio.org/2011/01 http://www.beanio.org/2011/01">
+  xsi:schemaLocation="http://www.beanio.org/2011/01 http://www.beanio.org/2011/01/mapping.xsd">
 
   <stream name="w1" format="csv">
     <record name="record1" class="org.beanio.parser.bean.Widget">

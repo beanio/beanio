@@ -43,6 +43,7 @@ public abstract class AbstractXmlDateTypeHandler extends DateTypeHandler {
     
     private TimeZone timeZone = null;
     private boolean timeZoneAllowed = true;
+    private boolean lenientDatatype = false;
     
     /**
      * Constructs a new <tt>AbstractXmlDateTypeHandler</tt>.
@@ -63,19 +64,21 @@ public abstract class AbstractXmlDateTypeHandler extends DateTypeHandler {
         
         try {
             XMLGregorianCalendar xcal = dataTypeFactory.newXMLGregorianCalendar(text);
-            if (!xcal.getXMLSchemaType().equals(type)) {
+            if (!lenientDatatype && type != null && !xcal.getXMLSchemaType().equals(type)) {
                 throw new TypeConversionException("Invalid XML " + type.getLocalPart());
             }
             
-            if (!isTimeZoneAllowed() && xcal.getTimezone() !=  DatatypeConstants.FIELD_UNDEFINED) {
-                throw new TypeConversionException("Invalid XML " + type.getLocalPart() + 
+            if (!isTimeZoneAllowed() && xcal.getTimezone() != DatatypeConstants.FIELD_UNDEFINED) {
+                String typeName = type == null ? "dateTime" : type.getLocalPart();
+                throw new TypeConversionException("Invalid XML " + typeName + 
                     ", time zone not allowed");
             }
             
             return xcal.toGregorianCalendar().getTime();
         }
         catch (IllegalArgumentException ex) {
-            throw new TypeConversionException("Invalid XML " + type.getLocalPart());
+            String typeName = type == null ? "dateTime" : type.getLocalPart();
+            throw new TypeConversionException("Invalid XML " + typeName);
         }
     }
 
@@ -87,8 +90,8 @@ public abstract class AbstractXmlDateTypeHandler extends DateTypeHandler {
     public abstract String format(Object value);
 
     /**
-     * Returns the expected XML Schema datatype when <tt>parse</tt> is called.
-     * @return the expected XML schema datatype <tt>QName</tt>
+     * Returns the expected XML Schema data type when <tt>parse</tt> is called.
+     * @return the expected XML schema data type <tt>QName</tt>
      */
     protected abstract QName getDatatypeQName();
     
@@ -140,11 +143,44 @@ public abstract class AbstractXmlDateTypeHandler extends DateTypeHandler {
         return timeZone == null ? null : timeZone.getID();
     }
 
+    /**
+     * Returns whether time zone information is allowed when parsing field text.  Defaults
+     * to <tt>true</tt>.
+     * @return <tt>true</tt> if time zone information is allowed when parsing field text
+     */
     public boolean isTimeZoneAllowed() {
         return timeZoneAllowed;
     }
 
+    /**
+     * Sets whether time zone information is allowed when parsing field text.  Defaults
+     * to <tt>true</tt>.
+     * @param timeZoneAllowed <tt>true</tt> if time zone information is allowed when
+     *   parsing field text
+     */
     public void setTimeZoneAllowed(boolean timeZoneAllowed) {
         this.timeZoneAllowed = timeZoneAllowed;
+    }
+
+    /**
+     * Returns whether data type validation is skipped when parsing field text.  Set to
+     * <tt>false</tt> by default, a <tt>TypeConversionException</tt> is thrown when a
+     * XML dateTime type handler is used to parse a XML date or XML time, or a XML date
+     * handler is used to parse a XML dateTime field, etc.
+     * @return <tt>true</tt> if data type validation is skipped
+     */
+    public boolean isLenientDatatype() {
+        return lenientDatatype;
+    }
+
+    /**
+     * Sets whether data type validation is skipped when parsing field text.  Set to
+     * <tt>false</tt> by default, a <tt>TypeConversionException</tt> is thrown when a
+     * XML dateTime type handler is used to parse a XML date or XML time, or a XML date
+     * handler is used to parse a XML dateTime field, etc.
+     * @param lenientDatatype <tt>true</tt> if data type validation is skipped
+     */
+    public void setLenientDatatype(boolean lenientDatatype) {
+        this.lenientDatatype = lenientDatatype;
     }
 }

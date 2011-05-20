@@ -6,7 +6,7 @@
   elementFormDefault="qualified" 
   targetNamespace="http://www.beanio.org/2011/01"
   xml:lang="en"
-  version="1.5">
+  version="2.0">
 
   <annotation>
     <documentation>
@@ -140,10 +140,37 @@
         </documentation>
       </annotation>
     </attribute>
-    <attribute name="xmlType" type="xsd:string" use="optional" />
-    <attribute name="xmlName" type="xsd:string" use="optional" />
-    <attribute name="xmlNamespace" type="xsd:string" use="optional" />
-    <attribute name="xmlPrefix" type="xsd:string" use="optional" />
+    <attribute name="xmlType" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The XML node type.  Defaults to 'element'.  Set to 'none' if a record
+          definition defines the root element.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="xmlName" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The XML root element name.  Defaults to the stream name.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="xmlNamespace" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The XML namespace for this element.  A value of '*' (default) indicates any namespace
+          is matched when unmarshalling XML and no namespace is declared when marshalling XML.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="xmlPrefix" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The XML namespace prefix to use when marshalling XML.  By default,
+          or when set to '', the default namespace is overridden for an element.
+        </documentation>
+      </annotation>
+    </attribute>
    </complexType>
 
   <complexType name="TypeHandler">
@@ -241,9 +268,30 @@
         </documentation>
       </annotation>
     </attribute>
-    <attribute name="xmlName" type="xsd:string" use="optional" />
-    <attribute name="xmlNamespace" type="xsd:string" use="optional" />
-    <attribute name="xmlPrefix" type="xsd:string" use="optional" />
+    <attribute name="xmlName" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The XML element name.  Defaults to the record or group name.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="xmlNamespace" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The XML namespace of this element.  A value of '*' indicates any namespace
+          is matched when unmarshalling XML and no namespace is declared when marshalling XML.
+          By default, xmlNamespace is inherited from its parent stream or group.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="xmlPrefix" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The XML namespace prefix to use when marshalling XML.  By default,
+          or when set to '', the default namespace is overridden for an element.
+        </documentation>
+      </annotation>
+    </attribute>
   </attributeGroup>
   
   <complexType name="Record">
@@ -325,7 +373,13 @@
         </documentation>
       </annotation>
     </attribute>
-    <attribute name="xmlType" type="xsd:string" use="optional" />
+    <attribute name="xmlType" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The XML node type.  May be set to 'element' (default) or 'none'.
+        </documentation>
+      </annotation>    
+    </attribute>
     <attributeGroup ref="tns:NodeAttributes" />
   </complexType>
   
@@ -483,7 +537,8 @@
       <annotation>
         <documentation>
           The minimum number of times this field repeats in its parent record.
-          Defaults to 1.
+          Defaults to 1.  XML formatted streams may set minOccurs to 0 to indicate
+          the element or attribute is optional when marshalling null field values.
         </documentation>
       </annotation>
     </attribute>
@@ -495,11 +550,45 @@
         </documentation>
       </annotation>
     </attribute>
-    <attribute name="xmlType" type="xsd:string" use="optional" />
-    <attribute name="xmlName" type="xsd:string" use="optional" />
-    <attribute name="xmlNamespace" type="xsd:string" use="optional" />
-    <attribute name="xmlPrefix" type="xsd:string" use="optional" />
-    <attribute name="nillable" type="xsd:boolean" use="optional" />
+    <attribute name="xmlType" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The XML node type.  May be set to 'element', 'attribute', 'text' or 'none'.
+        </documentation>
+      </annotation>    
+    </attribute>
+    <attribute name="xmlName" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The XML element or attribute name.  By default, the field name is used.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="xmlNamespace" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The XML namespace of this element or attribute.  A value of '*' indicates any namespace
+          is matched when unmarshalling XML and no namespace is declared when marshalling XML.
+          By default, xmlNamespace is inherited from its parent record or bean.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="xmlPrefix" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The XML namespace prefix to use when marshalling XML.  By default,
+          or when set to '', the default namespace is overridden for an element.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="nillable" type="xsd:boolean" use="optional">
+      <annotation>
+        <documentation>
+          Set to true if this element is nillable.  If 'true', null field values
+          are marshalled as nil.
+        </documentation>
+      </annotation>
+    </attribute>
   </complexType>  
 
   <complexType name="Bean">    
@@ -575,11 +664,45 @@
         </documentation>
       </annotation>
     </attribute>
-    <attribute name="xmlType" type="xsd:string" use="optional" />
-    <attribute name="xmlName" type="xsd:string" use="optional" />
-    <attribute name="xmlNamespace" type="xsd:string" use="optional" />
-    <attribute name="xmlPrefix" type="xsd:string" use="optional" />
-    <attribute name="nillable" type="xsd:boolean" use="optional" />
+    <attribute name="xmlType" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The XML node type.  May be set to 'element' (default) or 'none'.
+        </documentation>
+      </annotation>    
+    </attribute>
+    <attribute name="xmlName" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The XML element name.  By default, the bean name is used.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="xmlNamespace" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The XML namespace of this element.  A value of '*' indicates any namespace
+          is matched when unmarshalling XML and no namespace is declared when marshalling XML.
+          By default, xmlNamespace is inherited from its parent record or bean.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="xmlPrefix" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The XML namespace prefix to use when marshalling XML.  By default,
+          or when set to '', the default namespace is overridden for an element.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="nillable" type="xsd:boolean" use="optional">
+      <annotation>
+        <documentation>
+          Set to true if this element is nillable.  If 'true', null bean values
+          are marshalled as nil.
+        </documentation>
+      </annotation>
+    </attribute>
   </complexType>
   
   <simpleType name="justification">

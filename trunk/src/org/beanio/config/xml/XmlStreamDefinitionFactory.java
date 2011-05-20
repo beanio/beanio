@@ -40,6 +40,7 @@ public class XmlStreamDefinitionFactory extends StreamDefinitionFactory {
         defaultTypeHandlerFactory.registerHandlerFor(TypeUtil.DATE_ALIAS, new XmlDateTypeHandler());
         defaultTypeHandlerFactory.registerHandlerFor(TypeUtil.DATETIME_ALIAS, new XmlDateTimeTypeHandler());
         defaultTypeHandlerFactory.registerHandlerFor(TypeUtil.TIME_ALIAS, new XmlTimeTypeHandler());
+        defaultTypeHandlerFactory.registerHandlerFor(Boolean.class, new XmlBooleanTypeHandler());
     }
     
     @Override

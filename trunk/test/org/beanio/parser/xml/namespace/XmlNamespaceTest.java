@@ -20,9 +20,7 @@ import static org.junit.Assert.*;
 import java.io.*;
 
 import org.beanio.*;
-import org.beanio.parser.ParserTest;
-import org.beanio.parser.xml.Person;
-import org.beanio.util.IOUtil;
+import org.beanio.parser.xml.*;
 import org.junit.*;
 
 /**
@@ -30,7 +28,7 @@ import org.junit.*;
  * @author Kevin Seim
  * @since 1.1
  */
-public class XmlNamespaceTest extends ParserTest {
+public class XmlNamespaceTest extends XmlParserTest {
 
     private StreamFactory factory;
 
@@ -325,23 +323,6 @@ public class XmlNamespaceTest extends ParserTest {
         out.write(person);
         out.flush();
         
-        assertEquals(load("ns10_out.xml"), s.toString());
+        assertXmlEquals(load("ns10_out.xml"), s.toString());
     }
-    
-    public String load(String filename) throws IOException {
-        Reader in = new InputStreamReader(getClass().getResourceAsStream(filename));
-        StringBuilder s = new StringBuilder();
-        try {
-            int n = -1;
-            char [] c = new char[1024];
-            while ((n = in.read(c)) != -1) {
-                s.append(c, 0, n);
-            }
-            return s.toString();
-        }
-        finally {
-            IOUtil.closeQuietly(in);
-        }
-    }
-
 }

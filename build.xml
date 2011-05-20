@@ -148,13 +148,14 @@
 
   <!-- Run JUnit without capturing coverage -->
   <target name="test-junit" depends="test-init" unless="flag.emma">
-    <junit printsummary="true" fork="true" haltonfailure="true">
+    <junit printsummary="true" fork="true" forkmode="once" haltonfailure="true">
       <formatter type="plain" />
       <classpath refid="classpath.test" />
       <batchtest fork="true" todir="${junit.report.dir}">
         <fileset dir="test">
           <include name="**/*Test.java" />
-          <exclude name="**/ParserTest.java" />
+          <exclude name="org/beanio/parser/ParserTest.java" />
+          <exclude name="org/beanio/parser/xml/XmlParserTest.java" />
         </fileset>
       </batchtest>
     </junit>
@@ -187,7 +188,7 @@
     </path>
 
     <!-- Run the JUnit test cases -->
-    <junit printsummary="true" fork="true" haltonfailure="true">
+    <junit printsummary="true" fork="true" forkmode="once" haltonfailure="true">
       <formatter type="plain" />
       <classpath refid="classpath.test.emma" />
       <jvmarg value="-Demma.coverage.out.file=${target}/report/emma/coverage.emma" />
@@ -195,7 +196,8 @@
       <batchtest fork="true" todir="${junit.report.dir}">
         <fileset dir="test">
           <include name="**/*Test.java" />
-          <exclude name="**/ParserTest.java" />
+          <exclude name="org/beanio/parser/ParserTest.java" />
+          <exclude name="org/beanio/parser/xml/XmlParserTest.java" />
         </fileset>
       </batchtest>
     </junit>

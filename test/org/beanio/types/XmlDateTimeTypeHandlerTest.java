@@ -15,7 +15,7 @@
  */
 package org.beanio.types;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.*;
 
@@ -81,5 +81,25 @@ public class XmlDateTimeTypeHandlerTest {
         XmlDateTimeTypeHandler handler = new XmlDateTimeTypeHandler();
         handler.setTimeZoneAllowed(false);
         handler.parse("2000-01-31T08:04:03.1234+01:00");
+    }
+    
+    @Test
+    public void testDatatypeLenient() throws TypeConversionException {
+        XmlDateTimeTypeHandler handler = new XmlDateTimeTypeHandler();
+        handler.setLenientDatatype(true);
+        assertTrue(handler.isLenientDatatype());
+        
+        Date date = handler.parse("15:14:13");
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        assertEquals(1970, cal.get(Calendar.YEAR));
+        assertEquals(0, cal.get(Calendar.MONTH));
+        assertEquals(1, cal.get(Calendar.DATE));
+        assertEquals(15, cal.get(Calendar.HOUR_OF_DAY));
+        assertEquals(14, cal.get(Calendar.MINUTE));
+        assertEquals(13, cal.get(Calendar.SECOND));
+        assertEquals(0, cal.get(Calendar.MILLISECOND));
+        
+        assertEquals("1970-01-01T15:14:13", handler.format(date));
     }
 }

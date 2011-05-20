@@ -15,10 +15,15 @@
  */
 package org.beanio.parser.xml;
 
+import static org.junit.Assert.*;
 import java.io.*;
+
+import javax.xml.parsers.*;
 
 import org.beanio.parser.ParserTest;
 import org.beanio.util.IOUtil;
+import org.w3c.dom.*;
+import org.xml.sax.*;
 
 /**
  * Base class for XML parser JUnit test cases.
@@ -47,6 +52,33 @@ public class XmlParserTest extends ParserTest {
         }
         finally {
             IOUtil.closeQuietly(in);
+        }
+    }
+    
+    /**
+     * Compares expected and actual XML documents using the documnet object model's
+     * <tt>node.isEqualNode()</tt> method.
+     * @param expected the expected XML document
+     * @param actual the actual XML document
+     * @throws IOException
+     * @throws SAXException
+     * @throws ParserConfigurationException
+     * @see {@link Node#isEqualNode(Node)}
+     */
+    public void assertXmlEquals(String expected, String actual) throws IOException, 
+        SAXException, ParserConfigurationException {
+        
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        factory.setCoalescing(true);
+        
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document d1 = builder.parse(new InputSource(new StringReader(expected)));
+
+        Document d2 = builder.parse(new InputSource(new StringReader(actual)));
+        
+        if (!d1.isEqualNode(d2)) {
+            assertEquals(expected, actual);
         }
     }
 }

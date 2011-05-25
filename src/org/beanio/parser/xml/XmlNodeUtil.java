@@ -46,6 +46,15 @@ public class XmlNodeUtil {
      *   found on the element
      */
     public static String getAttribute(Element element, XmlDefinition definition) {
+        XmlDefinition wrapper = definition.getWrapper();
+        if (wrapper != null) {
+            Node node = findChild(element, wrapper, 0);
+            if (node == null || node.getNodeType() != Node.ELEMENT_NODE) {
+                return null;
+            }
+            element = (Element) node;
+        }
+        
         if (definition.isNamespaceAware()) {
             if (element.hasAttributeNS(definition.getNamespace(), definition.getName())) {
                 return element.getAttributeNS(definition.getNamespace(), definition.getName());
@@ -57,6 +66,23 @@ public class XmlNodeUtil {
             }
         }
         return null;
+    }
+    
+    /**
+     * Returns the child text from a DOM node after adjusting for any node wrapping.
+     * @param node the node to parse
+     * @param definition the definition of the text node
+     * @return the node text, or <tt>null</tt> if the node did not contain any text
+     */
+    public static String getText(Node node, XmlDefinition definition) {
+        XmlDefinition wrapper = definition.getWrapper();
+        if (wrapper != null) {
+            node = findChild(node, wrapper, 0);
+            if (node == null) {
+                return null;
+            }
+        }
+        return getText(node);
     }
     
     /**
@@ -126,7 +152,13 @@ public class XmlNodeUtil {
      */
     public static Element findChild(Node parent, XmlDefinition definition, int offset) {
         
-        Node node = parent.getFirstChild();
+        Node node = parent;
+        if (definition.getWrapper() != null) {
+            node = findChild(parent, definition.getWrapper(), 0);
+        }
+        if (node != null) {
+            node = node.getFirstChild();
+        }
         if (node == null) {
             return null;
         }

@@ -326,6 +326,7 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
         config.setXmlPrefix(getOptionalAttribute(element, "xmlPrefix"));
         config.setXmlType(getOptionalAttribute(element, "xmlType"));
         config.setNillable(getBooleanAttribute(element, "nillable", config.isNillable()));
+        config.setXmlWrapper(getOptionalAttribute(element, "xmlWrapper"));
         
         NodeList children = element.getChildNodes();
         for (int i = 0, j = children.getLength(); i < j; i++) {
@@ -376,6 +377,7 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
         config.setXmlNamespace(getOptionalAttribute(element, "xmlNamespace"));
         config.setXmlPrefix(getOptionalAttribute(element, "xmlPrefix"));
         config.setNillable(getBooleanAttribute(element, "nillable", config.isNillable()));
+        config.setXmlWrapper(getOptionalAttribute(element, "xmlWrapper"));
         return config;
     }
 

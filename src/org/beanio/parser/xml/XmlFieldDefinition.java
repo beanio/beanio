@@ -78,7 +78,7 @@ public class XmlFieldDefinition extends FieldDefinition implements XmlNode {
             fieldText = XmlNodeUtil.getText(node);
         }
         else if (xml.getType() == XmlDefinition.XML_TYPE_TEXT) {
-            fieldText = XmlNodeUtil.getText(parent);
+            fieldText = XmlNodeUtil.getText(parent, xml);
         }
         
         return isMatch(fieldText);
@@ -126,7 +126,7 @@ public class XmlFieldDefinition extends FieldDefinition implements XmlNode {
                 if (node == null) {
                     return null;
                 }
-                
+
                 rec.setPreviousElement(node);
             }
             else {
@@ -147,7 +147,7 @@ public class XmlFieldDefinition extends FieldDefinition implements XmlNode {
             return fieldText;
         }
         else if (xml.getType() == XmlDefinition.XML_TYPE_TEXT) {
-            return XmlNodeUtil.getText(parent);
+            return XmlNodeUtil.getText(parent, xml);
         }
         else {
             return null;

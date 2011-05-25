@@ -264,6 +264,18 @@ public class XmlStreamDefinitionFactory extends StreamDefinitionFactory {
                 xmlPrefix = null;
             }
             xml.setPrefix(xmlPrefix);
+            
+            String wrapperName = propertyConfig.getXmlWrapper();
+            if (wrapperName != null) {
+                XmlDefinition wrapper = new XmlDefinition();
+                wrapper.setName(wrapperName);
+                wrapper.setType(XmlDefinition.XML_TYPE_ELEMENT);
+                wrapper.setNamespace(xml.getNamespace());
+                wrapper.setPrefix(xml.getPrefix());
+                wrapper.setNillable(xml.isNillable());
+                wrapper.setNamespaceAware(xml.isNamespaceAware());
+                xml.setWrapper(wrapper);
+            }
         }
         
         return xmlNamespaceSet;

@@ -42,7 +42,8 @@ public class XmlDefinition {
     private String prefix;
     private boolean namespaceAware;
     private boolean nillable;
-   
+    private XmlDefinition wrapper;
+    
     /**
      * Constructs a new <tt>XmlDefinition</tt>.
      */
@@ -183,6 +184,30 @@ public class XmlDefinition {
         return type == XmlDefinition.XML_TYPE_ATTRIBUTE;
     }
     
+    /**
+     * Returns the XML element for wrapping this XML node.
+     * @return the XML wrapper element
+     */
+    public XmlDefinition getWrapper() {
+        return wrapper;
+    }
+
+    /**
+     * Sets the XML element for wrapping this XML node.
+     * @param wrapper the XML wrapper element
+     */
+    public void setWrapper(XmlDefinition wrapper) {
+        this.wrapper = wrapper;
+    }
+    
+    /**
+     * Returns whether this XML node is wrapped by another element.
+     * @return <tt>true</tt> if this XML node is wrapped by another element
+     */
+    public boolean isWrapped() {
+        return wrapper != null;
+    }
+
     @Override
     public String toString() { 
         return getClass().getSimpleName() +
@@ -192,6 +217,7 @@ public class XmlDefinition {
             ", namespace=" + namespace +
             ", namespaceAware=" + namespaceAware +
             ", nillable=" + nillable +
+            ", wrapper=" + wrapper +
             "}";
     }
 }

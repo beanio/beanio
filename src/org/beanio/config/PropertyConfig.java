@@ -43,6 +43,7 @@ public abstract class PropertyConfig {
     private String xmlNamespace;
     private String xmlPrefix;
     private boolean nillable;
+    private String xmlWrapper;
     
     /**
      * Returns whether this property defines a bean class with its own list
@@ -301,5 +302,25 @@ public abstract class PropertyConfig {
      */
     public void setNillable(boolean nillable) {
         this.nillable = nillable;
+    }
+
+    /**
+     * Returns the name of a XML wrapper element for this property.
+     * @return the XML wrapper element name or <tt>null</tt> if this property
+     *   is not wrapped by another element
+     * @since 1.1
+     */
+    public String getXmlWrapper() {
+        return xmlWrapper;
+    }
+
+    /**
+     * Sets the name of a XML wrapper element for this property.
+     * @param xmlWrapper the XML wrapper element name or <tt>null</tt> if 
+     *   this property is not wrapped by another element
+     * @since 1.1
+     */
+    public void setXmlWrapper(String xmlWrapper) {
+        this.xmlWrapper = xmlWrapper;
     }
 }

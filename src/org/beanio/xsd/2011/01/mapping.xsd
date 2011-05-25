@@ -589,6 +589,13 @@
         </documentation>
       </annotation>
     </attribute>
+    <attribute name="xmlWrapper" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The XML element name that wraps this field or collection of fields.
+        </documentation>
+      </annotation>
+    </attribute>
   </complexType>  
 
   <complexType name="Bean">    
@@ -700,6 +707,13 @@
         <documentation>
           Set to true if this element is nillable.  If 'true', null bean values
           are marshalled as nil.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="xmlWrapper" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The XML element name that wraps this bean or collection of beans.
         </documentation>
       </annotation>
     </attribute>

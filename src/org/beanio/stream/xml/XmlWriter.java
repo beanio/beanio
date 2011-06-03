@@ -145,7 +145,7 @@ public class XmlWriter implements RecordWriter {
             // write the XMl header if needed
             if (outputHeader) {
                 String encoding = config.getEncoding();
-                if (encoding != null) {
+                if (encoding != null && !"".equals(encoding)) {
                     out.writeStartDocument(encoding, config.getVersion());
                 }
                 else {

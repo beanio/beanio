@@ -137,8 +137,8 @@ public class XmlWriterConfiguration implements Cloneable {
 
     /**
      * Sets the XML character encoding to include in the document header.  Defaults
-     * to '<tt>utf-8</tt>'.  If set to <tt>null</tt> the document header will not
-     * include the encoding setting. 
+     * to '<tt>utf-8</tt>'.  If set to <tt>null</tt> or empty string the document 
+     * header will not include the encoding setting. 
      * @param encoding the XML character encoding
      */
     public void setEncoding(String encoding) {

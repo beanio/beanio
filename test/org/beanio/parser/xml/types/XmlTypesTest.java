@@ -66,7 +66,7 @@ public class XmlTypesTest extends XmlParserTest {
             person.setGender("M");
             out.write(person);
             
-            out.flush();
+            out.close();
             assertEquals(load("t1_out.xml"), s.toString());
         }
         finally {
@@ -98,7 +98,14 @@ public class XmlTypesTest extends XmlParserTest {
             assertEquals("F", person.getGender());            
             out.write(person);
             
-            out.flush();
+            person = (Person) in.read();
+            assertNull(person.getFirstName());
+            assertEquals("", person.getLastName());
+            assertNull(person.getGender());          
+            person.setLastName(null);
+            out.write(person);
+            
+            out.close();
             
             assertEquals(load("t2_out.xml"), s.toString());
         }
@@ -128,7 +135,7 @@ public class XmlTypesTest extends XmlParserTest {
             assertEquals("F", person.getGender());            
             out.write(person);
             
-            out.flush();
+            out.close();
             
             assertEquals(load("t3_out.xml"), s.toString());
         }
@@ -164,7 +171,7 @@ public class XmlTypesTest extends XmlParserTest {
             }
             out.write(person);
             
-            out.flush();
+            out.close();
             
             assertEquals(load("t3_out.xml"), s.toString());
         }
@@ -228,7 +235,7 @@ public class XmlTypesTest extends XmlParserTest {
             }
             out.write(person);
             
-            out.flush();
+            out.close();
             
             assertEquals(load("t6_in.xml"), s.toString());
         }

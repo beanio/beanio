@@ -29,6 +29,26 @@ public class XmlNodeUtil {
     private XmlNodeUtil() { }
     
     /**
+     * Unwraps an XML element when a wrapper is configured for the given XML definition.
+     * Otherwise, just returns <tt>parent</tt>.
+     * @param parent the parent XML element to unwrap
+     * @param definition the definition of the XML node 
+     * @return the wrapper child element if found, or <tt>null</tt> if not, or the parent
+     *   if the XML node is not wrapped
+     */
+    public static Element unwrap(Element parent, XmlDefinition definition) {
+        XmlDefinition wrapper = definition.getWrapper();
+        if (wrapper != null) {
+            Node node = findChild(parent, wrapper, 0);
+            if (node == null || node.getNodeType() != Node.ELEMENT_NODE) {
+                return null;
+            }
+            return (Element) node;
+        }
+        return parent;
+    }
+    
+    /**
      * Tests if an element is nil.
      * @param element the element to test
      * @return <tt>true</tt> if the element is nil
@@ -46,13 +66,9 @@ public class XmlNodeUtil {
      *   found on the element
      */
     public static String getAttribute(Element element, XmlDefinition definition) {
-        XmlDefinition wrapper = definition.getWrapper();
-        if (wrapper != null) {
-            Node node = findChild(element, wrapper, 0);
-            if (node == null || node.getNodeType() != Node.ELEMENT_NODE) {
-                return null;
-            }
-            element = (Element) node;
+        element = unwrap(element, definition);
+        if (element == null) {
+            return null;
         }
         
         if (definition.isNamespaceAware()) {
@@ -75,14 +91,14 @@ public class XmlNodeUtil {
      * @return the node text, or <tt>null</tt> if the node did not contain any text
      */
     public static String getText(Node node, XmlDefinition definition) {
-        XmlDefinition wrapper = definition.getWrapper();
-        if (wrapper != null) {
-            node = findChild(node, wrapper, 0);
-            if (node == null) {
-                return null;
-            }
+        if (node.getNodeType() != Node.ELEMENT_NODE) {
+            return null;
         }
-        return getText(node);
+        Node parent = unwrap((Element)node, definition);
+        if (parent == null) {
+            return null;
+        }
+        return getText(parent);
     }
     
     /**

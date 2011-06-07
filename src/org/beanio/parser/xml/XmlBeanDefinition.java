@@ -64,10 +64,13 @@ public class XmlBeanDefinition extends BeanDefinition implements XmlNode {
                 // the stream node is not matched
                 return false;
             }
+            else if (isRecordIdentifer()) {
+                // if a child element is used to identify the record and the parent
+                // element does not exist, then the node is not matched 
+                return false;
+            }
             else {
-                // if a child element is not found and it is not required,
-                // the stream node is matched
-                return getMinOccurs() == 0;
+                return true;
             }
         }
         
@@ -109,6 +112,18 @@ public class XmlBeanDefinition extends BeanDefinition implements XmlNode {
                     element = XmlNodeUtil.findSibling(domRecord.getPreviousElement(), xml);
                 }
                 else {
+                    // special nil validation for wrapped collections
+                    if (xml.isWrapped()) {
+                        Element temp = XmlNodeUtil.unwrap((Element)parent, xml);
+                        if (temp != null && XmlNodeUtil.isNil(temp)) {
+                            if (!xml.isNillable()) {
+                                record.addFieldError(getName(), null, "nillable");
+                                return INVALID;
+                            }
+                            return MISSING;
+                        }
+                    }
+                    
                     element = XmlNodeUtil.findChild(parent, xml, 0);
                 }
                 domRecord.setPreviousElement(element);
@@ -118,10 +133,18 @@ public class XmlBeanDefinition extends BeanDefinition implements XmlNode {
             }
             
             if (element == null) {
+                if (!isCollection() && getMinOccurs() > 0) {
+                    record.addFieldError(getName(), null, "minOccurs", getMinOccurs(), getMaxOccurs());
+                    return INVALID;
+                }
                 return MISSING;
             }
             
-            if (xml.isNillable() && XmlNodeUtil.isNil(element)) {
+            if (XmlNodeUtil.isNil(element)) {
+                if (!xml.isNillable()) {
+                    record.addFieldError(getName(), null, "nillable");
+                    return INVALID;
+                }
                 return null;
             }
             
@@ -334,12 +357,17 @@ public class XmlBeanDefinition extends BeanDefinition implements XmlNode {
         
         int type = fieldXml.getType();
         if (type == XmlDefinition.XML_TYPE_ATTRIBUTE) {
-            
-            if (field.getMinOccurs() > 0 || value != null) {
-                parent = wrap(parent, fieldXml, false);
+
+            if (value == null) {
+                if (field.getMinOccurs() == 0) {
+                    return;
+                }
+                value = "";
             }
             
-            if (parent.getNodeType() == Node.ELEMENT_NODE && value != null) {
+            parent = wrap(parent, fieldXml, false);
+            
+            if (parent.getNodeType() == Node.ELEMENT_NODE) {
                 Attr att = parent.getOwnerDocument().createAttributeNS(fieldXml.getNamespace(), fieldXml.getName());
                 att.setValue(field.formatValue(value));
                 att.setPrefix(fieldXml.getPrefix());

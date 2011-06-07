@@ -52,7 +52,7 @@ public class XmlNamespaceTest extends XmlParserTest {
             assertEquals("John", person.getFirstName());
             
             out.write(person);
-            out.flush();
+            out.close();
             
             assertEquals(load("ns1_out.xml"), s.toString());
         }
@@ -76,7 +76,7 @@ public class XmlNamespaceTest extends XmlParserTest {
             assertEquals("John", person.getFirstName());
             
             out.write(person);
-            out.flush();
+            out.close();
             
             assertEquals(load("ns1_out.xml"), s.toString());
         }
@@ -100,7 +100,7 @@ public class XmlNamespaceTest extends XmlParserTest {
             assertEquals("John", person.getFirstName());
             
             out.write(person);
-            out.flush();
+            out.close();
             
             assertEquals(load("ns2_out.xml"), s.toString());
         }
@@ -124,7 +124,7 @@ public class XmlNamespaceTest extends XmlParserTest {
             assertEquals("John", person.getFirstName());
             
             out.write(person);
-            out.flush();
+            out.close();
             
             assertEquals(load("ns3_out.xml"), s.toString());
         }
@@ -148,7 +148,7 @@ public class XmlNamespaceTest extends XmlParserTest {
             assertEquals("John", person.getFirstName());
             
             out.write(person);
-            out.flush();
+            out.close();
             
             assertEquals(load("ns4_out.xml"), s.toString());
         }
@@ -172,7 +172,7 @@ public class XmlNamespaceTest extends XmlParserTest {
             assertEquals("John", person.getFirstName());
             
             out.write(person);
-            out.flush();
+            out.close();
             
             assertEquals(load("ns5_out.xml"), s.toString());
         }
@@ -254,7 +254,7 @@ public class XmlNamespaceTest extends XmlParserTest {
         
         person.setFirstName("David");
         out.write(person);
-        out.flush();
+        out.close();
         
         assertEquals(load("ns6_out.xml"), s.toString());
     }
@@ -270,7 +270,7 @@ public class XmlNamespaceTest extends XmlParserTest {
         Person person = new Person();
         person.setFirstName("John");
         out.write(person);
-        out.flush();
+        out.close();
         
         assertEquals(load("ns7_out.xml"), s.toString());
     }
@@ -287,7 +287,7 @@ public class XmlNamespaceTest extends XmlParserTest {
         Person person = new Person();
         person.setFirstName("John");
         out.write(person);
-        out.flush();
+        out.close();
         
         assertEquals(load("ns8_out.xml"), s.toString());
     }
@@ -304,7 +304,7 @@ public class XmlNamespaceTest extends XmlParserTest {
         Person person = new Person();
         person.setFirstName("John");
         out.write(person);
-        out.flush();
+        out.close();
         
         assertEquals(load("ns9_out.xml"), s.toString());
     }
@@ -321,7 +321,7 @@ public class XmlNamespaceTest extends XmlParserTest {
         Person person = new Person();
         person.setLastName("Smith");
         out.write(person);
-        out.flush();
+        out.close();
         
         assertXmlEquals(load("ns10_out.xml"), s.toString());
     }

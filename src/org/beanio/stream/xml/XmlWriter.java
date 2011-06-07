@@ -132,7 +132,7 @@ public class XmlWriter implements RecordWriter {
             this.indentation = b.toString();
         }
         
-        this.outputHeader = config.isHeaderEnabled();
+        this.outputHeader = !config.isSuppressHeader();
         this.namespaceMap = new HashMap<String,String>(config.getNamespaceMap());
     }
     
@@ -347,10 +347,6 @@ public class XmlWriter implements RecordWriter {
      */
     public void flush() throws IOException {
         try {
-            while (stack != null) {
-                endElement();
-            }
-            out.writeEndDocument();
             out.flush();
         }
         catch (XMLStreamException e) {
@@ -364,6 +360,11 @@ public class XmlWriter implements RecordWriter {
      */
     public void close() throws IOException {
         try {
+            while (stack != null) {
+                endElement();
+            }
+            out.writeEndDocument();
+            out.flush();
             out.close();
         }
         catch (XMLStreamException e) {

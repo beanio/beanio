@@ -24,7 +24,7 @@ import org.beanio.*;
 import org.beanio.util.IOUtil;
 
 /**
- * 
+ * Base class for JUnit test classes that test the parsing framework.
  * @author Kevin Seim
  * @since 1.0
  */
@@ -75,21 +75,21 @@ public class ParserTest {
     
     protected void assertFieldError(BeanReader in, int lineNumber, String recordName,
         String fieldName, int fieldIndex, String fieldText, String message) {
-    try {
-        in.read();
-        fail("Record expected to fail validation");
-    }
-    catch (InvalidRecordException ex) {
-        assertEquals(recordName, in.getRecordName());
-        assertEquals(lineNumber, in.getLineNumber());
+        try {
+            in.read();
+            fail("Record expected to fail validation");
+        }
+        catch (InvalidRecordException ex) {
+            assertEquals(recordName, in.getRecordName());
+            assertEquals(lineNumber, in.getLineNumber());
 
-        BeanReaderContext ctx = ex.getContext();
-        assertEquals(recordName, ctx.getRecordName());
-        assertEquals(lineNumber, ctx.getRecordLineNumber());
-        assertEquals(fieldText, ctx.getFieldText(fieldName, fieldIndex));
-        for (String s : ctx.getFieldErrors(fieldName)) {
-            assertEquals(message, s);
+            BeanReaderContext ctx = ex.getContext();
+            assertEquals(recordName, ctx.getRecordName());
+            assertEquals(lineNumber, ctx.getRecordLineNumber());
+            assertEquals(fieldText, ctx.getFieldText(fieldName, fieldIndex));
+            for (String s : ctx.getFieldErrors(fieldName)) {
+                assertEquals(message, s);
+            }
         }
     }
-}
 }

@@ -88,7 +88,7 @@ public class XmlGroupsTest extends XmlParserTest {
             assertEquals("F", person.getType());
             out.write(person);
             
-            out.flush();
+            out.close();
             assertEquals(load("g1_in.xml"), s.toString());
         }
         finally {
@@ -126,7 +126,7 @@ public class XmlGroupsTest extends XmlParserTest {
             assertEquals("F", person.getType());
             out.write(person);
             
-            out.flush();
+            out.close();
             assertEquals(load("g2_in.xml"), s.toString());
         }
         finally {
@@ -152,7 +152,7 @@ public class XmlGroupsTest extends XmlParserTest {
             assertEquals("IL", address.getState());
             out.write(person);
             
-            out.flush();
+            out.close();
             assertEquals(load("g3_in.xml"), s.toString());
         }
         finally {

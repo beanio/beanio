@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<beanio xmlns="http://www.beanio.org/2011/01" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.beanio.org/2011/01 http://www.beanio.org/2011/01/mapping.xsd">
+
+  <stream name="stream" format="xml">
+    <record name="person" class="map">
+      <bean name="bean" class="map" xmlType="attribute">
+        <field name="field" />
+      </bean>
+    </record>
+  </stream>
+
+</beanio>

@@ -33,6 +33,7 @@ public class TestXmlWriterFactory extends XmlWriterFactory {
      */
     public TestXmlWriterFactory() {
         super();
+        setSuppressHeader(true);
         setLineSeparator("\r\n");
         setIndentation(2);
     }

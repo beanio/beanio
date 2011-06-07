@@ -32,7 +32,7 @@
     <record name="person" class="org.beanio.parser.xml.Person">
       <field name="gender" xmlType="attribute" xmlNamespace="fieldNS" xmlPrefix="ns" />
       <field name="firstName" xmlName="first" xmlType="attribute" xmlNamespace="fieldNS" xmlPrefix="ns" />
-      <field name="lastName" xmlName="last" xmlType="attribute" />
+      <field name="lastName" xmlName="last" xmlType="attribute" minOccurs="1" />
     </record>
   </stream>
 

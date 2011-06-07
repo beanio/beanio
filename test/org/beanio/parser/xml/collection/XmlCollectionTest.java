@@ -63,7 +63,7 @@ public class XmlCollectionTest extends XmlParserTest {
             assertEquals(0, person.getColor().size());
             out.write(person);
             
-            out.flush();
+            out.close();
             assertEquals(load("c1_in.xml"), s.toString());
         }
         finally {

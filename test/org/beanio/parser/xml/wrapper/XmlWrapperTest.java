@@ -62,7 +62,7 @@ public class XmlWrapperTest extends XmlParserTest {
             out.write(person);
             
             person = (Person) in.read();
-            assertNull(person.getFirstName());
+            assertEquals("", person.getFirstName());
             assertNull(person.getLastName());
             assertEquals(0, person.getColor().size());
             addressList = person.getAddressList();
@@ -71,7 +71,7 @@ public class XmlWrapperTest extends XmlParserTest {
             assertEquals("IL", addressList.get(1).getState());
             out.write(person);
             
-            out.flush();
+            out.close();
             assertEquals(load("w1_in.xml"), s.toString());
         }
         finally {

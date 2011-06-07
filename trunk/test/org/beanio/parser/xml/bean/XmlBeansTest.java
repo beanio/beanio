@@ -60,7 +60,7 @@ public class XmlBeansTest extends XmlParserTest {
             assertNull(person.getAddress());
             out.write(person);
             
-            out.flush();
+            out.close();
             assertEquals(load("b1_out.xml"), s.toString());
         }
         finally {
@@ -95,7 +95,7 @@ public class XmlBeansTest extends XmlParserTest {
             assertEquals("George", person.getFirstName());
             assertNull(person.getAddress());
             
-            out.flush();
+            out.close();
             assertEquals(load("b2_out.xml"), s.toString());
         }
         finally {
@@ -132,7 +132,7 @@ public class XmlBeansTest extends XmlParserTest {
             assertEquals(0, person.getAddressList().size());
             out.write(person);
             
-            out.flush();
+            out.close();
             assertEquals(load("b3_in.xml"), s.toString());
         }
         finally {
@@ -167,7 +167,7 @@ public class XmlBeansTest extends XmlParserTest {
             address.setZip(null);
             out.write(person);
             
-            out.flush();
+            out.close();
             assertEquals(load("b4_in.xml"), s.toString());
         }
         finally {

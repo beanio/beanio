@@ -73,7 +73,7 @@ public class XmlStreamDefinitionFactory extends StreamDefinitionFactory {
             xmlType = XmlDefinition.XML_TYPE_NONE;
         }
         else {
-            throw new BeanIOConfigurationException("Invalid xml type '" + xmlTypeConfig + "' for a group");
+            throw new BeanIOConfigurationException("Invalid xmlType '" + xmlTypeConfig + "'");
         }
         
         String xmlName = config.getXmlName();
@@ -138,13 +138,6 @@ public class XmlStreamDefinitionFactory extends StreamDefinitionFactory {
             xml.setNamespaceAware(parentXml.isNamespaceAware());
             xml.setPrefix(parentXml.getPrefix());
         }
-        
-        switch (xml.getType()) {
-        case XmlDefinition.XML_TYPE_ELEMENT:
-            break;
-        default:
-            throw new BeanIOConfigurationException("Invalid xml type '" + config.getBean().getXmlType() + "' for a record");
-        }
     }
 
     @Override
@@ -156,7 +149,7 @@ public class XmlStreamDefinitionFactory extends StreamDefinitionFactory {
         case XmlDefinition.XML_TYPE_NONE:
             break;
         default:
-            throw new BeanIOConfigurationException("Invalid xml type '" + beanConfig.getXmlType() + "' for a bean");
+            throw new BeanIOConfigurationException("Invalid xmlType '" + beanConfig.getXmlType() + "'");
         }
     }
     
@@ -183,18 +176,29 @@ public class XmlStreamDefinitionFactory extends StreamDefinitionFactory {
         int xmlType;
         if (XmlTypeConstants.XML_TYPE_ATTRIBUTE.equals(xmlTypeConfig)) {
             xmlType = XmlDefinition.XML_TYPE_ATTRIBUTE;
+            
+            // by default, attributes should always have minOccurs="0"
+            if (propertyConfig.getMinOccurs() == null) {
+                propertyDefinition.setMinOccurs(0);
+            }
         }
         else if (XmlTypeConstants.XML_TYPE_ELEMENT.equals(xmlTypeConfig)) {
             xmlType = XmlDefinition.XML_TYPE_ELEMENT;
         }
         else if (XmlTypeConstants.XML_TYPE_NONE.equals(xmlTypeConfig)) {
             xmlType = XmlDefinition.XML_TYPE_NONE;
+            
+            Integer minOccurs = propertyConfig.getMinOccurs();
+            if (minOccurs != null && minOccurs > 0) {
+                throw new BeanIOConfigurationException("minOccurs must be 0 for xmlType 'none'");
+            } 
+            propertyDefinition.setMinOccurs(0);
         }
         else if (XmlTypeConstants.XML_TYPE_TEXT.equals(xmlTypeConfig)) {
             xmlType = XmlDefinition.XML_TYPE_TEXT;
         }
         else {
-            throw new BeanIOConfigurationException("Invalid XML type '" + propertyConfig.getXmlType() + "'");
+            throw new BeanIOConfigurationException("Invalid xmlType '" + propertyConfig.getXmlType() + "'");
         }
         xml.setType(xmlType);
         xml.setNillable(propertyConfig.isNillable());
@@ -202,14 +206,13 @@ public class XmlStreamDefinitionFactory extends StreamDefinitionFactory {
         // property collections must be of type 'element'
         if (xml.getType() != XmlDefinition.XML_TYPE_ELEMENT && propertyDefinition.isCollection()) {
             if (propertyDefinition.isCollection()) {
-                throw new BeanIOConfigurationException("Invalid XML type '" + 
-                    xmlTypeConfig + "' for a collection");
+                throw new BeanIOConfigurationException("Collection type bean/field must have xmlType 'element'");
             }
         }
         
         // if the bean/field/record is nillable, it must be of type 'element'
         if (xml.isNillable() && xml.getType() != XmlDefinition.XML_TYPE_ELEMENT)  {
-            throw new BeanIOConfigurationException("Configured XML type is not nillable");
+            throw new BeanIOConfigurationException("xmlType '" + xmlTypeConfig + "' is not nillable");
         }
         
         String xmlName = propertyConfig.getXmlName();
@@ -225,17 +228,21 @@ public class XmlStreamDefinitionFactory extends StreamDefinitionFactory {
         
         // namespace only allies to XML types attribute and element
         if (xmlNamespace != null) {
-            if (xmlType != XmlDefinition.XML_TYPE_ATTRIBUTE && xmlType != XmlDefinition.XML_TYPE_ELEMENT) {
-                throw new BeanIOConfigurationException("XML namespace is not applicable to XML type '" +
-                    xmlTypeConfig + "'");
+            // allow beans where xmlType='none' to still apply an XML namespace to its children
+            if (!propertyConfig.isBean()) {
+                if (xmlType != XmlDefinition.XML_TYPE_ATTRIBUTE && xmlType != XmlDefinition.XML_TYPE_ELEMENT) {
+                    throw new BeanIOConfigurationException("XML namespace is not applicable for xmlType '" +
+                        xmlTypeConfig + "'");
+                }
             }
         }
         if (xmlPrefix != null && xmlNamespace == null) {
-            throw new BeanIOConfigurationException("Missing XML namespace for configured XML prefix");
+            throw new BeanIOConfigurationException("Missing namespace for configured XML prefix");
         }
         
         if (xmlNamespace == null) {
             XmlBeanDefinition parent = (XmlBeanDefinition)propertyDefinition.getParent();
+            // parent is null for record elements
             if (parent == null) {
                 xmlNamespaceSet = false;
             }
@@ -279,6 +286,18 @@ public class XmlStreamDefinitionFactory extends StreamDefinitionFactory {
         }
         
         return xmlNamespaceSet;
+    }
+    
+    /**
+     * An XML record identifying field of type element or attribute does not need a literal
+     * or regular expression configured to identify the record (since the presence of the named
+     * field may sufficiently identify the record).
+     */
+    @Override
+    protected void validateRecordIdentifyingCriteria(FieldDefinition fieldDefinition) {
+        if (((XmlFieldDefinition)fieldDefinition).getXmlDefinition().getType() == XmlDefinition.XML_TYPE_TEXT) {
+            super.validateRecordIdentifyingCriteria(fieldDefinition);
+        }
     }
     
     @Override

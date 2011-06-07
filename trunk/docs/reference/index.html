@@ -778,35 +778,34 @@ and record writer:</p>
   <th>Writer?</th>
 </tr>
 <tr>
-  <td><tt>headerEnabled</tt></td>
+  <td><tt>suppressHeader</tt></td>
   <td>boolean</td>
-  <td>If set to <tt>true</tt>, an XML header is written to the output stream
-    before any XML content is written.  Defaults to <tt>true</tt>.</td>
+  <td>If set to <tt>true</tt>, the XML header is suppressed in the marshalled
+  document.  Defaults to <tt>false</tt>.</td>
   <td>No</td>
   <td>Yes</td>
 </tr>
 <tr>
   <td><tt>version</tt></td>
   <td>String</td>
-  <td>The version to include in the XML header if enabled.  Defaults to 
-    <tt>1.0</tt>.</td>
+  <td>The XML header version.  Defaults to <tt>1.0</tt>.</td>
   <td>No</td>
   <td>Yes</td>
 </tr>
 <tr>
   <td><tt>encoding</tt></td>
   <td>String</td>
-  <td>The encoding to include in the XML header if enabled.  Defaults to 
+  <td>The XML header encoding.  Defaults to 
     <tt>utf-8</tt>.  Note that this setting has no bearing on the actual
     encoding of the output stream.  If set to "", an encoding attribute
-    will not be included in the header.</td>
+    is not be included in the header.</td>
   <td>No</td>
   <td>Yes</td>
 </tr>
 <tr>
   <td><tt>namespaces</tt></td>
   <td>String</td>
-  <td>The space delimited list of XML prefixes and namespaces to declare
+  <td>A space delimited list of XML prefixes and namespaces to declare
     on the root element of a marshalled document.  The property value
     should be formatted as
     <pre class="indent">prefix namespace prefix namespace...</pre></td>
@@ -2256,6 +2255,14 @@ the element is not marshalled at all.</p>
 </tr>
 <tr>
   <td><pre>&lt;record name="person" class="map"&gt;
+  &lt;field name="name" xmlType="attribute" minOccurs="1"/&gt;
+&lt;/person&gt;</pre>
+  </td>
+  <td><pre>&lt;person name=""/&gt;</pre>
+</td>  
+</tr>
+<tr>
+  <td><pre>&lt;record name="person" class="map"&gt;
   &lt;field name="name" xmlType="text"/&gt;
 &lt;/person&gt;</pre>
   </td>
@@ -2489,16 +2496,15 @@ of a field, and the effect of <tt>minOccurs</tt> and <tt>nillable</tt> when mars
   </td>
   <td rowspan="2"><pre>&lt;wrapper field="value"/&gt;</pre>
 </td>
-  <td><pre>&lt;wrapper /&gt;</pre>
-</td>
+  <td>-</td>
 </tr>
 <tr>
   <td><pre>&lt;field name="field" 
   xmlType="attribute" 
   xmlWrapper="wrapper" 
-  minOccurs="0"/&gt;</pre>
+  minOccurs="1"/&gt;</pre>
   </td>
-  <td>-</td>
+  <td><pre>&lt;wrapper field=""/&gt;</pre></td>
 </tr>
 
 <tr>
@@ -2676,7 +2682,7 @@ as a <a href="#typeHandler"><tt>typeHandler</tt></a>.</p>
 </tr>
 <tr>
   <td><tt>format</tt></td>
-  <td>The stream format.  Either <tt>csv</tt>, <tt>delimited</tt> or
+  <td>The stream format.  Either <tt>xml</tt>, <tt>csv</tt>, <tt>delimited</tt> or
     <tt>fixedlength</tt></td>
   <td>Yes</td>
   <td>*</td>
@@ -2712,7 +2718,7 @@ as a <a href="#typeHandler"><tt>typeHandler</tt></a>.</p>
 <tr>
   <td><tt>xmlType</tt></td>
   <td>The XML node type mapped to the stream.  
-  If set to <tt>element</tt>, or not specified, the stream is mapped to the root element of the
+  If not specified or set to <tt>element</tt>, the stream is mapped to the root element of the
   XML document being marshalled or unmarshalled.  If set to <tt>none</tt>, the XML input stream 
   will be fully read and mapped to a group or record.</td>
   <td>No</td>
@@ -2726,7 +2732,7 @@ as a <a href="#typeHandler"><tt>typeHandler</tt></a>.</p>
 </tr>
 <tr>
   <td><tt>xmlNamespace</tt></td>
-  <td>The namespace of the XML element mapped to the stream.  Defaults to '*' which cause BeanIO to ignore
+  <td>The namespace of the XML element mapped to the stream.  Defaults to '*' which will ignore
     namespaces while marshalling and unmarshalling.</td>
   <td>No</td>
   <td>xml</td>
@@ -2765,7 +2771,9 @@ for the stream..</p>
     used based on the stream format:<br />
     <br />csv - <tt>org.beanio.stream.csv.CsvReaderFactory</tt>
     <br />delimited - <tt>org.beanio.stream.delimited.DelimitedReaderFactory</tt>
-    <br />fixedlength - <tt>org.beanio.stream.fixedlength.FixedLengthReaderFactory</tt> 
+    <br />fixedlength - <tt>org.beanio.stream.fixedlength.FixedLengthReaderFactory</tt>
+    <br />xml - <tt>org.beanio.stream.xml.XmlReaderFactory</tt>
+    <p>Overriding the record reader factory for XML is not supported.</p>
   </td>
   <td>No</td>
 </tr>
@@ -2792,7 +2800,9 @@ for the stream..</p>
     used based on the stream format:<br />
     <br />csv - <tt>org.beanio.stream.csv.CsvWriterFactory</tt>
     <br />delimited - <tt>org.beanio.stream.delimited.DelimitedWriterFactory</tt>
-    <br />fixedlength - <tt>org.beanio.stream.fixedlength.FixedLengthWriterFactory</tt> 
+    <br />fixedlength - <tt>org.beanio.stream.fixedlength.FixedLengthWriterFactory</tt>
+    <br />xml - <tt>org.beanio.stream.xml.XmlWriterFactory</tt> 
+    <p>Overriding the record writer factory for XML is not supported.</p>
   </td>
   <td>No</td>
 </tr>
@@ -2845,7 +2855,7 @@ the group as a whole.</p>
 <tr>
   <td><tt>xmlType</tt></td>
   <td>The XML node type mapped to this group.  
-  If set to <tt>element</tt>, or not specified, this group is mapped to an XML element.  When set to 
+  If not specified or set to <tt>element</tt>, this group is mapped to an XML element.  When set to 
   <tt>none</tt>, this group is used only to define expected record sequencing.</td>
   <td>No</td>
   <td>xml</td>
@@ -2919,25 +2929,23 @@ the group as a whole.</p>
   <td><tt>minLength</tt></td>
   <td>If the stream format is <tt>delimited</tt> or <tt>csv</tt>, <tt>minLength</tt> is the minimum number
     of fields required by this record.  Defaults to the number of fields defined for the record.
-    <br /><br />
-    If the stream format is <tt>fixedlength</tt>, <tt>minLength</tt> is the minimum number 
+    <p>If the stream format is <tt>fixedlength</tt>, <tt>minLength</tt> is the minimum number 
     of characters required by this record.  Defaults to the sum of all field lengths definied for
-    the record.
+    the record.</p>
     </td>
   <td>No</td>
-  <td>*</td>
+  <td>csv, delimited, fixedlength</td>
 </tr>
 <tr>
   <td><tt>maxLength</tt></td>
   <td>If the stream format is <tt>delimited</tt> or <tt>csv</tt>, <tt>maxLength</tt> is the maximum number
     of fields allowed by this record.  Defaults to the number of fields defined for the record.
-    <br /><br />
-    If the stream format is <tt>fixedlength</tt>, <tt>maxLength</tt> is the maximum number 
+    <p>If the stream format is <tt>fixedlength</tt>, <tt>maxLength</tt> is the maximum number 
     of characters allowed by this record.  Defaults to the sum of all field lengths defined for
-    the record.
+    the record.</p>
     </td>
   <td>No</td>
-  <td>*</td>
+  <td>csv, delimited, fixedlength</td>
 </tr>
 <tr>
   <td><tt>class</tt></td>
@@ -2990,7 +2998,7 @@ the group as a whole.</p>
 </tr>
 <tr>
   <td><tt>name</tt></td>
-  <td>The name of bean.  Unless a getter and/or setter is defined, the bean name is used
+  <td>The name of the bean.  Unless a getter and/or setter is defined, the bean name is used
     for getting and setting the bean from its parent bean object.</td>
   <td>Yes</td>
   <td>*</td>
@@ -3028,7 +3036,7 @@ the group as a whole.</p>
     May be set to <tt>array</tt> if the collection type is a Java array.
     <p>BeanIO will not derrive the collection type from it's parent bean object, thus 
     collection type beans must always be explicitly declared.</p>
-    <p>There are a few restrictions specific to beans in any "flat" format (delimited, csv or fixedlength):</p>
+    <p>There are a few restrictions specific to beans in any "flat" format (delimited, CSV or fixedlength):</p>
     <ul>
     <li>Collection bean values must appear in the stream consecutively.</li>
     <li>A collection type bean cannot contain collection children (fields or other beans) where
@@ -3053,9 +3061,10 @@ the group as a whole.</p>
 <tr>
   <td><tt>maxOccurs</tt></td>
   <td>The maximum consecutive occurrences of this bean.  By default, 
-    <tt>maxOccurs</tt> is set to <tt>minOccurs</tt> or 1, whichever is greater.  If overridden,
-    the value can only exceed <tt>minOccurs</tt> if the bean appears at the end of a record.  
-    If there is no limit to the number of occurrences, the value may be set to <tt>unbounded</tt>.
+    <tt>maxOccurs</tt> is set to <tt>minOccurs</tt> or 1, whichever is greater.  If overridden for
+    a CSV, delimited or fixed length stream, the value can only exceed <tt>minOccurs</tt> if the bean 
+    appears at the end of a record.  If there is no limit to the number of occurrences, the value may 
+    be set to <tt>unbounded</tt>.
   </td>
   <td>No</td>
   <td>*</td>
@@ -3063,7 +3072,7 @@ the group as a whole.</p>
 <tr>
   <td><tt>xmlType</tt></td>
   <td>The XML node type mapped to this bean.  
-  If set to <tt>element</tt>, or not specified, this group is mapped to an XML element.  If set to 
+  If not specified or set to <tt>element</tt>, this bean is mapped to an XML element.  If set to 
   <tt>none</tt>, fields and nested beans belonging to this bean are expected to be contained by
   this bean's parent record or bean.</td>
   <td>No</td>
@@ -3151,7 +3160,7 @@ and vice versa.</p>
 </tr>
 <tr>
   <td><tt>rid</tt></td>
-  <td>Record identifier.  Set to <tt>true</tt> if this field is used to identify the record.  
+  <td>Record identifier indicator.  Set to <tt>true</tt> if this field is used to identify the record.  
     More than one field can be used to identify a record.  Defaults to <tt>false</tt>.</td>
   <td>No</td>
   <td>*</td>
@@ -3172,7 +3181,7 @@ and vice versa.</p>
     </p>
   </td>
   <td>No</td>
-  <td>*</td>
+  <td>csv, delimited, fixedlength</td>
 </tr>
 <tr>
   <td><tt>trim</tt></td>
@@ -3246,8 +3255,9 @@ and vice versa.</p>
 </tr>
 <tr>
   <td><tt>minOccurs</tt></td>
-  <td>The minimum consecutive occurrences of this field in a record.  Defaults to 1 and should only
-    be overridden for collection type fields.
+  <td>The minimum consecutive occurrences of this field in a record.  Defaults to 0 for
+    attribute field types in an XML stream, and to 1 in all other cases.  Minimum occurences should only
+    be overridden for collection type fields, or fields in an XML formatted stream.  
   </td>
   <td>No</td>
   <td>*</td>
@@ -3255,8 +3265,8 @@ and vice versa.</p>
 <tr>
   <td><tt>maxOccurs</tt></td>
   <td>The maximum consecutive occurrences of this field in a record.  By default, 
-    <tt>maxOccurs</tt> is set to <tt>minOccurs</tt> or 1, whichever is greater.  If overridden,
-    the value can only exceed <tt>minOccurs</tt> if this is the last field
+    <tt>maxOccurs</tt> is set to <tt>minOccurs</tt> or 1, whichever is greater.  If overridden
+    for a non-XML stream format, the value can only exceed <tt>minOccurs</tt> if this is the last field
     in the record.  The value may be set to <tt>unbounded</tt> if there is no limit to the 
     number of occurrences of this field.
   </td>
@@ -3265,8 +3275,8 @@ and vice versa.</p>
 </tr>
 <tr>
   <td><tt>format</tt></td>
-  <td>The decimal format pattern for <tt>Number</tt> field properties, or the date format 
-    pattern for <tt>Date</tt> field properties.
+  <td>The decimal format pattern for <tt>Number</tt> field properties, or the simple
+    date format pattern for <tt>Date</tt> field properties.
     <p>The <tt>format</tt> value can accessed by any custom type handler that
     implements <tt>ConfigurableTypeHandler</tt>.</p>  
   </td>
@@ -3277,7 +3287,7 @@ and vice versa.</p>
   <td><tt>typeHandler</tt></td>
   <td>The name of the type handler to use for type conversion.  By default, BeanIO
     will select a type handler based on the field type when set, or through 
-    introspection of the record class.</td>
+    introspection of this field's parent record or bean class.</td>
   <td>No</td>
   <td>*</td>
 </tr>
@@ -3432,8 +3442,25 @@ message for each configurable validation rule.</p>
   <td>Maximum Length</td>
 </tr>
 <tr>
-  <td rowspan="42">Field Error</td>
+  <td rowspan="52">Field Error</td>
   <td rowspan="4"><tt>required</tt></td>
+  <td>0</td>
+  <td>Line Number</td>
+</tr>
+<tr>
+  <td>1</td>
+  <td>Record Label/Name</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td>Field Label/Name</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>Field Text</td>
+</tr>
+<tr>
+  <td rowspan="4"><tt>nillable</tt></td>
   <td>0</td>
   <td>Line Number</td>
 </tr>
@@ -3585,6 +3612,31 @@ message for each configurable validation rule.</p>
 </tr>
 <tr>
   <td rowspan="6"><tt>minOccurs</tt></td>
+  <td>0</td>
+  <td>Line Number</td>
+</tr>
+<tr>
+  <td>1</td>
+  <td>Record Label/Name</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td>Field or Bean Label/Name</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>-</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>Minimum occurrences</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td>Maximum occurences</td>
+</tr>
+<tr>
+  <td rowspan="6"><tt>maxOccurs</tt></td>
   <td>0</td>
   <td>Line Number</td>
 </tr>

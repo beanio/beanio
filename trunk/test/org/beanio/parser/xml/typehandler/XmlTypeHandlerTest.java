@@ -59,7 +59,7 @@ public class XmlTypeHandlerTest extends XmlParserTest {
             assertEquals(Boolean.TRUE, map.get("boolean"));
             
             out.write(map);
-            out.flush();
+            out.close();
             assertEquals(load("th1_in.xml"), s.toString());
         }
         finally {

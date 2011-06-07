@@ -493,14 +493,6 @@ public abstract class StreamDefinitionFactory {
                     }
                 }
 
-                // validate regex or literal is configured for record identifying fields
-                if (fieldDefinition.isRecordIdentifier()) {
-                    if (fieldDefinition.getLiteral() == null && fieldDefinition.getRegex() == null) {
-                        throw new BeanIOConfigurationException("literal or regex pattern required " +
-                            "for record identifying fields");
-                    }
-                }
-                
                 // validate minOccurs
                 int minOccurs = 1;
                 if (field.getMinOccurs() != null) {
@@ -554,14 +546,18 @@ public abstract class StreamDefinitionFactory {
                         fieldDefinition.setDefaultValue(defaultText);
                     }
                 }
-                
-                // validate a collection is not used to identify the record
-                if (fieldDefinition.isRecordIdentifier() && fieldDefinition.isCollection()) {
-                    throw new BeanIOConfigurationException("a collection cannot be " +
-                        "used as a record identifiers");
-                }
-                
+
                 updateFieldDefinition(field, fieldDefinition);
+                
+                if (fieldDefinition.isRecordIdentifier()) {
+                    validateRecordIdentifyingCriteria(fieldDefinition);
+                    
+                    // validate a collection is not used to identify the record
+                    if (fieldDefinition.isCollection()) {
+                        throw new BeanIOConfigurationException("a collection cannot be " +
+                            "used as a record identifiers");
+                    }
+                }
             }
             catch (BeanIOConfigurationException ex) {
                 throw new BeanIOConfigurationException("Invalid '" + field.getName() +
@@ -588,6 +584,20 @@ public abstract class StreamDefinitionFactory {
      * @since 1.1
      */
     protected void updateFieldDefinition(FieldConfig fieldConfig, FieldDefinition fieldDefinition) { }
+    
+    /**
+     * This method validates a record identifying field has a literal or regular expression
+     * configured for identifying a record.
+     * @param fieldDefinition the record identifying field definition to validate
+     * @since 1.1
+     */
+    protected void validateRecordIdentifyingCriteria(FieldDefinition fieldDefinition) {
+        // validate regex or literal is configured for record identifying fields
+        if (fieldDefinition.getLiteral() == null && fieldDefinition.getRegex() == null) {
+            throw new BeanIOConfigurationException("literal or regex pattern required " +
+                "for record identifying fields");
+        }
+    }
     
     /**
      * Returns whether this stream format allows fields with zero minimum occurrences.  Returns

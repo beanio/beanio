@@ -31,7 +31,7 @@ public class XmlWriterConfiguration implements Cloneable {
     private int indentation = -1;
     private String lineSeparator = null;
     
-    private boolean headerEnabled = false;
+    private boolean suppressHeader = false;
     private String version = "1.0";
     private String encoding = "utf-8";
     
@@ -92,19 +92,19 @@ public class XmlWriterConfiguration implements Cloneable {
     }
 
     /**
-     * Returns whether a XML header will be written to the stream.
-     * @return <tt>true</tt> if a XML header will be written to the stream
+     * Returns whether the XML header is suppressed.  Defaults to <tt>false</tt>.
+     * @return <tt>true</tt> if the XML header is suppressed
      */
-    public boolean isHeaderEnabled() {
-        return headerEnabled;
+    public boolean isSuppressHeader() {
+        return suppressHeader;
     }
 
     /**
-     * Sets whether a XML header will be written to the stream.
-     * @param headerEnabled <tt>true</tt> to write a XML header to the stream
+     * Sets whether the XML header is suppressed.
+     * @param suppressHeader <tt>true</tt> to suppress the XML header
      */
-    public void setHeaderEnabled(boolean headerEnabled) {
-        this.headerEnabled = headerEnabled;
+    public void setSuppressHeader(boolean suppressHeader) {
+        this.suppressHeader = suppressHeader;
     }
 
     /**

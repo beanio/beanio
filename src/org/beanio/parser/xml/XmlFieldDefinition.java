@@ -65,16 +65,6 @@ public class XmlFieldDefinition extends FieldDefinition implements XmlNode {
             if (node == null) {
                 return false;
             }
-            
-            if (xml.isNillable() && XmlNodeUtil.isNil(node)) {
-                if (getLiteral() == null && getRegex() == null) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-            
             fieldText = XmlNodeUtil.getText(node);
         }
         else if (xml.getType() == XmlDefinition.XML_TYPE_TEXT) {
@@ -88,27 +78,31 @@ public class XmlFieldDefinition extends FieldDefinition implements XmlNode {
     protected String parseField(Record record) {
         String text = getFieldText(record);
         // update the record with the raw field text
-        record.setFieldText(getName(), text);
+        record.setFieldText(getName(), text == NIL ? null : text);
         return text;
     }
     
     /**
-     * Returns the text for this field from a record.
+     * Returns the text for this field from a record.  Returns {@link #NIL}
+     * if the XSI nil attribute was set to true, or <tt>null</tt> if the field
+     * was not present, or an empty string if the field was present but there
+     * was no value (e.g. &lt;field/&gt; or &lt;field&gt;&lt;/field&gt;)
      * @param record the record to parse
      * @return the field text
      */
     private String getFieldText(Record record) {
         XmlRecord rec = ((XmlRecord)record);
         
-        Node parent = rec.getPosition();
-        if (parent == null) {
+        Node n = rec.getPosition();
+        if (n == null) {
             return null;
         }
+        if (n.getNodeType() != Node.ELEMENT_NODE) {
+            return null;
+        }
+        Element parent = (Element) n;
         
         if (xml.getType() == XmlDefinition.XML_TYPE_ATTRIBUTE) {
-            if (parent.getNodeType() != Node.ELEMENT_NODE) {
-                return null;
-            }
             return XmlNodeUtil.getAttribute((Element)parent, xml);
         }
         else if (xml.getType() == XmlDefinition.XML_TYPE_ELEMENT) {
@@ -120,6 +114,14 @@ public class XmlFieldDefinition extends FieldDefinition implements XmlNode {
                     node = XmlNodeUtil.findSibling(rec.getPreviousElement(), xml);
                 }
                 else {
+                    // special nil validation for wrapped collections
+                    if (xml.isWrapped()) {
+                        Element temp = XmlNodeUtil.unwrap(parent, xml);
+                        if (temp != null && XmlNodeUtil.isNil(temp)) {
+                            return NIL;
+                        }
+                    }
+                    
                     node = XmlNodeUtil.findChild(parent, xml, offset);
                 }
                 
@@ -135,8 +137,8 @@ public class XmlFieldDefinition extends FieldDefinition implements XmlNode {
                     return null;
                 }
             }
-            
-            if (xml.isNillable() && XmlNodeUtil.isNil(node)) {
+
+            if (XmlNodeUtil.isNil(node)) {
                 return NIL;
             }
             
@@ -147,7 +149,20 @@ public class XmlFieldDefinition extends FieldDefinition implements XmlNode {
             return fieldText;
         }
         else if (xml.getType() == XmlDefinition.XML_TYPE_TEXT) {
-            return XmlNodeUtil.getText(parent, xml);
+            parent = XmlNodeUtil.unwrap((Element)parent, xml);
+            if (parent == null) {
+                return null;
+            }
+
+            if (XmlNodeUtil.isNil(parent)) {
+                return NIL;
+            }
+            
+            String fieldText = XmlNodeUtil.getText(parent);
+            if (fieldText == null) {
+                fieldText = "";
+            }
+            return fieldText;
         }
         else {
             return null;
@@ -157,9 +172,14 @@ public class XmlFieldDefinition extends FieldDefinition implements XmlNode {
     @Override
     protected Object parsePropertyValue(Record record, String fieldText) {
         if (fieldText == NIL) {
-            // validation for required fields
-            if (isRequired()) {
-                record.addFieldError(getName(), fieldText, "required");
+            // validate field is nillable
+            if (!xml.isNillable()) {
+                record.addFieldError(getName(), null, "nillable");
+                return INVALID;
+            }
+            // validate field is not required
+            else if (isRequired()) {
+                record.addFieldError(getName(), null, "required");
                 return INVALID;
             }
             // return the default value if set
@@ -171,6 +191,11 @@ public class XmlFieldDefinition extends FieldDefinition implements XmlNode {
             }
         }
         else {
+            if (fieldText == null && !isCollection() && getMinOccurs() > 0) {
+                record.addFieldError(getName(), null, "minOccurs", getMinOccurs(), getMaxOccurs());
+                return INVALID;
+            }
+            
             return super.parsePropertyValue(record, fieldText);
         }
     }

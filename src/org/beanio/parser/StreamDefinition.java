@@ -52,6 +52,7 @@ public abstract class StreamDefinition implements MessageFactory {
     /* used to flag cache misses */
     private static final String NOT_FOUND = new String();
 
+    private String name;
     private String format;
     private GroupDefinition root;
 
@@ -63,21 +64,12 @@ public abstract class StreamDefinition implements MessageFactory {
      */
     public StreamDefinition(String format) {
         this.format = format;
-        
-        root = newGroupDefinition();
+
+        root = new GroupDefinition();
         root.setOrder(1);
         root.setMinOccurs(0);
         root.setMaxOccurs(1);
         root.setName("<root>");
-    }
-    
-    /**
-     * This method is called to instantiate a new group definition so that subclasses
-     * may override the implementation.
-     * @return the new <tt>GroupDefinition</tt>
-     */
-    protected GroupDefinition newGroupDefinition() {
-        return new GroupDefinition();
     }
 
     /**
@@ -85,15 +77,15 @@ public abstract class StreamDefinition implements MessageFactory {
      * @return the name of this stream context
      */
     public String getName() {
-        return root.getName();
+        return name;
     }
 
-    /**
+    /**s
      * Sets the name of this stream context.
      * @param name the new name of this stream context
      */
     public void setName(String name) {
-        this.root.setName(name);
+        this.name = name;
     }
 
     /**
@@ -305,7 +297,7 @@ public abstract class StreamDefinition implements MessageFactory {
     public void setReaderFactory(RecordReaderFactory readerFactory) {
         this.readerFactory = readerFactory;
     }
-    
+
     /**
      * Sets the record writer factory to use to create new <tt>RecordWriter</tt>'s.
      * If set to null, this stream context will create a default writer.
@@ -314,7 +306,7 @@ public abstract class StreamDefinition implements MessageFactory {
     public void setWriterFactory(RecordWriterFactory writerFactory) {
         this.writerFactory = writerFactory;
     }
-    
+
     /**
      * Sets the primary resource bundle to check for messages.
      * @param resourceBundle the resource bundle
@@ -456,8 +448,6 @@ public abstract class StreamDefinition implements MessageFactory {
                 Object recordValue;
                 try {
                     recordValue = in.read();
-                    //if (recordValue instanceof Document)
-                    //    DomUtil.print("record", (Document)recordValue);
                     record.setRecordText(in.getRecordText());
                     record.setLineNumber(in.getRecordLineNumber());
                 }
@@ -570,7 +560,7 @@ public abstract class StreamDefinition implements MessageFactory {
         }
 
         private GroupNode buildTree(StreamDefinition streamDefinition) {
-            GroupNode root = newGroupNode(streamDefinition.getRootGroupDefinition());
+            GroupNode root = new GroupNode(streamDefinition.getRootGroupDefinition());
             buildTree(streamDefinition.getRootGroupDefinition(), root);
             return root;
         }
@@ -578,36 +568,18 @@ public abstract class StreamDefinition implements MessageFactory {
         private void buildTree(NodeDefinition nodeDefinition, GroupNode group) {
             for (NodeDefinition definition : nodeDefinition.getChildren()) {
                 if (definition.isRecordDefinition()) {
-                    RecordNode child = newRecordNode((RecordDefinition) definition);
+                    RecordNode child = new RecordNode((RecordDefinition) definition);
                     group.addChild(child);
                 }
                 else {
-                    GroupNode child = newGroupNode((GroupDefinition)definition);
+                    GroupNode child = new GroupNode((GroupDefinition) definition);
                     group.addChild(child);
                     buildTree(definition, child);
                 }
             }
         }
     }
-    
-    /**
-     * Constructs a new group node for parsing an input stream.
-     * @param definition the group definition
-     * @return the new group node
-     */
-    protected GroupNode newGroupNode(GroupDefinition definition) {
-        return new GroupNode(definition);
-    }
 
-    /**
-     * Constructs a new record node for parsing an input stream.
-     * @param definition the record definition
-     * @return the new record node
-     */
-    protected RecordNode newRecordNode(RecordDefinition definition) {
-        return new RecordNode(definition);
-    }
-    
     /*
      * BeanWriter implementation.
      */

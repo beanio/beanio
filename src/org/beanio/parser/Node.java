@@ -24,10 +24,10 @@ import java.util.List;
  * @author Kevin Seim
  * @since 1.0
  */
-public abstract class Node {
+abstract class Node {
 
     protected int groupCount = 0;
-    
+
     /**
      * Constructs a new <tt>Node</tt>.
      */

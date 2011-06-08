@@ -4,13 +4,13 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<title>BeanIO 1.1 Reference Documentation</title>
+<title>BeanIO 1.0 Reference Documentation</title>
 <link rel="stylesheet" type="text/css" href="style.css" />
 <link rel="shortcut icon" href="http://www.beanio.org/favicon.ico" />
 </head>
 <body>
 
-<div class="title">BeanIO 1.1 - Reference Documentation</div>
+<div class="title">BeanIO 1.0 - Reference Documentation</div>
 <p>&copy; 2010-2011 Kevin Seim</p>
 <i style="font-size: 90%">Copies of this document may be made for your own use and for
 distribution to others, provided that you do not charge any fee for such copies and further provided
@@ -40,7 +40,6 @@ that each copy contains this Copyright Notice, whether distributed in print or e
   	<a href="#CSVStreamFormat">4.1.2. CSV Streams</a><br />
   	<a href="#DelimitedStreamFormat">4.1.3. Delimited Streams</a><br />
   	<a href="#FixedLengthStreamFormat">4.1.4. Fixed Length Streams</a><br />
-    <a href="#XmlStreamFormat">4.1.5. XML Streams</a><br />
   </div>
   <a href="#RecordDefinition">4.2. Record Definitions</a><br />
   <div class="toc">
@@ -65,27 +64,6 @@ that each copy contains this Copyright Notice, whether distributed in print or e
     <a href="#FieldValidation">4.5.2. Field Validation</a><br />
   </div>
 </div>
-<a href="#MappingXmlStreams">5.0.  Mapping XML Streams</a><br />
-<div class="toc">
-  <a href="#XmlIntroduction">5.1.  Introduction</a><br />
-  <div class="toc">
-    <a href="#MyFirstXmlStream">5.1.1.  My First XML Stream</a><br />
-    <a href="#XmlValidation">5.1.2.  A Note on XML Validation</a><br />
-  </div>
-  <a href="#XmlNames">5.2.  XML Names</a><br />
-  <a href="#XmlNamespaces">5.3.  XML Namespaces</a><br />
-  <a href="#XmlStreams">5.4.  Stream Definitions for XML</a><br />
-  <a href="#XmlGroups">5.5.  Group Definitions for XML</a><br />
-  <a href="#XmlRecords">5.6.  Record Definitions for XML</a><br />
-  <a href="#XmlFields">5.7.  Field Definitions for XML</a><br />
-  <div class="toc">
-    <a href="#XmlTypeConversion">5.7.1.  Field Type Conversion</a><br />
-    <a href="#NullFields">5.7.2.  Marshalling Null Fields</a><br />
-  </div>
-  <a href="#XmlBeans">5.8.  Bean Definitions for XML</a><br />
-  <a href="#XmlWrappers">5.9.  XML Wrappers</a><br />
-</div>
-
 <a href="#A">Appendix A: XML Mapping File Reference</a><br />
 <div class="toc">
   <a href="#beanio">A.1. <tt>beanio</tt></a><br />
@@ -105,47 +83,14 @@ that each copy contains this Copyright Notice, whether distributed in print or e
 <h1><a name="Introduction">1.0. Introduction</a></h1>
 <p>BeanIO is an open source Java framework for reading and writing Java beans or plain old java
 objects (POJO's) from a flat file or stream.  BeanIO is ideally suited for batch processing, and
-currently supports XML, CSV, delimited and fixed length file formats. BeanIO is licensed under the <a
+currently supports CSV, delimited and fixed length file formats. BeanIO is licensed under the <a
   href="http://www.apache.org/licenses/LICENSE-2.0">Apache 2.0 License</a>.</p>
 
 <h1><a name="GettingStarted">2.0. Getting Started</a></h1>
 <p>To get started with BeanIO, download the latest stable version from 
 <a href="http://code.google.com/p/beanio/">Google Code</a>, extract the contents of the ZIP file, 
-and add <tt>beanio.jar</tt> to your application's classpath.</p>
-
-<p>BeanIO requires a version 1.5 JDK or higher.  In order to process XML formatted streams,
-BeanIO also requires an XML parser based on the Streaming API for XML (StAX), as specified by 
-<a href="http://www.jcp.org/en/jsr/detail?id=173">JSR 173</a>.  JDK 1.6 and higher includes
-a StAX implementation and therefore does not require any additional libraries.  JDK 1.5 users
-will need to include the following:</p>
-<ul>
-<li>The StAX/JSR 173 API JAR, available from <a href="http://sjsxp.java.net/">Project SJSXP</a>.</li>
-<li>A StAX implementation JAR.  A reference implementation, used for BeanIO development and included
-in JDK 1.6, is available from <a href="http://sjsxp.java.net/">Project SJSXP</a>.</li>
-</ul>
-
-<p>Alternatively, <a href="http://maven.apache.org/">Maven</a> users can declare the following dependencies
-  in their application's POM.  Note that versions documented below are only examples and may have changed.</p>
-<pre>
-    &lt;-- BeanIO dependency --&gt;
-    &lt;dependency&gt;
-      &lt;groupId&gt;org.beanio&lt;/groupId&gt;
-      &lt;artifactId&gt;beanio&lt;/artifactId&gt;
-      &lt;version&gt;1.1.0&lt;/version&gt;
-    &lt;/dependency&gt;
-
-    &lt;-- StAX dependencies for JDK 1.5 users --&gt;
-    &lt;dependency&gt;
-      &lt;groupId&gt;javax.xml&lt;/groupId&gt;
-      &lt;artifactId&gt;jsr173&lt;/artifactId&gt;
-      &lt;version&gt;1.0&lt;/version&gt;
-    &lt;/dependency&gt;
-    &lt;dependency&gt;
-      &lt;groupId&gt;com.sun.xml.stream&lt;/groupId&gt;
-      &lt;artifactId&gt;sjsxp&lt;/artifactId&gt;
-      &lt;version&gt;1.0.1&lt;/version&gt;
-    &lt;/dependency&gt;
-</pre>
+and add <tt>beanio.jar</tt> to your application's classpath.  BeanIO requires a version 1.5 JDK or higher.
+No other libraries are required.</p>
 
 <h2><a name="MyFirstStream">2.1. My First Stream</a></h2>
 <p>This section explores a simple example that uses BeanIO to read and write
@@ -496,7 +441,7 @@ will bubble up to the calling method.</p>
 definition must have a <tt>name</tt> and <tt>format</tt> attribute configured. The name of the 
 stream is used to reference the layout when creating a <tt>BeanReader</tt> or 
 <tt>BeanWriter</tt> instance using a <tt>StreamFactory</tt>.  Supported
-formats include <tt>xml</tt>, <tt>csv</tt>, <tt>delimited</tt> and <tt>fixedlength</tt>.  
+formats include <tt>csv</tt>, <tt>delimited</tt> and <tt>fixedlength</tt>.  
 </p> 
 <pre class="file">
 &lt;beanio xmlns="http://www.beanio.org/2011/01" 
@@ -519,7 +464,7 @@ and a <tt>RecordWriter</tt> to write records to an output stream.</p>
 
 <p>The <tt>RecordReader</tt> interface is shown below.  A record reader is responsible
 for dividing a stream into records.  The actual Java representation of a record is dependent
-on the format of stream.  Delimited record readers (including CSV) parse an input stream into 
+on the format of stream.  Delimited record readers (including CSV) parse an input streams into 
 <tt>String</tt> array records, where each value in the array is a delimited field.  
 And fixed length record readers simply parse an input stream into <tt>String</tt> records.</p>
 <pre class="java">
@@ -542,7 +487,7 @@ records simply use a <tt>String</tt>.</p>
 package org.beanio.stream;
 
 public interface RecordWriterFactory {
-    public RecordWriter createWriter(Writer out) throws IllegalArgumentException;
+	public RecordWriter createWriter(Writer out) throws IllegalArgumentException;
 }
 </pre>
 
@@ -566,13 +511,11 @@ public interface RecordWriterFactory {
 }
 </pre>
 
-<p>BeanIO includes default record readers and writers for XML, CSV, delimited and fixed length 
+<p>BeanIO includes default record readers and writers for CSV, delimited and fixed length 
 stream formats.  Default reader and writer settings can be overridden for any stream in
 the mapping file using a <tt>reader</tt> or <tt>writer</tt> element.  Or if necessary,
 you can even replace the default record reader or writer by setting the <tt>class</tt> attribute
-to the fully qualified class name of the record reader or writer factory to use.  (Note that
-custom record reader/writer implementations will not be supported for XML formatted streams
-due to the tight coupling with the parser, although it is not prevented.)</p>
+to the fully qualified class name of the record reader or writer factory to use.</p>
 
 <p>In the example mapping file below, the default record reader's delimiter is changed to an astericks,
 while the record writer implementation is completely replaced using the factory class
@@ -767,68 +710,7 @@ and record writer:</p>
 </tr>
 </table>
 
-<h3><a name="XmlStreamFormat">4.1.5. XML Streams</a></h3>
-<p>The XML writer can be customized using the following properties:</p>
-<table class="indent">
-<tr>
-  <th>Property</th>
-  <th>Type</th>
-  <th>Description</th>
-  <th>Reader?</th>
-  <th>Writer?</th>
-</tr>
-<tr>
-  <td><tt>suppressHeader</tt></td>
-  <td>boolean</td>
-  <td>If set to <tt>true</tt>, the XML header is suppressed in the marshalled
-  document.  Defaults to <tt>false</tt>.</td>
-  <td>No</td>
-  <td>Yes</td>
-</tr>
-<tr>
-  <td><tt>version</tt></td>
-  <td>String</td>
-  <td>The XML header version.  Defaults to <tt>1.0</tt>.</td>
-  <td>No</td>
-  <td>Yes</td>
-</tr>
-<tr>
-  <td><tt>encoding</tt></td>
-  <td>String</td>
-  <td>The XML header encoding.  Defaults to 
-    <tt>utf-8</tt>.  Note that this setting has no bearing on the actual
-    encoding of the output stream.  If set to "", an encoding attribute
-    is not be included in the header.</td>
-  <td>No</td>
-  <td>Yes</td>
-</tr>
-<tr>
-  <td><tt>namespaces</tt></td>
-  <td>String</td>
-  <td>A space delimited list of XML prefixes and namespaces to declare
-    on the root element of a marshalled document.  The property value
-    should be formatted as
-    <pre class="indent">prefix namespace prefix namespace...</pre></td>
-  <td>No</td>
-  <td>Yes</td>
-</tr>
-<tr>
-  <td><tt>indentation</tt></td>
-  <td>Integer</td>
-  <td>The number of spaces to indent each level of XML.  By default, indentation
-    is disabled using a value of -1.</td>
-  <td>No</td>
-  <td>Yes</td>
-</tr>
-<tr>
-  <td><tt>lineSeparator</tt></td>
-  <td>String</td>
-  <td>The character(s) used to separate lines when indentation is enabled. 
-    By default, <tt>System.getProperty("line.separator")</tt> is used.</td>
-  <td>No</td>
-  <td>Yes</td>
-</tr>
-</table>
+
 
 
 <h2><a name="RecordDefinition">4.2. Record Definitions</a></h2>
@@ -1116,7 +998,7 @@ configured validation rules are still applied to ignored fields.</p>
   
 &lt;/beanio&gt;</pre>
 
-<p>By default, BeanIO expects fields to appear in a CSV, delimited or fixed length stream in the same order they
+<p>By default, BeanIO expects configured fields in the same order they
 are declared in the mapping file.  If this is not the case, a <tt>position</tt> field attribute
 can be configured for each field.  If a position is declared for one field, a position must be declared
 for all other fields in the same record.  For delimited (and CSV) formatted streams, <tt>position</tt>
@@ -1802,791 +1684,8 @@ writing to an output stream.
 </tr>
 </table>
 
-<!-- 
-
-  5.0. MAPPING XML FORMATTED STREAMS
-  
- -->
-<h1><a name="MappingXmlStreams">5.0. Mapping XML Streams</a></h1>
-<p>This section provides further details for using BeanIO to marshall and unmarshall
-Java objects to and from XML formatted streams.   This section assumes you are already familiar with 
-the mapping file concepts documented in previous sections.</p>
-<h2><a name="XmlIntroduction">5.1. Introduction</a></h2>
-<p>BeanIO is similar to other OXM (Object to XML Mapping) libraries, except that it is also capable
-of marshalling and unmarshalling extremely large XML files by reading and writing Java beans one
-record at a time.  BeanIO uses a streaming XML (StAX) parser to read and write XML, and will never 
-hold more than the minimum amount of XML in memory needed to marshall or unmarshall a single bean object.
-That said, it is still possible to run out of memory (heap space) with poorly designed XML documents and/or misconfigured
-mapping files.</p>
-
-<h3><a name="MyFirstXmlStream">5.1.1. My First XML Stream</a></h3>
-<p>Before diving into the details, let's start with a basic example using the employee input file
-from <a href="#MyFirstStream">Section 2.1</a> after it's been converted to XML (shown below).</p>
-<pre class="file">
-&lt;?xml version=&quot;1.0&quot;?&gt;
-&lt;employeeFile&gt;
-  &lt;employee&gt;
-    &lt;firstName&gt;Joe&lt;/firstName&gt;
-    &lt;lastName&gt;Smith&lt;/lastName&gt;
-    &lt;title&gt;Developer&lt;/title&gt;
-    &lt;salary&gt;75000&lt;/salary&gt;
-    &lt;hireDate&gt;2009-10-12&lt;/hireDate&gt;
-  &lt;/employee&gt;
-  &lt;employee&gt;
-    &lt;firstName&gt;Jane&lt;/firstName&gt;
-    &lt;lastName&gt;Doe&lt;/lastName&gt;
-    &lt;title&gt;Architect&lt;/title&gt;
-    &lt;salary&gt;80000&lt;/salary&gt;
-    &lt;hireDate&gt;2008-01-15&lt;/hireDate&gt;
-  &lt;/employee&gt;
-  &lt;employee&gt;
-    &lt;firstName&gt;Jon&lt;/firstName&gt;
-    &lt;lastName&gt;Andersen&lt;/lastName&gt;
-    &lt;title&gt;Manager&lt;/title&gt;
-    &lt;salary&gt;85000&lt;/salary&gt;
-    &lt;hireDate&gt;2007-03-18&lt;/hireDate&gt;
-  &lt;/employee&gt;
-&lt;/employeeFile&gt;
-</pre>
-
-<p>In this example, let's suppose we are unmarshalling the XML employee file into the same
-<tt>Employee</tt> bean object from Section 2.1 and repeated below.</p>
-<pre class="java">
-package org.beanio.example;
-import java.util.Date;
-
-public class Employee {
-    String firstName;
-    String lastName;
-    String title;
-    int salary;
-    Date hireDate;
-    
-    <span class="comment">// getters and setters not shown...</span>
-}</pre>
-
-<p>Our original mapping file from Section 2.1 can now be updated to parse XML instead of
-CSV with only two minor changes.  First, the stream format is changed to
-<tt>xml</tt>.  And second, the hire date field format is removed and replaced with 
-<tt>type="date"</tt>.  With XML, the date format does not need to be explicity declared
-because it conforms to the W3C XML Schema date syntax.  (This will be further explained
-in <a href="#XmlTypeConversion">Section 5.7.1</a>).</p>
-<pre class="file">
-&lt;beanio xmlns="http://www.beanio.org/2011/01" 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.beanio.org/2011/01 http://www.beanio.org/2011/01/mapping.xsd"&gt;
-
-  &lt;stream name="employeeFile" format="<span class="highlight">xml</span>"&gt;
-    &lt;record name="employee" class="org.beanio.example.Employee"&gt;
-      &lt;field name="firstName" /&gt;
-      &lt;field name="lastName" /&gt;
-      &lt;field name="title" /&gt;
-      &lt;field name="salary" /&gt;
-      &lt;field name="hireDate" <span class="highlight">type="date"</span> /&gt;
-    &lt;/record&gt;
-  &lt;/stream&gt;
-&lt;/beanio&gt;</pre>
-
-<p>That's it!  No Java code changes are required, and as before, <tt>Employee</tt> bean objects
-will be unmarshalled from the XML input stream each time <tt>beanReader.read()</tt> is called.</p>
-<p>And also as before, <tt>Employee</tt> objects can be marshalled to an XML output stream using 
-<tt>beanWriter.write(Object)</tt>.  However, please note that when marshalling/writing XML, 
-it is even more important to call <tt>beanWriter.close()</tt> so that the XML document can be 
-properly completed.</p>
-
-
-<h3><a name="XmlValidation">5.1.2. A Note on XML Validation</a></h3>
-<p>Because BeanIO is built like a pull parser, it does not support XML validation against a DTD
-or XML schema.  Where this functionality is needed, it is recommended to make two passes on the
-input document.  The first pass can use a SAX parser or other means to validate the XML, and the
-second pass can use BeanIO to parse and process bean objects read from the document.</p>
-
-
-<h2><a name="XmlNames">5.2. XML Names</a></h2>
-<p>Each BeanIO mapping element (stream, group, record, bean and field), is mapped to an XML
-element with the same local name.  When the name of the stream, group, etc. does not match the XML
-element name, the <tt>xmlName</tt> attribute can be used.  For example, if the name of the root element in the previous
-example's employee file is changed from "employeeFile" to "employees", and "title" was renamed "position",
-the mapping file could be updated as shown below.</p>
-<pre class="file">
-&lt;beanio&gt;
-
-  &lt;stream name="employeeFile" format="xml" <span class="highlight">xmlName="employees"</span>&gt;
-    &lt;record name="employee" class="org.beanio.example.Employee"&gt;
-      &lt;field name="firstName" /&gt;
-      &lt;field name="lastName" /&gt;
-      &lt;field name="title" <span class="highlight">xmlName="position"</span> /&gt;
-      &lt;field name="salary" /&gt;
-      &lt;field name="hireDate" type="date" /&gt;
-    &lt;/record&gt;
-  &lt;/stream&gt;
-  
-&lt;/beanio&gt;</pre>
-
-<h2><a name="XmlNamespaces">5.3. XML Namespaces</a></h2>
-<p>XML namespaces can be enabled by declaring namespaces using a <tt>xmlNamespace</tt> attribute
-on any mapping element (stream, group, record, bean or field).  By default, all mapping elements 
-inherit their namespace (or lack thereof) from their parent.  When a namespace is delcared, the local
-name <i>and</i> namespace must match when unmarshalling XML, and appropriate namespace declarations
-are included when marshalling bean objects.  For example, let's suppose our employee file contains
-namespaces as shown below.</p>
-<pre class="file">
-&lt;?xml version=&quot;1.0&quot;?&gt;
-&lt;employeeFile xmlns="http://example.com/employeeFile" xmlns:n="http://example.com/name"&gt;
-  &lt;e:employee xmlns:e="http://example.com/employee"&gt;
-    &lt;n:firstName&gt;Joe&lt;/n:firstName&gt;
-    &lt;n:lastName&gt;Smith&lt;/n:lastName&gt;
-    &lt;e:title&gt;Developer&lt;/e:title&gt;
-    &lt;e:salary&gt;75000&lt;/e:salary&gt;
-    &lt;e:hireDate&gt;2009-10-12&lt;/e:hireDate&gt;
-  &lt;/e:employee&gt;
-  .
-  .
-  .
-&lt;/employeeFile&gt;
-</pre>
-
-<p>To unmarshall the file using namespaces, and to marshall Employee bean objects in the same fashion
-as they appear above, the following mapping file can be used.</p>
-<pre class="file">
-&lt;beanio&gt;
-
-  &lt;stream name="employeeFile" format="xml" <span class="highlight">xmlNamespace="http://example.com/employeeFile"</span>&gt;
-    &lt;writer&gt;
-      <span class="highlight">&lt;property name="namespaces" value="n http://example.com/name"/&gt;</span>
-    &lt;/writer&gt;
-    &lt;record name="employee" class="org.beanio.example.Employee" 
-      <span class="highlight">xmlNamespace="http://example.com/employee"</span> <span class="highlight">xmlPrefix="e"</span>&gt;
-      &lt;field name="firstName" <span class="highlight">xmlNamespace="http://example.com/name"</span> /&gt;
-      &lt;field name="lastName" <span class="highlight">xmlNamespace="http://example.com/name"</span> /&gt;
-      &lt;field name="title" /&gt;
-      &lt;field name="salary" /&gt;
-      &lt;field name="hireDate" type="date" /&gt;
-    &lt;/record&gt;
-  &lt;/stream&gt;
-  
-&lt;/beanio&gt;</pre>
-
-<p>From this example, the following behavior can be observed:</p>
-<ul>
-<li>A <tt>xmlPrefix</tt> attribute can be used to assign a namespace prefix anywhere a <tt>xmlNamespace</tt> is declared.  
- <ul>
- <li>If a prefix is configured, the namespace is assigned to the prefix and the prefix is used
-   from that point forward.  This can be seen on the 'employee' element (<tt>record</tt> configuration).</li>
- <li>If a prefix is not configured, a namespace declaration will replace the default namespace.  This can
-   be seen on the 'employeeFile' element (<tt>stream</tt> configuration).</li>
- </ul>
-</li>
-<li>As previously mentioned, namespace are by default inherited from parent mapping elements.  This
-  can be seen on the 'title', 'salary' and 'hireDate' elements (<tt>field</tt> configurations).</li>
-<li>Namespaces can be eagerly declared on the root element using the writer's <tt>namespaces</tt> property.
-  Multiple namespaces can be declared with space delimiters such as '<i>prefix namespace prefix namespace...</i>'.
-</li>
-</ul>
-
-<p>BeanIO also supports a special wildcard namespace.  If <tt>xmlNamespace</tt> is set to '*', any namespace
-is allowed when unmarshalling XML, and no namespace declaration will be made when marshalling XML.</p>
-
-<p>The following table summarizes namespace configuration options and their effect on the configured
-element and a child that inherits it's parent namespace.</p>
-<table class="indent">
-<tr>
-  <th>Mapping Configuration</th>
-  <th>Marshalled Element</th>
-  <th>Marshalled Child</th>
-</tr>
-<tr>
-  <td><tt>[None]</tt></td>
-  <td><tt>&lt;element /&gt;</tt></td>
-  <td><tt>&lt;child /&gt;</tt></td>
-</tr>
-<tr>
-  <td><tt>xmlNamespace="*"</tt></td>
-  <td><tt>&lt;element /&gt;</tt></td>
-  <td><tt>&lt;child /&gt;</tt></td>
-</tr>
-<tr>
-  <td><tt>xmlNamespace=""</tt></td>
-  <td><tt>&lt;element xmlns="" /&gt;</tt></td>
-  <td><tt>&lt;child /&gt;</tt></td>
-</tr>
-<tr>
-  <td><tt>xmlNamespace="http://example.com"</tt></td>
-  <td><tt>&lt;element xmlns="http://example.com" /&gt;</tt></td>
-  <td><tt>&lt;child /&gt;</tt></td>
-</tr>
-<tr>
-  <td style="width: 40%"><tt>xmlNamespace="http://example.com" xmlPrefix="e"</tt></td>
-  <td><tt>&lt;e:element xmlns:e="http://example.com" /&gt;</tt></td>
-  <td><tt>&lt;e:child /&gt;</tt></td>
-</tr>
-</table>
-
-<h2><a name="XmlStreams">5.4. Stream Definitions for XML</a></h2>
-<p>When unmarshalling multiple records from an XML document, the <tt>stream</tt> configuration 
-is mapped to the root element in the XML formatted stream.  This default behavior has been 
-demonstrated in previous examples.  If on the other hand, an XML document contains only a
-single record, the document can be fully read or written by setting the <tt>stream</tt>
-configuration's <tt>xmlType</tt> attribute to <tt>none</tt>.  This behavior is similar to
-other OXM libraries that marshall or unmarshall one bean object per XML document.</p>
-
-<p>For example, if BeanIO was used to unmarshall a single employee record submitted via a web
-service, the XML document might look like the following.  Notice there is no 'employeeFile'
-root element for containing multiple employee records.</p>
-<pre class="file">
-&lt;employee&gt;
-  &lt;firstName&gt;Joe&lt;/firstName&gt;
-  &lt;lastName&gt;Smith&lt;/lastName&gt;
-  &lt;title&gt;Developer&lt;/title&gt;
-  &lt;salary&gt;75000&lt;/salary&gt;
-  &lt;hireDate&gt;2009-10-12&lt;/hireDate&gt;
-&lt;/employee&gt;
-</pre>
-
-<p>In this example, the following highlighted changes can be made to our mapping file to
-allow BeanIO to unmarshall/marshall a single employee record.</p>
-<pre class="file">
-&lt;beanio&gt;
-
-  &lt;stream name="employeeFile" format="xml" <span class="highlight">xmlType="none"</span>&gt;
-    &lt;record name="employee" class="org.beanio.example.Employee"&gt;
-      &lt;field name="firstName" /&gt;
-      &lt;field name="lastName" /&gt;
-      &lt;field name="title" /&gt;
-      &lt;field name="salary" /&gt;
-      &lt;field name="hireDate" type="date" /&gt;
-    &lt;/record&gt;
-  &lt;/stream&gt;
-  
-&lt;/beanio&gt;</pre>
-
-<h2><a name="XmlGroups">5.5. Group Definitions for XML</a></h2>
-<p>Like other mapping elements, groups are also mapped to XML elements by default.
-Or if a group is used only for control purposes, the group's <tt>xmlType</tt> attribute
-can be set to <tt>none</tt>.</p>
-
-<h2><a name="XmlRecords">5.6. Record Definitions for XML</a></h2>
-<p>A record is always mapped to an XML element.  As we've seen before, records are matched
-based on their group context and configured record identifying fields.  XML records are further
-matched using their XML element name, as defined
-by <tt>xmlName</tt>, or if not present, <tt>name</tt>.  Other than record identifying fields,
-fields and beans contained within the record are not used for matching.</p>
-
-<p>For example, let's suppose our employee file differentiated managers using 'manager' tags.</p>
-<pre class="file">
-&lt;?xml version=&quot;1.0&quot;?&gt;
-&lt;employeeFile&gt;
-  &lt;employee&gt;
-    &lt;firstName&gt;Joe&lt;/firstName&gt;
-    &lt;lastName&gt;Smith&lt;/lastName&gt;
-    &lt;title&gt;Developer&lt;/title&gt;
-    &lt;salary&gt;75000&lt;/salary&gt;
-    &lt;hireDate&gt;2009-10-12&lt;/hireDate&gt;
-  &lt;/employee&gt;
-  &lt;employee&gt;
-    &lt;firstName&gt;Jane&lt;/firstName&gt;
-    &lt;lastName&gt;Doe&lt;/lastName&gt;
-    &lt;title&gt;Architect&lt;/title&gt;
-    &lt;salary&gt;80000&lt;/salary&gt;
-    &lt;hireDate&gt;2008-01-15&lt;/hireDate&gt;
-  &lt;/employee&gt;
-  &lt;manager&gt;
-    &lt;firstName&gt;Jon&lt;/firstName&gt;
-    &lt;lastName&gt;Andersen&lt;/lastName&gt;
-    &lt;title&gt;Manager&lt;/title&gt;
-    &lt;salary&gt;85000&lt;/salary&gt;
-    &lt;hireDate&gt;2007-03-18&lt;/hireDate&gt;
-  &lt;/manager&gt;
-&lt;/employeeFile&gt;
-</pre>
-
-<p>To map managers to a new <tt>Manager</tt> bean we could use the following
-mapping configuration.</p>
-<pre class="file">
-&lt;beanio&gt;
-
-  &lt;stream name="employeeFile" format="xml"&gt;
-    &lt;record name="employee" class="org.beanio.example.Employee"&gt;
-      &lt;field name="firstName" /&gt;
-      &lt;field name="lastName" /&gt;
-      &lt;field name="title" /&gt;
-      &lt;field name="salary" /&gt;
-      &lt;field name="hireDate" type="date" /&gt;
-    &lt;/record&gt;
-    <span class="highlight">&lt;record name="manager" class="org.beanio.example.Manager"&gt;
-      &lt;field name="firstName" /&gt;
-      &lt;field name="lastName" /&gt;
-      &lt;field name="title" /&gt;
-      &lt;field name="salary" /&gt;
-      &lt;field name="hireDate" type="date" /&gt;
-    &lt;/record&gt;</span>
-  &lt;/stream&gt;
-  
-&lt;/beanio&gt;</pre>
-
-<p>Do not forget BeanIO will enforce record order in this example unless <tt>ordered</tt>
-is set to <tt>false</tt> on the stream, or unless each record is assigned the same order number.</p>
-
-
-<h2><a name="XmlFields">5.7. Field Definitions for XML</a></h2>
-<p>A field is mapped to XML using the field definition's <tt>xmlType</tt> attribute, which defaults to <tt>element</tt>.
-The field XML type can be set to <tt>element</tt>, <tt>attribute</tt>, <tt>text</tt>, or <tt>none</tt>.  The following
-table illustrates possible configurations, except for <tt>none</tt> which is not covered here.</p>
-
-<table class="indent">
-<tr>
-  <th>Record Definition</th>
-  <th>Sample Record</th>
-</tr>
-<tr>
-  <td><pre>&lt;record name="person" class="map"&gt;
-  &lt;field name="name" xmlType="element"/&gt;
-&lt;/person&gt;</pre>
-  </td>
-  <td><pre>&lt;person&gt;
-  &lt;name&gt;John&lt;/name&gt;
-&lt;/person&gt;</pre>
-</td>  
-</tr>
-<tr>
-  <td><pre>&lt;record name="person" class="map"&gt;
-  &lt;field name="name" xmlType="attribute"/&gt;
-&lt;/person&gt;</pre>
-  </td>
-  <td><pre>&lt;person name="John"/&gt;</pre>
-</td>  
-</tr>
-<tr>
-  <td><pre>&lt;record name="person" class="map"&gt;
-  &lt;field name="name" xmlType="text"/&gt;
-&lt;/person&gt;</pre>
-  </td>
-  <td><pre>&lt;person&gt;John&lt;/person&gt;</pre>
-</td>  
-</tr>
-</table>
-
-<h3><a name="XmlTypeConversion">5.7.1. Field Type Conversion</a></h3>
-<p>Field type conversion works the same way for XML formatted streams as it does for other formats.  However,
-several default type handlers are overridden specifically for XML formatted streams to
-conform with W3C XML Schema built-in data types according to this 
-<a href="http://www.w3.org/TR/xmlschema-2/">specification</a>.
-The following table summarizes overriden type handlers:</p>
-<table class="indent">
-<tr>
-  <th>Class or Type Alias</th>
-  <th>XML Schema Data Type</th>
-  <th>Example</th>
-</tr>
-<tr>
-  <td><tt>date</tt></td>
-  <td><a href="http://www.w3.org/TR/xmlschema-2/#date">date</a></td>
-  <td><tt>2011-01-01</tt></td>
-</tr>
-<tr>
-  <td><tt>datetime</tt> or java.util.Date</td>
-  <td><a href="http://www.w3.org/TR/xmlschema-2/#dateTime">dateTime</a></td>
-  <td><tt>2011-01-01T15:14:13</tt></td>
-</tr>
-<tr>
-  <td><tt>time</tt></td>
-  <td><a href="http://www.w3.org/TR/xmlschema-2/#time">time</a></td>
-  <td><tt>15:14:13</tt></td>
-</tr>
-<tr>
-  <td><tt>boolean</tt></td>
-  <td><a href="http://www.w3.org/TR/xmlschema-2/#boolean">boolean</a></td>
-  <td><tt>true</tt></td>
-</tr>
-</table>
-
-<p>Like other type handlers, XML specific type handlers can be customized or completely
-replaced.  Please consult BeanIO javadocs for customization details.</p>
-
-<h3><a name="NullFields">5.7.2. Marshalling Null Field Values</a></h3>
-<p>If a field value is null, <tt>attribute</tt> and <tt>text</tt> type fields
-are not marshalled.  If the field type is set to <tt>element</tt>, the <tt>nillable</tt>
-and <tt>minOccurs</tt> field attributes control how the element is marshalled.  If <tt>nillable</tt>
-is set to <tt>true</tt> and <tt>minOccurs</tt> is greater than 1, the W3C XML Schema 
-Instance attribute <tt>nil</tt> is set to <tt>true</tt>.  And if <tt>minOccurs</tt> is 0,
-the element is not marshalled at all.</p>
-
-<p>This behavior is illustrated in the following table.</p>
-<table class="indent">
-<tr>
-  <th>Record Definition</th>
-  <th>Marshalled Record<br/>(Field Value is Null)</th>
-</tr>
-<tr>
-  <td><pre>&lt;record name="person" class="map"&gt;
-  &lt;field name="name" xmlType="element" /&gt;
-&lt;/person&gt;</pre>
-  </td>
-  <td><pre>&lt;person&gt;
-  &lt;name/&gt;
-&lt;/person&gt;</pre>
-</td>
-</tr>
-<tr>
-  <td><pre>&lt;record name="person" class="map"&gt;
-  &lt;field name="name" xmlType="element" nillable="true"/&gt;
-&lt;/person&gt;</pre>
-  </td>
-  <td><pre>&lt;person&gt;
-  &lt;name xsi:nil="true"/&gt;
-&lt;/person&gt;</pre>
-</td>
-</tr>
-<tr>
-  <td><pre>&lt;record name="person" class="map"&gt;
-  &lt;field name="name" xmlType="element" minOccurs="0" /&gt;
-&lt;/person&gt;</pre>
-  </td>
-  <td><pre>&lt;person/&gt;</pre>
-</td>  
-</tr>
-<tr>
-  <td><pre>&lt;record name="person" class="map"&gt;
-  &lt;field name="name" xmlType="attribute"/&gt;
-&lt;/person&gt;</pre>
-  </td>
-  <td><pre>&lt;person/&gt;</pre>
-</td>  
-</tr>
-<tr>
-  <td><pre>&lt;record name="person" class="map"&gt;
-  &lt;field name="name" xmlType="attribute" minOccurs="1"/&gt;
-&lt;/person&gt;</pre>
-  </td>
-  <td><pre>&lt;person name=""/&gt;</pre>
-</td>  
-</tr>
-<tr>
-  <td><pre>&lt;record name="person" class="map"&gt;
-  &lt;field name="name" xmlType="text"/&gt;
-&lt;/person&gt;</pre>
-  </td>
-  <td><pre>&lt;person/&gt;</pre>
-</td>  
-</tr>
-</table>
-
-<h2><a name="XmlBeans">5.8. Bean Definitions for XML</a></h2>
-<p>Nested bean definitions can be mapped to XML elements or used to
-group fields.  This difference can be explored using the Address and Employee
-beans defined in Section 4.4 and repeated here.</p>
-<pre class="java">
-package org.beanio.example;
-
-public class Address {
-    String street;
-    String city;
-    String state;
-    String zip;
-    
-    <span class="comment">// getters and setters not shown...</span>
-}</pre>
-<pre class="java">
-package org.beanio.example;
-import java.util.Date;
-
-public class Employee {
-    String firstName;
-    String lastName;
-    String title;
-    int salary;
-    Date hireDate;
-    Address mailingAddress;
-    
-    <span class="comment">// getters and setters not shown...</span>
-}</pre>
-
-<p>By default, a bean definition's <tt>xmlType</tt> is set to <tt>element</tt>, so
-it is not necessary to declare it in the mapping file below.</p>
-<pre class="file">
-&lt;beanio&gt;
-
-  &lt;stream name="employeeFile" format="xml"&gt;
-    &lt;record name="employee" class="org.beanio.example.Employee"&gt;
-      &lt;field name="firstName" /&gt;
-      &lt;field name="lastName" /&gt;
-      &lt;field name="title" /&gt;
-      &lt;field name="salary" /&gt;
-      &lt;field name="hireDate" type="date" /&gt;
-      &lt;bean name="mailingAddress" class="org.beanio.example.Address" <span class="highlight">xmlType="element"</span>&gt;
-        &lt;field name="street" /&gt;
-        &lt;field name="city" /&gt;
-        &lt;field name="state" /&gt;      
-        &lt;field name="zip" /&gt;
-      &lt;/bean&gt;
-    &lt;/record&gt; 
-  &lt;/stream&gt;
-  
-&lt;/beanio&gt;</pre>
-
-<p>This mapping configuration can be used to process the sample XML document below.  When
-a bean is mapped to an XML element, <tt>nillable</tt> and <tt>minOccurs</tt> will control
-the marshalling behavior of null bean objects in the same fashion as a field (see <a href="#NullFields">Section 5.7.2</a>).
-</p>
-<pre class="file">
-&lt;?xml version=&quot;1.0&quot;?&gt;
-&lt;employeeFile&gt;
-  &lt;employee&gt;
-    &lt;firstName&gt;Joe&lt;/firstName&gt;
-    &lt;lastName&gt;Smith&lt;/lastName&gt;
-    &lt;title&gt;Developer&lt;/title&gt;
-    &lt;salary&gt;75000&lt;/salary&gt;
-    &lt;hireDate&gt;2009-10-12&lt;/hireDate&gt;
-    &lt;mailingAddress&gt;
-      &lt;street&gt;123 Main Street&lt;/street&gt;
-      &lt;city&gt;Chicago&lt;/city&gt;
-      &lt;state&gt;IL&lt;/state&gt;
-      &lt;zip&gt;12345&lt;/zip&gt;
-    &lt;/mailingAddress&gt;
-  &lt;/employee&gt;
-  .
-  .
-  .
-&lt;/employeeFile&gt;
-</pre>
-
-<p>Alternatively, if the bean definition's <tt>xmlType</tt> is set to <tt>none</tt>,
-the following XML document can be processed.</p>
-<pre class="file">
-&lt;?xml version=&quot;1.0&quot;?&gt;
-&lt;employeeFile&gt;
-  &lt;employee&gt;
-    &lt;firstName&gt;Joe&lt;/firstName&gt;
-    &lt;lastName&gt;Smith&lt;/lastName&gt;
-    &lt;title&gt;Developer&lt;/title&gt;
-    &lt;salary&gt;75000&lt;/salary&gt;
-    &lt;hireDate&gt;2009-10-12&lt;/hireDate&gt;
-    &lt;street&gt;123 Main Street&lt;/street&gt;
-    &lt;city&gt;Chicago&lt;/city&gt;
-    &lt;state&gt;IL&lt;/state&gt;
-    &lt;zip&gt;12345&lt;/zip&gt;
-  &lt;/employee&gt;
-  .
-  .
-  .
-&lt;/employeeFile&gt;
-</pre>
-
-<h2><a name="XmlWrappers">5.9. XML Wrappers</a></h2>
-<p>In some cases, an XML document may contain elements that do not map directly
-to a bean or field.  In these situations, the <tt>xmlWrapper</tt> attribute may help.
-The <tt>xmlWrapper</tt> attribute is used to configure the local name of an XML element
-that wraps a record, bean or field.  The wrapper element uses the same namespace
-as the element (record, bean or field) for which it was configured.</p>
-
-<p>Extending the previous example, let's suppose the <tt>Employee</tt> bean object is modified
-to hold a list of addresses.</p>
-<pre class="java">
-package org.beanio.example;
-import java.util.Date;
-
-public class Employee {
-    String firstName;
-    String lastName;
-    String title;
-    int salary;
-    Date hireDate;
-    List&lt;Address&gt; addressList;
-    
-    <span class="comment">// getters and setters not shown...</span>
-}</pre>
-
-<p>And let's further suppose that each employee's list of addresses is enclosed in a new element called
-<tt>addresses</tt>.</p>
-<pre class="file">
-&lt;?xml version=&quot;1.0&quot;?&gt;
-&lt;employeeFile&gt;
-  &lt;employee&gt;
-    &lt;firstName&gt;Joe&lt;/firstName&gt;
-    &lt;lastName&gt;Smith&lt;/lastName&gt;
-    &lt;title&gt;Developer&lt;/title&gt;
-    &lt;salary&gt;75000&lt;/salary&gt;
-    &lt;hireDate&gt;2009-10-12&lt;/hireDate&gt;
-    &lt;addresses&gt;
-      &lt;mailingAddress&gt;
-        &lt;street&gt;123 Main Street&lt;/street&gt;
-        &lt;city&gt;Chicago&lt;/city&gt;
-        &lt;state&gt;IL&lt;/state&gt;
-        &lt;zip&gt;12345&lt;/zip&gt;
-      &lt;/mailingAddress&gt;
-    &lt;/addresses&gt;
-  &lt;/employee&gt;
-  .
-  .
-  .
-&lt;/employeeFile&gt;
-</pre>
-
-<p>The mapping file can now be updated as follows:</p>
-<pre class="file">
-&lt;beanio&gt;
-
-  &lt;stream name="employeeFile" format="xml"&gt;
-    &lt;record name="employee" class="org.beanio.example.Employee"&gt;
-      &lt;field name="firstName" /&gt;
-      &lt;field name="lastName" /&gt;
-      &lt;field name="title" /&gt;
-      &lt;field name="salary" /&gt;
-      &lt;field name="hireDate" type="date" /&gt;
-      &lt;bean name="mailingAddress" class="org.beanio.example.Address" collection="list" 
-        minOccurs="0" maxOccurs="unbounded" <span class="highlight">xmlWrapper="addresses"</span>&gt;
-        &lt;field name="street" /&gt;
-        &lt;field name="city" /&gt;
-        &lt;field name="state" /&gt;      
-        &lt;field name="zip" /&gt;
-      &lt;/bean&gt;
-    &lt;/record&gt; 
-  &lt;/stream&gt;
-  
-&lt;/beanio&gt;</pre>
-
-<p>The following table illustrates different <tt>xmlWrapper</tt> effects based on the <tt>xmlType</tt>
-of a field, and the effect of <tt>minOccurs</tt> and <tt>nillable</tt> when marshalling null field values.</p>
-
-<table class="indent">
-<tr>
-  <th>Record Definition</th>
-  <th>Non-Null Field Value</th>
-  <th>Null Field Value</th>
-</tr>
-<tr>
-  <td><pre>&lt;field name="field" 
-  xmlType="element" 
-  xmlWrapper="wrapper" /&gt;</pre>
-  </td>
-  <td rowspan="3"><pre>&lt;wrapper&gt;
-  &lt;field&gt;value&lt;/field&gt;
-&lt;/wrapper&gt;</pre>
-</td>
-  <td><pre>&lt;wrapper&gt;
-  &lt;field/&gt;
-&lt;/wrapper&gt;</pre>
-</td>
-</tr>
-<tr>
-  <td><pre>&lt;field name="field" 
-  xmlType="element" 
-  xmlWrapper="wrapper" 
-  nillable="true" /&gt;</pre>
-  </td>
-  <td><pre>&lt;wrapper&gt;
-  &lt;field xsi:nil="true"/&gt;
-&lt;/wrapper&gt;</pre>
-</td>
-</tr>
-<tr>
-  <td><pre>&lt;field name="field" 
-  xmlType="element" 
-  xmlWrapper="wrapper" 
-  minOccurs="0" /&gt;</pre>
-  </td>
-  <td>-</td>
-</tr>
-
-
-<tr>
-  <td><pre>&lt;field name="field" 
-  xmlType="attribute" 
-  xmlWrapper="wrapper" /&gt;</pre>
-  </td>
-  <td rowspan="2"><pre>&lt;wrapper field="value"/&gt;</pre>
-</td>
-  <td>-</td>
-</tr>
-<tr>
-  <td><pre>&lt;field name="field" 
-  xmlType="attribute" 
-  xmlWrapper="wrapper" 
-  minOccurs="1"/&gt;</pre>
-  </td>
-  <td><pre>&lt;wrapper field=""/&gt;</pre></td>
-</tr>
-
-<tr>
-  <td><pre>&lt;field name="field" 
-  xmlType="text" 
-  xmlWrapper="wrapper" /&gt;</pre>
-  </td>
-  <td rowspan="3"><pre>&lt;wrapper&gt;value&lt;/wrapper&gt;</pre>
-</td>
-  <td><pre>&lt;wrapper /&gt;</pre>
-</td>
-</tr>
-<tr>
-  <td><pre>&lt;field name="field" 
-  xmlType="text" 
-  xmlWrapper="wrapper" 
-  nillable="true" /&gt;</pre>
-  </td>
-  <td><pre>&lt;wrapper xsi:nil="true"/&gt;</pre>
-</td>
-</tr>
-<tr>
-  <td><pre>&lt;field name="field" 
-  xmlType="text" 
-  xmlWrapper="wrapper" 
-  minOccurs="0"/&gt;</pre>
-  </td>
-  <td>-</td>
-</tr>
-
-<tr>
-  <td><pre>&lt;field name="field" 
-  collection="list"
-  minOccurs="1"
-  xmlType="element" 
-  xmlWrapper="wrapper" /&gt;</pre>
-  </td>
-  <td rowspan="4"><pre>&lt;wrapper&gt;
-  &lt;field&gt;value1&lt;/field&gt;
-  &lt;field&gt;value2&lt;/field&gt;  
-&lt;/wrapper&gt;</pre>
-</td>
-  <td><pre>&lt;wrapper&gt;
-  &lt;field/&gt;
-&lt;/wrapper&gt;</pre>
-</td>
-</tr>
-<tr>
-  <td><pre>&lt;field name="field" 
-  collection="list"
-  minOccurs="0"
-  xmlType="element" 
-  xmlWrapper="wrapper" 
-  nillable="true"/&gt;</pre>
-  </td>
-  <td><pre>&lt;wrapper xsi:nil="true"/&gt;</pre>
-</td>
-</tr>
-<tr>
-  <td><pre>&lt;field name="field" 
-  collection="list"
-  minOccurs="1"
-  xmlType="element" 
-  xmlWrapper="wrapper" 
-  nillable="true" /&gt;</pre>
-  </td>
-  <td><pre>&lt;wrapper&gt;
-  &lt;field xsi:nil="true"/&gt;
-&lt;/wrapper&gt;</pre>
-</td>
-</tr>
-<tr>
-  <td><pre>&lt;field name="field" 
-  collection="list"
-  minOccurs="0"
-  xmlType="element" 
-  xmlWrapper="wrapper" /&gt;</pre>
-  </td>
-  <td>-</td>
-</tr>
-</table>
-
+<br />
+<br />
 <!-- 
 
 	APPENDIX A
@@ -2672,26 +1771,22 @@ as a <a href="#typeHandler"><tt>typeHandler</tt></a>.</p>
   <th>Attribute</th>
   <th>Description</th>
   <th>Required</th>
-  <th>Format(s)</th>
 </tr>
 <tr>
   <td><tt>name</tt></td>
   <td>The name of the stream.</td>
   <td>Yes</td>
-  <td>*</td>
 </tr>
 <tr>
   <td><tt>format</tt></td>
-  <td>The stream format.  Either <tt>xml</tt>, <tt>csv</tt>, <tt>delimited</tt> or
+  <td>The stream format.  Either <tt>csv</tt>, <tt>delimited</tt> or
     <tt>fixedlength</tt></td>
   <td>Yes</td>
-  <td>*</td>
 </tr>
 <tr>
   <td><tt>resourceBundle</tt></td>
   <td>The name of the resource bundle for customizing error messages.</td>
   <td>No</td>
-  <td>*</td>
 </tr>
 <tr>
   <td><tt>ordered</tt></td>
@@ -2699,50 +1794,18 @@ as a <a href="#typeHandler"><tt>typeHandler</tt></a>.</p>
     a record <tt>order</tt> will cause a configuration error to be thrown.  
     Defaults to <tt>true</tt>.</td>
   <td>No</td>
-  <td>*</td>
 </tr>
 <tr>
   <td><tt>minOccurs</tt></td>
   <td>The minimum number of times the record layout must be read from an
     input stream.  Defaults to <tt>0</tt>.</td>
   <td>No</td>
-  <td>*</td>
 </tr>
 <tr>
   <td><tt>maxOccurs</tt></td>
   <td>The maximum number of times the record layout can repeat when read from an
     input stream.  Defaults to <tt>1</tt>.</td>
   <td>No</td>
-  <td>*</td>
-</tr>
-<tr>
-  <td><tt>xmlType</tt></td>
-  <td>The XML node type mapped to the stream.  
-  If not specified or set to <tt>element</tt>, the stream is mapped to the root element of the
-  XML document being marshalled or unmarshalled.  If set to <tt>none</tt>, the XML input stream 
-  will be fully read and mapped to a group or record.</td>
-  <td>No</td>
-  <td>xml</td>
-</tr>
-<tr>
-  <td><tt>xmlName</tt></td>
-  <td>The local name of the XML element mapped to the stream.  Defaults to the stream name.</td>
-  <td>No</td>
-  <td>xml</td>
-</tr>
-<tr>
-  <td><tt>xmlNamespace</tt></td>
-  <td>The namespace of the XML element mapped to the stream.  Defaults to '*' which will ignore
-    namespaces while marshalling and unmarshalling.</td>
-  <td>No</td>
-  <td>xml</td>
-</tr>
-<tr>
-  <td><tt>xmlPrefix</tt></td>
-  <td>The namespace prefix assigned to the declared <tt>xmlNamespace</tt> for marshalling XML.  
-    If not specified, the default namespace (i.e. <tt>xmlns="..."</tt>) is used.</td>
-  <td>No</td>
-  <td>xml</td>
 </tr>
 </table>
 
@@ -2771,9 +1834,7 @@ for the stream..</p>
     used based on the stream format:<br />
     <br />csv - <tt>org.beanio.stream.csv.CsvReaderFactory</tt>
     <br />delimited - <tt>org.beanio.stream.delimited.DelimitedReaderFactory</tt>
-    <br />fixedlength - <tt>org.beanio.stream.fixedlength.FixedLengthReaderFactory</tt>
-    <br />xml - <tt>org.beanio.stream.xml.XmlReaderFactory</tt>
-    <p>Overriding the record reader factory for XML is not supported.</p>
+    <br />fixedlength - <tt>org.beanio.stream.fixedlength.FixedLengthReaderFactory</tt> 
   </td>
   <td>No</td>
 </tr>
@@ -2800,9 +1861,7 @@ for the stream..</p>
     used based on the stream format:<br />
     <br />csv - <tt>org.beanio.stream.csv.CsvWriterFactory</tt>
     <br />delimited - <tt>org.beanio.stream.delimited.DelimitedWriterFactory</tt>
-    <br />fixedlength - <tt>org.beanio.stream.fixedlength.FixedLengthWriterFactory</tt>
-    <br />xml - <tt>org.beanio.stream.xml.XmlWriterFactory</tt> 
-    <p>Overriding the record writer factory for XML is not supported.</p>
+    <br />fixedlength - <tt>org.beanio.stream.fixedlength.FixedLengthWriterFactory</tt> 
   </td>
   <td>No</td>
 </tr>
@@ -2821,13 +1880,11 @@ the group as a whole.</p>
   <th>Attribute</th>
   <th>Description</th>
   <th>Required</th>
-  <th>Format(s)</th>
 </tr>
 <tr>
   <td><tt>name</tt></td>
   <td>The name of the group.</td>
   <td>Yes</td>
-  <td>*</td>
 </tr>
 <tr>
   <td><tt>order</tt></td>
@@ -2836,49 +1893,18 @@ the group as a whole.</p>
     order of the previous record/group at the same level.  If this is the first record/group, 
     <tt>order</tt> defaults to <tt>1</tt>.</td>
   <td>No</td>
-  <td>*</td>
 </tr>
 <tr>
   <td><tt>minOccurs</tt></td>
   <td>The minimum number of times this group must repeat within its parent group or stream.
     Defaults to <tt>0</tt>.</td>
   <td>No</td>
-  <td>*</td>
 </tr>
 <tr>
   <td><tt>maxOccurs</tt></td>
   <td>The maximum number of times this group may repeat within its parent group or stream.
     Defaults to <tt>unbounded</tt>.</td>
   <td>No</td>
-  <td>*</td>
-</tr>
-<tr>
-  <td><tt>xmlType</tt></td>
-  <td>The XML node type mapped to this group.  
-  If not specified or set to <tt>element</tt>, this group is mapped to an XML element.  When set to 
-  <tt>none</tt>, this group is used only to define expected record sequencing.</td>
-  <td>No</td>
-  <td>xml</td>
-</tr>
-<tr>
-  <td><tt>xmlName</tt></td>
-  <td>The local name of the XML element mapped to this group.  Defaults to the group name.</td>
-  <td>No</td>
-  <td>xml</td>
-</tr>
-<tr>
-  <td><tt>xmlNamespace</tt></td>
-  <td>The namespace of the XML element mapped to this group.  Defaults to the namespace declared for the
-    parent stream or group definition.</td>
-  <td>No</td>
-  <td>xml</td>
-</tr>
-<tr>
-  <td><tt>xmlPrefix</tt></td>
-  <td>The namespace prefix assigned to the declared <tt>xmlNamespace</tt> for marshalling XML.  
-    If not specified, the default namespace (i.e. <tt>xmlns="..."</tt>) is used.</td>
-  <td>No</td>
-  <td>xml</td>
 </tr>
 </table>
 
@@ -2894,13 +1920,11 @@ the group as a whole.</p>
   <th>Attribute</th>
   <th>Description</th>
   <th>Required</th>
-  <th>Format(s)</th>
 </tr>
 <tr>
   <td><tt>name</tt></td>
   <td>The name of the record.</td>
   <td>Yes</td>
-  <td>*</td>
 </tr>
 <tr>
   <td><tt>order</tt></td>
@@ -2909,43 +1933,40 @@ the group as a whole.</p>
     order of the previous record/group at the same level.  If this is the first record/group, 
     <tt>order</tt> defaults to <tt>1</tt>.</td>
   <td>No</td>
-  <td>*</td>
 </tr>
 <tr>
   <td><tt>minOccurs</tt></td>
   <td>The minimum number of times this record must repeat within its parent group or stream.
     Defaults to <tt>0</tt>.</td>
   <td>No</td>
-  <td>*</td>
 </tr>
 <tr>
   <td><tt>maxOccurs</tt></td>
   <td>The maximum number of times this record may repeat within its parent group or stream.
     Defaults to <tt>unbounded</tt>.</td>
   <td>No</td>
-  <td>*</td>
 </tr>
 <tr>
   <td><tt>minLength</tt></td>
   <td>If the stream format is <tt>delimited</tt> or <tt>csv</tt>, <tt>minLength</tt> is the minimum number
     of fields required by this record.  Defaults to the number of fields defined for the record.
-    <p>If the stream format is <tt>fixedlength</tt>, <tt>minLength</tt> is the minimum number 
+    <br /><br />
+    If the stream format is <tt>fixedlength</tt>, <tt>minLength</tt> is the minimum number 
     of characters required by this record.  Defaults to the sum of all field lengths definied for
-    the record.</p>
+    the record.
     </td>
   <td>No</td>
-  <td>csv, delimited, fixedlength</td>
 </tr>
 <tr>
   <td><tt>maxLength</tt></td>
   <td>If the stream format is <tt>delimited</tt> or <tt>csv</tt>, <tt>maxLength</tt> is the maximum number
     of fields allowed by this record.  Defaults to the number of fields defined for the record.
-    <p>If the stream format is <tt>fixedlength</tt>, <tt>maxLength</tt> is the maximum number 
+    <br /><br />
+    If the stream format is <tt>fixedlength</tt>, <tt>maxLength</tt> is the maximum number 
     of characters allowed by this record.  Defaults to the sum of all field lengths defined for
-    the record.</p>
+    the record.
     </td>
   <td>No</td>
-  <td>csv, delimited, fixedlength</td>
 </tr>
 <tr>
   <td><tt>class</tt></td>
@@ -2956,27 +1977,6 @@ the group as a whole.</p>
     for keys and field values for values.
   </td>
   <td>No</td>
-  <td>*</td>
-</tr>
-<tr>
-  <td><tt>xmlName</tt></td>
-  <td>The local name of the XML element mapped to this record.  Defaults to the record name.</td>
-  <td>No</td>
-  <td>xml</td>
-</tr>
-<tr>
-  <td><tt>xmlNamespace</tt></td>
-  <td>The namespace of the XML element mapped to this record.  Defaults to the namespace declared for
-    this record's parent group or stream.</td>
-  <td>No</td>
-  <td>xml</td>
-</tr>
-<tr>
-  <td><tt>xmlPrefix</tt></td>
-  <td>The namespace prefix assigned to the declared <tt>xmlNamespace</tt> for marshalling XML.  
-    If not specified, the default namespace (i.e. <tt>xmlns="..."</tt>) is used.</td>
-  <td>No</td>
-  <td>xml</td>
 </tr>
 </table>
 
@@ -2994,14 +1994,12 @@ the group as a whole.</p>
   <th>Attribute</th>
   <th>Description</th>
   <th>Required</th>
-  <th>Format(s)</th>
 </tr>
 <tr>
   <td><tt>name</tt></td>
-  <td>The name of the bean.  Unless a getter and/or setter is defined, the bean name is used
+  <td>The name of bean.  Unless a getter and/or setter is defined, the bean name is used
     for getting and setting the bean from its parent bean object.</td>
   <td>Yes</td>
-  <td>*</td>
 </tr>
 <tr>
   <td><tt>getter</tt></td>
@@ -3009,7 +2007,6 @@ the group as a whole.</p>
     it's parent.  By default, the getter method is determined through intropection using
     the bean name.</td>
   <td>No</td>
-  <td>*</td>
 </tr>
 <tr>
   <td><tt>setter</tt></td>
@@ -3017,7 +2014,6 @@ the group as a whole.</p>
     it's parent.  By default, the setter method is determined through intropection using
     the bean name.</td>
   <td>No</td>
-  <td>*</td>
 </tr>
 <tr>
   <td><tt>class</tt></td>
@@ -3026,7 +2022,6 @@ the group as a whole.</p>
     be used with field/bean names for keys and field/bean values for values.
   </td>
   <td>Yes</td>
-  <td>*</td>
 </tr>
 <tr>
   <td><tt>collection</tt></td>
@@ -3036,7 +2031,7 @@ the group as a whole.</p>
     May be set to <tt>array</tt> if the collection type is a Java array.
     <p>BeanIO will not derrive the collection type from it's parent bean object, thus 
     collection type beans must always be explicitly declared.</p>
-    <p>There are a few restrictions specific to beans in any "flat" format (delimited, CSV or fixedlength):</p>
+    <p>There are a few restrictions specific to beans in any "flat" format (delimited, csv or fixedlength):</p>
     <ul>
     <li>Collection bean values must appear in the stream consecutively.</li>
     <li>A collection type bean cannot contain collection children (fields or other beans) where
@@ -3046,75 +2041,22 @@ the group as a whole.</p>
     </ul>
   </td>
   <td>No</td>
-  <td>*</td>
 </tr>
 <tr>
   <td><tt>minOccurs</tt></td>
   <td>The minimum consecutive occurrences of this bean.  Defaults to 1, and should only
-    be overridden for collection type fields with one exception: XML formatted streams may set <tt>minOccurs</tt>
-    to 0 if the XML element mapped to this bean should not be marshalled when the bean object
-    is null.
+    be overridden for collection type fields.
   </td>
   <td>No</td>
-  <td>*</td>
 </tr>
 <tr>
   <td><tt>maxOccurs</tt></td>
   <td>The maximum consecutive occurrences of this bean.  By default, 
-    <tt>maxOccurs</tt> is set to <tt>minOccurs</tt> or 1, whichever is greater.  If overridden for
-    a CSV, delimited or fixed length stream, the value can only exceed <tt>minOccurs</tt> if the bean 
-    appears at the end of a record.  If there is no limit to the number of occurrences, the value may 
-    be set to <tt>unbounded</tt>.
+    <tt>maxOccurs</tt> is set to <tt>minOccurs</tt> or 1, whichever is greater.  If overridden,
+    the value can only exceed <tt>minOccurs</tt> if the bean appears at the end of a record.  
+    If there is no limit to the number of occurrences, the value may be set to <tt>unbounded</tt>.
   </td>
   <td>No</td>
-  <td>*</td>
-</tr>
-<tr>
-  <td><tt>xmlType</tt></td>
-  <td>The XML node type mapped to this bean.  
-  If not specified or set to <tt>element</tt>, this bean is mapped to an XML element.  If set to 
-  <tt>none</tt>, fields and nested beans belonging to this bean are expected to be contained by
-  this bean's parent record or bean.</td>
-  <td>No</td>
-  <td>xml</td>
-</tr>
-<tr>
-  <td><tt>xmlName</tt></td>
-  <td>The local name of the XML element mapped to this bean.  Defaults to the bean name.</td>
-  <td>No</td>
-  <td>xml</td>
-</tr>
-<tr>
-  <td><tt>xmlNamespace</tt></td>
-  <td>The namespace of the XML element mapped to this bean.  Defaults to the namespace declared for the
-    parent record or bean definition.</td>
-  <td>No</td>
-  <td>xml</td>
-</tr>
-<tr>
-  <td><tt>xmlPrefix</tt></td>
-  <td>The namespace prefix assigned to the declared <tt>xmlNamespace</tt> for marshalling XML.  
-    If not specified, the default namespace (i.e. <tt>xmlns="..."</tt>) is used.</td>
-  <td>No</td>
-  <td>xml</td>
-</tr>
-<tr>
-  <td><tt>xmlWrapper</tt></td>
-  <td>The local name of the XML element that wraps this bean element.  The
-    XML wrapper element uses the same namespace of the element it wraps.  If a bean object
-    is null when marshalled, <tt>minOccurs</tt> also controls whether the wrapper element 
-    is marshalled.  By default, elements are not wrapped.</td>
-  <td>No</td>
-  <td>xml</td>
-</tr>
-<tr>
-  <td><tt>nillable</tt></td>
-  <td>Set to <tt>true</tt> if the W3C Schema Instance attribute <tt>nil</tt> should be
-    set to true when the marshalled bean object is null.  Defaults to <tt>false</tt>.
-    Nillable collection type beans that use a wrapper element will have the <tt>nil</tt> attribute set on the wrapping
-    element when the bean collection value is null or empty.</td>
-  <td>No</td>
-  <td>xml</td>
 </tr>
 </table>
 
@@ -3160,7 +2102,7 @@ and vice versa.</p>
 </tr>
 <tr>
   <td><tt>rid</tt></td>
-  <td>Record identifier indicator.  Set to <tt>true</tt> if this field is used to identify the record.  
+  <td>Record identifier.  Set to <tt>true</tt> if this field is used to identify the record.  
     More than one field can be used to identify a record.  Defaults to <tt>false</tt>.</td>
   <td>No</td>
   <td>*</td>
@@ -3181,7 +2123,7 @@ and vice versa.</p>
     </p>
   </td>
   <td>No</td>
-  <td>csv, delimited, fixedlength</td>
+  <td>*</td>
 </tr>
 <tr>
   <td><tt>trim</tt></td>
@@ -3255,9 +2197,8 @@ and vice versa.</p>
 </tr>
 <tr>
   <td><tt>minOccurs</tt></td>
-  <td>The minimum consecutive occurrences of this field in a record.  Defaults to 0 for
-    attribute field types in an XML stream, and to 1 in all other cases.  Minimum occurences should only
-    be overridden for collection type fields, or fields in an XML formatted stream.  
+  <td>The minimum consecutive occurrences of this field in a record.  Defaults to 1 and should only
+    be overridden for collection type fields.
   </td>
   <td>No</td>
   <td>*</td>
@@ -3265,8 +2206,8 @@ and vice versa.</p>
 <tr>
   <td><tt>maxOccurs</tt></td>
   <td>The maximum consecutive occurrences of this field in a record.  By default, 
-    <tt>maxOccurs</tt> is set to <tt>minOccurs</tt> or 1, whichever is greater.  If overridden
-    for a non-XML stream format, the value can only exceed <tt>minOccurs</tt> if this is the last field
+    <tt>maxOccurs</tt> is set to <tt>minOccurs</tt> or 1, whichever is greater.  If overridden,
+    the value can only exceed <tt>minOccurs</tt> if this is the last field
     in the record.  The value may be set to <tt>unbounded</tt> if there is no limit to the 
     number of occurrences of this field.
   </td>
@@ -3275,8 +2216,8 @@ and vice versa.</p>
 </tr>
 <tr>
   <td><tt>format</tt></td>
-  <td>The decimal format pattern for <tt>Number</tt> field properties, or the simple
-    date format pattern for <tt>Date</tt> field properties.
+  <td>The decimal format pattern for <tt>Number</tt> field properties, or the date format 
+    pattern for <tt>Date</tt> field properties.
     <p>The <tt>format</tt> value can accessed by any custom type handler that
     implements <tt>ConfigurableTypeHandler</tt>.</p>  
   </td>
@@ -3287,7 +2228,7 @@ and vice versa.</p>
   <td><tt>typeHandler</tt></td>
   <td>The name of the type handler to use for type conversion.  By default, BeanIO
     will select a type handler based on the field type when set, or through 
-    introspection of this field's parent record or bean class.</td>
+    introspection of the record class.</td>
   <td>No</td>
   <td>*</td>
 </tr>
@@ -3320,55 +2261,6 @@ and vice versa.</p>
     <tt>left</tt> or <tt>right</tt>.  Defaults to <tt>left</tt>.</td>
   <td>No</td>
   <td><tt>*</tt></td>
-</tr>
-<tr>
-  <td><tt>xmlType</tt></td>
-  <td>The XML node type mapped to this field.  The type can be set to <tt>element</tt> (default)
-  to map this field to an XML element, <tt>attribute</tt> to map to an XML attribute, or <tt>text</tt>
-  to map the field value to the enclosed text of the parent record or bean element.  May also be
-  set to <tt>none</tt> if a default value is provided.
-  
-  <p>When set to <tt>text</tt>, <tt>xmlName</tt> and <tt>xmlNamespace</tt> have no effect.</p></td>
-  <td>No</td>
-  <td>xml</td>
-</tr>
-<tr>
-  <td><tt>xmlName</tt></td>
-  <td>The local name of the XML element or attribute mapped to this field.  Defaults to the field name.</td>
-  <td>No</td>
-  <td>xml</td>
-</tr>
-<tr>
-  <td><tt>xmlNamespace</tt></td>
-  <td>The namespace of the XML element mapped to this field.  Defaults to the namespace configured for the
-    parent record or bean definition.</td>
-  <td>No</td>
-  <td>xml</td>
-</tr>
-<tr>
-  <td><tt>xmlPrefix</tt></td>
-  <td>The namespace prefix assigned to the configured <tt>xmlNamespace</tt> for marshalling XML.  
-    If not specified, the default namespace (i.e. <tt>xmlns="..."</tt>) is used.</td>
-  <td>No</td>
-  <td>xml</td>
-</tr>
-<tr>
-  <td><tt>xmlWrapper</tt></td>
-  <td>The local name of the XML element that wraps this field.  The
-    XML wrapper element uses the same namespace configured for the field it wraps.  If a field value
-    is null when marshalled, <tt>minOccurs</tt> also controls whether the wrapper element 
-    is marshalled.  By default, fields are not wrapped.</td>
-  <td>No</td>
-  <td>xml</td>
-</tr>
-<tr>
-  <td><tt>nillable</tt></td>
-  <td>Set to <tt>true</tt> if the W3C Schema Instance attribute <tt>nil</tt> should be
-    set to true when the marshalled field value is null.  Defaults to <tt>false</tt>.  Nillable collection
-    type fields that use a wrapper element will have the <tt>nil</tt> attribute set on the wrapping
-    element when the field collection value is null or empty. </td>
-  <td>No</td>
-  <td>xml</td>
 </tr>
 </table>
 <p><sup>1</sup>Only required for fixed length fields.  If a literal value is supplied for 
@@ -3442,25 +2334,8 @@ message for each configurable validation rule.</p>
   <td>Maximum Length</td>
 </tr>
 <tr>
-  <td rowspan="52">Field Error</td>
+  <td rowspan="42">Field Error</td>
   <td rowspan="4"><tt>required</tt></td>
-  <td>0</td>
-  <td>Line Number</td>
-</tr>
-<tr>
-  <td>1</td>
-  <td>Record Label/Name</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td>Field Label/Name</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td>Field Text</td>
-</tr>
-<tr>
-  <td rowspan="4"><tt>nillable</tt></td>
   <td>0</td>
   <td>Line Number</td>
 </tr>
@@ -3612,31 +2487,6 @@ message for each configurable validation rule.</p>
 </tr>
 <tr>
   <td rowspan="6"><tt>minOccurs</tt></td>
-  <td>0</td>
-  <td>Line Number</td>
-</tr>
-<tr>
-  <td>1</td>
-  <td>Record Label/Name</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td>Field or Bean Label/Name</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td>-</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td>Minimum occurrences</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td>Maximum occurences</td>
-</tr>
-<tr>
-  <td rowspan="6"><tt>maxOccurs</tt></td>
   <td>0</td>
   <td>Line Number</td>
 </tr>

@@ -25,6 +25,7 @@ import java.util.*;
  */
 public class StreamConfig {
 
+    private String name;
     private String format;
     private String resourceBundle;
     private boolean ordered = true;
@@ -49,7 +50,7 @@ public class StreamConfig {
      * @return the stream name
      */
     public String getName() {
-        return root.getName();
+        return name;
     }
 
     /**
@@ -57,7 +58,7 @@ public class StreamConfig {
      * @param name the stream name
      */
     public void setName(String name) {
-        root.setName(name);
+        this.name = name;
     }
 
     /**

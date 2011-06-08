@@ -27,7 +27,7 @@ import org.beanio.UnexpectedRecordException;
  * @author Kevin Seim
  * @since 1.0
  */
-public class GroupNode extends Node {
+class GroupNode extends Node {
 
     private GroupDefinition context;
     private List<Node> children = new ArrayList<Node>();

@@ -28,11 +28,6 @@ public class GroupConfig extends NodeConfig {
 
     private List<NodeConfig> nodeList = new ArrayList<NodeConfig>();
 
-    private String xmlType;
-    private String xmlName;
-    private String xmlNamespace;
-    private String xmlPrefix;
-    
     /**
      * Returns {@link NodeConfig#GROUP}.
      */
@@ -68,84 +63,5 @@ public class GroupConfig extends NodeConfig {
         else {
             this.nodeList = children;
         }
-    }
-    
-    /**
-     * Returns the XML node type of this group.
-     * @return the XML node type
-     * @since 1.1
-     * @see XmlTypeConstants
-     */
-    public String getXmlType() {
-        return xmlType;
-    }
-
-    /**
-     * Sets the XML node type of this group.
-     * @param xmlType the XML node type
-     * @since 1.1
-     * @see XmlTypeConstants
-     */
-    public void setXmlType(String xmlType) {
-        this.xmlType = xmlType;
-    }
-
-    /**
-     * Returns XML element local name of this group.
-     * @return the XML element local name of this group
-     * @since 1.1
-     */
-    public String getXmlName() {
-        return xmlName;
-    }
-
-    /**
-     * Sets the XML element local name of this group.  If set to <tt>null</tt> 
-     * (the default), the XML name defaults to the group name.
-     * @param xmlName the XML element local name of this group
-     * @since 1.1
-     */
-    public void setXmlName(String xmlName) {
-        this.xmlName = xmlName;
-    }
-
-    /**
-     * Returns the XML namespace for this group element.
-     * @return the XML namespace
-     * @since 1.1
-     */
-    public String getXmlNamespace() {
-        return xmlNamespace;
-    }
-
-    /**
-     * Sets the XML namespace for this group element.  If set to <tt>null</tt>
-     * (default), the namespace is inherited from its parent group, or if this group
-     * does not have a parent, namespaces are ignored.
-     * @param xmlNamespace the XML namespace
-     * @since 1.1
-     */
-    public void setXmlNamespace(String xmlNamespace) {
-        this.xmlNamespace = xmlNamespace;
-    }
-
-    /**
-     * Returns the XML prefix for the namespace assigned to this group element.
-     * @return the XML namespace prefix
-     * @since 1.1
-     */
-    public String getXmlPrefix() {
-        return xmlPrefix;
-    }
-
-    /**
-     * Sets the XML prefix for the namespace assigned to this group element.  If set to
-     * <tt>null</tt> and a namespace is set, the namespace will replace the default namespace
-     * when marshaling the group.  If a namespace is not set, the prefix is ignored.
-     * @param xmlPrefix the XML namespace prefix
-     * @since 1.1
-     */
-    public void setXmlPrefix(String xmlPrefix) {
-        this.xmlPrefix = xmlPrefix;
     }
 }

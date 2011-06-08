@@ -25,7 +25,7 @@ import java.util.*;
  * @author Kevin Seim
  * @since 1.0
  */
-public class GroupDefinition extends NodeDefinition {
+public final class GroupDefinition extends NodeDefinition {
 
     private List<NodeDefinition> children = new ArrayList<NodeDefinition>();
 

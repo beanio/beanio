@@ -28,8 +28,7 @@ pre {
   margin-top: 20px;
 }
 h1 {
-  font-size: 155%;
-  margin-top: 1em;
+  font-size: 150%;
 }
 h2 {
   font-size: 130%;
@@ -75,4 +74,6 @@ td, th {
     padding-right: 20px;
     padding-left: 5px;
     border: 1px solid gray;
+    
 }
+

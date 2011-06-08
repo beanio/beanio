@@ -1,7 +1,0 @@
-<stream xmlns="stream">
-  <group xmlns="group">
-    <person xmlns="record">
-      <firstName>John</firstName>
-    </person>
-  </group>
-</stream>

@@ -1,0 +1,145 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!-- 
+    Copyright 2010 Kevin Seim
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+       http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<beanio xmlns="http://www.beanio.org/2011/01" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.beanio.org/2011/01 http://www.beanio.org/2011/01/mapping.xsd">
+
+  <stream name="g1" format="csv">
+    <record name="h" order="1" minOccurs="1" maxOccurs="1">
+      <field name="type" rid="true" literal="H" />
+    </record>
+    <group name="batch" order="2" minOccurs="0" maxOccurs="2">
+      <record name="h1" minOccurs="1" maxOccurs="1">
+        <field name="type" rid="true" literal="H1" />
+      </record>
+      <record name="d1" minOccurs="0" maxOccurs="unbounded">
+        <field name="type" rid="true" literal="D1" />
+      </record>
+      <record name="t1" minOccurs="1" maxOccurs="1">
+        <field name="type" rid="true" literal="T1" />
+      </record>
+    </group>
+    <record name="t" order="3" minOccurs="1" maxOccurs="1">
+      <field name="type" rid="true" literal="T" />
+    </record>
+  </stream>
+
+  <stream name="g2" format="csv" minOccurs="1" maxOccurs="unbounded">
+    <record name="h" order="1" minOccurs="1" maxOccurs="1">
+      <field name="type" rid="true" literal="H" />
+    </record>
+    <group name="batch1" order="2" minOccurs="1" maxOccurs="2">
+      <record name="h1" minOccurs="1" maxOccurs="1">
+        <field name="type" rid="true" literal="H1" />
+      </record>
+      <record name="t1" minOccurs="0" maxOccurs="1">
+        <field name="type" rid="true" literal="T1" />
+      </record>
+    </group>
+    <record name="d" order="2" minOccurs="1" maxOccurs="unbounded">
+      <field name="type" rid="true" literal="D" />
+    </record>
+    <group name="batch2" order="2" minOccurs="0" maxOccurs="unbounded">
+      <record name="h2" minOccurs="1" maxOccurs="1">
+        <field name="type" rid="true" literal="H2" />
+      </record>
+      <record name="t2" minOccurs="1" maxOccurs="1">
+        <field name="type" rid="true" literal="T2" />
+      </record>
+      <record name="t2" minOccurs="0" maxOccurs="1">
+        <field name="type" rid="true" literal="TT2" />
+      </record>
+    </group>
+    <record name="t" order="3" minOccurs="1" maxOccurs="1">
+      <field name="type" rid="true" literal="T" />
+    </record>
+  </stream>
+
+  <stream name="g3" format="csv">
+    <record name="h" order="1" minOccurs="1" maxOccurs="1">
+      <field name="type" rid="true" literal="H" />
+    </record>
+    <record name="1" order="2" minOccurs="1" maxOccurs="2">
+      <field name="type" rid="true" literal="1" />
+    </record>
+    <record name="2" order="2" minOccurs="0" maxOccurs="unbounded">
+      <field name="type" rid="true" literal="2" />
+    </record>
+    <record name="3" order="2" minOccurs="0" maxOccurs="2">
+      <field name="type" rid="true" literal="3" />
+    </record>
+    <record name="t" order="3" minOccurs="1" maxOccurs="1">
+      <field name="type" rid="true" literal="T" />
+    </record>
+  </stream>
+
+  <stream name="g4" format="csv" minOccurs="1" maxOccurs="unbounded">
+    <record name="h" order="1" minOccurs="1" maxOccurs="1">
+      <field name="type" rid="true" literal="H" />
+    </record>
+    <group name="batch" order="2" minOccurs="0" maxOccurs="3">
+      <record name="h" minOccurs="0" maxOccurs="1">
+        <field name="type" rid="true" literal="BH" />
+      </record>
+      <record name="d" minOccurs="0" maxOccurs="unbounded">
+        <field name="type" rid="true" literal="BD" />
+      </record>
+      <record name="t1" minOccurs="0" maxOccurs="1">
+        <field name="type" rid="true" literal="BT" />
+      </record>
+    </group>
+    <record name="o" order="2" minOccurs="0" maxOccurs="unbounded">
+      <field name="type" rid="true" literal="O" />
+    </record>
+    <record name="t" order="3" minOccurs="1" maxOccurs="1">
+      <field name="type" rid="true" literal="T" />
+    </record>
+  </stream>
+
+  <stream name="g5" format="csv" minOccurs="1" maxOccurs="unbounded">
+    <record name="controlHeader" order="1" minOccurs="1" maxOccurs="1">
+      <field name="type" rid="true" literal="CH" />
+    </record>
+    
+    <group name="functionGroup" order="2" minOccurs="1" maxOccurs="unbounded">
+      <record name="functionGroupHeader" minOccurs="1" maxOccurs="1">
+        <field name="type" rid="true" literal="FH" />
+      </record>
+      
+      <group name="transactionSet" minOccurs="0" maxOccurs="unbounded">
+        <record name="transactionSetHeader" minOccurs="1" maxOccurs="1">
+          <field name="type" rid="true" literal="TH" />
+        </record>      
+        <record name="transaction" minOccurs="0" maxOccurs="unbounded">
+          <field name="type" rid="true" literal="T" />
+        </record>          
+        <record name="transactionSetTrailer" minOccurs="1" maxOccurs="1">
+          <field name="type" rid="true" literal="TT" />
+        </record>         
+      </group>
+      
+      <record name="functionGroupTrailer" minOccurs="1" maxOccurs="1">
+        <field name="type" rid="true" literal="FT" />
+      </record>
+    </group>
+    
+    <record name="controlTrailer" order="3" minOccurs="1" maxOccurs="1">
+      <field name="type" rid="true" literal="CT" />
+    </record>
+  </stream>
+
+</beanio>

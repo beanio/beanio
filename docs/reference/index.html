@@ -2204,12 +2204,10 @@ The following table summarizes overriden type handlers:</p>
 replaced.  Please consult BeanIO javadocs for customization details.</p>
 
 <h3><a name="NullFields">5.7.2. Marshalling Null Field Values</a></h3>
-<p>If a field value is null, <tt>attribute</tt> and <tt>text</tt> type fields
-are not marshalled.  If the field type is set to <tt>element</tt>, the <tt>nillable</tt>
-and <tt>minOccurs</tt> field attributes control how the element is marshalled.  If <tt>nillable</tt>
-is set to <tt>true</tt> and <tt>minOccurs</tt> is greater than 1, the W3C XML Schema 
-Instance attribute <tt>nil</tt> is set to <tt>true</tt>.  And if <tt>minOccurs</tt> is 0,
-the element is not marshalled at all.</p>
+<p>The <tt>nillable</tt> and <tt>minOccurs</tt> field attributes control how a null field value is marshalled.  
+If <tt>minOccurs</tt> is 0, an element or attribute is not marshalled for the field.
+If an element type field has <tt>nillable</tt> set to <tt>true</tt> and <tt>minOccurs</tt> set to 1, the W3C XML Schema 
+Instance attribute <tt>nil</tt> is set to <tt>true</tt>.</p>
 
 <p>This behavior is illustrated in the following table.</p>
 <table class="indent">
@@ -2222,6 +2220,14 @@ the element is not marshalled at all.</p>
   &lt;field name="name" xmlType="element" /&gt;
 &lt;/person&gt;</pre>
   </td>
+  <td><pre>&lt;person/&gt;</pre>
+</td>
+</tr>
+<tr>
+  <td><pre>&lt;record name="person" class="map"&gt;
+  &lt;field name="name" xmlType="element" minOccurs="1" /&gt;
+&lt;/person&gt;</pre>
+  </td>
   <td><pre>&lt;person&gt;
   &lt;name/&gt;
 &lt;/person&gt;</pre>
@@ -2229,21 +2235,13 @@ the element is not marshalled at all.</p>
 </tr>
 <tr>
   <td><pre>&lt;record name="person" class="map"&gt;
-  &lt;field name="name" xmlType="element" nillable="true"/&gt;
+  &lt;field name="name" xmlType="element" minOccurs="1" nillable="true"/&gt;
 &lt;/person&gt;</pre>
   </td>
   <td><pre>&lt;person&gt;
   &lt;name xsi:nil="true"/&gt;
 &lt;/person&gt;</pre>
 </td>
-</tr>
-<tr>
-  <td><pre>&lt;record name="person" class="map"&gt;
-  &lt;field name="name" xmlType="element" minOccurs="0" /&gt;
-&lt;/person&gt;</pre>
-  </td>
-  <td><pre>&lt;person/&gt;</pre>
-</td>  
 </tr>
 <tr>
   <td><pre>&lt;record name="person" class="map"&gt;
@@ -2457,21 +2455,20 @@ of a field, and the effect of <tt>minOccurs</tt> and <tt>nillable</tt> when mars
 <tr>
   <td><pre>&lt;field name="field" 
   xmlType="element" 
-  xmlWrapper="wrapper" /&gt;</pre>
+  xmlWrapper="wrapper" 
+  minOccurs="0" /&gt;</pre>
   </td>
   <td rowspan="3"><pre>&lt;wrapper&gt;
   &lt;field&gt;value&lt;/field&gt;
 &lt;/wrapper&gt;</pre>
 </td>
-  <td><pre>&lt;wrapper&gt;
-  &lt;field/&gt;
-&lt;/wrapper&gt;</pre>
-</td>
+  <td>-</td>
 </tr>
 <tr>
   <td><pre>&lt;field name="field" 
   xmlType="element" 
   xmlWrapper="wrapper" 
+  minOccurs="1"
   nillable="true" /&gt;</pre>
   </td>
   <td><pre>&lt;wrapper&gt;
@@ -2483,16 +2480,20 @@ of a field, and the effect of <tt>minOccurs</tt> and <tt>nillable</tt> when mars
   <td><pre>&lt;field name="field" 
   xmlType="element" 
   xmlWrapper="wrapper" 
-  minOccurs="0" /&gt;</pre>
+  minOccurs="1" /&gt;</pre>
   </td>
-  <td>-</td>
+  <td><pre>&lt;wrapper&gt;
+  &lt;field/&gt;
+&lt;/wrapper&gt;</pre>
+</td>
 </tr>
 
 
 <tr>
   <td><pre>&lt;field name="field" 
   xmlType="attribute" 
-  xmlWrapper="wrapper" /&gt;</pre>
+  xmlWrapper="wrapper" 
+  minOccurs="0" /&gt;</pre>
   </td>
   <td rowspan="2"><pre>&lt;wrapper field="value"/&gt;</pre>
 </td>
@@ -2502,15 +2503,16 @@ of a field, and the effect of <tt>minOccurs</tt> and <tt>nillable</tt> when mars
   <td><pre>&lt;field name="field" 
   xmlType="attribute" 
   xmlWrapper="wrapper" 
-  minOccurs="1"/&gt;</pre>
+  minOccurs="1" /&gt;</pre>
   </td>
   <td><pre>&lt;wrapper field=""/&gt;</pre></td>
 </tr>
 
 <tr>
   <td><pre>&lt;field name="field" 
-  xmlType="text" 
-  xmlWrapper="wrapper" /&gt;</pre>
+  xmlType="text"
+  xmlWrapper="wrapper" 
+  minOccurs="1" /&gt;</pre>
   </td>
   <td rowspan="3"><pre>&lt;wrapper&gt;value&lt;/wrapper&gt;</pre>
 </td>
@@ -2521,6 +2523,7 @@ of a field, and the effect of <tt>minOccurs</tt> and <tt>nillable</tt> when mars
   <td><pre>&lt;field name="field" 
   xmlType="text" 
   xmlWrapper="wrapper" 
+  minOccurs="1"
   nillable="true" /&gt;</pre>
   </td>
   <td><pre>&lt;wrapper xsi:nil="true"/&gt;</pre>
@@ -2530,26 +2533,34 @@ of a field, and the effect of <tt>minOccurs</tt> and <tt>nillable</tt> when mars
   <td><pre>&lt;field name="field" 
   xmlType="text" 
   xmlWrapper="wrapper" 
-  minOccurs="0"/&gt;</pre>
+  minOccurs="0" /&gt;</pre>
   </td>
   <td>-</td>
 </tr>
-
+</table>
+<p>Wrapped collection fields (and beans) behave a little differently depending on whether the collection
+is null or empty.</p>
+<table class="indent">
+<tr>
+  <th>Record Definition</th>
+  <th>Collection</th>
+  <th>Null Collection</th>
+  <th>Empty Collection</th>
+</tr>
 <tr>
   <td><pre>&lt;field name="field" 
   collection="list"
-  minOccurs="1"
+  minOccurs="0"
   xmlType="element" 
   xmlWrapper="wrapper" /&gt;</pre>
   </td>
-  <td rowspan="4"><pre>&lt;wrapper&gt;
+  <td rowspan="3"><pre>&lt;wrapper&gt;
   &lt;field&gt;value1&lt;/field&gt;
   &lt;field&gt;value2&lt;/field&gt;  
 &lt;/wrapper&gt;</pre>
 </td>
-  <td><pre>&lt;wrapper&gt;
-  &lt;field/&gt;
-&lt;/wrapper&gt;</pre>
+  <td><pre>-</pre></td>
+  <td><pre>&lt;wrapper /&gt;</pre>
 </td>
 </tr>
 <tr>
@@ -2558,8 +2569,9 @@ of a field, and the effect of <tt>minOccurs</tt> and <tt>nillable</tt> when mars
   minOccurs="0"
   xmlType="element" 
   xmlWrapper="wrapper" 
-  nillable="true"/&gt;</pre>
+  nillable="true" /&gt;</pre>
   </td>
+  <td><pre>-</pre></td>
   <td><pre>&lt;wrapper xsi:nil="true"/&gt;</pre>
 </td>
 </tr>
@@ -2569,13 +2581,18 @@ of a field, and the effect of <tt>minOccurs</tt> and <tt>nillable</tt> when mars
   minOccurs="1"
   xmlType="element" 
   xmlWrapper="wrapper" 
-  nillable="true" /&gt;</pre>
+  nillable="false" /&gt;</pre>
   </td>
   <td><pre>&lt;wrapper&gt;
-  &lt;field xsi:nil="true"/&gt;
+  &lt;field/&gt;
+&lt;/wrapper&gt;</pre>
+</td>
+  <td><pre>&lt;wrapper&gt;
+  &lt;field/&gt;
 &lt;/wrapper&gt;</pre>
 </td>
 </tr>
+<!-- 
 <tr>
   <td><pre>&lt;field name="field" 
   collection="list"
@@ -2585,7 +2602,9 @@ of a field, and the effect of <tt>minOccurs</tt> and <tt>nillable</tt> when mars
   </td>
   <td>-</td>
 </tr>
+ -->
 </table>
+
 
 <!-- 
 
@@ -2840,14 +2859,14 @@ the group as a whole.</p>
 </tr>
 <tr>
   <td><tt>minOccurs</tt></td>
-  <td>The minimum number of times this group must repeat within its parent group or stream.
-    Defaults to <tt>0</tt>.</td>
+  <td>The minimum number of occurences of this group within its parent group or stream.
+    Defaults to 1.</td>
   <td>No</td>
   <td>*</td>
 </tr>
 <tr>
   <td><tt>maxOccurs</tt></td>
-  <td>The maximum number of times this group may repeat within its parent group or stream.
+  <td>The maximum number of occurences of this group within its parent group or stream.
     Defaults to <tt>unbounded</tt>.</td>
   <td>No</td>
   <td>*</td>
@@ -2913,14 +2932,14 @@ the group as a whole.</p>
 </tr>
 <tr>
   <td><tt>minOccurs</tt></td>
-  <td>The minimum number of times this record must repeat within its parent group or stream.
-    Defaults to <tt>0</tt>.</td>
+  <td>The minimum number of occurences of this record within its parent group or stream.
+    Defaults to 1.</td>
   <td>No</td>
   <td>*</td>
 </tr>
 <tr>
   <td><tt>maxOccurs</tt></td>
-  <td>The maximum number of times this record may repeat within its parent group or stream.
+  <td>The maximum number of occurrences of this record within its parent group or stream.
     Defaults to <tt>unbounded</tt>.</td>
   <td>No</td>
   <td>*</td>
@@ -3050,10 +3069,12 @@ the group as a whole.</p>
 </tr>
 <tr>
   <td><tt>minOccurs</tt></td>
-  <td>The minimum consecutive occurrences of this bean.  Defaults to 1, and should only
-    be overridden for collection type fields with one exception: XML formatted streams may set <tt>minOccurs</tt>
-    to 0 if the XML element mapped to this bean should not be marshalled when the bean object
-    is null.
+  <td>The minimum consecutive occurrences of this bean.  
+    <p>For CSV, delimited and fixed length streams, <tt>minOccurs</tt> defaults to 1, and should only
+    be overridden for collection type beans.</p> 
+    <p>For XML streams, <tt>minOccurs</tt> defaults to 1 if <tt>nillable</tt> is true, or
+     0 otherwise.  <tt>minOccurs</tt> controls whether an element is marshalled for a null bean object
+     or required during unmarshalling.</p>
   </td>
   <td>No</td>
   <td>*</td>
@@ -3255,9 +3276,12 @@ and vice versa.</p>
 </tr>
 <tr>
   <td><tt>minOccurs</tt></td>
-  <td>The minimum consecutive occurrences of this field in a record.  Defaults to 0 for
-    attribute field types in an XML stream, and to 1 in all other cases.  Minimum occurences should only
-    be overridden for collection type fields, or fields in an XML formatted stream.  
+  <td>The minimum consecutive occurrences of this field in a record.
+    <p>For CSV, delimited and fixed length streams, <tt>minOccurs</tt> defaults to 1, and should only
+     be overridden for collection type fields.</p> 
+    <p>For XML streams, <tt>minOccurs</tt> defaults to 1 if <tt>nillable</tt> is true, or
+     0 otherwise.  <tt>minOccurs</tt> controls whether an element is marshalled for a null field object
+     or required during unmarshalling.</p>
   </td>
   <td>No</td>
   <td>*</td>

@@ -23,8 +23,8 @@
       <property name="namespaces" value="xsi http://www.w3.org/2001/XMLSchema-instance" />
     </writer>
     <record name="person" class="org.beanio.parser.xml.Person">
-      <field name="firstName" nillable="false" />
-      <field name="lastName" xmlWrapper="lastName" xmlType="text" nillable="false"/>
+      <field name="firstName" minOccurs="1" nillable="false" />
+      <field name="lastName" minOccurs="1" xmlWrapper="lastName" xmlType="text" nillable="false"/>
     </record>
   </stream>
 
@@ -33,7 +33,7 @@
       <property name="namespaces" value="xsi http://www.w3.org/2001/XMLSchema-instance" />
     </writer>
     <record name="person" class="org.beanio.parser.xml.Person">
-      <bean name="address" class="org.beanio.parser.xml.Address">
+      <bean name="address" class="org.beanio.parser.xml.Address" minOccurs="1">
         <field name="state" />
       </bean>
     </record>

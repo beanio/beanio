@@ -11,6 +11,14 @@
   </person>
   <person>
     <firstName/>
+    <colors/>
+    <addresses>
+      <address>CO</address>
+      <address>IL</address>
+    </addresses>
+  </person>
+  <person>
+    <firstName/>
     <addresses>
       <address>CO</address>
       <address>IL</address>

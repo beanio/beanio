@@ -33,4 +33,22 @@
     </record>
   </stream>
 
+  <stream name="stream2" format="xml" xmlName="stream">
+    <writer class="org.beanio.parser.xml.TestXmlWriterFactory">
+      <property name="namespaces" value="xsi http://www.w3.org/2001/XMLSchema-instance" />
+    </writer>
+    <record name="person" class="org.beanio.parser.xml.Person">
+      <field name="color" collection="list" type="string" minOccurs="0" maxOccurs="unbounded" nillable="true" xmlWrapper="colors" />
+    </record>
+  </stream>
+
+  <stream name="stream3" format="xml" xmlName="stream">
+    <writer class="org.beanio.parser.xml.TestXmlWriterFactory">
+      <property name="namespaces" value="xsi http://www.w3.org/2001/XMLSchema-instance" />
+    </writer>
+    <record name="person" class="org.beanio.parser.xml.Person">
+      <field name="color" collection="list" type="string" minOccurs="1" maxOccurs="unbounded" xmlWrapper="colors" />
+    </record>
+  </stream>
+
 </beanio>

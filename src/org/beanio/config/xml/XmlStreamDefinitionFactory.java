@@ -144,18 +144,31 @@ public class XmlStreamDefinitionFactory extends StreamDefinitionFactory {
     protected void updateBeanDefinition(BeanConfig beanConfig, BeanDefinition beanDefinition) {
         updateXmlAttributes(beanConfig, beanDefinition, "element");
         
-        switch (((XmlBeanDefinition)beanDefinition).getXmlDefinition().getType()) {
+        XmlDefinition xml = ((XmlBeanDefinition)beanDefinition).getXmlDefinition();
+        
+        switch (xml.getType()) {
         case XmlDefinition.XML_TYPE_ELEMENT:
         case XmlDefinition.XML_TYPE_NONE:
             break;
         default:
             throw new BeanIOConfigurationException("Invalid xmlType '" + beanConfig.getXmlType() + "'");
         }
+        
+        // default minOccurs is 0 for non-nillable beans in an XML stream
+        if (beanConfig.getMinOccurs() == null && !xml.isNillable()) {
+            beanDefinition.setMinOccurs(0);
+        }
     }
     
     @Override
     protected void updateFieldDefinition(FieldConfig fieldConfig, FieldDefinition fieldDefinition) {
         updateXmlAttributes(fieldConfig, fieldDefinition, Settings.getInstance().getProperty(Settings.DEFAULT_XML_TYPE));
+        
+        // default minOccurs is 0 for fields in an XML stream
+        XmlDefinition xml = ((XmlFieldDefinition)fieldDefinition).getXmlDefinition();
+        if (fieldConfig.getMinOccurs() == null && !xml.isNillable()) {
+            fieldDefinition.setMinOccurs(0);
+        }
     }
     
     /**
@@ -176,11 +189,6 @@ public class XmlStreamDefinitionFactory extends StreamDefinitionFactory {
         int xmlType;
         if (XmlTypeConstants.XML_TYPE_ATTRIBUTE.equals(xmlTypeConfig)) {
             xmlType = XmlDefinition.XML_TYPE_ATTRIBUTE;
-            
-            // by default, attributes should always have minOccurs="0"
-            if (propertyConfig.getMinOccurs() == null) {
-                propertyDefinition.setMinOccurs(0);
-            }
         }
         else if (XmlTypeConstants.XML_TYPE_ELEMENT.equals(xmlTypeConfig)) {
             xmlType = XmlDefinition.XML_TYPE_ELEMENT;

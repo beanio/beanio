@@ -18,7 +18,7 @@ package org.beanio.parser.xml.wrapper;
 import static org.junit.Assert.*;
 
 import java.io.*;
-import java.util.List;
+import java.util.*;
 
 import org.beanio.*;
 import org.beanio.parser.xml.*;
@@ -39,10 +39,10 @@ public class XmlWrapperTest extends XmlParserTest {
     }
     
     /**
-     * Test a xmlWrapper configuration.
+     * Test a xmlWrapper configuration for various field types.
      */
     @Test
-    public void testFieldCollection() throws Exception {
+    public void testFieldCollection_NotNillable() throws Exception {
         BeanReader in = factory.createReader("stream", new InputStreamReader(
             getClass().getResourceAsStream("w1_in.xml")));
         
@@ -71,8 +71,73 @@ public class XmlWrapperTest extends XmlParserTest {
             assertEquals("IL", addressList.get(1).getState());
             out.write(person);
             
+            person.setColor(null);
+            out.write(person);
+            
             out.close();
             assertEquals(load("w1_in.xml"), s.toString());
+        }
+        finally {
+            in.close();
+        }
+    }
+    
+    /**
+     * Test a xmlWrapper configuration for a nillable field collection.
+     */
+    @Test
+    public void testFieldCollection_Nillable() throws Exception {
+        BeanReader in = factory.createReader("stream2", new InputStreamReader(
+            getClass().getResourceAsStream("w2_in.xml")));
+        
+        StringWriter s = new StringWriter();
+        BeanWriter out = factory.createWriter("stream2", s);
+        try {
+            Person person = (Person) in.read();
+            List<String> list = person.getColor();
+            assertEquals(2, list.size());
+            assertEquals("Red", list.get(0));
+            assertEquals("Blue", list.get(1));
+            out.write(person);
+            
+            person = (Person) in.read();
+            assertNotNull(person.getColor());
+            assertEquals(0, person.getColor().size());
+            out.write(person);
+
+            person.setColor(null);
+            out.write(person);
+
+            out.close();
+            assertEquals(load("w2_in.xml"), s.toString());
+        }
+        finally {
+            in.close();
+        }
+    }
+    
+    /**
+     * Test a xmlWrapper configuration for a field collection where min occurs is one.
+     */
+    @Test
+    public void testFieldCollection_MinOccursOne() throws Exception {
+        BeanReader in = factory.createReader("stream3", new InputStreamReader(
+            getClass().getResourceAsStream("w3_in.xml")));
+        
+        StringWriter s = new StringWriter();
+        BeanWriter out = factory.createWriter("stream3", s);
+        try {
+            Person person = (Person) in.read();
+            List<String> list = person.getColor();
+            assertEquals(1, list.size());
+            assertEquals("", list.get(0));
+            out.write(person);
+            
+            person.setColor(new ArrayList<String>());
+            out.write(person);
+
+            out.close();
+            assertEquals(load("w3_in.xml"), s.toString());
         }
         finally {
             in.close();

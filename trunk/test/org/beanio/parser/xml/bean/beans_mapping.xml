@@ -55,8 +55,8 @@
     <record name="person" class="org.beanio.parser.xml.Person">
       <field name="firstName" />
       <bean name="address" xmlType="none" class="org.beanio.parser.xml.Address">
-        <field name="state" minOccurs="0" />
-        <field name="zip" />
+        <field name="state" />
+        <field name="zip" minOccurs="1" />
       </bean>
     </record>
   </stream>

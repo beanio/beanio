@@ -184,40 +184,32 @@ public class XmlBeanDefinition extends BeanDefinition implements XmlNode {
     private void formatBean(Node parent, Object bean) {
         
         if (isCollection()) {
-            if (bean == null) {
-                if (xml.isNillable()) {
-                    parent = wrap(parent, xml, true);
+            int size = getCollectionSize(this, bean);
+            if (size == 0) {
+                if (getMinOccurs() == 0) {
+                    if (bean != null && xml.isWrapped()) {
+                        wrap(parent, xml, xml.isNillable());
+                    }
                 }
-                else if (getMinOccurs() > 0) {
+                else {
                     parent = wrap(parent, xml, false);
                     for (int i=0; i<getMinOccurs(); i++) {
                         formatProperty(parent, (Object)null, false);
                     }
                 }
             }
-            else if (isArray()) {
-                int length = Array.getLength(bean);
-                if (xml.isNillable() && length == 0) {
-                    parent = wrap(parent, xml, true);
-                }
-                else if (length > 0 || getMinOccurs() > 0) {
-                    parent = wrap(parent, xml, false);
-                }
-                for (int i=0; i<length; i++) {
-                    Object value = Array.get(bean, i);
-                    formatProperty(parent, value, false);
-                }
-            }
             else {
-                Collection<Object> collection = (Collection<Object>)bean;
-                if (xml.isNillable() && collection.size() == 0) {
-                    parent = wrap(parent, xml, true);
+                parent = wrap(parent, xml, false);
+                if (isArray()) {
+                    for (int i=0; i<size; i++) {
+                        Object value = Array.get(bean, i);
+                        formatProperty(parent, value, false);
+                    }
                 }
-                else if (collection.size() > 0 || getMinOccurs() > 0) {
-                    parent = wrap(parent, xml, false);    
-                }
-                for (Object obj : collection) {
-                    formatProperty(parent, obj, false);
+                else {
+                    for (Object obj : (Collection<Object>)bean) {
+                        formatProperty(parent, obj, false);
+                    }
                 }
             }
         }
@@ -233,30 +225,23 @@ public class XmlBeanDefinition extends BeanDefinition implements XmlNode {
      */
     private void formatProperty(Node parent, Object bean, boolean wrap) {
         
-        if (xml.getType() == XmlDefinition.XML_TYPE_NONE) {
-            if (bean == null) {
-                return;
-            }
-            if (wrap) {
-                parent = wrap(parent, xml, false);
-            }
+        // nothing to marshall if minOccurs is 0        
+        if (bean == null && getMinOccurs() == 0) {
+            return;
         }
-        else if (xml.getType() == XmlDefinition.XML_TYPE_ELEMENT) {
+        
+        // wrap the parent element if enabled
+        if (wrap) {
+            parent = wrap(parent, xml, false);
+        }
+        
+        if (xml.getType() == XmlDefinition.XML_TYPE_ELEMENT) {
             Document document;
             if (parent.getNodeType() == Node.DOCUMENT_NODE) {
                 document = (Document) parent;
             }
             else {
                 document = parent.getOwnerDocument();
-            }
-            
-            // if the bean is null and minOccurs="0", no element is added to the DOM tree
-            if (bean == null && getMinOccurs() == 0) {
-                return;
-            }
-            
-            if (wrap) {
-                parent = wrap(parent, xml, false);
             }
             
             // create an element for the bean
@@ -270,11 +255,10 @@ public class XmlBeanDefinition extends BeanDefinition implements XmlNode {
             parent.appendChild(element);
             
             // if the bean is null and nillable="true", add a 'nil' attribute to the bean element
-            if (bean == null && xml.isNillable()) {
-                element.setAttributeNS(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "nil", "true");
-            }
-            
             if (bean == null) {
+                if (xml.isNillable()) {
+                    element.setAttributeNS(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "nil", "true");
+                }
                 return;
             }
             
@@ -305,39 +289,32 @@ public class XmlBeanDefinition extends BeanDefinition implements XmlNode {
         if (field.isCollection()) {
             XmlDefinition fieldXml = field.getXmlDefinition();
             
-            if (value == null) {
-                if (fieldXml.isNillable()) {
-                    parent = wrap(parent, fieldXml, true);
+            int size = getCollectionSize(field, value);
+            
+            if (size == 0) {
+                if (field.getMinOccurs() == 0) {
+                    if (value != null && fieldXml.isWrapped()) {
+                        wrap(parent, fieldXml, fieldXml.isNillable());
+                    }
                 }
-                else if (field.getMinOccurs() > 0) {
+                else {
                     parent = wrap(parent, fieldXml, false);
                     for (int i=0; i<field.getMinOccurs(); i++) {
                         addFieldValue(field, parent, null, false);
                     }
                 }
             }
-            else if (field.isArray()) {
-                int length = Array.getLength(value);
-                if (length == 0 && fieldXml.isNillable()) {
-                    parent = wrap(parent, fieldXml, true);
-                }
-                else if (length > 0 || field.getMinOccurs() > 0) {
-                    parent = wrap(parent, fieldXml, false);
-                }
-                for (int i=0; i<length; i++) {
-                    addFieldValue(field, parent, Array.get(value, i), false);
-                }
-            }
             else {
-                Collection<Object> collection = (Collection<Object>)value;
-                if (fieldXml.isNillable() && collection.size() == 0) {
-                    parent = wrap(parent, fieldXml, true);
+                parent = wrap(parent, fieldXml, false);
+                if (field.isArray()) {
+                    for (int i=0; i<size; i++) {
+                        addFieldValue(field, parent, Array.get(value, i), false);
+                    }
                 }
-                else if (collection.size() > 0 || field.getMinOccurs() > 0) {
-                    parent = wrap(parent, fieldXml, false);
-                }
-                for (Object obj : (Collection<Object>)value) {
-                    addFieldValue(field, parent, obj, false);
+                else {
+                    for (Object obj : (Collection<Object>)value) {
+                        addFieldValue(field, parent, obj, false);
+                    }
                 }
             }
         }
@@ -351,42 +328,41 @@ public class XmlBeanDefinition extends BeanDefinition implements XmlNode {
      * @param field the field definition
      * @param parent the parent DOM element
      * @param value the field value
+     * @param wrap whether the field should be wrapped
      */
     private void addFieldValue(XmlFieldDefinition field, Node parent, Object value, boolean wrap) {
         XmlDefinition fieldXml = field.getXmlDefinition();
+
+        // format the field text (a null field value may not return null if a custom type handler was configured)
+        String text = field.formatValue(value);
+        
+        // nothing to marshall if minOccurs is 0        
+        if (text == null && field.getMinOccurs() == 0) {
+            return;
+        }
+        
+        // wrap the parent element if enabled
+        if (wrap) {
+            parent = wrap(parent, fieldXml, false);
+        }
         
         int type = fieldXml.getType();
         if (type == XmlDefinition.XML_TYPE_ATTRIBUTE) {
 
-            if (value == null) {
-                if (field.getMinOccurs() == 0) {
-                    return;
-                }
-                value = "";
-            }
-            
-            parent = wrap(parent, fieldXml, false);
-            
             if (parent.getNodeType() == Node.ELEMENT_NODE) {
+                if (text == null) {
+                    text = "";
+                }
+                
                 Attr att = parent.getOwnerDocument().createAttributeNS(fieldXml.getNamespace(), fieldXml.getName());
-                att.setValue(field.formatValue(value));
+                att.setValue(text);
                 att.setPrefix(fieldXml.getPrefix());
                 ((Element)parent).setAttributeNode(att);
             }
             
         }
         else if (type == XmlDefinition.XML_TYPE_ELEMENT) {
-            // null values are formatted to empty strings
-            String text = field.formatValue(value);
-            
-            if (value == null && field.getMinOccurs() == 0) {
-                return;
-            }
-            
-            if (wrap) {
-                parent = wrap(parent, fieldXml, false);
-            }
-            
+
             Element element = parent.getOwnerDocument().createElementNS(fieldXml.getNamespace(), fieldXml.getName());
             if (!fieldXml.isNamespaceAware()) {
                 element.setUserData(XmlWriter.IS_NAMESPACE_IGNORED, Boolean.TRUE, null);
@@ -396,24 +372,18 @@ public class XmlBeanDefinition extends BeanDefinition implements XmlNode {
             }
             parent.appendChild(element);
             
-            if (value == null && fieldXml.isNillable()) {
+            if (text == null && fieldXml.isNillable()) {
                 element.setAttributeNS(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "nil", "true");
             }
-            else if (text != null && !"".equals(text)) {
+            else if (text != null && text.length() > 0) {
                 element.appendChild(parent.getOwnerDocument().createTextNode(text));
             }
+            
         }
         else if (type == XmlDefinition.XML_TYPE_TEXT) {
             
-            if (fieldXml.isNillable() && value == null) {
-                parent = wrap(parent, fieldXml, true);
-            }
-            else if (field.getMinOccurs() > 0 || value != null) {
-                parent = wrap(parent, fieldXml, false);
-            }
-            
-            if (value != null) {
-                parent.setTextContent(value.toString());
+            if (text != null) {
+                parent.setTextContent(text);
             }
             
         }
@@ -447,6 +417,25 @@ public class XmlBeanDefinition extends BeanDefinition implements XmlNode {
         }
         
         return element;
+    }
+    
+    /**
+     * Returns the size of a collection property value.
+     * @param property the property definition
+     * @param value the property collection value
+     * @return the size of the property collection value
+     */
+    @SuppressWarnings("unchecked")
+    private int getCollectionSize(PropertyDefinition property, Object value) {
+        if (value == null) {
+            return 0;
+        }
+        else if (property.isArray()) {
+            return Array.getLength(value);
+        }
+        else {
+            return ((Collection<Object>)value).size();
+        }
     }
     
     /*

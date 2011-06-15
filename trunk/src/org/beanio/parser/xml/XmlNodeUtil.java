@@ -133,6 +133,10 @@ public class XmlNodeUtil {
         String xmlNamespace = definition.getNamespace();
         
         Node node = sibling;
+        if (node == null) {
+            return null;
+        }
+        
         while ((node = node.getNextSibling()) != null) {
             if (node.getNodeType() != Node.ELEMENT_NODE) {
                 continue;

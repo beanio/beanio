@@ -171,11 +171,16 @@ public class XmlFieldDefinition extends FieldDefinition implements XmlNode {
     
     @Override
     protected Object parsePropertyValue(Record record, String fieldText) {
-        if (fieldText == NIL) {
+        if (fieldText == NIL) {            
             // validate field is nillable
             if (!xml.isNillable()) {
                 record.addFieldError(getName(), null, "nillable");
                 return INVALID;
+            }
+            
+            // collections are not further validated
+            if (isCollection()) {
+                return MISSING;
             }
             // validate field is not required
             else if (isRequired()) {
@@ -197,6 +202,19 @@ public class XmlFieldDefinition extends FieldDefinition implements XmlNode {
             }
             
             return super.parsePropertyValue(record, fieldText);
+        }
+    }
+    
+    /*
+     * Overridden to return null when 'text' is null and the field is not padded.
+     */
+    @Override
+    protected String formatText(String text) {
+        if (text == null && getPaddedLength() <= 0) {
+            return null;
+        }
+        else {
+            return super.formatText(text);
         }
     }
     

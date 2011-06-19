@@ -36,7 +36,8 @@ public interface BeanReaderContext {
     public int getRecordLineNumber();
 
     /**
-     * Returns the raw text of the record being parsed.
+     * Returns the raw text of the record being parsed, or <tt>null</tt> if not supported
+     * by the input stream format (such as XML).
      * @return the raw text of the record
      */
     public String getRecordText();

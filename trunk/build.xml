@@ -73,9 +73,9 @@
   </target>
   <!-- Create API documentation -->
   <target name="docs-api" depends="docs-init">
-    <javadoc sourcepath="src" destdir="${target}/docs/api" windowtitle="BeanIO 1.0 API" access="protected"
-      header="BeanIO 1.0">
-      <doctitle><![CDATA[<h2>BeanIO 1.0 API</h2>]]></doctitle>
+    <javadoc sourcepath="src" destdir="${target}/docs/api" windowtitle="BeanIO 1.1 API" access="protected"
+      header="BeanIO 1.1">
+      <doctitle><![CDATA[<h2>BeanIO 1.1 API</h2>]]></doctitle>
       <bottom><![CDATA[<i>Copyright &copy; 2010-2011 Kevin Seim</i>]]></bottom>
       <link href="http://download.oracle.com/javase/6/docs/api/" />
     </javadoc>

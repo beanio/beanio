@@ -125,7 +125,8 @@ in JDK 1.6, is available from <a href="http://sjsxp.java.net/">Project SJSXP</a>
 </ul>
 
 <p>Alternatively, <a href="http://maven.apache.org/">Maven</a> users can declare the following dependencies
-  in their application's POM.  Note that versions documented below are only examples and may have changed.</p>
+  in their application's POM.  Note that the version numbers documented below are only examples 
+  and may have changed.</p>
 <pre>
     &lt;-- BeanIO dependency --&gt;
     &lt;dependency&gt;
@@ -808,7 +809,7 @@ and record writer:</p>
   <td>A space delimited list of XML prefixes and namespaces to declare
     on the root element of a marshalled document.  The property value
     should be formatted as
-    <pre class="indent">prefix namespace prefix namespace...</pre></td>
+    <pre class="indent">prefix1 namespace1 prefix2 namespace2...</pre></td>
   <td>No</td>
   <td>Yes</td>
 </tr>
@@ -1969,7 +1970,7 @@ as they appear above, the following mapping file can be used.</p>
 
 <p>From this example, the following behavior can be observed:</p>
 <ul>
-<li>A <tt>xmlPrefix</tt> attribute can be used to assign a namespace prefix anywhere a <tt>xmlNamespace</tt> is declared.  
+<li>An <tt>xmlPrefix</tt> attribute can be used to assign a namespace prefix anywhere a <tt>xmlNamespace</tt> is declared.  
  <ul>
  <li>If a prefix is configured, the namespace is assigned to the prefix and the prefix is used
    from that point forward.  This can be seen on the 'employee' element (<tt>record</tt> configuration).</li>
@@ -1980,7 +1981,7 @@ as they appear above, the following mapping file can be used.</p>
 <li>As previously mentioned, namespace are by default inherited from parent mapping elements.  This
   can be seen on the 'title', 'salary' and 'hireDate' elements (<tt>field</tt> configurations).</li>
 <li>Namespaces can be eagerly declared on the root element using the writer's <tt>namespaces</tt> property.
-  Multiple namespaces can be declared with space delimiters such as '<i>prefix namespace prefix namespace...</i>'.
+  Multiple namespaces can be declared with space delimiters such as '<i>prefix1 namespace1 prefix2 namespace2...</i>'.
 </li>
 </ul>
 
@@ -1992,33 +1993,37 @@ element and a child that inherits it's parent namespace.</p>
 <table class="indent">
 <tr>
   <th>Mapping Configuration</th>
-  <th>Marshalled Element</th>
-  <th>Marshalled Child</th>
+  <th>Marshalled Element And Child</th>
 </tr>
 <tr>
-  <td><tt>[None]</tt></td>
-  <td><tt>&lt;element /&gt;</tt></td>
-  <td><tt>&lt;child /&gt;</tt></td>
+  <td><pre>[None]</pre></td>
+  <td><pre>&lt;element&gt;
+  &lt;child/&gt;
+&lt;/element&gt;</pre></td>
 </tr>
 <tr>
-  <td><tt>xmlNamespace="*"</tt></td>
-  <td><tt>&lt;element /&gt;</tt></td>
-  <td><tt>&lt;child /&gt;</tt></td>
+  <td><pre>xmlNamespace="*"</pre></td>
+  <td><pre>&lt;element&gt;
+  &lt;child/&gt;
+&lt;/element&gt;</pre></td>
 </tr>
 <tr>
-  <td><tt>xmlNamespace=""</tt></td>
-  <td><tt>&lt;element xmlns="" /&gt;</tt></td>
-  <td><tt>&lt;child /&gt;</tt></td>
+  <td><pre>xmlNamespace=""</pre></td>
+  <td><pre>&lt;element xmlns=""&gt;
+  &lt;child/&gt;
+&lt;/element&gt;</pre></td>
 </tr>
 <tr>
-  <td><tt>xmlNamespace="http://example.com"</tt></td>
-  <td><tt>&lt;element xmlns="http://example.com" /&gt;</tt></td>
-  <td><tt>&lt;child /&gt;</tt></td>
+  <td><pre>xmlNamespace="http://example.com"</pre></td>
+  <td><pre>&lt;element xmlns="http://example.com"&gt;
+  &lt;child/&gt;
+&lt;/element&gt;</pre></td>
 </tr>
 <tr>
-  <td style="width: 40%"><tt>xmlNamespace="http://example.com" xmlPrefix="e"</tt></td>
-  <td><tt>&lt;e:element xmlns:e="http://example.com" /&gt;</tt></td>
-  <td><tt>&lt;e:child /&gt;</tt></td>
+  <td><pre>xmlNamespace="http://example.com" xmlPrefix="e"</pre></td>
+  <td><pre>&lt;e:element xmlns="http://example.com"&gt;
+  &lt;e:child/&gt;
+&lt;/e:element&gt;</pre></td>
 </tr>
 </table>
 

@@ -46,7 +46,7 @@ public class XmlDateTypeHandler extends AbstractXmlDateTypeHandler {
         
         XMLGregorianCalendar xcal = dataTypeFactory.newXMLGregorianCalendarDate(
             cal.get(Calendar.YEAR), 
-            cal.get(Calendar.MONTH + 1), 
+            cal.get(Calendar.MONTH) + 1, 
             cal.get(Calendar.DATE), 
             getTimeZoneOffset((Date)value));
         

@@ -39,6 +39,8 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
 
     private static final EntityResolver defaultEntityResolver = new DefaultEntityResolver();
 
+    private DocumentBuilderFactory factory;
+    
     /**
      * Constructs a new <tt>XmlConfigurationLoader</tt>.
      */
@@ -50,7 +52,10 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
      */
     public BeanIOConfig loadConfiguration(InputStream in) throws IOException,
         BeanIOConfigurationException {
-        DocumentBuilderFactory factory = createDocumentBuilderFactory();
+        
+        if (factory == null) {
+            factory = createDocumentBuilderFactory();
+        }
 
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -395,6 +400,8 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
         try {
             factory.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaLanguage",
                 XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            factory.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaSource", 
+                getClass().getResource(BEANIO_XSD).toExternalForm());
         }
         catch (IllegalArgumentException ex) {
             throw new BeanIOException("Unable to validate using XSD: JAXP provider [" +

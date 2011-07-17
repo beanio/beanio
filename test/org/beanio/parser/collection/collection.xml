@@ -45,7 +45,7 @@
 
   <stream name="fc1" format="fixedlength">
     <record name="record1" minLength="2" class="org.beanio.parser.collection.CollectionBean">
-      <field name="array" type="int" length="3" justify="right" padding="0" collection="array" minOccurs="3" />
+      <field name="array" type="int" length="3" justify="right" padding="0" collection="array" required="true" minOccurs="3" />
       <field name="set" type="char" length="1" collection="java.util.LinkedHashSet" minOccurs="0" maxOccurs="5" />
     </record>
   </stream>

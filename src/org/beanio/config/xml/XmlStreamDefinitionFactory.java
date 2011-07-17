@@ -169,6 +169,14 @@ public class XmlStreamDefinitionFactory extends StreamDefinitionFactory {
         if (fieldConfig.getMinOccurs() == null && !xml.isNillable()) {
             fieldDefinition.setMinOccurs(0);
         }
+        
+        if (fieldConfig.getPadding() != null) {
+            fieldDefinition.setPadded(true);
+            fieldDefinition.setPadding(fieldConfig.getPadding());
+            fieldDefinition.setPaddedLength(fieldConfig.getLength());
+            fieldDefinition.setJustification(FieldConfig.RIGHT.equals(fieldConfig.getJustify()) ?
+                FieldDefinition.RIGHT : FieldDefinition.LEFT);
+        }
     }
     
     /**

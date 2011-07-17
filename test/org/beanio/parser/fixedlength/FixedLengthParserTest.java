@@ -169,11 +169,11 @@ public class FixedLengthParserTest extends ParserTest {
         
         try {
             Map map = (Map) in.read();
-            assertEquals(Arrays.asList(0, 1, 10, 100, 1000, 10000), map.get("number"));
+            assertEquals(Arrays.asList(0, 1, 10, 100, 1000, 10000, null), map.get("number"));
             
             StringWriter text = new StringWriter();
             factory.createWriter("f4", text).write(map);
-            assertEquals("INT000000000100010001000100010000", text.toString());
+            assertEquals("INT000000000100010001000100010000     ", text.toString());
             
             map = (Map) in.read();
             assertEquals(Arrays.asList('A', 'B', ' ', 'D'), map.get("character"));

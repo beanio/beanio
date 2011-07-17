@@ -57,6 +57,7 @@ public class FixedLengthStreamDefinitionFactory extends FlatStreamDefinitionFact
         Character padding = fieldConfig.getPadding();
         
         fieldDefinition.setLength(length);
+        fieldDefinition.setPadded(true);
         fieldDefinition.setPaddedLength(length);
         fieldDefinition.setPosition(fieldConfig.getPosition());
         fieldDefinition.setPadding(padding != null ? padding : ' ');

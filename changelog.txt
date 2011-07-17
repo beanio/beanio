@@ -1,6 +1,11 @@
 Project BeanIO Change Log
 =========================
 
+Changes in version 1.1.1 (TBD)
+-------------------------------------
+* gc0010 - Fixed to honor padding settings for XML formatted streams
+* gc0011 - Added support for optional padded fields
+
 Changes in version 1.1.0 (2011-06-19)
 -------------------------------------
 * Added support for XML formatted streams.

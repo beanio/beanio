@@ -79,7 +79,35 @@ public class XmlFieldDefinition extends FieldDefinition implements XmlNode {
         String text = getFieldText(record);
         // update the record with the raw field text
         record.setFieldText(getName(), text == NIL ? null : text);
-        return text;
+        
+        if (text == NIL) {
+            record.setFieldText(getName(), null);
+            return NIL;
+        }
+        else {
+            record.setFieldText(getName(), text);
+            
+            if (text == null) {
+                return null;
+            }
+            else if (isPadded()) {
+                if ("".equals(text)) {
+                    // this will either cause a required validation error or map
+                    // to a null value depending on the value of 'required'
+                    return "";
+                }
+                else if (getPaddedLength() > 0 && text.length() != getPaddedLength()) {
+                    record.addFieldError(getName(), text, "length", getPaddedLength());
+                    return INVALID;
+                }
+                else {
+                    return unpad(text);
+                }
+            }
+            else {
+                return text;
+            }
+        }
     }
     
     /**
@@ -216,6 +244,14 @@ public class XmlFieldDefinition extends FieldDefinition implements XmlNode {
         else {
             return super.formatText(text);
         }
+    }
+    
+    /**
+     * Overridden to return null when a padded optional field is null.
+     */
+    @Override
+    protected String formatPaddedNull() {
+        return null;
     }
     
     /*

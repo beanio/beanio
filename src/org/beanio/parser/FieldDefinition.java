@@ -50,6 +50,7 @@ public abstract class FieldDefinition extends PropertyDefinition {
     private Object defaultValue;
     
     /* padded field settings */
+    private boolean padded = false;
     private char padding = ' ';
     private int paddedLength = 0; // 0 if padding is disabled
     private char justification = LEFT;
@@ -261,21 +262,31 @@ public abstract class FieldDefinition extends PropertyDefinition {
      * @return the formatted field text
      */
     protected String formatText(String text) {
-        if (text == null) {
-            text = "";
-        }
-        
         int toLength = getPaddedLength();
         if (toLength <= 0) {
-            return text;
+            return text == null ? "" : text;
         }
-    
-        int fromLength = text.length();
-        if (fromLength > toLength) {
-            return text.substring(0, toLength);
+        
+        // handle padded fields...
+        
+        int fromLength;
+        if (text == null) {
+            // if the field isn't required, then we allow padding
+            // to be skipped
+            if (!isRequired()) {
+                return formatPaddedNull();
+            }
+            text = "";
+            fromLength = 0;
         }
-        else if (fromLength == toLength) {
-            return text;
+        else {
+            fromLength = text.length();
+            if (fromLength > toLength) {
+                return text.substring(0, toLength);
+            }
+            else if (fromLength == toLength) {
+                return text;
+            }
         }
     
         int remaining = toLength - fromLength;
@@ -293,6 +304,15 @@ public abstract class FieldDefinition extends PropertyDefinition {
             s.append(text);
         }
         return s.toString();
+    }
+    
+    /**
+     * Returns the field text for a padded field when the property value
+     * is null.
+     * @return field text for a null property
+     */
+    protected String formatPaddedNull() {
+        return "";
     }
     
     /**
@@ -550,6 +570,24 @@ public abstract class FieldDefinition extends PropertyDefinition {
     public void setPropertyType(Class<?> type) {
         super.setPropertyType(type);
         this.defaultText = getDefaultTextFor(type, padding);
+    }
+
+    /**
+     * Returns whether this field is padded.
+     * @return <tt>true</tt> if this field is padded
+     * @since 1.1.1
+     */
+    public boolean isPadded() {
+        return padded;
+    }
+
+    /**
+     * Sets whether this field is padded.
+     * @param padded <tt>true</tt> if this field is padded
+     * @since 1.1.1
+     */
+    public void setPadded(boolean padded) {
+        this.padded = padded;
     }
 
     /**

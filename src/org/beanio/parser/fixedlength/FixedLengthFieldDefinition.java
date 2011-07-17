@@ -27,6 +27,8 @@ import org.beanio.parser.flat.FlatFieldDefinition;
  */
 public class FixedLengthFieldDefinition extends FlatFieldDefinition {
     
+    private String paddedNullText = "";
+    
     @Override
     public boolean matches(Record record) {     
         if (!isRecordIdentifier()) {
@@ -54,8 +56,37 @@ public class FixedLengthFieldDefinition extends FlatFieldDefinition {
             record.addFieldError(getName(), fieldText, "length", getLength());
             return INVALID;
         }
+        // return null if the field is all spaces, to allow for optional
+        // zero padded fields
+        else if (!getPropertyType().equals(Character.class) && fieldText.trim().length() == 0) {
+            return "";
+        }
         else {
             return unpad(fieldText);
+        }
+    }
+    
+    /**
+     * Overridden to return spaces filled to the padded length of the field.
+     */
+    @Override
+    protected String formatPaddedNull() {
+        return paddedNullText;
+    }
+
+    @Override
+    public void setPaddedLength(int length) {
+        super.setPaddedLength(length);
+        
+        if (length > 0) {
+            StringBuffer s = new StringBuffer(length);
+            for (int i=0; i<length; i++) {
+                s.append(' ');
+            }
+            paddedNullText = s.toString();
+        }
+        else {
+            paddedNullText = "";
         }
     }
 

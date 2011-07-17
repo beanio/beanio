@@ -31,6 +31,7 @@ public class Person {
     private List<String> color;
     private Address address;
     private List<Address> addressList;
+    private Integer age;
     
     public String getType() {
         return type;
@@ -76,6 +77,13 @@ public class Person {
     }
     public void setAddressList(List<Address> address) {
         this.addressList = address;
+    }
+    
+    public Integer getAge() {
+        return age;
+    }
+    public void setAge(Integer age) {
+        this.age = age;
     }
     
     public String toString() {

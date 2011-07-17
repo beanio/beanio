@@ -45,11 +45,22 @@ public class DelimitedFieldDefinition extends FlatFieldDefinition {
 		if (text == null) {
 		    return null;
 		}
-		else if (getPaddedLength() == 0){
-		    return text;
+		else if (isPadded()) {
+		    if ("".equals(text)) {
+		        // this will either cause a required validation error or map
+		        // to a null value depending on the value of 'required'
+		        return "";
+		    }
+            else if (getPaddedLength() > 0 && text.length() != getPaddedLength()) {
+                record.addFieldError(getName(), text, "length", getPaddedLength());
+                return INVALID;
+            }
+            else {
+                return unpad(text);
+            }
 		}
 		else {
-		    return unpad(text);
+		    return text;
 		}
 	}
 	

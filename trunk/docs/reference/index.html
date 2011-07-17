@@ -1364,7 +1364,7 @@ redefine our employee file example using the fixed length format below.
   </table>
 </div>
 
-<p>Thus, a fixed length version of the employee file might look like the following:</p>
+<p>A fixed length version of the employee file might look like the following:</p>
 <pre class="file">
 Joe       Smith    Developer 07500010012009
 Jane      Doe      Architect 08000001152008
@@ -1395,7 +1395,8 @@ Using these attributes, our mapping file can now be updated as follows:
 from the end of the field if left justified, until a character is found that does not match the padding
 character.  If the entire field is padded, <tt>Number</tt> property types default to the padding character if 
 it is a digit, and the padding character is ignored for <tt>Character</tt> types.  To illustrate this, 
-some examples are shown in the table below.</p><table class="indent">
+some examples are shown in the table below.</p>
+<table class="indent">
 <tr>
   <th>Justify</th>
   <th>Type</th>
@@ -1453,7 +1454,48 @@ some examples are shown in the table below.</p><table class="indent">
 </tr>
 </table>
 
+<p>The marshalling and unmarshalling behavior of null field values for a padded field is
+further controlled using the <tt>required</tt> attribute.  If <tt>required</tt> is set to true, null
+field values are marshalled by filling the field with the padding character.  If
+<tt>required</tt> is set to false, a null field value is marshalled as spaces for fixed length
+streams and an empty string for non-fixed length streams.  Similarly, if <tt>required</tt> is set to
+false, spaces are unmarshalled to a null field value regardless of the padding character.
+To illustrate this, the following table shows the field text for a right justified zero
+padded 3 digit number.</p>
 
+<table class="indent">
+<tr>
+  <th>Required</th>
+  <th>Field Value</th>
+  <th>Field Text<br /> (Fixed Length)</th>
+  <th>Field Text<br />(Non-Fixed Length)</th>
+</tr>
+<tr>
+  <td rowspan="2"><tt>true</tt></td>
+  <td>0</td>
+  <td>"<tt>000</tt>"</td>
+  <td>"<tt>000</tt>"</td>
+</tr>
+<tr>
+  <td>null</td>
+  <td>"<tt>000</tt>"<sup>1</sup></td>
+  <td>"<tt>000</tt>"<sup>1</sup></td>
+</tr>
+<tr>
+  <td rowspan="2"><tt>false</tt></td>
+  <td>0</td>
+  <td>"<tt>000</tt>"</td>
+  <td>"<tt>000</tt>"</td>
+</tr>
+<tr>
+  <td>null</td>
+  <td>"<tt>&nbsp;&nbsp;&nbsp;</tt>"</td>
+  <td>""</td>
+</tr>
+</table>
+<p class="indent"><sup>1</sup> Applies to marshalling only.  Unmarshalling "000" would
+produce a field value of 0.</p>
+<p>As hinted to above, padding settings can be applied to any field for any stream type.</p>
 
 
 <h2><a name="BeanDefinitions">4.4. Nested Bean Definitions</a></h2>
@@ -3339,7 +3381,25 @@ and vice versa.</p>
   <td><tt>padding</tt></td>
   <td>The character used to pad this field.  For fixed length formatted streams,
     <tt>padding</tt> defaults to a space.  For non-fixed length formatted streams,
-    padding is disabled unless a padding character and length is specified.</td>
+    padding is disabled unless a padding character and length is specified.
+    
+    <p>If padding is enabled, the <tt>required</tt> field attribute has some control over the
+    marshalling and unmarshalling of null values.</p>
+    
+    <p>When unmarshalling a field consisting of all spaces in a fixed length stream, 
+    if <tt>required</tt> is false, the field
+    is accepted regardless of the padding character.  If
+    <tt>required</tt> is true, a required field validation error is triggered.  And when
+    marshalling a null field value, if <tt>required</tt> is false, 
+    the field text is formatted as spaces regardless of the configured padding character.
+    </p>
+    
+    <p>In other stream formats that are not fixed length, null field values are 
+    unmarshalled and marshalled as empty strings when <tt>required</tt> is false.
+    When <tt>required</tt> is true, unmarshalling an empty string will trigger a required
+    field validation error, and marshalling a null value will fill the field text with
+    the padding character up to the padded length of the field.</p>
+  </td>
   <td>No</td>
   <td><tt>*</tt></td>
 </tr>

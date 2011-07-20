@@ -68,6 +68,7 @@ public class XmlReader implements RecordReader {
     private static final XMLInputFactory xmlInputFactory;
     static {
         xmlInputFactory = XMLInputFactory.newInstance();
+        xmlInputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
     }
     
     /* the input stream to read from */

@@ -83,7 +83,7 @@ public class XmlFieldTest extends XmlParserTest {
             person.setAge(null);
             out.write(person);
             
-            assertFieldError(in, 8, "record", "age", "025", "Invalid field length, expected 5 characters");
+            assertFieldError(in, 8, "record", "age", "025", "Invalid padded field length, expected 5 characters");
             
             out.close();
             assertEquals(load("f2_out.xml"), s.toString());

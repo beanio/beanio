@@ -38,6 +38,7 @@ public abstract class PropertyDefinition {
     
     private String name;
     private boolean property = false;
+    private boolean recordIdentifier = false;
     private Class<?> propertyType;
     private PropertyDescriptor propertyDescriptor;
     private int length;
@@ -64,12 +65,31 @@ public abstract class PropertyDefinition {
     }
     
     /**
+     * Returns whether this property describes a field in the mapped stream.
+     * @return <tt>true</tt> if this property describes a field in the mapped stream 
+     * @since 1.2
+     */
+    public boolean isField() {
+        return false;
+    }
+    
+    /**
      * Tests if the field text in the record matches this field definition.
      * @param record the record containing the field to test
      * @return <tt>true</tt> if the text is a match
      */
     public abstract boolean matches(Record record);
 
+    /**
+     * Tests whether this definition is used to map the given bean or property value.
+     * If this property is not used to identify records, the return value of this method
+     * is undefined.
+     * @param value the bean or property value to test
+     * @return <tt>true</tt> if this definition is used to map the given value
+     * @since 1.2
+     */
+    public abstract boolean defines(Object value);
+    
     /**
      * Validates and parses the value of this field from a record.  If field validation
      * fails, appropriate field errors are set on the record, and null is returned. 
@@ -206,7 +226,7 @@ public abstract class PropertyDefinition {
 
     /**
      * Returns <tt>true</tt> if the value parsed by this property definition is a property
-     * its enclosing bean.
+     * of its enclosing bean.
      * @return <tt>true</tt> if the value parsed by this property definition is a property
      *   of its enclosing bean
      */
@@ -377,5 +397,27 @@ public abstract class PropertyDefinition {
      */
     public void setLazy(boolean lazy) {
         this.lazy = lazy;
+    }
+    
+    /**
+     * Returns <tt>true</tt> if the property or any descendant of this property definition 
+     * is used to identify records.
+     * @return <tt>true</tt> if this property or any descendant of this property definition is used
+     *   to identify records
+     * @since 1.2
+     */
+    public boolean isRecordIdentifier() {
+        return recordIdentifier;
+    }
+
+    /**
+     * Sets whether this property or any descendant of this property definition 
+     * is used to identify records.
+     * @param recordIdentifier <tt>true</tt> if this property or any descendant of this property 
+     *   definition is used to identify records
+     * @since 1.2
+     */
+    public void setRecordIdentifier(boolean recordIdentifier) {
+        this.recordIdentifier = recordIdentifier;
     }
 }

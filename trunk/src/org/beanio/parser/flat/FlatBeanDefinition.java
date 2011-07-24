@@ -73,7 +73,7 @@ public abstract class FlatBeanDefinition extends BeanDefinition {
             if (property.isBean()) {
                 ((FlatBeanDefinition)property).formatBean(offset, record, value, backfill);
             }
-            else {
+            else if (property.isField()) {
                 final FieldDefinition field = (FieldDefinition) property;
                 final int position = field.getPosition() + offset;
                 

@@ -1,6 +1,10 @@
 Project BeanIO Change Log
 =========================
 
+Changes in version 1.2.0 (TBD)
+-------------------------------------
+* Added 'property' mapping element for records and beans
+
 Changes in version 1.1.1 (2011-07-21)
 -------------------------------------
 * gc0010 - Fixed to honor padding settings for XML formatted streams

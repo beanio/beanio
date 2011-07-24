@@ -64,7 +64,7 @@ public class XmlBeanDefinition extends BeanDefinition implements XmlNode {
                 // the stream node is not matched
                 return false;
             }
-            else if (isRecordIdentifer()) {
+            else if (isRecordIdentifier()) {
                 // if a child element is used to identify the record and the parent
                 // element does not exist, then the node is not matched 
                 return false;
@@ -272,7 +272,7 @@ public class XmlBeanDefinition extends BeanDefinition implements XmlNode {
             if (property.isBean()) {
                 ((XmlBeanDefinition)property).formatBean(parent, value);
             }
-            else {
+            else if (property.isField()) {
                 addField((XmlFieldDefinition) property, parent, value);
             }
         }

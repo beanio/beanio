@@ -302,12 +302,15 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
             else if ("bean".equals(name)) {
                 beanConfig.addProperty(createBeanConfig(child));
             }
+            else if ("property".equals(name)) {
+                beanConfig.addProperty(createBeanPropertyConfig(child));
+            }
         }
         
         config.setBean(beanConfig);
         return config;
     }
-    
+        
     private void populatePropertyConfig(PropertyConfig config, Element element) {
         config.setName(getAttribute(element, "name"));
         config.setGetter(getAttribute(element, "getter"));
@@ -346,6 +349,9 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
             }
             else if ("bean".equals(name)) {
                 config.addProperty(createBeanConfig(child));
+            }
+            else if ("property".equals(name)) {
+                config.addProperty(createBeanPropertyConfig(child));
             }
         }
         
@@ -386,6 +392,25 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
         return config;
     }
 
+    /**
+     * Parses a bean property configuration from a DOM element.
+     * @param element the DOM element to parse
+     * @return the parsed bean property configuration
+     */
+    protected BeanPropertyConfig createBeanPropertyConfig(Element element) {
+        BeanPropertyConfig config = new BeanPropertyConfig();
+        config.setName(getAttribute(element, "name"));
+        config.setGetter(getAttribute(element, "getter"));
+        config.setSetter(getAttribute(element, "setter"));
+        config.setType(getAttribute(element, "type"));
+        config.setTypeHandler(getAttribute(element, "typeHandler"));
+        config.setValue(getAttribute(element, "format"));
+        config.setRecordIdentifier(getBooleanAttribute(element, "rid", 
+            config.isRecordIdentifier()));
+        config.setValue(getAttribute(element, "value"));
+        return config;
+    }
+    
     /**
      * Creates an XML document builder factory.
      * @return the new <tt>DocumentBuilderFactory</tt>

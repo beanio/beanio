@@ -55,6 +55,15 @@ public abstract class PropertyConfig {
     }
     
     /**
+     * Returns whether this property configuration defines a field.
+     * @return <tt>true</tt> if this property is a field
+     * @since 1.2
+     */
+    public boolean isField() {
+        return false;
+    }
+    
+    /**
      * Returns the name of this property.  The name of the property is
      * used to get and set the property value from its enclosing bean
      * when a <tt>getter</tt> and <tt>setter</tt> are not set.

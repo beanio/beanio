@@ -170,7 +170,7 @@ public abstract class FlatStreamDefinitionFactory extends StreamDefinitionFactor
                 FlatBeanDefinition child = (FlatBeanDefinition)property;
                 validateCollections(child, isCollection);
             }
-            else {
+            else if (property.isField()) {
                 if (previous != null) {
                     if (previous.isCollection()) {
                         // assume min and max occurs are the same (which is validated elsewhere)
@@ -225,7 +225,7 @@ public abstract class FlatStreamDefinitionFactory extends StreamDefinitionFactor
                     }
                 }
             }
-            else {
+            else if (property.isField()) {
                 if (property.getMinOccurs() != property.getMaxOccurs()) {
                     if (indeterminate) {
                         throw new BeanIOConfigurationException(
@@ -308,7 +308,7 @@ public abstract class FlatStreamDefinitionFactory extends StreamDefinitionFactor
                 bean.setLength(beanSize.getLength());
                 block.update(bean, beanSize);
             }
-            else {
+            else if (property.isField()) {
                 block.update((FieldDefinition) property);
             }
         }
@@ -382,8 +382,12 @@ public abstract class FlatStreamDefinitionFactory extends StreamDefinitionFactor
                 }
                 return min;
             }
-            else {
+            else if (pd.isField()) {
                 return ((FieldDefinition)pd).getPosition();
+            }
+            else {
+                // TODO is it OK to sort properties to the end??
+                return -1;
             }
         }
     }

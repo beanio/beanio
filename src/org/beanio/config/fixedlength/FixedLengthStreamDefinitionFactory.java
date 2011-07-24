@@ -85,7 +85,7 @@ public class FixedLengthStreamDefinitionFactory extends FlatStreamDefinitionFact
                 nextPosition = updateFieldPositionAndLength(nextPosition, (BeanConfig) property, 
                     childBeanDefinition);
             }
-            else {
+            else if (property.isField()) {
                 FieldConfig field = (FieldConfig) property;
                 FixedLengthFieldDefinition currentDefinition = (FixedLengthFieldDefinition) beanDefinition.getProperty(i);
                 

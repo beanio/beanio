@@ -391,12 +391,12 @@ public abstract class StreamDefinitionFactory {
             
             // update the parent bean definition
             parent.addProperty(definition);
-            if (definition.isRecordIdentifer()) {
+            if (definition.isRecordIdentifier()) {
                 if (parent.isCollection()) {
                     throw new BeanIOConfigurationException("a collection cannot contain " +
                         "record identifying fields");
                 }
-                parent.setRecordIdentifer(true);
+                parent.setRecordIdentifier(true);
             }
         }
         catch (BeanIOConfigurationException ex) {
@@ -425,7 +425,7 @@ public abstract class StreamDefinitionFactory {
     protected void updateBeanDefinition(BeanConfig beanConfig, BeanDefinition beanDefinition) { }
     
     /**
-     * Compiles field definitions for a record.  The compiled field definitions are
+     * Compiles child property definitions for a record.  The compiled property definitions are
      * added to the record definition.
      * @param recordConfig the record configuration
      * @param recordDefinition the record definition to update
@@ -435,144 +435,277 @@ public abstract class StreamDefinitionFactory {
     }
 
     /**
-     * Compiles field definitions for a bean.  The compiled field definitions are
+     * Compiles child property definitions for a bean.  The compiled property definitions are
      * added to the bean definition.
      * @param beanConfig the bean configuration
      * @param beanDefinition the bean definition to update
      */
     protected void compileFieldDefinitions(BeanConfig beanConfig, BeanDefinition beanDefinition) {
-        int index = 0;
         for (PropertyConfig property : beanConfig.getPropertyList()) {
-            
             if (property.isBean()) {
                 BeanConfig childBeanConfig = (BeanConfig) property;
                 BeanDefinition childBeanDefinition = newBeanDefinition(childBeanConfig);
                 compileBeanDefinition(beanDefinition, childBeanConfig, childBeanDefinition);
-                continue;
+            }
+            else if (property.isField()) {
+                FieldConfig fieldConfig = (FieldConfig) property;
+                FieldDefinition fieldDefinition = newFieldDefinition(fieldConfig);
+                compileFieldDefinition(beanDefinition, fieldConfig, fieldDefinition);
+            }
+            else {
+                BeanPropertyDefinition definition = new BeanPropertyDefinition();
+                compileBeanPropertyDefinition(beanDefinition, (BeanPropertyConfig)property, definition);
+            }
+        }
+    }
+    
+    /**
+     * Compiles a bean property definition.
+     * @param beanDefinition the parent bean definition
+     * @param config the property configuration
+     * @param definition the property definition
+     */
+    protected void compileBeanPropertyDefinition(BeanDefinition beanDefinition, BeanPropertyConfig config, 
+        BeanPropertyDefinition definition) {
+        
+        if (config.getName() == null) {
+            throw new BeanIOConfigurationException("Missing property name");
+        }
+        
+        try {
+            definition.setName(config.getName());
+            definition.setRecordIdentifier(config.isRecordIdentifier());
+            definition.setProperty(true);
+            
+            // determine the property type
+            Class<?> propertyType = null;
+            if (config.getType() != null) {
+                propertyType = TypeUtil.toType(config.getType());
+                if (propertyType == null) {
+                    throw new BeanIOConfigurationException("Invalid type or type alias '" + config.getType() + "'");
+                }
             }
             
-            FieldConfig field = (FieldConfig) property;
+            // set the property descriptor on the field
+            PropertyDescriptor descriptor = null;
+            if (!beanDefinition.isPropertyTypeMap()) {
+                descriptor = getPropertyDescriptor(config, beanDefinition.getPropertyType());
+
+                if (propertyType == null) {
+                    propertyType = descriptor.getPropertyType();
+                }
+                else if (!TypeUtil.isAssignable(descriptor.getPropertyType(), propertyType)) {
+                    throw new BeanIOConfigurationException("Configured property type '" + 
+                        config.getType() + "' is not assignable to bean property " +
+                        "type '" + descriptor.getPropertyType().getName() + "'");
+                }
+            }
+            definition.setPropertyDescriptor(descriptor);
             
-            if (field.getName() == null) {
-                throw new BeanIOConfigurationException("Missing field name");
+            // configure type handler properties
+            Properties typeHandlerProperties = null;
+            if (config.getFormat() != null) {
+                typeHandlerProperties = new Properties();
+                typeHandlerProperties.put(ConfigurableTypeHandler.FORMAT_SETTING, config.getFormat());
             }
 
-            FieldDefinition fieldDefinition = null;
-            
-            ++index;
-            try {
-                fieldDefinition = newFieldDefinition(field);
-                fieldDefinition.setName(field.getName());
-                fieldDefinition.setParent(beanDefinition);
-                fieldDefinition.setRecordIdentifier(field.isRecordIdentifier());
-                fieldDefinition.setRequired(field.isRequired());
-                fieldDefinition.setTrim(field.isTrim());
-                fieldDefinition.setLiteral(field.getLiteral());
+            // determine the type handler based on the named handler or the field class
+            TypeHandler handler = null;
+            if (config.getTypeHandler() != null) {
+                handler = typeHandlerFactory.getTypeHandler(config.getTypeHandler(), typeHandlerProperties);
+                if (handler == null) {
+                    throw new BeanIOConfigurationException("No configured type handler named '" +
+                        config.getTypeHandler() + "'");
+                }
+
+                // if the property type was not already determine, use the type from the type handler
+                if (propertyType == null) {
+                    propertyType = handler.getType();
+                }
+                // otherwise validate the property type is compatible with the type handler
+                else if (!TypeUtil.isAssignable(propertyType, handler.getType())) {
+                    throw new BeanIOConfigurationException("Property type '" +
+                        propertyType.getName() + "' is not compatible " +
+                        "with assigned type handler named '" + config.getTypeHandler() + "'");
+                }
+            }
+            else {
+                // assume String type if the property type was not determined any other way
+                if (propertyType == null) {
+                    propertyType = String.class;
+                }
+
+                // get a type handler for the the property type
+                String typeName = config.getType();
                 try {
-                    fieldDefinition.setRegex(field.getRegex());
-                }
-                catch (PatternSyntaxException ex) {
-                    throw new BeanIOConfigurationException("Invalid regex pattern", ex);
-                }
-
-                int minLength = field.getMinLength() != null ? field.getMinLength() : 0;
-                fieldDefinition.setMinLength(minLength);
-                int maxLength = field.getMaxLength() != null ? field.getMaxLength() : -1;
-                fieldDefinition.setMaxLength(maxLength);
-
-                if (maxLength > 0 && maxLength < minLength) {
-                    throw new BeanIOConfigurationException("maxLength must be greater than or equal to minLength");
-                }
-                if (fieldDefinition.getLiteral() != null) {
-                    int size = fieldDefinition.getLiteral().length();
-                    if (size < minLength) {
-                        throw new BeanIOConfigurationException("literal text length is less than minLength");
-                    }
-                    if (maxLength >= 0 && size > maxLength) {
-                        throw new BeanIOConfigurationException("literal text length is greater than maxLength");
-                    }
-                }
-
-                // validate minOccurs
-                int minOccurs = 1;
-                if (field.getMinOccurs() != null) {
-                    minOccurs = field.getMinOccurs();
-                    
-                    if (minOccurs != 1 && field.getCollection() == null && !isOptionalFieldEnabled()) {
-                        throw new BeanIOConfigurationException(
-                            "minOccurs must be 1, or the field collection type must be set");
-                    }
-                }
-                fieldDefinition.setMinOccurs(minOccurs);
-                
-                // validate the field's maximum occurrences, default is minOccurs
-                int maxOccurs = Math.max(minOccurs, 1);
-                if (field.getMaxOccurs() != null) {
-                    maxOccurs = field.getMaxOccurs();
-                    if (maxOccurs < 0) {
-                        maxOccurs = -1;
-                    }
-                    else if (maxOccurs < minOccurs) {
-                        throw new BeanIOConfigurationException("maxOccurs must be greater than or " +
-                            "equal to minOccurs");
-                    }                   
-                    if (maxOccurs != 1 && field.getCollection() == null) {
-                        throw new BeanIOConfigurationException(
-                            "maxOccurs must be 1, or the field collection type must be set");
-                    }
-                }
-                if (maxOccurs < 0 && beanDefinition.isCollection()) {
-                    throw new BeanIOConfigurationException("Invalid maxLength, variable sized collection " +
-                        "fields not supported for bean collections");
-                }
-                fieldDefinition.setMaxOccurs(maxOccurs);
-
-                updateFieldType(field, fieldDefinition, beanDefinition);
-
-                // set the default field value using the configured type handler
-                String defaultText = field.getDefault();
-                if (defaultText != null) {
-                    TypeHandler handler = fieldDefinition.getTypeHandler();
-                    if (handler != null) {
-                        try {
-                            fieldDefinition.setDefaultValue(handler.parse(defaultText));
-                        }
-                        catch (TypeConversionException ex) {
-                            throw new BeanIOConfigurationException("Type conversion failed for " +
-                                "configured default '" + defaultText + "': " + ex.getMessage(), ex);
-                        }
+                    if (typeName == null) {
+                        typeName = propertyType.getName();
+                        handler = typeHandlerFactory.getTypeHandlerFor(propertyType, typeHandlerProperties);
                     }
                     else {
-                        fieldDefinition.setDefaultValue(defaultText);
+                        handler = typeHandlerFactory.getTypeHandlerFor(typeName, typeHandlerProperties);
                     }
                 }
-
-                updateFieldDefinition(field, fieldDefinition);
-                
-                if (fieldDefinition.isRecordIdentifier()) {
-                    validateRecordIdentifyingCriteria(fieldDefinition);
-                    
-                    // validate a collection is not used to identify the record
-                    if (fieldDefinition.isCollection()) {
-                        throw new BeanIOConfigurationException("a collection cannot be " +
-                            "used as a record identifiers");
-                    }
+                catch (IllegalArgumentException ex) {
+                    throw new BeanIOConfigurationException(ex.getMessage(), ex);
+                }
+                if (handler == null) {
+                    throw new BeanIOConfigurationException("Type handler not found for type '" + typeName + "'");
                 }
             }
-            catch (BeanIOConfigurationException ex) {
-                throw new BeanIOConfigurationException("Invalid '" + field.getName() +
-                    "' field configuration: " + ex.getMessage(), ex);
-            }
+            definition.setPropertyType(propertyType);
             
-            // update the bean definition
-            beanDefinition.addProperty(fieldDefinition);
-            if (fieldDefinition.isRecordIdentifier()) {
-                if (beanDefinition.isRecordIdentifer()) {
-                    throw new BeanIOConfigurationException("a collection cannot " +
-                        "contain record identifying fields");
+            // set the property value using the configured type handler
+            String text = config.getValue();
+            if (text != null) {
+                try {
+                    definition.setValue(handler.parse(text));
                 }
-                beanDefinition.setRecordIdentifer(true);
+                catch (TypeConversionException ex) {
+                    throw new BeanIOConfigurationException("Type conversion failed for " +
+                        "configured value '" + text + "': " + ex.getMessage(), ex);
+                }
             }
+        }
+        catch (BeanIOConfigurationException ex) {
+            throw new BeanIOConfigurationException("Invalid '" + config.getName() +
+                "' property configuration: " + ex.getMessage(), ex);
+        }
+        
+        // update the bean definition
+        beanDefinition.addProperty(definition);
+        if (definition.isRecordIdentifier()) {
+            if (beanDefinition.isCollection()) {
+                throw new BeanIOConfigurationException("a collection cannot " +
+                    "contain record identifying fields");
+            }
+            beanDefinition.setRecordIdentifier(true);
+        }
+    }
+    
+    /**
+     * Compiles a field definition.
+     * @param beanDefinition the parent bean definition
+     * @param field the field configuration
+     * @param fieldDefinition the field definition
+     * @since 1.2
+     */
+    protected void compileFieldDefinition(BeanDefinition beanDefinition, FieldConfig field, FieldDefinition fieldDefinition) {
+        if (field.getName() == null) {
+            throw new BeanIOConfigurationException("Missing field name");
+        }
+
+        try {
+            fieldDefinition.setName(field.getName());
+            fieldDefinition.setParent(beanDefinition);
+            fieldDefinition.setRecordIdentifier(field.isRecordIdentifier());
+            fieldDefinition.setRequired(field.isRequired());
+            fieldDefinition.setTrim(field.isTrim());
+            fieldDefinition.setLiteral(field.getLiteral());
+            try {
+                fieldDefinition.setRegex(field.getRegex());
+            }
+            catch (PatternSyntaxException ex) {
+                throw new BeanIOConfigurationException("Invalid regex pattern", ex);
+            }
+
+            int minLength = field.getMinLength() != null ? field.getMinLength() : 0;
+            fieldDefinition.setMinLength(minLength);
+            int maxLength = field.getMaxLength() != null ? field.getMaxLength() : -1;
+            fieldDefinition.setMaxLength(maxLength);
+
+            if (maxLength > 0 && maxLength < minLength) {
+                throw new BeanIOConfigurationException("maxLength must be greater than or equal to minLength");
+            }
+            if (fieldDefinition.getLiteral() != null) {
+                int size = fieldDefinition.getLiteral().length();
+                if (size < minLength) {
+                    throw new BeanIOConfigurationException("literal text length is less than minLength");
+                }
+                if (maxLength >= 0 && size > maxLength) {
+                    throw new BeanIOConfigurationException("literal text length is greater than maxLength");
+                }
+            }
+
+            // validate minOccurs
+            int minOccurs = 1;
+            if (field.getMinOccurs() != null) {
+                minOccurs = field.getMinOccurs();
+                
+                if (minOccurs != 1 && field.getCollection() == null && !isOptionalFieldEnabled()) {
+                    throw new BeanIOConfigurationException(
+                        "minOccurs must be 1, or the field collection type must be set");
+                }
+            }
+            fieldDefinition.setMinOccurs(minOccurs);
+            
+            // validate the field's maximum occurrences, default is minOccurs
+            int maxOccurs = Math.max(minOccurs, 1);
+            if (field.getMaxOccurs() != null) {
+                maxOccurs = field.getMaxOccurs();
+                if (maxOccurs < 0) {
+                    maxOccurs = -1;
+                }
+                else if (maxOccurs < minOccurs) {
+                    throw new BeanIOConfigurationException("maxOccurs must be greater than or " +
+                        "equal to minOccurs");
+                }                   
+                if (maxOccurs != 1 && field.getCollection() == null) {
+                    throw new BeanIOConfigurationException(
+                        "maxOccurs must be 1, or the field collection type must be set");
+                }
+            }
+            if (maxOccurs < 0 && beanDefinition.isCollection()) {
+                throw new BeanIOConfigurationException("Invalid maxLength, variable sized collection " +
+                    "fields not supported for bean collections");
+            }
+            fieldDefinition.setMaxOccurs(maxOccurs);
+
+            updateFieldType(field, fieldDefinition, beanDefinition);
+
+            // set the default field value using the configured type handler
+            String defaultText = field.getDefault();
+            if (defaultText != null) {
+                TypeHandler handler = fieldDefinition.getTypeHandler();
+                if (handler != null) {
+                    try {
+                        fieldDefinition.setDefaultValue(handler.parse(defaultText));
+                    }
+                    catch (TypeConversionException ex) {
+                        throw new BeanIOConfigurationException("Type conversion failed for " +
+                            "configured default '" + defaultText + "': " + ex.getMessage(), ex);
+                    }
+                }
+                else {
+                    fieldDefinition.setDefaultValue(defaultText);
+                }
+            }
+
+            updateFieldDefinition(field, fieldDefinition);
+            
+            if (fieldDefinition.isRecordIdentifier()) {
+                validateRecordIdentifyingCriteria(fieldDefinition);
+                
+                // validate a collection is not used to identify the record
+                if (fieldDefinition.isCollection()) {
+                    throw new BeanIOConfigurationException("a collection cannot be " +
+                        "used as a record identifiers");
+                }
+            }
+        }
+        catch (BeanIOConfigurationException ex) {
+            throw new BeanIOConfigurationException("Invalid '" + field.getName() +
+                "' field configuration: " + ex.getMessage(), ex);
+        }
+        
+        // update the bean definition
+        beanDefinition.addProperty(fieldDefinition);
+        if (fieldDefinition.isRecordIdentifier()) {
+            if (beanDefinition.isCollection()) {
+                throw new BeanIOConfigurationException("a collection cannot " +
+                    "contain record identifying fields");
+            }
+            beanDefinition.setRecordIdentifier(true);
         }
     }
     
@@ -758,7 +891,7 @@ public abstract class StreamDefinitionFactory {
         fieldDefinition.setPropertyType(propertyType);
         fieldDefinition.setTypeHandler(handler);
     }
-
+    
     /**
      * Returns the <tt>PropertyDescriptor</tt> for setting and getting the field value from
      * the bean class.

@@ -48,7 +48,7 @@ public abstract class RecordDefinition extends NodeDefinition {
 
     @Override
     public NodeDefinition findDefinitionFor(Object bean) {
-        return (beanDefinition.isDefinitionFor(bean)) ? this : null;
+        return (beanDefinition.defines(bean)) ? this : null;
     }
     
     /**

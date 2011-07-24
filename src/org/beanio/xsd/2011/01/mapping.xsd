@@ -6,7 +6,7 @@
   elementFormDefault="qualified" 
   targetNamespace="http://www.beanio.org/2011/01"
   xml:lang="en"
-  version="2.0">
+  version="2.1.0">
 
   <annotation>
     <documentation>
@@ -243,6 +243,67 @@
     </attribute>
   </complexType>
   
+  <complexType name="BeanProperty">
+    <attribute name="name" type="xsd:string" use="required">
+      <annotation>
+        <documentation>
+          The property name to set on the parent bean object.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="value" type="xsd:string" use="required">
+      <annotation>
+        <documentation>
+          The property value to set on the parent bean object.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="type" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The class name or type alias of the property value.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="typeHandler" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The type handler name for converting the property value to a Java object.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="format" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The format of the property value passed to the type handler.
+          A DecimalFormat pattern for number types, or a SimpleDateFormat
+          pattern for date types.
+        </documentation>
+      </annotation>      
+    </attribute>
+    <attribute name="setter" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The name of the setter method to set the field property value on the bean class.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="getter" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The name of the getter method to get the field property value from the bean class.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="rid" type="xsd:boolean" use="optional">
+      <annotation>
+        <xsd:documentation>
+          Set to 'true' to indicate this property is used to identify the record.
+        </xsd:documentation>
+      </annotation>
+    </attribute>
+  </complexType>
+  
   <attributeGroup name="NodeAttributes">
     <attribute name="minOccurs" type="xsd:nonNegativeInteger" use="optional" default="1">
       <annotation>
@@ -301,6 +362,14 @@
           <documentation>
             A field is used to map a portion of its parent record to a property 
             of the record bean object.
+          </documentation>
+        </annotation>
+      </element>
+      <element name="property" minOccurs="0" maxOccurs="unbounded" type="tns:BeanProperty">
+        <annotation>
+          <documentation>
+            A property is used to set a constant property value (not found in the stream)
+            on its parent record bean object.
           </documentation>
         </annotation>
       </element>
@@ -395,7 +464,7 @@
     <attribute name="setter" type="xsd:string" use="optional">
       <annotation>
         <documentation>
-          The name of the setter method name to set the field property value on the bean class.
+          The name of the setter method to set the field property value on the bean class.
         </documentation>
       </annotation>
     </attribute>
@@ -482,7 +551,7 @@
         <documentation>
           The format of the field property value passed to the type handler.
           A DecimalFormat pattern for number types, or a SimpleDateFormat
-          patter for date types.
+          pattern for date types.
         </documentation>
       </annotation>      
     </attribute>
@@ -605,6 +674,14 @@
           <documentation>
             A field is used to map a portion of a record to a property 
             of its parent bean object.
+          </documentation>
+        </annotation>
+      </element>
+      <element name="property" minOccurs="0" maxOccurs="unbounded" type="tns:BeanProperty">
+        <annotation>
+          <documentation>
+            A property is used to set a constant property value (not found in the stream)
+            on its parent bean object.
           </documentation>
         </annotation>
       </element>

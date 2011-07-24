@@ -37,7 +37,6 @@ public abstract class FieldDefinition extends PropertyDefinition {
     public static final char RIGHT = 'R';
 
     private int position = -1;
-    private boolean recordIdentifier = false;
     private boolean trim = true;
     private boolean required = false;
     private boolean property = false;
@@ -56,6 +55,11 @@ public abstract class FieldDefinition extends PropertyDefinition {
     private char justification = LEFT;
     private String defaultText = "";
     
+    @Override
+    public boolean isField() {
+        return true;
+    }
+    
     /**
      * Tests if the field text in the record matches this field definition.
      * @param record the record containing the field to test
@@ -63,21 +67,9 @@ public abstract class FieldDefinition extends PropertyDefinition {
      */
     public abstract boolean matches(Record record);
 
-    /**
-     * Returns <tt>true</tt> if the provided field text is a match for this field
-     * definition based on the configured literal value or regular expression.
-     * @param text the field text to test
-     * @return <tt>true</tt> if the field text matches this field definitions constraints,
-     *   or <tt>false</tt> if the field text is null or does not match
-     */
-    protected boolean isMatch(String text) {
-        if (text == null)
-            return false;
-        if (literal != null && !literal.equals(text))
-            return false;
-        if (regex != null && !regex.matcher(text).matches())
-            return false;
-        return true;
+    @Override
+    public boolean defines(Object value) {
+        return isMatch(value);
     }
 
     /**
@@ -96,6 +88,23 @@ public abstract class FieldDefinition extends PropertyDefinition {
         
         String text = (handler == null) ? value.toString() : handler.format(value);
         return isMatch(text);
+    }
+    
+    /**
+     * Returns <tt>true</tt> if the provided field text is a match for this field
+     * definition based on the configured literal value or regular expression.
+     * @param text the field text to test
+     * @return <tt>true</tt> if the field text matches this field definitions constraints,
+     *   or <tt>false</tt> if the field text is null or does not match
+     */
+    protected boolean isMatch(String text) {
+        if (text == null)
+            return false;
+        if (literal != null && !literal.equals(text))
+            return false;
+        if (regex != null && !regex.matcher(text).matches())
+            return false;
+        return true;
     }
 
     /**
@@ -386,23 +395,6 @@ public abstract class FieldDefinition extends PropertyDefinition {
      */
     public void setTrim(boolean trim) {
         this.trim = trim;
-    }
-
-    /**
-     * Returns <tt>true</tt> if this field is used to identify the
-     * record type.
-     * @return <tt>true</tt> if this fields is used to identify the record type
-     */
-    public boolean isRecordIdentifier() {
-        return recordIdentifier;
-    }
-
-    /**
-     * Set to <tt>true</tt> if this field should be used to identify the record type.
-     * @param b set to <tt>true</tt> to use this field to identify the reocrd type
-     */
-    public void setRecordIdentifier(boolean b) {
-        this.recordIdentifier = b;
     }
 
     /**

@@ -32,7 +32,6 @@ public abstract class BeanDefinition extends PropertyDefinition {
 
     private List<PropertyDefinition> propertyList = new ArrayList<PropertyDefinition>();
     private boolean propertyTypeMap;
-    private boolean recordIdentifer;
     
     /**
      * Creates a new <tt>BeanDefinition</tt>.
@@ -245,51 +244,38 @@ public abstract class BeanDefinition extends PropertyDefinition {
         }
     }
     
-    /**
-     * Tests if this bean definition describes a given bean object.
-     * @param bean the bean object to test
-     * @return <tt>true</tt> if the bean definition describes the bean object
-     */
-    public boolean isDefinitionFor(Object bean) {
-        if (getPropertyType() == null) {
+    @Override
+    public boolean defines(Object bean) {
+        if (bean == null || getPropertyType() == null) {
             return false;
         }
         
         if (isDefinitionForType(bean)) {
             for (PropertyDefinition propertyDefinition : propertyList) {
-                if (propertyDefinition.isBean()) {
-                    // if the child bean does not contain any record identifying fields,
-                    // no need to go further
-                    BeanDefinition childBeanDefinition = (BeanDefinition) propertyDefinition;
-                    if (!childBeanDefinition.isRecordIdentifer()) {
-                        continue;
-                    }
-                    
-                    // if the child bean is null and contains record identifying fields, 
-                    // then we must assume no match
-                    Object childBean = getBeanProperty(propertyDefinition, bean);
-                    if (childBean == null) {
-                        return false;
-                    }
-                    
-                    if (!childBeanDefinition.isDefinitionFor(childBean)) {
-                        return false;
-                    }
+                // if the child property is not used to identify records, no need to go further
+                if (!propertyDefinition.isRecordIdentifier() || !propertyDefinition.isProperty()) {
+                    continue;
                 }
-                else {
-                    FieldDefinition fieldDefinition = (FieldDefinition) propertyDefinition;
-                    if (!fieldDefinition.isRecordIdentifier()) {
-                        continue;
-                    }
-                    if (!fieldDefinition.isMatch(getBeanProperty(fieldDefinition, bean))) {
-                        return false;   
-                    }
+                    
+                Object value = getBeanProperty(propertyDefinition, bean);
+                if (!propertyDefinition.defines(value)) {
+                    return false;
                 }
             }
             return true;
         }
         
         return false;
+    }
+
+    /**
+     * Tests if this bean definition describes a given bean object.
+     * @param bean the bean object to test
+     * @return <tt>true</tt> if the bean definition describes the bean object
+     * @deprecated use {@link #defines(Object)}
+     */
+    public boolean isDefinitionFor(Object bean) {
+        return defines(bean);
     }
     
     /**
@@ -326,7 +312,7 @@ public abstract class BeanDefinition extends PropertyDefinition {
             if (pd.isBean()) {
                 createFieldList(list, (BeanDefinition)pd);
             }
-            else {
+            else if (pd.isField()) {
                 list.add((FieldDefinition)pd);
             }
         }
@@ -414,9 +400,10 @@ public abstract class BeanDefinition extends PropertyDefinition {
      * to identify the record.
      * @return <tt>true</tt> if any field descendant of this bean definition is used
      *   to identify the record
+     * @deprecated use {@link #isRecordIdentifier()}
      */
     public boolean isRecordIdentifer() {
-        return recordIdentifer;
+        return isRecordIdentifier();
     }
 
     /**
@@ -424,8 +411,9 @@ public abstract class BeanDefinition extends PropertyDefinition {
      * the reccord.
      * @param recordIdentifer <tt>true</tt> if any field descendant of this bean 
      *   definition is used to identify the record
+     * @deprecated use {@link #setRecordIdentifier(boolean)}
      */
     public void setRecordIdentifer(boolean recordIdentifer) {
-        this.recordIdentifer = recordIdentifer;
+        setRecordIdentifier(recordIdentifer);
     }
 }

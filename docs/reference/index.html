@@ -4,13 +4,13 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<title>BeanIO 1.1 Reference Documentation</title>
+<title>BeanIO 1.2 Reference Documentation</title>
 <link rel="stylesheet" type="text/css" href="style.css" />
 <link rel="shortcut icon" href="http://www.beanio.org/favicon.ico" />
 </head>
 <body>
 
-<div class="title">BeanIO 1.1 - Reference Documentation</div>
+<div class="title">BeanIO 1.2 - Reference Documentation</div>
 <p>&copy; 2010-2011 Kevin Seim</p>
 <i style="font-size: 90%">Copies of this document may be made for your own use and for
 distribution to others, provided that you do not charge any fee for such copies and further provided
@@ -55,14 +55,15 @@ that each copy contains this Copyright Notice, whether distributed in print or e
 	<a href="#CollectionFields">4.3.3. Collection Type Fields</a><br />
 	<a href="#FixedLengthFields">4.3.4. Fixed Length Fields</a><br />
   </div>
-  <a href="#BeanDefinitions">4.4. Nested Bean Definitions</a><br />
+  <a href="#PropertyDefinitions">4.4. Property Definitions</a><br />
+  <a href="#BeanDefinitions">4.5. Nested Bean Definitions</a><br />
   <div class="toc">
-	<a href="#BeanCollections">4.4.1. Collection Type Beans</a><br />
+	<a href="#BeanCollections">4.5.1. Collection Type Beans</a><br />
   </div>
-  <a href="#StreamValidation">4.5. Stream Validation</a><br />
+  <a href="#StreamValidation">4.6. Stream Validation</a><br />
   <div class="toc">
-    <a href="#RecordValidation">4.5.1. Record Validation</a><br />
-    <a href="#FieldValidation">4.5.2. Field Validation</a><br />
+    <a href="#RecordValidation">4.6.1. Record Validation</a><br />
+    <a href="#FieldValidation">4.6.2. Field Validation</a><br />
   </div>
 </div>
 <a href="#MappingXmlStreams">5.0.  Mapping XML Streams</a><br />
@@ -1498,7 +1499,41 @@ produce a field value of 0.</p>
 <p>As hinted to above, padding settings can be applied to any field for any stream type.</p>
 
 
-<h2><a name="BeanDefinitions">4.4. Nested Bean Definitions</a></h2>
+<h2><a name="PropertyDefinitions">4.4. Property Definitions</a></h2>
+<p>If a bean property does not map to a field in the input or output stream, the property
+value can still be set using a <tt>property</tt> element.  Like a field, all properties must 
+specify a <tt>name</tt> attribute, which by default, is used to get and set the property value 
+from the bean object.  Properties also require a <tt>value</tt> attribute for setting the textual
+representation of the property value.  The value text is type converted using the same rules
+and attributes (<tt>type</tt>, <tt>typeHandler</tt> and <tt>format</tt>) used for
+field type conversion described above.  Collection type properties are not supported.</p>
+<pre class="file">
+&lt;beanio&gt;
+
+  &lt;stream name="employeeFile" format="csv"&gt;
+    &lt;record name="employee" class="map"&gt;
+      <span class="highlight">&lt;property name="recordType" value="employee" /&gt;</span>
+      &lt;field name="firstName" /&gt;
+      &lt;field name="lastName" /&gt;
+      &lt;field name="title" /&gt;
+      &lt;field name="salary" /&gt;
+      &lt;field name="hireDate" format="MMddyyyy" /&gt;
+    &lt;/record&gt; 
+  &lt;/stream&gt;
+  
+&lt;/beanio&gt;</pre>
+
+<p>Properties are particularly useful in two scenarios:</p>
+<ul>
+<li>When reading an input stream (unmarshalling), if multiple records are mapped to the same bean class, such as a Map,
+a property can be used to set a property, or a Map key) for identifying the record type without querying the 
+<tt>BeanReader</tt></li>
+<li>When writing an output stream (marshalling), a record mapping can be selected based on a record identifying
+property value by setting <tt>rid</tt> to true.  This allows the same bean class to be unmarshalled to different
+record types based on a property that may not exist in the output stream.</li>
+</ul>
+
+<h2><a name="BeanDefinitions">4.5. Nested Bean Definitions</a></h2>
 <p>The bean class mapped to a record can be divided into nested bean objects using
 a <tt>bean</tt> element.  First, let's suppose we store an address in our CSV employee
 file, so that the record layout might look like this:</p>
@@ -1577,7 +1612,7 @@ field values are stored in the Map under their configured field name.</p>
 <p>If needed, nested bean objects can be further divided into other bean objects.  There is no limit
 to the number of nested levels that can be configured in a mapping file.</p>
 
-<h3><a name="BeanCollections">4.4.1. Collection Type Beans</a></h3>
+<h3><a name="BeanCollections">4.5.1. Collection Type Beans</a></h3>
 <p>Similar to collection type fields, BeanIO also supports collection type beans.  Continuing our previous
 example, let's suppose the employee CSV file may contain 1 or more addresses for each employee.  Thus our 
 <tt>Employee</tt> bean object might look like this:</p>
@@ -1651,7 +1686,7 @@ is greater.  If the number of occurences is variable (i.e. <tt>maxOccurs</tt> is
 
 
 
-<h2><a name="StreamValidation">4.5. Stream Validation</a></h2>
+<h2><a name="StreamValidation">4.6. Stream Validation</a></h2>
 <p>A <tt>BeanReader</tt> will throw an <tt>InvalidRecordException</tt> if a record or one of 
 its fields fails a configured validation rule.  There are two types of errors reported
 for an invalid record: record level errors and field level errors.  If a record level error occurs, 
@@ -1781,7 +1816,7 @@ on the validation rule that was violated, different parameters are passed to the
 validation rule.</p>
 
 
-<h3><a name="RecordValidation">4.5.1. Record Validation</a></h3>
+<h3><a name="RecordValidation">4.6.1. Record Validation</a></h3>
 <p>The following record level validation rules may be configured on a <tt>record</tt> element.
 </p>
 <table>
@@ -1800,7 +1835,7 @@ validation rule.</p>
 </tr>
 </table>
 
-<h3><a name="FieldValidation">4.5.2. Field Validation</a></h3>
+<h3><a name="FieldValidation">4.6.2. Field Validation</a></h3>
 <p>BeanIO supports several common field validation rules when reading an input stream.  All field 
 validation rules are validated against the field text before type conversion.  When field trimming 
 is enabled, <tt>trim="true"</tt>, all validations are performed
@@ -2639,17 +2674,6 @@ is null or empty.</p>
 &lt;/wrapper&gt;</pre>
 </td>
 </tr>
-<!-- 
-<tr>
-  <td><pre>&lt;field name="field" 
-  collection="list"
-  minOccurs="0"
-  xmlType="element" 
-  xmlWrapper="wrapper" /&gt;</pre>
-  </td>
-  <td>-</td>
-</tr>
- -->
 </table>
 
 
@@ -2710,7 +2734,8 @@ that implement the <tt>org.beanio.types.TypeHandler</tt> interface.</p>
 
 <h2><a name="property">A.3. <tt>property</tt></a></h2>
 <p>A <tt>property</tt> element is used to customize other elements, such
-as a <a href="#typeHandler"><tt>typeHandler</tt></a>.</p>
+as a <a href="#typeHandler"><tt>typeHandler</tt></a>, <a href="#reader"><tt>reader</tt></a>,
+or <a href="#writer"><tt>writer</tt></a>.</p>
 <table>
 <tr>
   <th>Attribute</th>
@@ -2729,6 +2754,71 @@ as a <a href="#typeHandler"><tt>typeHandler</tt></a>.</p>
   <td>Yes</td>
 </tr>
 </table>
+<p>A <tt>property</tt> element, when used as child of a <a href="#record"><tt>record</tt></a> or 
+<a href="#bean"><tt>bean</tt></a> element, can also be used to set 
+constant values on a record or bean object that do not map to field in the input or output stream.  
+The following additional attributes are accepted in this scenario:</p>
+<table>
+<tr>
+  <th>Attribute</th>
+  <th>Description</th>
+  <th>Required</th>
+  <th>Format(s)</th>
+</tr>
+<tr>
+  <td><tt>getter</tt></td>
+  <td>The getter method used to retrieve the property value from its parent bean class.
+    By default, the getter method is determined through intropection using
+    the property name.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>setter</tt></td>
+  <td>The setter method used to set the property value on its parent bean class.  
+    By default, the setter method is determined through intropection using
+    the property name.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>rid</tt></td>
+  <td>Record identifier indicator for marshalling/writing only.  Set to <tt>true</tt> if this property is 
+    used to identify the record mapping configuration used to marshall a bean object.  
+    More than one property or field can be used for identification.  Defaults to <tt>false</tt>.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>type</tt></td>
+  <td>The fully qualified class name or type alias of the property value.  By default,
+    BeanIO will derrive the property type from the bean class.  This attribute
+    can be used to override the default or may be required if the bean class
+    is of type <tt>Map</tt>.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>typeHandler</tt></td>
+  <td>The name of the type handler to use for type conversion.  By default, BeanIO
+    will select a type handler based on <tt>type</tt> when set, or through 
+    introspection of the property's parent bean class.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>format</tt></td>
+  <td>The decimal format pattern for <tt>Number</tt> type properties, or the simple
+    date format pattern for <tt>Date</tt> type properties.
+    <p>The <tt>format</tt> value can accessed by any custom type handler that
+    implements <tt>ConfigurableTypeHandler</tt>.</p>  
+  </td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+</table>
+
+
 
 <h2><a name="stream">A.4. <tt>stream</tt></a></h2>
 <p>A <tt>stream</tt> element defines the record layout of an input or output stream.</p> 
@@ -3048,6 +3138,7 @@ the group as a whole.</p>
 
 <p>Children: 
 <a href="#field"><tt>field</tt></a>*
+<a href="#property"><tt>property</tt></a>*
 <a href="#bean"><tt>bean</tt></a>*
 </p>
 
@@ -3188,6 +3279,7 @@ the group as a whole.</p>
 
 <p>Children: 
 <a href="#field"><tt>field</tt></a>*
+<a href="#property"><tt>property</tt></a>*
 <a href="#bean"><tt>bean</tt></a>*
 </p>
 

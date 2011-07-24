@@ -45,6 +45,16 @@ public class FieldConfig extends PropertyConfig {
     private String justify = LEFT;
 
     /**
+     * Constructs a new <tt>FieldConfig</tt>.
+     */
+    public FieldConfig() { }
+    
+    @Override
+    public boolean isField() {
+        return true;
+    }
+    
+    /**
      * Returns the default textual representation of the value of
      * this field when the field is not present in the input stream.
      * May be <tt>null</tt>.

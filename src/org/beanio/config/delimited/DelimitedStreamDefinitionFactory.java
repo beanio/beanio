@@ -64,7 +64,7 @@ public class DelimitedStreamDefinitionFactory extends FlatStreamDefinitionFactor
                 
                 currentPosition += (stop - start) * child.getMaxOccurs();
             }
-            else {
+            else if (propertyConfig.isField()) {
                 FieldDefinition fieldDefinition = (FieldDefinition) beanDefinition.getProperty(index);
                 fieldDefinition.setPosition(currentPosition);
                 currentPosition += fieldDefinition.getMinOccurs();

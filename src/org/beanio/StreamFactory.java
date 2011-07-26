@@ -44,7 +44,8 @@ public abstract class StreamFactory {
      * @param name the configured stream mapping name
      * @param filename the name of the file to read
      * @return the new <tt>BeanReader</tt>
-     * @throws IllegalArgumentException if there is no stream configured for the given name
+     * @throws IllegalArgumentException if there is no stream configured for the given name, or
+     *   if the stream mapping mode does not support reading an input stream
      * @throws BeanIOException if the file is not found
      */
     public BeanReader createReader(String name, String filename) throws BeanIOException {
@@ -56,7 +57,8 @@ public abstract class StreamFactory {
      * @param name the configured stream mapping name
      * @param file the file to read
      * @return the new <tt>BeanReader</tt>
-     * @throws IllegalArgumentException if there is no stream configured for the given name
+     * @throws IllegalArgumentException if there is no stream configured for the given name, or
+     *   if the stream mapping mode does not support reading an input stream
      * @throws BeanIOException if the file is not found
      */
     public BeanReader createReader(String name, File file) throws BeanIOException {
@@ -81,7 +83,8 @@ public abstract class StreamFactory {
      * @param name the configured stream mapping name
      * @param in the input stream to read from
      * @return the new <tt>BeanReader</tt>
-     * @throws IllegalArgumentException if there is no stream configured for the given name
+     * @throws IllegalArgumentException if there is no stream configured for the given name, or
+     *   if the stream mapping mode does not support reading an input stream
      */
     public BeanReader createReader(String name, Reader in) throws IllegalArgumentException {
         return createReader(name, in, Locale.getDefault());
@@ -93,7 +96,8 @@ public abstract class StreamFactory {
      * @param in the input stream to read from
      * @param locale the locale used to format error messages 
      * @return the new <tt>BeanReader</tt>
-     * @throws IllegalArgumentException if there is no stream configured for the given name
+     * @throws IllegalArgumentException if there is no stream configured for the given name, or
+     *   if the stream mapping mode does not support reading an input stream
      */
     public abstract BeanReader createReader(String name, Reader in, Locale locale)
         throws IllegalArgumentException;
@@ -103,7 +107,8 @@ public abstract class StreamFactory {
      * @param name the configured stream mapping name
      * @param file the file to write to
      * @return the new <tt>BeanReader</tt>
-     * @throws IllegalArgumentException if there is no stream configured for the given name
+     * @throws IllegalArgumentException if there is no stream configured for the given name, or
+     *   if the stream mapping mode does not support writing to an output stream
      */
     public BeanWriter createWriter(String name, File file) throws IllegalArgumentException {
         validateStreamName(name);
@@ -125,7 +130,8 @@ public abstract class StreamFactory {
      * @param name the configured stream mapping name
      * @param out the output stream to write to
      * @return the new BeanWriter
-     * @throws IllegalArgumentException if there is no stream configured for the given name
+     * @throws IllegalArgumentException if there is no stream configured for the given name, or
+     *   if the stream mapping mode does not support writing to an output stream
      */
     public abstract BeanWriter createWriter(String name, Writer out)
         throws IllegalArgumentException;

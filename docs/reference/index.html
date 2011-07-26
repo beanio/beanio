@@ -800,7 +800,7 @@ and record writer:</p>
   <td>The XML header encoding.  Defaults to 
     <tt>utf-8</tt>.  Note that this setting has no bearing on the actual
     encoding of the output stream.  If set to "", an encoding attribute
-    is not be included in the header.</td>
+    is not included in the header.</td>
   <td>No</td>
   <td>Yes</td>
 </tr>
@@ -2841,6 +2841,19 @@ The following additional attributes are accepted in this scenario:</p>
   <td>The stream format.  Either <tt>xml</tt>, <tt>csv</tt>, <tt>delimited</tt> or
     <tt>fixedlength</tt></td>
   <td>Yes</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>mode</tt></td>
+  <td>By default, a stream mapping can be used for both reading input streams and writing 
+    output streams, called <tt>readwrite</tt> mode.  Setting mode to <tt>read</tt> or 
+    <tt>write</tt> instead, respectively restricts usage to a <tt>BeanReader</tt> or a 
+    <tt>BeanWriter</tt> only, but relaxes some validations on the mapping configuration.
+    <p>When mode is set <tt>read</tt>, a bean class does not require getter methods. </p>
+    <p>When mode is set <tt>write</tt>, a bean class may be abstract or an interface, and does
+      not require setter methods.</p>
+  </td>
+  <td>No</td>
   <td>*</td>
 </tr>
 <tr>

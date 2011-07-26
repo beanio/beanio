@@ -4,6 +4,9 @@ Project BeanIO Change Log
 Changes in version 1.2.0 (TBD)
 -------------------------------------
 * Added 'property' mapping element for records and beans
+* Added support for a stream 'mode' attribute, and modified mapping validations based on set mode
+* Modified bean introspection to allow beans with setters only in 'read' mode, and beans with getters only and non-concrete classes in 'write' mode
+* gc0013 - Fixed mapping validation to allow for multiple record identifying fields 
 
 Changes in version 1.1.1 (2011-07-21)
 -------------------------------------

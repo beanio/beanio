@@ -57,7 +57,14 @@ public class DefaultStreamFactory extends StreamFactory {
      * @see org.beanio.StreamManager#createBeanReader(java.lang.String, java.io.Reader, java.util.Locale)
      */
     public BeanReader createReader(String name, Reader in, Locale locale) {
-        return getStream(name).createBeanReader(in, locale);
+        StreamDefinition stream = getStream(name);
+        switch (stream.getMode()) {
+            case StreamDefinition.READ_WRITE_MODE:
+            case StreamDefinition.READ_ONLY_MODE:
+                return stream.createBeanReader(in, locale);
+            default:
+                throw new IllegalArgumentException("Read mode not supported for stream mapping '" + name + "'");
+        }
     }
 
     /*
@@ -65,7 +72,14 @@ public class DefaultStreamFactory extends StreamFactory {
      * @see org.beanio.StreamManager#createBeanWriter(java.lang.String, java.io.Writer)
      */
     public BeanWriter createWriter(String name, Writer out) {
-        return getStream(name).createBeanWriter(out);
+        StreamDefinition stream = getStream(name);
+        switch (stream.getMode()) {
+            case StreamDefinition.READ_WRITE_MODE:
+            case StreamDefinition.WRITE_ONLY_MODE:
+                return stream.createBeanWriter(out);
+            default:
+                throw new IllegalArgumentException("Write mode not supported for stream mapping '" + name + "'");
+        }
     }
 
     /**

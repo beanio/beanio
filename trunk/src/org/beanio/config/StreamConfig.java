@@ -25,7 +25,15 @@ import java.util.*;
  */
 public class StreamConfig {
 
+    /** Stream configuration supports reading and writing */
+    public static final String READ_WRITE_MODE = "readwrite";
+    /** Stream configuration supports reading only */
+    public static final String READ_ONLY_MODE = "read";
+    /** Stream configuration supports writing only */
+    public static final String WRITE_ONLY_MODE = "write";
+    
     private String format;
+    private String mode;
     private String resourceBundle;
     private boolean ordered = true;
 
@@ -74,6 +82,31 @@ public class StreamConfig {
      */
     public void setFormat(String format) {
         this.format = format;
+    }
+
+    /**
+     * Returns the allowed mode(s) of operation for this stream configuration. 
+     * @return {@link #READ_WRITE_MODE} if reading and writing from a stream is allowed,<br />
+     *   {@link #READ_ONLY_MODE} if only reading is allowed,<br/>
+     *   {@link #WRITE_ONLY_MODE} if only writing is allowed, <br/> 
+     *   or <tt>null</tt> if explicitly declared set
+     * @since 1.2
+     */
+    public String getMode() {
+        return mode;
+    }
+
+    /**
+     * Sets the allowed mode(s) of operation for this stream configuration.  If not
+     * set, or explicitly set to <tt>null</tt>, the stream configuration defaults to
+     * read/write.  Some configuration validations are relaxed if set to read or write only.
+     * @param mode {@link #READ_WRITE_MODE} if reading and writing from a stream is allowed,<br />
+     *   {@link #READ_ONLY_MODE} if only reading is allowed,<br/>
+     *   {@link #WRITE_ONLY_MODE} if only writing is allowed
+     * @since 1.2
+     */
+    public void setMode(String mode) {
+        this.mode = mode;
     }
 
     /**

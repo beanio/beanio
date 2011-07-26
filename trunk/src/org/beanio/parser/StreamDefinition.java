@@ -43,6 +43,13 @@ public abstract class StreamDefinition implements MessageFactory {
     private static final String FIELD_ERROR_MESSAGE_PREFIX = "fielderror";
     private static final String RECORD_ERROR_MESSAGE_PREFIX = "recorderror";
 
+    /** Stream definition supports reading and writing */
+    public static final int READ_WRITE_MODE = 0;
+    /** Stream definition supports reading only */
+    public static final int READ_ONLY_MODE = 1;
+    /** Stream definition supports writing only */
+    public static final int WRITE_ONLY_MODE = 2;
+
     /* configured resource bundle for messages */
     private ResourceBundle resourceBundle;
     /* default resource bundle for messages based on the stream format */
@@ -53,6 +60,7 @@ public abstract class StreamDefinition implements MessageFactory {
     private static final String NOT_FOUND = new String();
 
     private String format;
+    private int mode;
     private GroupDefinition root;
 
     private RecordReaderFactory readerFactory;
@@ -63,14 +71,14 @@ public abstract class StreamDefinition implements MessageFactory {
      */
     public StreamDefinition(String format) {
         this.format = format;
-        
+
         root = newGroupDefinition();
         root.setOrder(1);
         root.setMinOccurs(0);
         root.setMaxOccurs(1);
         root.setName("<root>");
     }
-    
+
     /**
      * This method is called to instantiate a new group definition so that subclasses
      * may override the implementation.
@@ -102,6 +110,28 @@ public abstract class StreamDefinition implements MessageFactory {
      */
     public String getFormat() {
         return this.format;
+    }
+    
+    /**
+     * Returns the allowed mode of operation for this stream configuration. 
+     * @return {@link #READ_WRITE_MODE} if reading and writing from a stream is allowed,<br />
+     *   {@link #READ_ONLY_MODE} if only reading is allowed,<br/>
+     *   {@link #WRITE_ONLY_MODE} if only writing is allowed
+     * @since 1.2
+     */
+    public int getMode() {
+        return mode;
+    }
+
+    /**
+     * Sets the allowed mode of operation for this stream configuration.
+     * @param mode {@link #READ_WRITE_MODE} if reading and writing from a stream is allowed,<br />
+     *   {@link #READ_ONLY_MODE} if only reading is allowed,<br/>
+     *   {@link #WRITE_ONLY_MODE} if only writing is allowed
+     * @since 1.2
+     */
+    public void setMode(int mode) {
+        this.mode = mode;
     }
 
     /**
@@ -305,7 +335,7 @@ public abstract class StreamDefinition implements MessageFactory {
     public void setReaderFactory(RecordReaderFactory readerFactory) {
         this.readerFactory = readerFactory;
     }
-    
+
     /**
      * Sets the record writer factory to use to create new <tt>RecordWriter</tt>'s.
      * If set to null, this stream context will create a default writer.
@@ -314,7 +344,7 @@ public abstract class StreamDefinition implements MessageFactory {
     public void setWriterFactory(RecordWriterFactory writerFactory) {
         this.writerFactory = writerFactory;
     }
-    
+
     /**
      * Sets the primary resource bundle to check for messages.
      * @param resourceBundle the resource bundle
@@ -397,7 +427,7 @@ public abstract class StreamDefinition implements MessageFactory {
         private Record record;
         private RecordReader in;
         private BeanReaderErrorHandler errorHandler;
-        
+
         /**
          * Constructs a new <tt>BeanReaderImpl</tt>.
          * @param reader the record reader to read from
@@ -423,7 +453,7 @@ public abstract class StreamDefinition implements MessageFactory {
                 try {
                     // find the next matching record node
                     RecordNode node = nextRecord();
-                    
+
                     // node is null when the end of the stream is reached
                     if (node == null) {
                         break;
@@ -439,7 +469,7 @@ public abstract class StreamDefinition implements MessageFactory {
             }
             return bean;
         }
-        
+
         /**
          * Reads the next record from the input stream and returns the matching record node.
          * @return the next matching record node, or <tt>null</tt> if the end of the stream
@@ -496,13 +526,13 @@ public abstract class StreamDefinition implements MessageFactory {
                 try {
                     node = (RecordNode) layout.matchNext(record);
                 }
-                catch (UnexpectedRecordException ex) { 
+                catch (UnexpectedRecordException ex) {
                     // when thrown, node is null and the error is handled below
                 }
-                
+
                 if (node == null) {
                     node = (RecordNode) layout.matchAny(record);
-                    
+
                     if (node != null) {
                         record.setRecordName(node.getName());
                         String message = record.addRecordError("unexpected");
@@ -513,7 +543,7 @@ public abstract class StreamDefinition implements MessageFactory {
                         throw new UnidentifiedRecordException(record.getContext(), message);
                     }
                 }
-            }      
+            }
             return node;
         }
 
@@ -547,23 +577,23 @@ public abstract class StreamDefinition implements MessageFactory {
         public int getLineNumber() {
             return record.getRecordLineNumber();
         }
-        
+
         public void setErrorHandler(BeanReaderErrorHandler errorHandler) {
             this.errorHandler = errorHandler;
         }
-        
+
         private void handleError(BeanReaderException ex) {
             if (errorHandler == null)
                 throw ex;
             else {
-                try { 
+                try {
                     errorHandler.handleError(ex);
                 }
                 catch (BeanReaderException e) {
                     throw e;
                 }
                 catch (Exception e) {
-                    throw new BeanReaderIOException(ex.getContext(), 
+                    throw new BeanReaderIOException(ex.getContext(),
                         "Error handler exception caught", e);
                 }
             }
@@ -582,14 +612,14 @@ public abstract class StreamDefinition implements MessageFactory {
                     group.addChild(child);
                 }
                 else {
-                    GroupNode child = newGroupNode((GroupDefinition)definition);
+                    GroupNode child = newGroupNode((GroupDefinition) definition);
                     group.addChild(child);
                     buildTree(definition, child);
                 }
             }
         }
     }
-    
+
     /**
      * Constructs a new group node for parsing an input stream.
      * @param definition the group definition
@@ -607,7 +637,7 @@ public abstract class StreamDefinition implements MessageFactory {
     protected RecordNode newRecordNode(RecordDefinition definition) {
         return new RecordNode(definition);
     }
-    
+
     /*
      * BeanWriter implementation.
      */
@@ -649,7 +679,7 @@ public abstract class StreamDefinition implements MessageFactory {
          */
         public void write(String recordName, Object bean) throws BeanWriterException {
             if (recordDefinitionMap == null) {
-                recordDefinitionMap = new HashMap<String,RecordDefinition>();
+                recordDefinitionMap = new HashMap<String, RecordDefinition>();
                 for (RecordDefinition rd : getRootGroupDefinition().getRecordDefinitionAncestors()) {
                     recordDefinitionMap.put(rd.getName(), rd);
                 }

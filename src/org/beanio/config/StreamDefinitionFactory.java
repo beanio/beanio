@@ -16,7 +16,7 @@
 package org.beanio.config;
 
 import java.beans.*;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.regex.PatternSyntaxException;
 
@@ -37,11 +37,14 @@ public abstract class StreamDefinitionFactory {
 
     private TypeHandlerFactory typeHandlerFactory;
 
+    private boolean readEnabled = true;
+    private boolean writeEnabled = true;
+    
     /**
      * Constructs a new <tt>StreamDefinitionFactory</tt>.
      */
     public StreamDefinitionFactory() { }
-
+    
     /**
      * Creates a new stream definition based on a stream configuration.
      * @param config the stream configuration
@@ -73,6 +76,24 @@ public abstract class StreamDefinitionFactory {
     protected void compileStreamDefinition(StreamConfig config, StreamDefinition definition)
         throws BeanIOConfigurationException {
 
+        // set the stream mode, defaults to read/write, the stream mode may be used
+        // to enforce or relax validation rules specific to marshalling or unmarshalling
+        String mode = config.getMode();
+        if (mode == null || StreamConfig.READ_WRITE_MODE.equals(mode)) {
+            definition.setMode(StreamDefinition.READ_WRITE_MODE);
+        }
+        else if (StreamConfig.READ_ONLY_MODE.equals(mode)) {
+            definition.setMode(StreamDefinition.READ_ONLY_MODE);
+            writeEnabled = false;
+        }
+        else if (StreamConfig.WRITE_ONLY_MODE.equals(mode)) {
+            definition.setMode(StreamDefinition.WRITE_ONLY_MODE);
+            readEnabled = false;
+        }
+        else {
+            throw new BeanIOConfigurationException("Invalid mode '" + mode + "'");
+        }
+        
         definition.setName(config.getName());
         definition.setMinOccurs(config.getRootGroupConfig().getMinOccurs());
         definition.setMaxOccurs(config.getRootGroupConfig().getMaxOccurs());
@@ -900,68 +921,69 @@ public abstract class StreamDefinitionFactory {
      * @return the <tt>PropertyDescriptor</tt>
      */
     private PropertyDescriptor getPropertyDescriptor(PropertyConfig config, Class<?> beanClass) {
+        String property = config.getName();
         String setter = config.getSetter();
         String getter = config.getGetter();
 
+        // calling new PropertyDescriptor(...) will throw an exception if either the getter
+        // or setter method is not null and not found
+        
+        PropertyDescriptor descriptor = null;
         try {
             if (setter != null && getter != null) {
-                if ("".equals(setter)) {
-                    setter = null;
-                }
-                if ("".equals(getter)) {
-                    getter = null;
-                }
-                return new PropertyDescriptor(config.getName(), beanClass, getter, setter);
-            }
-            else if (setter == null && getter == null) {
-                return new PropertyDescriptor(config.getName(), beanClass);
+                descriptor = new PropertyDescriptor(property, beanClass, getter, setter);
             }
             else {
-                PropertyDescriptor descriptor = null;
-                BeanInfo info = Introspector.getBeanInfo(beanClass, Object.class);
+                // the Introspector class caches BeanInfo so subsequent calls shouldn't be a concern
+                BeanInfo info = Introspector.getBeanInfo(beanClass);
                 for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
-                    if (pd.getName().equals(config.getName())) {
+                    if (pd.getName().equals(property)) {
                         descriptor = pd;
                         break;
                     }
                 }
+                
                 if (descriptor == null) {
-                    throw new BeanIOConfigurationException("No such property '" + config.getName() +
-                        "' on class '" + beanClass.getName() + "'");
-                }
-                if (getter != null) {
-                    try {
-                        if ("".equals(getter))
-                            descriptor.setReadMethod(null);
-                        else
-                            descriptor.setReadMethod(beanClass.getDeclaredMethod(getter, (Class[]) null));
+                    if (setter == null && getter == null) {
+                        throw new BeanIOConfigurationException("No such property '" + property +
+                            "' in class '" + beanClass.getName() + "'");
                     }
-                    catch (NoSuchMethodException ex) {
-                        throw new BeanIOConfigurationException("getter method not found: " +
-                            ex.getMessage(), ex);
+                    else {
+                        descriptor = new PropertyDescriptor(property, beanClass, getter, setter);
                     }
                 }
-                if (setter != null) {
-                    try {
-                        if ("".equals(setter))
-                            descriptor.setWriteMethod(null);
-                        else
-                            descriptor.setWriteMethod(beanClass.getDeclaredMethod(setter,
-                                new Class[] { descriptor.getPropertyType() }));
+                else if (setter != null) {
+                    if (descriptor.getReadMethod() != null) {
+                        getter = descriptor.getReadMethod().getName();
                     }
-                    catch (NoSuchMethodException ex) {
-                        throw new BeanIOConfigurationException("setter method not found: " +
-                            ex.getMessage(), ex);
-                    }
+                    descriptor = new PropertyDescriptor(property, beanClass, getter, setter);
                 }
-                return descriptor;
+                else if (getter != null) {
+                    if (descriptor.getWriteMethod() != null) {
+                        setter = descriptor.getWriteMethod().getName();
+                    }
+                    descriptor = new PropertyDescriptor(property, beanClass, getter, setter);
+                }
             }
+            
+            // validate a read method is found for mapping configurations that write streams
+            if (isReadEnabled() && descriptor.getWriteMethod() == null) {
+                throw new BeanIOConfigurationException("No writeable method for property '" + property + 
+                    "' in class '" + beanClass.getName() + "'");
+            }
+            // validate a write method is found for mapping configurations that read streams
+            if (isWriteEnabled() && descriptor.getReadMethod() == null) {
+                throw new BeanIOConfigurationException("No readable method for property '" + property + 
+                    "' in class '" + beanClass.getName() + "'");
+            }
+            
+            return descriptor;
         }
         catch (IntrospectionException e) {
-            throw new BeanIOConfigurationException("Bean introspection error: " + e.getMessage(), e);
+            throw new BeanIOConfigurationException("Bean introspection failed: " + e.getMessage(), e);
         }
     }
-
+    
     /**
      * Determines the bean class type from its configuration/
      * @param config the bean configuration
@@ -977,8 +999,9 @@ public abstract class StreamDefinitionFactory {
             else {
                 try {
                     beanClass = Class.forName(config.getType());
-                    if (beanClass.isInterface() || Modifier.isAbstract(beanClass.getModifiers())) {
-                        throw new BeanIOConfigurationException("Bean class cannot be interface or abstract");
+                    if (isReadEnabled() && (beanClass.isInterface() || Modifier.isAbstract(beanClass.getModifiers()))) {
+                        throw new BeanIOConfigurationException("Class must be concrete unless " +
+                            "stream mode is set to '" + StreamConfig.WRITE_ONLY_MODE + "'");
                     }
                 }
                 catch (ClassNotFoundException ex) {
@@ -1083,5 +1106,27 @@ public abstract class StreamDefinitionFactory {
      */
     public TypeHandlerFactory getDefaultTypeHandlerFactory() {
         return null;
+    }
+    
+    /**
+     * Returns whether the stream definition must support reading
+     * an input stream.
+     * @return <tt>true</tt> if the stream definition must support reading
+     *   an input stream
+     * @since 1.2
+     */
+    public boolean isReadEnabled() {
+        return readEnabled;
+    }
+
+    /**
+     * Returns whether the stream definition must support writing to an
+     * output stream.
+     * @return <tt>true</tt> if the stream definition must support writing
+     *   to an output stream
+     * @since 1.2
+     */
+    public boolean isWriteEnabled() {
+        return writeEnabled;
     }
 }

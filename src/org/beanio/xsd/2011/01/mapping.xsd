@@ -109,6 +109,15 @@
         </documentation>
       </annotation>  
     </attribute>
+    <attribute name="mode" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The allowed modes of operation for the stream mapping.  Defaults to 'readwrite' which
+          allows both reading from and writing to a stream.  If set to 'read' for read only, 
+          or 'write' for write only, some restrictions may be relaxed.
+        </documentation>
+      </annotation>
+    </attribute>
     <attribute name="ordered" type="xsd:boolean" use="optional">
       <annotation>
         <documentation>

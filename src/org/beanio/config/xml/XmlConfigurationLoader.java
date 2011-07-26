@@ -191,6 +191,7 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
         StreamConfig config = new StreamConfig();
         config.setName(getAttribute(element, "name"));
         config.setFormat(getAttribute(element, "format"));
+        config.setMode(getAttribute(element, "mode"));
         config.setOrdered(getBooleanAttribute(element, "ordered", true));
         config.setResourceBundle(getAttribute(element, "resourceBundle"));
         config.setMinOccurs(getIntAttribute(element, "minOccurs", 0));

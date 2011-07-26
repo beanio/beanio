@@ -386,7 +386,6 @@ public abstract class FlatStreamDefinitionFactory extends StreamDefinitionFactor
                 return ((FieldDefinition)pd).getPosition();
             }
             else {
-                // TODO is it OK to sort properties to the end??
                 return -1;
             }
         }

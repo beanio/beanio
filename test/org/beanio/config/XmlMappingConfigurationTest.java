@@ -65,6 +65,36 @@ public class XmlMappingConfigurationTest extends ParserTest {
     public void testCollectionAttributeField() throws IOException {
         loadInvalidMappingFile("collectionAttributeField.xml", "Collection type bean/field must have xmlType 'element'");
     }
+
+    @Test
+    public void testInvalidStreamMode() throws IOException {
+        loadInvalidMappingFile("invalidStreamMode.xml", "Invalid mode 'xxx'");
+    }
+    
+    @Test
+    public void testInvalidBeanClass() throws IOException {
+        loadInvalidMappingFile("invalidBeanClass.xml", "Class must be concrete unless stream mode is set to 'write'");
+    }
+    
+    @Test
+    public void testNoWriteableMethod() throws IOException {
+        loadInvalidMappingFile("noWriteableMethod.xml", "No writeable method for property 'name' in class 'org.beanio.config.ConcreteBean'");
+    }
+
+    @Test
+    public void testNoReadableMethod() throws IOException {
+        loadInvalidMappingFile("noReadableMethod.xml", "No readable method for property 'value' in class 'org.beanio.config.InterfaceBean'");
+    }
+    
+    @Test
+    public void testNoBeanProperty() throws IOException {
+        loadInvalidMappingFile("noBeanProperty.xml", "No such property 'birthDate' in class 'org.beanio.config.ConcreteBean'");
+    }
+    
+    @Test
+    public void testInvalidSetter() throws IOException {
+        loadInvalidMappingFile("invalidSetter.xml", "Method not found: setAge");
+    }
     
     /**
      * 

@@ -43,6 +43,25 @@ public interface BeanReader {
 		UnidentifiedRecordException, UnexpectedRecordException, InvalidRecordException;
 	
 	/**
+	 * Skips ahead in the input stream.  Record validation errors are ignored, but
+	 * a malformed input stream, unidentified record, or record out of sequence,
+	 * will cause an exception that halts stream reading.  Exceptions thrown by this
+	 * method are not passed to the error handler.
+	 * @param count the number of bean objects to skip over that would have been returned
+	 *   by calling {@link #read()}
+	 * @return the number of skipped bean objects, which may be less than <tt>count</tt>
+	 *   if the end of the stream was reached
+     * @throws BeanReaderIOException if an IOException or other fatal error is caught
+     * @throws MalformedRecordException if the underlying input stream is malformed
+     *   and a record could not be accurately skipped
+     * @throws UnidentifiedRecordException if a record could not be identified
+     * @throws UnexpectedRecordException if a record is out of sequence
+     * @since 1.2
+	 */
+	public int skip(int count) throws BeanReaderIOException, MalformedRecordException,
+        UnidentifiedRecordException, UnexpectedRecordException;
+	
+	/**
 	 * Returns the name of the last record read.
 	 * @return the name of the last record read
 	 */

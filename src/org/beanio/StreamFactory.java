@@ -21,7 +21,7 @@ import java.util.Locale;
 import org.beanio.util.*;
 
 /**
- * A <tt>StreamFactory</tt> manages stream configurations and is used create 
+ * A <tt>StreamFactory</tt> manages stream mapping configurations and is used create 
  * <tt>BeanWriter</tt> and <tt>BeanReader</tt> instances.
  * <p>
  * The default BeanIO <tt>StreamFactory</tt> implementation can be safely shared 
@@ -62,8 +62,10 @@ public abstract class StreamFactory {
      * @throws BeanIOException if the file is not found
      */
     public BeanReader createReader(String name, File file) throws BeanIOException {
-        validateStreamName(name);
-
+        if (!isMapped(name)) {
+            throw new IllegalArgumentException("No stream mapping configured for name '" + name + "'");
+        }
+        
         Reader in = null;
         try {
             in = new BufferedReader(new FileReader(file));
@@ -111,8 +113,10 @@ public abstract class StreamFactory {
      *   if the stream mapping mode does not support writing to an output stream
      */
     public BeanWriter createWriter(String name, File file) throws IllegalArgumentException {
-        validateStreamName(name);
-
+        if (!isMapped(name)) {
+            throw new IllegalArgumentException("No stream mapping configured for name '" + name + "'");
+        }
+        
         Writer out = null;
         try {
             return createWriter(name, new BufferedWriter(new FileWriter(file)));
@@ -239,9 +243,18 @@ public abstract class StreamFactory {
     }
 
     /**
+     * Test whether a mapping configuration exists for a named stream.
+     * @param streamName the stream name to test for existence
+     * @return <tt>true</tt> if a mapping configuration is found for the named stream
+     * @since 1.2
+     */
+    public abstract boolean isMapped(String streamName);
+    
+    /**
      * Validates a stream name.
      * @param name the stream name to validate
      * @throws IllegalArgumentException if there is no stream configured with this name
+     * @deprecated use {@link #isMapped(String)}
      */
     protected abstract void validateStreamName(String name) throws IllegalArgumentException;
 }

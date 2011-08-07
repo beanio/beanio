@@ -16,12 +16,13 @@
 package org.beanio.parser.xml;
 
 import java.io.*;
+import java.util.Map;
 
 import org.beanio.*;
 import org.beanio.parser.*;
 import org.beanio.stream.*;
 import org.beanio.stream.xml.*;
-import org.beanio.util.DomUtil;
+import org.beanio.util.*;
 import org.w3c.dom.*;
 import org.w3c.dom.Node;
 
@@ -167,7 +168,7 @@ public class XmlStreamDefinition extends StreamDefinition {
     /**
      * BeanWriter implementation for XML formatted streams.
      */
-    private class XmlBeanWriter implements BeanWriter {
+    private class XmlBeanWriter implements BeanWriter, StatefulWriter {
         
         private Marshaller marshaller;
         private RecordWriter writer;
@@ -237,6 +238,28 @@ public class XmlStreamDefinition extends StreamDefinition {
             }
             catch (IOException e) {
                 throw new BeanWriterIOException(e);
+            }
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see org.beanio.parser.StatefulBeanWriter#updateState(java.lang.String, java.util.Map)
+         */
+        public void updateState(String namespace, Map<String, Object> state) {
+            marshaller.updateState(namespace + ".m", state);
+            if (writer instanceof StatefulWriter) {
+                ((StatefulWriter)writer).updateState(namespace + ".w", state);
+            }
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see org.beanio.parser.StatefulBeanWriter#restoreState(java.lang.String, java.util.Map)
+         */
+        public void restoreState(String namespace, Map<String, Object> state) throws IllegalStateException {
+            marshaller.restoreState(namespace + ".m", state);
+            if (writer instanceof StatefulWriter) {
+                ((StatefulWriter)writer).restoreState(namespace + ".w", state);
             }
         }
     }

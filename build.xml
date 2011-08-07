@@ -37,14 +37,19 @@
     <property name="classes.main" location="${target}/classes/main" />
     <property name="classes.test" location="${target}/classes/test" />
     <property name="classes.emma" location="${target}/classes/emma" />
+    <!-- main classpath -->
+	<path id="classpath.main">
+	  <fileset dir="lib">
+	    <include name="*.jar" />
+	  </fileset>
+	</path>
   </target>
 
   <!-- Compile main source files (src -> target/classes/main) -->
-  <target name="compile" depends="init" 
-  	description="Compiles Java source files under src/">
+  <target name="compile" depends="init" description="Compiles Java source files under src/">
     <mkdir dir="${classes.main}" />
     <javac srcdir="src" destdir="${classes.main}" includeantruntime="false" 
-      debug="true" source="1.5" target="1.5" />
+      debug="true" source="1.5" target="1.5" classpathref="classpath.main" />
   </target>
 
   <!-- Create the beanio jar -->
@@ -67,17 +72,19 @@
   </target>
 
   <!-- Creates docs related directories -->
-  <target name="docs-init">
+  <target name="docs-init" depends="init">
     <delete dir="${target}/docs" />
     <mkdir dir="${target}/docs/api" />
   </target>
   <!-- Create API documentation -->
   <target name="docs-api" depends="docs-init">
     <javadoc sourcepath="src" destdir="${target}/docs/api" windowtitle="BeanIO 1.2 API" access="protected"
-      header="BeanIO 1.2">
+      header="BeanIO 1.2" classpathref="classpath.main">
       <doctitle><![CDATA[<h2>BeanIO 1.2 API</h2>]]></doctitle>
       <bottom><![CDATA[<i>Copyright &copy; 2010-2011 Kevin Seim</i>]]></bottom>
       <link href="http://download.oracle.com/javase/6/docs/api/" />
+      <link href="http://static.springsource.org/spring-batch/apidocs/" />
+      <link href="http://static.springsource.org/spring/docs/2.5.x/api/" />
     </javadoc>
   </target>
   <target name="docs" depends="docs-init,docs-api" 
@@ -127,7 +134,7 @@
       <pathelement location="${classes.test}" />
       <pathelement location="test" />
       <fileset dir="lib">
-        <include name="**/*.jar" />
+        <include name="*.jar" />
       </fileset>
     </path>
 

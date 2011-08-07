@@ -124,8 +124,13 @@ public class DefaultStreamFactory extends StreamFactory {
 
     @Override
     protected void validateStreamName(String name) throws IllegalArgumentException {
-        if (!contextMap.containsKey(name)) {
+        if (!isMapped(name)) {
             throw new IllegalArgumentException("No stream mapping configured for name '" + name + "'");
         }
+    }
+
+    @Override
+    public boolean isMapped(String streamName) {
+        return contextMap.containsKey(streamName);
     }
 }

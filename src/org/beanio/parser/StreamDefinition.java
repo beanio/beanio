@@ -469,6 +469,36 @@ public abstract class StreamDefinition implements MessageFactory {
             }
             return bean;
         }
+        
+        /*
+         * (non-Javadoc)
+         * @see org.beanio.BeanReader#skip(int)
+         */
+        public int skip(int count) throws BeanReaderIOException, MalformedRecordException,
+            UnidentifiedRecordException, UnexpectedRecordException {
+            if (layout == null) {
+                return 0;
+            }
+            
+            int n = 0;
+            while (n < count) {
+                // find the next matching record node
+                RecordNode node = nextRecord();
+
+                // node is null when the end of the stream is reached
+                if (node == null) {
+                    return n;
+                }
+                
+                // if the bean definition does not have a property type configured, it would not
+                // have been mapped to a bean object
+                if (node.getRecordDefinition().getBeanDefinition().getPropertyType() != null) {
+                    ++n;
+                }
+            }
+         
+            return n;
+        }
 
         /**
          * Reads the next record from the input stream and returns the matching record node.

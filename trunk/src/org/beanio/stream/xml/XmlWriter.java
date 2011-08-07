@@ -22,7 +22,7 @@ import javax.xml.XMLConstants;
 import javax.xml.stream.*;
 
 import org.beanio.stream.RecordWriter;
-import org.beanio.util.Settings;
+import org.beanio.util.*;
 import org.w3c.dom.*;
 
 /**
@@ -41,7 +41,7 @@ import org.w3c.dom.*;
  * @author Kevin Seim
  * @since 1.1
  */
-public class XmlWriter implements RecordWriter {
+public class XmlWriter implements RecordWriter, StatefulWriter {
 
     /**
      * The DOM user data key to indicate whether the namespace of a DOM element
@@ -63,21 +63,33 @@ public class XmlWriter implements RecordWriter {
         xmlOutputFactory = XMLOutputFactory.newInstance();
     }
     
+    /* map keys for storing state information for implementing StatefulWriter */
+    private static final String OUTPUT_HEADER_KEY = "header";
+    private static final String NAMESPACE_MAP_KEY = "nsMap";
+    private static final String LEVEL_KEY = "level";
+    private static final String STACK_ELEMENT_KEY = "xml";
+    private static final String STACK_NS_MAP_KEY = "nsMap";
+    
     /* The XML stream writer to write to */
     private XMLStreamWriter out;
     /* XML writer configuration */
     private XmlWriterConfiguration config;
-    /* Map of namespace prefixes to namespaces */
-    private Map<String,String> namespaceMap = new HashMap<String,String>();
     /* String used to indent new lines of XML */
     private String indentation = "";
     
     private int level = 0;
-    private Stack stack;
+    private ElementStack elementStack;
     /* whether a XML header needs to be output before writing a record */
     private boolean outputHeader = false;
-    /* the number of auto generated namespace prefixes */
+    /* the next index to try when auto generating a namespace prefix */
     private int namespaceCount = 0;
+    /* Map of auto-generated namespace prefixes to namespaces */
+    private Map<String,String> namespaceMap = new HashMap<String,String>();
+    
+    /* the minimum level last stored when the state was updated */
+    private int dirtyLevel = 0;
+    /* flag used to suppress output during state restoration */
+    private boolean suppressOutput = false;
     
     /**
      * Constructs a new <tt>XmlWriter</tt>.
@@ -97,6 +109,27 @@ public class XmlWriter implements RecordWriter {
             throw new IllegalArgumentException("writer is null");
         }
         
+        writer = new FilterWriter(writer) {
+            @Override
+            public void write(int c) throws IOException {
+                if (!suppressOutput) {
+                    super.write(c);
+                }
+            }
+            @Override
+            public void write(char[] cbuf, int off, int len) throws IOException {
+                if (!suppressOutput) {
+                    super.write(cbuf, off, len);
+                }
+            }
+            @Override
+            public void write(String str, int off, int len) throws IOException {
+                if (!suppressOutput) {
+                    super.write(str, off, len);
+                }
+            }
+        };
+        
         if (config == null) {
             // create a default configuration
             this.config = new XmlWriterConfiguration();
@@ -115,7 +148,7 @@ public class XmlWriter implements RecordWriter {
             throw new IllegalArgumentException("Failed to create XMLStreamWriter: " + e.getMessage(), e);
         }
     }
-    
+        
     /**
      * Initializes this writer after the configuration has been set.
      */
@@ -133,7 +166,6 @@ public class XmlWriter implements RecordWriter {
         }
         
         this.outputHeader = !config.isSuppressHeader();
-        this.namespaceMap = new HashMap<String,String>(config.getNamespaceMap());
     }
     
     /*
@@ -159,7 +191,7 @@ public class XmlWriter implements RecordWriter {
             
             // a null record indicates we need to close an element
             if (record == null) {
-                if (stack != null) {
+                if (elementStack != null) {
                     endElement();
                 }
             }
@@ -188,34 +220,37 @@ public class XmlWriter implements RecordWriter {
         String namespace = element.getNamespaceURI();
         if (namespace == null) {
             if (Boolean.TRUE.equals(element.getUserData(IS_NAMESPACE_IGNORED))) {
+                prefix = null;
                 ignoreNamespace = true;
             }
             namespace = "";
         }
         
+        // flag indicating if the element is empty or not
         boolean empty = false;
-        
+        // flag for lazily appending to stack
+        boolean pendingStackUpdate = true;
+
         // start the element
-        if (stack == null) {
+        if (elementStack == null) {
             if (ignoreNamespace) {
                 out.writeStartElement(name);
-                push("");
             }
             else if (prefix != null) {
                 out.writeStartElement(prefix, name, namespace);
-                push(null);
-                stack.addNamespace(prefix, namespace);
             }
             else {
                 out.writeStartElement(name);
-                out.writeNamespace("", namespace);
-                push(namespace);
+                out.writeDefaultNamespace(namespace);
             }
             
-            for (Map.Entry<String,String> ns : namespaceMap.entrySet()) {
+            push(namespace, prefix, name);
+            for (Map.Entry<String,String> ns : config.getNamespaceMap().entrySet()) {
                 out.writeNamespace(ns.getKey(), ns.getValue());
-                stack.addNamespace(ns.getKey(), ns.getValue());
+                elementStack.addNamespace(ns.getKey(), ns.getValue());
             }
+            
+            pendingStackUpdate = false;
         }
         else {
             if (indentationEnabled) {
@@ -224,22 +259,19 @@ public class XmlWriter implements RecordWriter {
             
             empty = !element.hasChildNodes();
             
-            if (ignoreNamespace || (stack.isNamesapce(namespace)) && prefix == null) {
+            if (ignoreNamespace || (elementStack.isDefaultNamespace(namespace)) && prefix == null) {
                 if (empty) {
                     out.writeEmptyElement(name);   
                 }
                 else {
                     out.writeStartElement(name);
                 }
-                push(stack.ns);
+                namespace = elementStack.getDefaultNamespace();
+                prefix = null;
             }
             else {
-                boolean addNamespace = false;
                 if (prefix == null) {
-                    prefix = stack.findPrefix(namespace);
-                }
-                else {
-                    addNamespace = true;
+                    prefix = elementStack.findPrefix(namespace);
                 }
                 
                 if (prefix == null) {
@@ -249,8 +281,7 @@ public class XmlWriter implements RecordWriter {
                     else {
                         out.writeStartElement(name);
                     }
-                    out.writeNamespace("", namespace);
-                    push(namespace);
+                    out.writeDefaultNamespace(namespace);
                 }
                 else {
                     if (empty) {
@@ -259,18 +290,6 @@ public class XmlWriter implements RecordWriter {
                     else {
                         out.writeStartElement(prefix, name, namespace);
                     }
-                    
-                    // if the element uses its own prefix, push the parent namespace again
-                    if ("".equals(prefix)) {
-                        push(namespace);
-                    }
-                    else {
-                        push(stack.ns);
-                    }
-                }
-                
-                if (addNamespace) {
-                    stack.addNamespace(prefix, namespace);
                 }
             }
         }
@@ -287,7 +306,7 @@ public class XmlWriter implements RecordWriter {
             }
             else {
                 if (attPrefix == null) {
-                    attPrefix = stack.findPrefix(attNamespace);
+                    attPrefix = elementStack.findPrefix(attNamespace);
                 }
                 if (attPrefix == null) {
                     attPrefix = namespaceMap.get(attNamespace);
@@ -319,19 +338,32 @@ public class XmlWriter implements RecordWriter {
         // write children
         Node child = element.getFirstChild();
         while (child != null) {
-            if (child.getNodeType() == Node.ELEMENT_NODE) {
-                write((Element) child, indentationEnabled);
-                isParent = true;
-            }
-            else if (child.getNodeType() == Node.TEXT_NODE) {
-                out.writeCharacters(((Text)child).getData());
+            switch (child.getNodeType()) {
+                case Node.ELEMENT_NODE:
+                    if (pendingStackUpdate) {
+                        push(namespace, prefix, name);
+                        pendingStackUpdate = false;
+                    }
+                    
+                    write((Element) child, indentationEnabled);
+                    isParent = true;
+                    break;
+                
+                case Node.TEXT_NODE:
+                    out.writeCharacters(((Text)child).getData());
+                    break;
+                    
+                default:
+                    break;
             }
             child = child.getNextSibling();
         }
         
         // end the element if it is not a group
         if (!Boolean.TRUE.equals(element.getUserData(IS_GROUP_ELEMENT))) {
-            pop();
+            if (!pendingStackUpdate) {
+                pop();
+            }
             if (!empty) {
                 if (isParent && indentationEnabled) {
                     newLine();
@@ -360,7 +392,7 @@ public class XmlWriter implements RecordWriter {
      */
     public void close() throws IOException {
         try {
-            while (stack != null) {
+            while (elementStack != null) {
                 endElement();
             }
             out.writeEndDocument();
@@ -413,49 +445,193 @@ public class XmlWriter implements RecordWriter {
         out.writeEndElement();
     }
     
-    private void push(String namespace) {
-        Stack n = new Stack();
-        n.ns = namespace;
-        n.parent = stack;
-        stack = n;
+    private void push(String namespace, String prefix, String name) {
+        push(new ElementStack(elementStack, namespace, prefix, name));
+    }
+    
+    private void push(ElementStack e) {
+        elementStack = e;
         ++level;
     }
     
-    private Stack pop() {
-        Stack node = stack;
-        stack = stack.parent;
+    private ElementStack pop() {
+        ElementStack e = elementStack;
+        elementStack = elementStack.getParent();
         --level;
-        return node;
+        dirtyLevel = Math.min(dirtyLevel, level);
+        return e;
     }
 
-    private static class Stack {
-        private Stack parent;
-        private String ns;
-        private Map<String,String> nsMap;
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.util.StatefulWriter#updateState(java.lang.String, java.util.Map)
+     */
+    public void updateState(String namespace, Map<String, Object> state) {
+        state.put(getKey(namespace, OUTPUT_HEADER_KEY), outputHeader);
+        state.put(getKey(namespace, NAMESPACE_MAP_KEY), toToken(namespaceMap));
         
-        public void addNamespace(String prefix, String namespace) {
-            if (nsMap == null) {
-                nsMap = new HashMap<String,String>();
-            }
-            nsMap.put(namespace, prefix);
+        Integer n = (Integer) state.get(getKey(namespace, LEVEL_KEY));
+        
+        int lastLevel = (n == null) ? 0 : n;
+
+        // remove previous stack items beyond the current level
+        for (int i=lastLevel; i>level; i--) {
+            String stackPrefix = namespace + ".s" + i;
+            state.remove(getKey(stackPrefix, STACK_ELEMENT_KEY));
+            state.remove(getKey(stackPrefix, STACK_NS_MAP_KEY));
         }
         
-        public String findPrefix(String namespace) {
-            String prefix = null;
-            if (nsMap  != null) {
-                prefix = nsMap.get(namespace);
-                if (prefix != null) {
-                    return prefix;
+        // update dirtied stack items up to the current level
+        ElementStack e = elementStack;
+        for (int i=level; i>dirtyLevel; i--) {
+            String stackPrefix = namespace + ".s" + i;
+            state.put(getKey(stackPrefix, STACK_ELEMENT_KEY), e.toToken());
+            
+            String nsMapKey = getKey(stackPrefix, STACK_NS_MAP_KEY);
+            String token = toToken(e.getNamespaces());
+            if (token == null) {
+                state.remove(nsMapKey);
+            }
+            else {
+                state.put(nsMapKey, token);
+            }
+            
+            e = elementStack.getParent();
+        }
+        dirtyLevel = level;
+        
+        state.put(getKey(namespace, LEVEL_KEY), level);
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.util.StatefulWriter#restoreState(java.lang.String, java.util.Map)
+     */
+    public void restoreState(String namespace, Map<String, Object> state) throws IllegalStateException {
+        this.outputHeader = (Boolean) getRequired(namespace, OUTPUT_HEADER_KEY, state);
+        
+        String key = getKey(namespace, NAMESPACE_MAP_KEY);
+        String token = (String) state.get(key);
+        if (token != null) {
+            this.namespaceMap = toMap(token, key);
+            this.namespaceCount = this.namespaceMap.size();
+        }
+        else {
+            this.namespaceCount = 0;
+        }
+        
+        this.level = 0;
+        this.elementStack = null;
+        
+        try {
+            out.flush();
+            this.suppressOutput = true;
+            
+            int level = (Integer) getRequired(namespace, LEVEL_KEY, state);
+            for (int i=0; i<level; i++) {
+                String stackPrefix = namespace + ".s" + (i+1);
+                
+                ElementStack e = ElementStack.fromToken(elementStack, (String)getRequired(stackPrefix, STACK_ELEMENT_KEY, state));
+                
+                if (e.isDefaultNamespace()) {
+                    out.writeStartElement(e.getName());
+                }
+                else if (e.getPrefix() == null) {
+                    out.writeStartElement(e.getName());
+                    out.writeDefaultNamespace(e.getNamespace());
+                }
+                else {
+                    out.writeStartElement(e.getPrefix(), e.getName(), e.getNamespace());
+                }
+                
+                // create a stack item
+                push(e);
+                
+                // add namespaces
+                String nsMap = (String) state.get(getKey(stackPrefix, STACK_NS_MAP_KEY));
+                if (nsMap != null) {
+                    String[] s = nsMap.trim().split(" ");
+                    if (s.length % 2 != 0) {
+                        throw new IllegalStateException("Invalid state information for key '" + 
+                            getKey(stackPrefix, STACK_NS_MAP_KEY) + "'");
+                    }
+                    for (int n=0; n<s.length; n+=2) {
+                        this.elementStack.addNamespace(s[n+1], s[n]);
+                        out.writeNamespace(s[n+1], s[n]);
+                    }
                 }
             }
-            if (parent != null) {
-                return parent.findPrefix(namespace);
-            }
+            
+            // by writing a single character here, we force the last started element to close
+            // so that it can be flushed and ignored
+            out.writeCharacters(" ");
+            out.flush();
+        }
+        catch (XMLStreamException ex) {
+            throw new IllegalStateException(ex);
+        }
+        finally {
+            this.suppressOutput = false;
+        }
+        
+        this.dirtyLevel = level;
+    }
+
+    /*
+     * Retrieves a value from a Map for a given key prepended with the namespace.
+     */
+    private Object getRequired(String namespace, String key, Map<String, Object> state) {
+        key = getKey(namespace, key);
+        Object value = state.get(key);
+        if (value == null) {
+            throw new IllegalStateException("Missing state information for key '" + key + "'");
+        }
+        return value;
+    }
+    
+    private String getKey(String namespace, String name) {
+        return namespace + "." + name;
+    }
+    
+    /*
+     * Constructs a Map from a String of space delimited key-values pairings.
+     */
+    private Map<String,String> toMap(String token, String key) {
+        if (token == null) {
+            return null;
+        }
+        String[] s = token.trim().split(" ");
+        if (s.length % 2 != 0) {
+            throw new IllegalStateException("Invalid state information for key '" + key + "'");
+        }
+        Map<String,String> map = new HashMap<String,String>();
+        for (int n=0; n<s.length; n+=2) {
+            map.put(s[n], s[n+1]);
+        }
+        return map;
+    }
+    
+    /*
+     * Converts a Map to a String of space delimited key-value pairings.
+     */
+    private String toToken(Map<String,String> map) {
+        if (map == null || map.isEmpty()) {
             return null;
         }
         
-        public boolean isNamesapce(String namespace) {
-            return ns != null && ns.equals(namespace);
+        boolean first = true;
+        StringBuffer token = new StringBuffer();
+        for (Map.Entry<String,String> entry : map.entrySet()) {
+            if (first) {
+                first = false;
+            }
+            else {
+                token.append(" ");
+            }
+            token.append(entry.getKey());
+            token.append(" ");
+            token.append(entry.getValue());
         }
+        return token.toString();
     }
 }

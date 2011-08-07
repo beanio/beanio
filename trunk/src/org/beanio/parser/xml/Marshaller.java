@@ -16,6 +16,7 @@
 package org.beanio.parser.xml;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.beanio.parser.*;
 import org.beanio.stream.RecordWriter;
@@ -34,6 +35,9 @@ import org.w3c.dom.Node;
  */
 public abstract class Marshaller {
 
+    /* map key used to store the state of the 'count' attribute */
+    private static final String COUNT_KEY = "count";
+    
     private NodeDefinition definition;
     
     private Marshaller parent;
@@ -155,5 +159,42 @@ public abstract class Marshaller {
     public void removeAllChildren() {
         this.childHead = null;
         this.childTail = null;
+    }
+
+    /**
+     * Updates a Map with the current state of the Marshaller.  Used for
+     * creating restartable Writers for Spring Batch.
+     * @param namespace a String to prefix all state keys with
+     * @param state the Map to update with the latest state
+     * @since 1.2
+     */
+    public void updateState(String namespace, Map<String, Object> state) {
+        state.put(getKey(namespace, COUNT_KEY), count);
+    }
+
+    /**
+     * Restores a Map of previously stored state information.  Used for
+     * restarting XML writers from Spring Batch.
+     * @param namespace a String to prefix all state keys with
+     * @param state the Map containing the state to restore
+     * @since 1.2
+     */
+    public void restoreState(String namespace, Map<String, Object> state) {
+        String key = getKey(namespace, COUNT_KEY);
+        Integer n = (Integer) state.get(key);
+        if (n == null) {
+            throw new IllegalStateException("Missing state information for key '" + key + "'");
+        }
+        count = n;
+    }
+    
+    /**
+     * Returns a Map key for accessing state information for this Node.
+     * @param namespace the assigned namespace for the key
+     * @param name the state information to access
+     * @return the fully qualified key
+     */
+    protected String getKey(String namespace, String name) {
+        return namespace + "." + definition.getName() + "." + name;
     }
 }

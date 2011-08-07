@@ -16,6 +16,7 @@
 package org.beanio.parser.xml;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.beanio.BeanWriterIOException;
 import org.beanio.stream.RecordWriter;
@@ -30,6 +31,11 @@ import org.w3c.dom.*;
  */
 public class GroupMarshaller extends Marshaller {
 
+    /* map key used to store the state of the 'addToHierarchy' attribute */
+    private static final String WRITTEN_KEY = "written";
+    /* map key used to store the state of the 'lastMatchedChild' attribute */
+    private static final String LAST_MATCHED_KEY = "lastMatched";
+    
     private XmlGroupDefinition groupDefinition;
     
     private Marshaller lastMatchedChild;
@@ -216,6 +222,62 @@ public class GroupMarshaller extends Marshaller {
         if (groupDefinition.getXmlDefinition().getType() != XmlDefinition.XML_TYPE_NONE) {
             out.write(null);
             addToHierarchy = true;
+        }
+    }
+    
+    @Override
+    public void updateState(String namespace, Map<String, Object> state) {
+        super.updateState(namespace, state);
+        
+        String lastMatchedChildName = "";
+        if (lastMatchedChild != null) {
+            lastMatchedChildName = lastMatchedChild.getNodeDefinition().getName();
+        }
+        state.put(getKey(namespace, LAST_MATCHED_KEY), lastMatchedChildName);
+        
+        state.put(getKey(namespace, WRITTEN_KEY), !addToHierarchy);
+        
+        // allow children to update their state
+        Marshaller child = getFirstChild();
+        while (child != null) {
+            child.updateState(namespace, state);
+            child = child.getNextSibling();
+        }
+    }
+
+    @Override
+    public void restoreState(String namespace, Map<String, Object> state) {
+        super.restoreState(namespace, state);
+        
+        // determine the last matched child
+        String key = getKey(namespace, LAST_MATCHED_KEY);
+        String lastMatchedChildName = (String) state.get(key);
+        if (lastMatchedChildName == null) {
+            throw new IllegalStateException("Missing state information for key '" + key + "'");
+        }
+        if ("".equals(lastMatchedChildName)) {
+            lastMatchedChild = null;
+            lastMatchedChildName = null;
+        }
+        
+        // determine the state of 'addToHierarchy'
+        key = getKey(namespace, WRITTEN_KEY); 
+        Boolean written = (Boolean) state.get(key);
+        if (written == null) {
+            throw new IllegalStateException("Missing state information for key '" + key + "'");
+        }
+        addToHierarchy = !written;
+        
+        // allow children to restore their state
+        Marshaller child = getFirstChild();
+        while (child != null) {    
+            if (lastMatchedChildName != null && 
+                lastMatchedChildName.equals(child.getNodeDefinition().getName())) {
+                lastMatchedChild = child;
+            }
+            
+            child.restoreState(namespace, state);
+            child = child.getNextSibling();
         }
     }
 }

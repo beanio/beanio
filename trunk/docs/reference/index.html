@@ -86,7 +86,11 @@ that each copy contains this Copyright Notice, whether distributed in print or e
   <a href="#XmlBeans">5.8.  Bean Definitions for XML</a><br />
   <a href="#XmlWrappers">5.9.  XML Wrappers</a><br />
 </div>
-
+<a href="#SpringBatch">6.0. Spring Batch Integration</a>
+<div class="toc">
+  <a href="#SpringItemReaderWriter">6.1. BeanIO ItemReader/Writer Beans</a><br />
+  <a href="#SpringStreamFactory">6.2. BeanIO StreamFactory Bean</a>
+</div>
 <a href="#A">Appendix A: XML Mapping File Reference</a><br />
 <div class="toc">
   <a href="#beanio">A.1. <tt>beanio</tt></a><br />
@@ -381,7 +385,7 @@ respectively.
 </p>
 
 <p>
-A <tt>BeanReaderException</tt> is furhter broken down into
+A <tt>BeanReaderException</tt> is further broken down into
 the following subclasses thrown by the <tt>read()</tt> method. 
 </p>
 <div class="indent">
@@ -1526,7 +1530,7 @@ field type conversion described above.  Collection type properties are not suppo
 <p>Properties are particularly useful in two scenarios:</p>
 <ul>
 <li>When reading an input stream (unmarshalling), if multiple records are mapped to the same bean class, such as a Map,
-a property can be used to set a property, or a Map key) for identifying the record type without querying the 
+a property can be used to set a property, or a Map key, for identifying the record type without querying the 
 <tt>BeanReader</tt></li>
 <li>When writing an output stream (marshalling), a record mapping can be selected based on a record identifying
 property value by setting <tt>rid</tt> to true.  This allows the same bean class to be unmarshalled to different
@@ -2676,6 +2680,74 @@ is null or empty.</p>
 </tr>
 </table>
 
+
+<!-- 
+
+	SPRING BATCH
+
+ -->
+<h1><a name="SpringBatch">6.0. Spring Batch Integration</a></h1>
+<p>As of release 1.2, BeanIO can be used to read and write flat files with 
+<a href="http://static.springsource.org/spring-batch/">Spring Batch</a> (2.1.x), 
+a batch processing framework by SpringSource.</p>
+
+<h2><a name="SpringItemReaderWriter">6.1. BeanIO ItemReader/Writer Beans</a></h2>
+<p>The class <tt>org.beanio.spring.BeanIOFlatFileItemReader</tt> implements Spring Batch's
+<tt>ItemReader</tt> interface and can be used to read flat files using a BeanIO stream
+mapping file.  The following Spring bean definition shows a BeanIO item reader configuration
+that loads a BeanIO mapping file called 'mapping.xml' from the classpath to read a file
+called 'in.txt'.  The location of the mapping file is set using the <tt>streamMapping</tt>
+property, and the name of the stream layout is specified using the <tt>streamName</tt>
+property.</p>
+<pre class="file">
+  &lt;bean id="itemReader" class="org.beanio.spring.BeanIOFlatFileItemReader"&gt;
+    &lt;property name="streamMapping" value="classpath:/mapping.xml" /&gt;
+    &lt;property name="streamName" value="stream" /&gt;
+    &lt;property name="resource" value="file:in.txt" /&gt;
+  &lt;/bean&gt;</pre>
+
+<p>Similarly, the class <tt>org.beanio.spring.BeanIOFlatFileItemWriter</tt> implements Spring Batch's
+<tt>ItemWriter</tt> interface and can be used to write flat files using a BeanIO stream
+mapping file.  The following Spring bean definition shows a BeanIO item writer configuration
+that loads a BeanIO mapping file called 'mapping.xml' from the classpath to write a file
+called 'out.txt'.</p>
+<pre class="file">
+  &lt;bean id="itemWriter" class="org.beanio.spring.BeanIOFlatFileItemWriter"&gt;
+    &lt;property name="streamMapping" value="classpath:/mapping.xml" /&gt;
+    &lt;property name="streamName" value="stream" /&gt;
+    &lt;property name="resource" value="file:out.txt" /&gt;
+  &lt;/bean&gt;</pre>
+
+<p>BeanIO item readers and writers are restartable, and support many of the same properties supported
+by the flat file item reader and writer included with Spring Batch.  Please refer to their 
+<a href="http://www.beanio.org/docs/api/index.html">API documentation</a> for details.</p>
+
+<h2><a name="SpringStreamFactory">6.2. BeanIO StreamFactory Bean</a></h2>
+<p>By default, a BeanIO item reader/writer creates its own stream factory, but
+in cases where this could cause one or more mapping files to be loaded multiple times, it may be preferable 
+to create a shared stream factory instance.  BeanIO's <tt>org.beanio.spring.BeanIOStreamFactory</tt> class
+can be used to create a shared stream factory that can be injected into BeanIO item readers and writers.
+The following Spring beans configuration file illustrates this:</p>
+
+<pre class="file">
+&lt;beans&gt;
+
+  <span class="highlight">&lt;bean id="streamFactory" class="org.beanio.spring.BeanIOStreamFactory"&gt;
+    &lt;property name="streamMappings"&gt;
+      &lt;list&gt;
+        &lt;value&gt;classpath:/mapping1.xml&lt;/value&gt;
+        &lt;value&gt;file:/mapping2.xml&lt;/value&gt;
+      &lt;/list&gt;
+    &lt;/property&gt;
+  &lt;/bean&gt;</span>
+  
+  &lt;bean id="itemReader" class="org.beanio.spring.BeanIOFlatFileItemReader"&gt;
+    <span class="highlight">&lt;property name="streamFactory" ref="streamFactory" /&gt;</span>
+    &lt;property name="streamName" value="stream" /&gt;
+    &lt;property name="resource" value="file:in.txt" /&gt;
+  &lt;/bean&gt;
+  
+&lt;/beans&gt;</pre>
 
 <!-- 
 

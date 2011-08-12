@@ -23,15 +23,18 @@ import java.util.List;
  * @since 1.1
  */
 public class Person {
-
+    /* used to test that the setter is not called for missing elements */
+    public static final String DEFAULT_NAME = new String();
+    public static final Integer DEFAULT_AGE = new Integer(-1);
+    
     private String type;
     private String gender;
     private String firstName;
-    private String lastName;
+    private String lastName = DEFAULT_NAME;
     private List<String> color;
     private Address address;
     private List<Address> addressList;
-    private Integer age;
+    private Integer age = DEFAULT_AGE;
     
     public String getType() {
         return type;

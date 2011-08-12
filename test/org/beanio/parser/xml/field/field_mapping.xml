@@ -32,4 +32,13 @@
     </record>
   </stream>
 
+  <stream name="stream3" format="xml" xmlName="stream">
+  <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <record name="record" xmlName="person" class="org.beanio.parser.xml.Person">
+      <field name="firstName" />
+      <field name="lastName" nillable="true" minOccurs="0" />
+      <field name="age" xmlType="attribute" />
+    </record>
+  </stream>
+
 </beanio>

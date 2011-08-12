@@ -94,15 +94,16 @@ that each copy contains this Copyright Notice, whether distributed in print or e
 <a href="#A">Appendix A: XML Mapping File Reference</a><br />
 <div class="toc">
   <a href="#beanio">A.1. <tt>beanio</tt></a><br />
-  <a href="#typeHandler">A.2. <tt>typeHandler</tt></a><br />
-  <a href="#property">A.3. <tt>property</tt></a><br />
-  <a href="#stream">A.4. <tt>stream</tt></a><br />
-  <a href="#reader">A.5. <tt>reader</tt></a><br />
-  <a href="#writer">A.6. <tt>writer</tt></a><br />
-  <a href="#group">A.7. <tt>group</tt></a><br />
-  <a href="#record">A.8. <tt>record</tt></a><br />
-  <a href="#bean">A.9. <tt>bean</tt></a><br />
-  <a href="#field">A.10. <tt>field</tt></a><br />
+  <a href="#import">A.2. <tt>import</tt></a><br />
+  <a href="#typeHandler">A.3. <tt>typeHandler</tt></a><br />
+  <a href="#property">A.4. <tt>property</tt></a><br />
+  <a href="#stream">A.5. <tt>stream</tt></a><br />
+  <a href="#reader">A.6. <tt>reader</tt></a><br />
+  <a href="#writer">A.7. <tt>writer</tt></a><br />
+  <a href="#group">A.8. <tt>group</tt></a><br />
+  <a href="#record">A.9. <tt>record</tt></a><br />
+  <a href="#bean">A.10. <tt>bean</tt></a><br />
+  <a href="#field">A.11. <tt>field</tt></a><br />
 </div>
 <a href="#B">Appendix B: Error Message Parameters</a><br />
 </div>
@@ -2768,12 +2769,34 @@ allowed number of child elements:
 
 <h2><a name="beanio">A.1. <tt>beanio</tt></a></h2>
 <p>The <tt>beanio</tt> element is the root element for a BeanIO mapping configuration file.</p>
-<p>Children: 
+<p>Children:
+<a href="#import"><tt>import</tt></a>*,  
 <a href="#typeHandler"><tt>typeHandler</tt></a>*, 
-<a href="#stream"><tt>stream</tt></a>+
+<a href="#stream"><tt>stream</tt></a>*
 </p>
 
-<h2><a name="typeHandler">A.2. <tt>typeHandler</tt></a></h2>
+<h2><a name="import">A.2. <tt>import</tt></a></h2>
+<p>An <tt>import</tt> element is used to import another mapping file.  Imported mapping files work
+as if the imported file was directly copied into the file that imported it.  A typical use for this
+might be to import a mapping file of customized type handlers.</p> 
+<p>Attributes:</p>
+<table>
+<tr>
+  <th>Attribute</th>
+  <th>Description</th>
+  <th>Required</th>
+</tr>
+<tr>
+  <td><tt>resource</tt></td>
+  <td>The name of the resource to import.  
+    <p>The resource name must be qualified with 'classpath:' to load the resource from 
+    the classpath, or with 'file:' to load the file relative to the application's working 
+    directory.</p></td>
+  <td>Yes</td>
+</tr>
+</table>
+
+<h2><a name="typeHandler">A.3. <tt>typeHandler</tt></a></h2>
 <p>A <tt>typeHandler</tt> element is used to define custom field type handlers
 that implement the <tt>org.beanio.types.TypeHandler</tt> interface.</p> 
 <p>Attributes:</p>
@@ -2804,7 +2827,7 @@ that implement the <tt>org.beanio.types.TypeHandler</tt> interface.</p>
 <a href="#property"><tt>property</tt></a>*
 </p>
 
-<h2><a name="property">A.3. <tt>property</tt></a></h2>
+<h2><a name="property">A.4. <tt>property</tt></a></h2>
 <p>A <tt>property</tt> element is used to customize other elements, such
 as a <a href="#typeHandler"><tt>typeHandler</tt></a>, <a href="#reader"><tt>reader</tt></a>,
 or <a href="#writer"><tt>writer</tt></a>.</p>
@@ -2892,7 +2915,7 @@ The following additional attributes are accepted in this scenario:</p>
 
 
 
-<h2><a name="stream">A.4. <tt>stream</tt></a></h2>
+<h2><a name="stream">A.5. <tt>stream</tt></a></h2>
 <p>A <tt>stream</tt> element defines the record layout of an input or output stream.</p> 
 <p>Attributes:</p>
 <table>
@@ -2995,7 +3018,7 @@ The following additional attributes are accepted in this scenario:</p>
 <a href="#group"><tt>group</tt></a>*
 </p>
 
-<h2><a name="reader">A.5. <tt>reader</tt></a></h2>
+<h2><a name="reader">A.6. <tt>reader</tt></a></h2>
 <p>A <tt>reader</tt> element is used to customize or replace the default record reader factory
 for the stream..</p> 
 <p>Attributes:</p>
@@ -3024,7 +3047,7 @@ for the stream..</p>
 <a href="#property"><tt>property</tt></a>*
 </p>
 
-<h2><a name="writer">A.6. <tt>writer</tt></a></h2>
+<h2><a name="writer">A.7. <tt>writer</tt></a></h2>
 <p>A <tt>writer</tt> element is used to customize or replace the default record writer factory
 for the stream..</p> 
 <p>Attributes:</p>
@@ -3053,7 +3076,7 @@ for the stream..</p>
 <a href="#property"><tt>property</tt></a>*
 </p>
 
-<h2><a name="group">A.7. <tt>group</tt></a></h2>
+<h2><a name="group">A.8. <tt>group</tt></a></h2>
 <p>A <tt>group</tt> element is used to group records together for validating occurrences of
 the group as a whole.</p> 
 <p>Attributes:</p>
@@ -3127,7 +3150,7 @@ the group as a whole.</p>
 <a href="#record"><tt>record</tt></a>*
 </p>
 
-<h2><a name="record">A.8. <tt>record</tt></a></h2>
+<h2><a name="record">A.9. <tt>record</tt></a></h2>
 <p>A <tt>record</tt> is used to define a record mapping within a stream.</p> 
 <p>Attributes:</p>
 <table>
@@ -3228,7 +3251,7 @@ the group as a whole.</p>
 </p>
 
 
-<h2><a name="bean">A.9. <tt>bean</tt></a></h2>
+<h2><a name="bean">A.10. <tt>bean</tt></a></h2>
 <p>A <tt>bean</tt> element is used to map fields and other bean objects to a parent bean or record.</p> 
 <p>Attributes:</p>
 <table>
@@ -3369,7 +3392,7 @@ the group as a whole.</p>
 </p>
 
 
-<h2><a name="field">A.10. <tt>field</tt></a></h2>
+<h2><a name="field">A.11. <tt>field</tt></a></h2>
 <p>A <tt>field</tt> element is used to define and map a field from a record to a bean property
 and vice versa.</p> 
 <p>Attributes:</p>

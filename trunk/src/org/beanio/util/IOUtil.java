@@ -26,7 +26,7 @@ import java.io.*;
 public class IOUtil {
 
     private IOUtil() { }
-
+   
     /**
      * Closes an input stream and quietly ignores any exception.
      * @param in the stream to close
@@ -73,5 +73,27 @@ public class IOUtil {
                 out.close();
         }
         catch (IOException ex) { }
+    }
+    
+    /**
+     * Loads a resource from the classpath.
+     * @param resource the name of the resource to load
+     * @return a new {@link InputStream} to read the resource or <tt>null</tt> if the
+     *   resource was not found
+     * @throws IOException if an I/O error occurs
+     * @since 1.2
+     */
+    public static InputStream getResourceAsStream(String resource) throws IOException {
+        ClassLoader cl = null;
+        try {
+            cl = Thread.currentThread().getContextClassLoader();
+        }
+        catch (Throwable ex) { }
+        
+        if (cl == null) {
+            cl = IOUtil.class.getClassLoader();
+        }
+        
+        return cl.getResourceAsStream(resource);
     }
 }

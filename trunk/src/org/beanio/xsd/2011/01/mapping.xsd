@@ -36,6 +36,13 @@
     </annotation>
     <complexType>
       <sequence>
+        <element name="import" minOccurs="0" maxOccurs="unbounded" type="tns:Import">
+          <annotation>
+            <documentation>
+              Imports a mapping file.
+            </documentation>
+          </annotation>
+        </element>
         <element name="typeHandler" minOccurs="0" maxOccurs="unbounded" type="tns:TypeHandler">
           <annotation>
             <documentation>
@@ -43,7 +50,7 @@
             </documentation>
           </annotation>
         </element>
-        <element name="stream" minOccurs="1" maxOccurs="unbounded" type="tns:Stream">
+        <element name="stream" minOccurs="0" maxOccurs="unbounded" type="tns:Stream">
           <annotation>
             <documentation>
               Declares a new stream mapping.
@@ -53,6 +60,17 @@
       </sequence>
     </complexType>
   </element>
+
+  <complexType name="Import">
+    <attribute name="resource" type="xsd:string" use="required">
+      <annotation>
+        <documentation>
+          The name of the mapping file to load.  Prefix with 'classpath:' to load from the classpath
+          or with 'file:' to load from the file system.
+        </documentation>
+      </annotation>
+    </attribute>
+  </complexType>
   
   <complexType name="Stream">
     <sequence>

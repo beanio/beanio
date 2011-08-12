@@ -23,6 +23,7 @@ import javax.xml.parsers.*;
 
 import org.beanio.*;
 import org.beanio.config.*;
+import org.beanio.util.IOUtil;
 import org.w3c.dom.*;
 import org.xml.sax.*;
 
@@ -116,7 +117,16 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
 
             Element child = (Element) node;
             String name = child.getTagName();
-            if ("typeHandler".equals(name)) {
+            if ("import".equals(name)) {
+                BeanIOConfig imported = importConfiguration(child);
+                for (TypeHandlerConfig handler : imported.getTypeHandlerList()) {
+                    config.addTypeHandler(handler);
+                }
+                for (StreamConfig stream : imported.getStreamList()) {
+                    config.addStream(stream);
+                }
+            }
+            else if ("typeHandler".equals(name)) {
                 config.addTypeHandler(createHandlerConfig(child));
             }
             else if ("stream".equals(name)) {
@@ -125,6 +135,67 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
         }
 
         return config;
+    }
+    
+    /**
+     * Parses an <tt>import</tt> DOM element and loads its mapping file.
+     * @param element the <tt>import</tt> DOM element
+     * @return a new <tt>BeanIOConfig</tt> for the imported resource or file
+     * @since 1.2
+     */
+    protected BeanIOConfig importConfiguration(Element element) {
+        
+        boolean classpath = false;
+        String resource = getAttribute(element, "resource");
+        
+        if (resource.startsWith("classpath:")) {
+            resource = resource.substring("classpath:".length()).trim();
+            classpath = true;
+        }
+        else if (resource.startsWith("file:")) {
+            resource = resource.substring("file:".length()).trim();
+        }
+        else {
+           throw new BeanIOConfigurationException("Import resource name must begin with 'classpath:' or 'file:'");
+        }
+        
+        if ("".equals(resource)) {
+            throw new BeanIOConfigurationException("Invalid import resource");
+        }
+        
+        String name = null;
+        InputStream in = null;
+        try {
+            if (classpath) {
+                name = resource;
+                in = IOUtil.getResourceAsStream(resource);
+                if (in == null) {
+                    throw new BeanIOConfigurationException("Import resource '" + resource + "' not found in classpath");
+                }
+            }
+            else {
+                File file = new File(resource);
+                if (!file.canRead()) {
+                    throw new BeanIOConfigurationException("Import resource '" + file + "' not found in file system");
+                }
+                name = file.getAbsolutePath();
+                in = new BufferedInputStream(new FileInputStream(file));
+            }
+        
+            try {
+                return loadConfiguration(in);
+            }
+            catch (BeanIOConfigurationException ex) {
+                throw new BeanIOConfigurationException("Failed to import mapping file '" + name + "': " + 
+                    ex.getMessage(), ex);
+            }
+        }
+        catch (IOException ex) {
+            throw new BeanIOConfigurationException("Failed to import mapping file '" + name + "'", ex);
+        }
+        finally {
+            IOUtil.closeQuietly(in);
+        }
     }
 
     /**

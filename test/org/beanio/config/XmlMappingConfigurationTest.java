@@ -32,6 +32,30 @@ import org.junit.Test;
 public class XmlMappingConfigurationTest extends ParserTest {
 
     @Test
+    public void testImport() throws IOException {
+        StreamFactory factory = StreamFactory.newInstance();
+        InputStream in = getClass().getResourceAsStream("import.xml");
+        try {
+            factory.load(in);
+        }
+        finally {
+            IOUtil.closeQuietly(in);
+        }
+    }
+
+    @Test
+    public void testInvalidImport_ResourceNotFound() throws IOException {
+        loadInvalidMappingFile("invalidImport_ResourceNotFound.xml", 
+            "Import resource 'org/beanio/config/doesnotexist.xml' not found in classpath");
+    }
+
+    @Test
+    public void testInvalidImport_InvalidResource() throws IOException {
+        loadInvalidMappingFile("invalidImport_InvalidResource.xml", 
+            "Import resource name must begin with 'classpath:' or 'file:'");
+    }
+    
+    @Test
     public void testInvalidGroupXmlType() throws IOException {
         loadInvalidMappingFile("invalidStreamXmlType.xml", "Invalid xmlType 'text'");
     }

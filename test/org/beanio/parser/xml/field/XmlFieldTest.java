@@ -92,4 +92,28 @@ public class XmlFieldTest extends XmlParserTest {
             in.close();
         }
     }
+    
+    /**
+     * Test a setter is not called if the element is missing.
+     */
+    @Test
+    public void testSetterNotCalledForMissingField() throws Exception {
+        BeanReader in = factory.createReader("stream3", new InputStreamReader(
+            getClass().getResourceAsStream("f3_in.xml")));
+        
+        try {
+            Person person = (Person) in.read();
+            assertEquals("Joe", person.getFirstName());
+            assertNull(person.getLastName());
+            assertEquals(new Integer(10), person.getAge());
+            
+            person = (Person) in.read();
+            assertEquals("John", person.getFirstName());
+            assertSame(Person.DEFAULT_NAME, person.getLastName());
+            assertSame(Person.DEFAULT_AGE, person.getAge());
+        }
+        finally {
+            in.close();
+        }
+    }
 }

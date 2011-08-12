@@ -79,10 +79,7 @@ public abstract class BeanDefinition extends PropertyDefinition {
         for (PropertyDefinition property : propertyList) {
             Object value = property.parseValue(record);
 
-            if (value == MISSING) {
-                value = null;
-            }
-            else if (!property.isCollection()) {
+            if (value != MISSING && !property.isCollection()) {
                 exists = true;
             }
             
@@ -96,7 +93,7 @@ public abstract class BeanDefinition extends PropertyDefinition {
             for (PropertyDefinition property : propertyList) {
                 if (property.isCollection()) {
                     Object value = propertyValue[index];
-                    if (value == null) {
+                    if (value == null || value == MISSING) {
                         continue;
                     }
                     else if (value == INVALID) {
@@ -149,7 +146,10 @@ public abstract class BeanDefinition extends PropertyDefinition {
         index = 0;
         for (PropertyDefinition property : propertyList) {
             try {
-                setBeanProperty(property, bean, propertyValue[index++]);
+                Object value = propertyValue[index++];
+                if (value != MISSING) {
+                    setBeanProperty(property, bean, value);
+                }
             }
             catch (BeanIOException ex) {
                 throw new BeanReaderIOException(record.getContext(),

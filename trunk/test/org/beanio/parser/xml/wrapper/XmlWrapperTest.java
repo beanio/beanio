@@ -63,12 +63,13 @@ public class XmlWrapperTest extends XmlParserTest {
             
             person = (Person) in.read();
             assertEquals("", person.getFirstName());
-            assertNull(person.getLastName());
+            assertSame(Person.DEFAULT_NAME, person.getLastName());
             assertEquals(0, person.getColor().size());
             addressList = person.getAddressList();
             assertEquals(2, addressList.size());
             assertEquals("CO", addressList.get(0).getState());
             assertEquals("IL", addressList.get(1).getState());
+            person.setLastName(null);
             out.write(person);
             
             person.setColor(null);

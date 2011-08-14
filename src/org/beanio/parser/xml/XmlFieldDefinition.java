@@ -246,6 +246,11 @@ public class XmlFieldDefinition extends FieldDefinition implements XmlNode {
         }
     }
     
+    @Override
+    protected boolean isNilSupported() {
+        return xml.isNillable();
+    }
+
     /**
      * Overridden to return null when a padded optional field is null.
      */

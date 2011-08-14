@@ -243,4 +243,26 @@ public class XmlTypesTest extends XmlParserTest {
             in.close();
         }
     }
+    
+    /**
+     * Test behvavior of a custom type handler where the format method
+     * may return null.
+     */
+    @Test
+    public void testTypeHandlerNilSupport() throws Exception {
+        StringWriter s = new StringWriter();
+        BeanWriter out = factory.createWriter("stream7", s);
+        
+        Person person = new Person();
+        person.setFirstName("");
+        person.setLastName(null);
+        out.write(person);
+        
+        person.setFirstName("nil");
+        person.setLastName("nil");
+        out.write(person);
+        out.close();
+        
+        assertEquals(load("t7_out.xml"), s.toString());
+    }
 }

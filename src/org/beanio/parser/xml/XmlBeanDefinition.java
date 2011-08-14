@@ -23,6 +23,7 @@ import javax.xml.XMLConstants;
 import org.beanio.InvalidRecordException;
 import org.beanio.parser.*;
 import org.beanio.stream.xml.XmlWriter;
+import org.beanio.types.TypeHandler;
 import org.beanio.util.DomUtil;
 import org.w3c.dom.*;
 import org.w3c.dom.Node;
@@ -336,8 +337,12 @@ public class XmlBeanDefinition extends BeanDefinition implements XmlNode {
         // format the field text (a null field value may not return null if a custom type handler was configured)
         String text = field.formatValue(value);
         
+        // if text is NIL, set text to null and continue
+        if (text == TypeHandler.NIL) {
+            text = null;
+        }
         // nothing to marshall if minOccurs is 0        
-        if (text == null && field.getMinOccurs() == 0) {
+        else if (text == null && field.getMinOccurs() == 0) {
             return;
         }
         

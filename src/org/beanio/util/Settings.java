@@ -51,6 +51,13 @@ public class Settings {
     public static final String DEFAULT_XML_TYPE = "org.beanio.xml.defaultXmlType";
     /** The default namespace prefix for 'http://www.w3.org/2001/XMLSchema-instance' */
     public static final String DEFAULT_XSI_NAMESPACE_PREFIX = "org.beanio.xml.xsiNamespacePrefix";
+    /** 
+     * Used for Spring Batch integration.  Set to 'true' to have the XmlWriter only update the execution context (state)
+     * with changes since the last update.  At the time of writing, it's not known whether Spring Batch will create a new
+     * ExecutionContext every time state is updated, or if the current context is used.  Disabled by default until proven
+     * the optimization will not impact state updates. 
+     */
+    public static final String XML_WRITER_UPDATE_STATE_USING_DELTA = "org.beanio.stream.xml.XmlWriter.deltaEnabled";
     
     private static final String DEFAULT_CONFIGURATION_PATH = "/org/beanio/config/beanio.properties";
     private static final String DEFAULT_CONFIGURATION_FILENAME = "beanio.properties";

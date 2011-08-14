@@ -56,6 +56,9 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
      * of type <tt>java.lang.Boolean</tt>. 
      */
     public static final String IS_GROUP_ELEMENT = "isGroup";
+
+    private static final boolean DELTA_ENABLED = "true".equals(Settings.getInstance().getProperty(
+        Settings.XML_WRITER_UPDATE_STATE_USING_DELTA));
     
     private static final String DEFAULT_LINE_SEPARATOR = System.getProperty("line.separator");
     private static final XMLOutputFactory xmlOutputFactory;
@@ -481,9 +484,11 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
             state.remove(getKey(stackPrefix, STACK_NS_MAP_KEY));
         }
         
+        int to = DELTA_ENABLED ? dirtyLevel : 0;
+        
         // update dirtied stack items up to the current level
         ElementStack e = elementStack;
-        for (int i=level; i>dirtyLevel; i--) {
+        for (int i=level; i>to; i--) {
             String stackPrefix = namespace + ".s" + i;
             state.put(getKey(stackPrefix, STACK_ELEMENT_KEY), e.toToken());
             

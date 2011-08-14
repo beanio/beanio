@@ -18,7 +18,10 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.beanio.org/2011/01 http://www.beanio.org/2011/01/mapping.xsd">
 
-  <typeHandler type="java.util.Date" class="org.beanio.types.DateTypeHandler">
+  <typeHandler type="java.util.Date" format="delimited" class="org.beanio.types.DateTypeHandler">
+    <property name="pattern" value="yyyy-MM-dd" />
+  </typeHandler>
+  <typeHandler type="java.util.Date" format="csv" class="org.beanio.types.DateTypeHandler">
     <property name="pattern" value="MMddyy" />
   </typeHandler>
   <typeHandler name="time" class="org.beanio.types.DateTypeHandler">
@@ -97,6 +100,15 @@
       <field name="dateValue" format='yyyy-MM-dd' />
       <field name="bigIntegerValue" format="0x" />
       <field name="bigDecimalValue" format="0.00x" />
+    </record>
+  </stream>
+
+  <stream name="t8" format="delimited">
+    <reader>
+      <property name="delimiter" value="," />
+    </reader>
+    <record name="record" class="org.beanio.parser.types.ObjectRecord">
+      <field name="dateValue" />
     </record>
   </stream>
 

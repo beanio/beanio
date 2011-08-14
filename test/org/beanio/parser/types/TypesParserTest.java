@@ -242,4 +242,26 @@ public class TypesParserTest extends ParserTest {
             in.close();
         }
     }
+    
+    /*
+     * Test format specific type handler.
+     */
+    @Test
+    public void testFormatSpecificTypeHandler() throws Exception {
+        StringWriter text;
+        BeanReader in = factory.createReader("t8", new InputStreamReader(
+            getClass().getResourceAsStream("t8_valid.txt")));
+        try {
+            ObjectRecord record;
+            record = (ObjectRecord) in.read();
+            assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse("2000-01-01"), record.getDateValue());
+
+            text = new StringWriter();
+            factory.createWriter("t8", text).write(record);
+            assertEquals("2000-01-01" + lineSep, text.toString());
+        }
+        finally {
+            in.close();
+        }
+    }
 }

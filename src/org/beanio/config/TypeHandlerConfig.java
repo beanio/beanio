@@ -29,6 +29,7 @@ public class TypeHandlerConfig extends Bean {
 
     private String name;
     private String type;
+    private String format;
 
     /**
      * Returns the name of the type handler.
@@ -60,5 +61,24 @@ public class TypeHandlerConfig extends Bean {
      */
     public void setType(String type) {
         this.type = type;
+    }
+
+    /**
+     * Returns the stream format to register this type handler for, or <tt>null</tt>
+     * if the type handler is used for all formats.
+     * @return the stream format (xml, csv, delimited, or fixedlength) or <tt>null</tt>
+     */
+    public String getFormat() {
+        return format;
+    }
+
+    /**
+     * Sets the stream format to register this type handler for.  By default,
+     * the stream format is <tt>null</tt> and the type handler is used for
+     * all formats.
+     * @param format the stream format (xml, csv, delimited, or fixedlength)
+     */
+    public void setFormat(String format) {
+        this.format = format;
     }
 }

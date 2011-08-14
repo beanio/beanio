@@ -43,10 +43,10 @@
             </documentation>
           </annotation>
         </element>
-        <element name="typeHandler" minOccurs="0" maxOccurs="unbounded" type="tns:TypeHandler">
+        <element name="typeHandler" minOccurs="0" maxOccurs="unbounded" type="tns:GlobalTypeHandler">
           <annotation>
             <documentation>
-              Declares a new global type handler, or customizes a default handler.
+              Declares a custom type handler for all streams.
             </documentation>
           </annotation>
         </element>
@@ -123,7 +123,7 @@
     <attribute name="format" type="xsd:string" use="required">
       <annotation>
         <documentation>
-          The stream format.  Either 'csv', 'delimited' or 'fixedlength'.
+          The stream format.  Either 'xml', 'csv', 'delimited' or 'fixedlength'.
         </documentation>
       </annotation>  
     </attribute>
@@ -199,6 +199,21 @@
       </annotation>
     </attribute>
    </complexType>
+
+  <complexType name="GlobalTypeHandler">
+    <complexContent>
+      <extension base="tns:TypeHandler">
+        <attribute name="format" type="xsd:string" use="optional">
+          <annotation>
+            <documentation>
+              The stream format to use this type handler for.  Either 'xml', 
+              'csv', 'delimited', or 'fixedlength'.
+            </documentation>
+          </annotation>
+        </attribute>      
+      </extension>
+    </complexContent>
+  </complexType>
 
   <complexType name="TypeHandler">
     <sequence>

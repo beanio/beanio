@@ -301,6 +301,8 @@ public interface BeanReader {
     
     public int getLineNumber();
     
+    public int skip(int count) throws BeanReaderException;
+    
     public void close() throws BeanReaderIOException;
     
     public void setErrorHandler(BeanReaderErrorHandler errorHandler);
@@ -499,11 +501,12 @@ will bubble up to the calling method.</p>
 <h1><a name="TheMappingFile">4.0. The Mapping File</a></h1>
 <p>An XML mapping file is used to configure a stream layout.</p>
 <h2><a name="StreamDefinition">4.1. Stream Definitions</a></h2>
-<p>A mapping file must contain one or more stream definitions.  A stream
+<p>A typical mapping file contains one or more stream definitions.  A stream
 definition must have a <tt>name</tt> and <tt>format</tt> attribute configured. The name of the 
 stream is used to reference the layout when creating a <tt>BeanReader</tt> or 
-<tt>BeanWriter</tt> instance using a <tt>StreamFactory</tt>.  Supported
-formats include <tt>xml</tt>, <tt>csv</tt>, <tt>delimited</tt> and <tt>fixedlength</tt>.  
+<tt>BeanWriter</tt> instance using a <tt>StreamFactory</tt>.  And the format instructs
+BeanIO how to interpret the stream.  Supported formats include <tt>xml</tt>, <tt>csv</tt>, 
+<tt>delimited</tt> and <tt>fixedlength</tt>.  
 </p> 
 <pre class="file">
 &lt;beanio xmlns="http://www.beanio.org/2011/01" 
@@ -526,7 +529,7 @@ and a <tt>RecordWriter</tt> to write records to an output stream.</p>
 
 <p>The <tt>RecordReader</tt> interface is shown below.  A record reader is responsible
 for dividing a stream into records.  The actual Java representation of a record is dependent
-on the format of stream.  Delimited record readers (including CSV) parse an input stream into 
+on the format of the stream.  Delimited record readers (including CSV) parse an input stream into 
 <tt>String</tt> array records, where each value in the array is a delimited field.  
 And fixed length record readers simply parse an input stream into <tt>String</tt> records.</p>
 <pre class="java">
@@ -1224,11 +1227,11 @@ the <tt>format</tt> attribute.</p>
 
 <h3><a name="CustomTypeHandlers">4.3.2. Custom Type Handlers</a></h3>
 <p>Field type conversion is performed by a <i>type handler</i>.  BeanIO includes type handlers
-for common Java types, or you can create your own type handler by implementing the <tt>TypeHandler</tt> 
-interface shown below.
+for common Java types, or you can create your own type handler by implementing the 
+<tt>org.beanio.types.TypeHandler</tt> interface shown below.
 When writing a custom type handler, make sure to handle null values and empty strings.
 Only one instance of your type handler is created, so if you plan to concurrently read or write
-multiple streams, make sure your type handler is thread safe.
+multiple streams, make sure your type handler is also thread safe.
 </p>
 <pre class="java">
 package org.beanio.types;
@@ -1239,7 +1242,7 @@ public interface TypeHandler {
     public Class&lt;?&gt; getType();
 }</pre>
 
-<p>The following example shows a custom type handler for the <tt>Boolean</tt> class
+<p>The following example shows a custom type handler for the <tt>java.lang.Boolean</tt> class
 and <tt>boolean</tt> primitive based on "Y" or "N" indicators.</p>
 <pre class="java">
 import org.beanio.types.TypeHandler;
@@ -1257,27 +1260,33 @@ public class YNTypeHandler implements TypeHandler {
 }</pre>
 
 
-<p>A type handler may be named using the <tt>name</tt> attribute, and/or registered for
-all fields of a particular type by setting its <tt>type</tt> attribute, where <tt>type</tt> is
-set to the fully qualified class name or type alias of the class supported by the type handler.
+<p>A type handler may be explicitly named using the <tt>name</tt> attribute, and/or registered for
+all fields of a particular type by setting the <tt>type</tt> attribute.  The <tt>type</tt> attribute can be
+be set to the fully qualified class name or type alias of the class supported by the type handler.
 To reference a named type handler, use the <tt>typeHandler</tt> field attribute when configuring
 the field.</p>
 
-<p>Many BeanIO included type handlers support customization through the use of 
+<p>Many default type handlers included with BeanIO support customization through the use of 
 one or more <tt>property</tt> elements, where the <tt>name</tt> attribute is a bean property of 
 the type handler, and the <tt>value</tt> attribute is the property value.</p>
 
 <p>Type handlers can be declared globally (for all streams in the mapping file) or for a specific stream.
-In the example below, the <tt>DateTypeHandler</tt> is declared globally, while the
-<tt>YNTypeHandler</tt> is declared only for the 'employeeFile' stream.  Stream
-specific type handlers will override global type handlers when declared with the same
-name or for the same type.</p>
+Globally declared type handlers may optionally use a <tt>format</tt> attribute to narrow the type handler
+scope to a specific stream format.</p>
+
+<p>In the example below, the first <tt>DateTypeHandler</tt> is declared globally for all stream formats.  The
+second <tt>DateTypeHandler</tt> overrides the first for <tt>java.util.Date</tt> types in an XML formatted stream, 
+and the <tt>YNTypeHandler</tt> is declared only for the 'employeeFile' stream.  Stream specific type handlers 
+override global type handlers when declared with the same name or for the same type.</p>
 <pre class="file">
 &lt;beanio&gt;
 
   &lt;typeHandler <span class="highlight">type="java.util.Date"</span> class="org.beanio.types.DateTypeHandler"&gt;
     <span class="highlight">&lt;property name="pattern" value="MMddyyyy" /&gt;</span>
     <span class="highlight">&lt;property name="lenient" value="true" /&gt;</span>
+  &lt;/typeHandler&gt;
+  &lt;typeHandler type="java.util.Date" <span class="highlight">format="xml"</span> class="org.beanio.types.DateTypeHandler"&gt;
+    &lt;property name="pattern" value="yyyy-MM-dd" /&gt;
   &lt;/typeHandler&gt;
 
   &lt;stream name="employeeFile" format="csv"&gt;
@@ -2797,8 +2806,10 @@ might be to import a mapping file of customized type handlers.</p>
 </table>
 
 <h2><a name="typeHandler">A.3. <tt>typeHandler</tt></a></h2>
-<p>A <tt>typeHandler</tt> element is used to define custom field type handlers
-that implement the <tt>org.beanio.types.TypeHandler</tt> interface.</p> 
+<p>A <tt>typeHandler</tt> element is used to declare a custom field type handler
+that implement the <tt>org.beanio.types.TypeHandler</tt> interface.  A type handler
+can be registered for a specific Java type, or registered for a Java type and stream format 
+combination, or explicitly named.</p> 
 <p>Attributes:</p>
 <table>
 <tr>
@@ -2808,18 +2819,31 @@ that implement the <tt>org.beanio.types.TypeHandler</tt> interface.</p>
 </tr>
 <tr>
   <td><tt>name</tt></td>
-  <td>The type handler name.</td>
+  <td>The type handler name.  A <a href="#field">field</a> can always reference a type
+    handler by name, even if the stream format does not match the
+    configured type handler <tt>format</tt> attribute.</td>
   <td>One of <tt>name</tt> or <tt>type</tt> is required.</td>
 </tr>
 <tr>
   <td><tt>type</tt></td>
-  <td>The fully qualified classname or class alias the type handler is for.</td>
+  <td>The fully qualified classname or type alias to register the type handler for.
+    If <tt>format</tt> is also set, the type handler will only be used
+    by streams that match the configured format.
+    </td>
   <td>One of <tt>name</tt> or <tt>type</tt> is required.</td>
 </tr>
 <tr>
   <td><tt>class</tt></td>
   <td>The fully qualified classname of the <tt>TypeHandler</tt> implementation.</td>
   <td>Yes</td>
+</tr>
+<tr>
+  <td><tt>format</tt></td>
+  <td>When used in conjunction with the <tt>type</tt> attribute, a type handler can be
+    registered for a specific stream format.  Set to <tt>xml</tt>, <tt>csv</tt>,
+    <tt>delimited</tt>, or <tt>fixedlength</tt>.  If not set, the type handler may be
+    used by any stream format.</td>
+  <td>No</td>
 </tr>
 </table>
 

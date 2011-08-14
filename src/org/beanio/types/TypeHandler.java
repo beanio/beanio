@@ -26,6 +26,13 @@ package org.beanio.types;
  */
 public interface TypeHandler {
 
+    /** 
+     * This constant can be returned from {@link #format(Object)} for XML formatted streams to indicate
+     * a nillable element should be set to nil even if the field's minimum occurrences is zero.  
+     * In all other cases, if NIL is returned, the formatted value is treated as <tt>null</tt>. 
+     */
+    public final static String NIL = new String("");
+    
     /**
      * Parses field text into a Java object.
      * @param text the field text to parse, which may be null if the field was not passed in the record
@@ -37,7 +44,8 @@ public interface TypeHandler {
     /**
      * Formats a Java object into field text.
      * @param value the Java object to format, which may be null
-     * @return the formatted field text
+     * @return the formatted field text, or <tt>null</tt> to indicate the value is not present, 
+     *   or {@link #NIL} for XML formatted streams
      */
     public String format(Object value);
 

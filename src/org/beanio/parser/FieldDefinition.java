@@ -250,6 +250,13 @@ public abstract class FieldDefinition extends PropertyDefinition {
         if (handler != null) {
             try {
                 text = handler.format(value);
+                
+                if (text == TypeHandler.NIL) {
+                    if (isNilSupported()) {
+                        return text;
+                    }
+                    text = null;
+                }
             }
             catch (Exception ex) {
                 throw new BeanWriterIOException("Type conversion failed for field '" +
@@ -261,6 +268,15 @@ public abstract class FieldDefinition extends PropertyDefinition {
         }
 
         return formatText(text);
+    }
+    
+    /**
+     * Returns whether {@link #formatValue(Object)} may return {@link TypeHandler#NIL}.  Returns
+     * <tt>false</tt> by default, which will convert <tt>TypeHandler.NIL</tt> to <tt>null</tt>.
+     * @return <tt>true</tt> if {@link #formatValue(Object)} may return {@link TypeHandler#NIL}.
+     */
+    protected boolean isNilSupported() {
+        return false;
     }
     
     /**

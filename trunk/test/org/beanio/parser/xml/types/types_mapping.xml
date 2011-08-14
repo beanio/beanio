@@ -80,4 +80,13 @@
     </record>
   </stream>
 
+  <stream name="stream7" format="xml" ordered="false" xmlName="stream">
+    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <typeHandler type="string" class="org.beanio.parser.xml.types.NillableStringTypeHandler" />
+    <record name="record" xmlName="person" class="org.beanio.parser.xml.Person">
+      <field name="firstName" minOccurs="0" nillable="false" />
+      <field name="lastName" minOccurs="0" nillable="true" />
+    </record>
+  </stream>
+
 </beanio>

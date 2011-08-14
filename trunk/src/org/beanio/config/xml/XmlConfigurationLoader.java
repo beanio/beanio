@@ -208,6 +208,7 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
         config.setName(getAttribute(element, "name"));
         config.setType(getAttribute(element, "type"));
         config.setClassName(getAttribute(element, "class"));
+        config.setFormat(getAttribute(element, "format"));
         config.setProperties(createProperties(element));
         return config;
     }

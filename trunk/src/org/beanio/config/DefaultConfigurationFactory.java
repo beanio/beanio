@@ -75,11 +75,12 @@ public class DefaultConfigurationFactory implements ConfigurationFactory {
         if (config == null) {
             throw new BeanIOConfigurationException("null configuration");
         }
+        
+        TypeHandlerFactoryManager manager = new TypeHandlerFactoryManager();
 
-        TypeHandlerFactory defaultTypeHandlerFactory = TypeHandlerFactory.getDefault();
-        TypeHandlerFactory globalTypeHandlerFactory = getTypeHandlerFactory(
-            null, config.getTypeHandlerList());
-
+        // create global type handlers
+        createTypeHandlers(manager, config.getTypeHandlerList());
+        
         Collection<StreamConfig> streamConfigList = config.getStreamList();
         Collection<StreamDefinition> streamDefinitionList = new ArrayList<StreamDefinition>(
             streamConfigList.size());
@@ -97,22 +98,23 @@ public class DefaultConfigurationFactory implements ConfigurationFactory {
         for (StreamConfig streamConfig : streamConfigList) {
             StreamDefinitionFactory factory = createStreamDefinitionFactory(streamConfig.getFormat());
             
-            // allow the stream factory to override default type handlers...
-            TypeHandlerFactory parentTypeHandlerFactory = factory.getDefaultTypeHandlerFactory();
-            if (parentTypeHandlerFactory == null) {
-                parentTypeHandlerFactory = defaultTypeHandlerFactory;
-            }
-            if (globalTypeHandlerFactory != null) {
-                globalTypeHandlerFactory.setParent(parentTypeHandlerFactory);
-                parentTypeHandlerFactory = globalTypeHandlerFactory;
+            // allow a stream factory to override default type handlers...
+            TypeHandlerFactory typeHandlerFactory = factory.getDefaultTypeHandlerFactory();
+            if (typeHandlerFactory == null) {
+                typeHandlerFactory = TypeHandlerFactory.getDefault();
             }
             
-            // create the stream specific type factory
-            TypeHandlerFactory typeHandlerFactory = getTypeHandlerFactory(
-                parentTypeHandlerFactory, streamConfig.getHandlerList());
+            // instruct the manager to create a new type handler factory for this stream
+            typeHandlerFactory = manager.createStreamTypeHandlerFactory(typeHandlerFactory, streamConfig.getFormat());
+
+            // create stream specific type handlers
+            createTypeHandlers(manager, streamConfig.getHandlerList());   
             
             factory.setTypeHandlerFactory(typeHandlerFactory);
             streamDefinitionList.add(factory.createStreamDefinition(streamConfig));
+            
+            // clear out the stream specific type handler
+            manager.clearStreamTypeHandlerFactory();
         }
         return streamDefinitionList;
     }
@@ -141,18 +143,17 @@ public class DefaultConfigurationFactory implements ConfigurationFactory {
     }
 
     /**
-     * Creates a type handler factory.
-     * @param parent the parent type handler factory
+     * Creates type handlers and adds them to the type handler factory provided by the type handler
+     * factory manager.
+     * @param manager the type handler factory manager
      * @param configList the list of customized type handler configurations
-     * @return the type handler factory
+     * @since 1.2
      */
-    protected TypeHandlerFactory getTypeHandlerFactory(TypeHandlerFactory parent,
+    private void createTypeHandlers(TypeHandlerFactoryManager manager,
         List<TypeHandlerConfig> configList) {
-        if (configList == null || configList.isEmpty()) {
-            return parent;
+        if (configList == null) {
+            return;
         }
-
-        TypeHandlerFactory handlerFactory = new TypeHandlerFactory(parent);
 
         // parse global type handlers
         for (TypeHandlerConfig hc : configList) {
@@ -183,19 +184,20 @@ public class DefaultConfigurationFactory implements ConfigurationFactory {
 
             TypeHandler h = (TypeHandler) bean;
             if (hc.getName() != null) {
-                handlerFactory.registerHandler(hc.getName(), h);
+                // named type handlers are always registerred globally
+                manager.getTypeHandlerFactory(null).registerHandler(hc.getName(), h);
             }
 
             if (hc.getType() != null) {
                 try {
-                    handlerFactory.registerHandlerFor(hc.getType(), h);
+                    // type handlers configured for java types may be registered for a specific stream format
+                    manager.getTypeHandlerFactory(hc.getFormat()).registerHandlerFor(hc.getType(), h);
                 }
                 catch (IllegalArgumentException ex) {
                     throw new BeanIOConfigurationException("Invalid type handler configuration", ex);
                 }
             }
         }
-        return handlerFactory;
     }
 
     /**

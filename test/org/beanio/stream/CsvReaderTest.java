@@ -234,13 +234,25 @@ public class CsvReaderTest {
     @Test(expected = RecordIOException.class)
     public void testMissingQuoteEOF() throws IOException {
         StringReader text = new StringReader("field1,\"field2");
-        new CsvReader(text, ',', null, false).read();
+        
+        CsvReaderConfiguration config = new CsvReaderConfiguration();
+        config.setDelimiter(',');
+        config.setEscape(null);
+        config.setMultilineEnabled(false);
+        
+        new CsvReader(text, config).read();
     }
 
     @Test
     public void testMissingQuoteEOL() throws IOException {
         StringReader text = new StringReader("field1,\"field2\nfield1");
-        CsvReader in = new CsvReader(text, ',', null, false);
+        
+        CsvReaderConfiguration config = new CsvReaderConfiguration();
+        config.setDelimiter(',');
+        config.setEscape(null);
+        config.setMultilineEnabled(false);
+        
+        CsvReader in = new CsvReader(text, config);
         try {
             in.read();
             fail("Expected RecordIOException");
@@ -254,7 +266,12 @@ public class CsvReaderTest {
     public void testRecoverSkipLF() throws IOException {
         StringReader text = new StringReader(
                 "field1,\"field2\" ,field3\r\nfield1");
-        CsvReader in = new CsvReader(text, ',', null, false);
+        
+        CsvReaderConfiguration config = new CsvReaderConfiguration();
+        config.setDelimiter(',');
+        config.setEscape(null);
+        config.setMultilineEnabled(false);
+        CsvReader in = new CsvReader(text, config);
         try {
             in.read();
             fail("Expected RecordIOException");
@@ -265,12 +282,20 @@ public class CsvReaderTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testQuoteIsDelimiter() {
-        new CsvReader(new StringReader(""), ',', ',', null, false, false, false);
+        CsvReaderConfiguration config = new CsvReaderConfiguration();
+        config.setDelimiter(',');
+        config.setQuote(',');
+        
+        new CsvReader(new StringReader(""), config);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testQuoteIsEscape() {
-        new CsvReader(new StringReader(""), ',', '"', ',', false, false, false);
+        CsvReaderConfiguration config = new CsvReaderConfiguration();
+        config.setDelimiter(',');
+        config.setEscape(',');
+        
+        new CsvReader(new StringReader(""), config);
     }
 
     @Test
@@ -282,6 +307,31 @@ public class CsvReaderTest {
         CsvReader in = createReader(factory, "   1,2,  3  ");
         assertArrayEquals(expected, in.read());
         assertEquals(1, in.getRecordLineNumber());
+        assertNull(in.read());
+    }
+    
+    @Test
+    public void testComments() throws IOException {
+        String[] comments = new String[] { "#", "$$", "--" };
+        
+        CsvReaderConfiguration config = new CsvReaderConfiguration();
+        config.setComments(comments);
+        
+        StringReader input = new StringReader(
+            "# Comment\n" +
+            "1\r\n" +
+            "-1\r\n" +
+            "--Comment\r\n" +
+            "2\n" +
+            "#");
+        
+        CsvReader in = new CsvReader(input, config);
+        assertArrayEquals(new String[] { "1" }, in.read());
+        assertEquals(2, in.getRecordLineNumber());
+        assertArrayEquals(new String[] { "-1" }, in.read());
+        assertEquals(3, in.getRecordLineNumber());        
+        assertArrayEquals(new String[] { "2" }, in.read());
+        assertEquals(5, in.getRecordLineNumber());
         assertNull(in.read());
     }
 

@@ -30,6 +30,13 @@ import org.beanio.types.*;
  */
 class BeanUtil {
 
+    private static TypeHandlerFactory typeHandlerFactory;
+    static {
+        typeHandlerFactory = new TypeHandlerFactory();
+        // string arrays allowed for setting 'comments' on a csv/delimited/fixedlength reader
+        typeHandlerFactory.registerHandlerFor(String[].class, new StringArrayTypeHandler());
+    }
+    
     private BeanUtil() { }
 
     /**
@@ -95,7 +102,6 @@ class BeanUtil {
             throw new BeanIOConfigurationException(e);
         }
 
-        TypeHandlerFactory typeHandlerFactory = TypeHandlerFactory.getDefault();
         PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
 
@@ -141,6 +147,74 @@ class BeanUtil {
                 throw new BeanIOConfigurationException("Failed to invoke '" + method +
                     "' on class '" + clazz + "'", e);
             }
+        }
+    }
+    
+    /*
+     * Type handler implementation for String arrays.  Values must be comma delimited,
+     * and a comma can be escaped using a backslash.  All whitespace is preserved.
+     */
+    private static class StringArrayTypeHandler implements TypeHandler {
+        
+        /*
+         * (non-Javadoc)
+         * @see org.beanio.types.TypeHandler#parse(java.lang.String)
+         */
+        public Object parse(String text) throws TypeConversionException {
+            if (text == null || "".equals(text)) {
+                return null;
+            }
+            
+            int pos = text.indexOf(',');
+            if (pos < 0) {
+                return new String[] { text };
+            }
+            
+            boolean escaped = false;
+            StringBuffer item = new StringBuffer();
+            List<String> list = new ArrayList<String>();
+            
+            char[] ca = text.toCharArray();
+            for (char c : ca) {
+                if (escaped) {
+                    if (c != ',' && c != '\\') {
+                        item.append('\\');
+                    }
+                    item.append(c);
+                    escaped = false;
+                }
+                else if (c == '\\') {
+                    escaped = true;
+                }
+                else if (c == ',') {
+                    list.add(item.toString());
+                    item = new StringBuffer();
+                }
+                else {
+                    item.append(c);
+                }
+            }
+            list.add(item.toString());
+            
+            String [] result = new String[list.size()];
+            list.toArray(result);
+            return result;
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see org.beanio.types.TypeHandler#format(java.lang.Object)
+         */
+        public String format(Object value) {
+            throw new UnsupportedOperationException();
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see org.beanio.types.TypeHandler#getType()
+         */
+        public Class<?> getType() {
+            return String[].class;
         }
     }
 }

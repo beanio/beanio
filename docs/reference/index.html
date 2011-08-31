@@ -646,6 +646,15 @@ and record writer:</p>
   <td>Yes</td>
 </tr>
 <tr>
+  <td><tt>comments</tt></td>
+  <td>String[]</td>
+  <td>A comma separated list of values for identifying commented lines.  If a line read from an input
+    stream begins with any of the configured values, the line is ignored.  A backslash may
+    be used to escape a comma and itself.  All whitespace is preserved.</td>
+  <td>Yes</td>
+  <td>No</td>
+</tr>
+<tr>
   <td><tt>multilineEnabled</tt></td>
   <td>boolean</td>
   <td>If set to <tt>true</tt>, quoted fields may contain new line characters.  Defaults to <tt>false</tt>.</td>
@@ -743,6 +752,15 @@ and record writer:</p>
   <td>Yes</td>
   <td>Yes</td>
 </tr>
+<tr>
+  <td><tt>comments</tt></td>
+  <td>String[]</td>
+  <td>A comma separated list of values for identifying commented lines.  If a line read from an input
+    stream begins with any of the configured values, the line is ignored.  A backslash may
+    be used to escape a comma and itself.  All whitespace is preserved.</td>
+  <td>Yes</td>
+  <td>No</td>
+</tr>
 </table>
 
 
@@ -774,6 +792,15 @@ and record writer:</p>
     to a stream.</td>
   <td>Yes</td>
   <td>Yes</td>
+</tr>
+<tr>
+  <td><tt>comments</tt></td>
+  <td>String[]</td>
+  <td>A comma separated list of values for identifying commented lines.  If a line read from an input
+    stream begins with any of the configured values, the line is ignored.  A backslash may
+    be used to escape a comma and itself.  All whitespace is preserved.</td>
+  <td>Yes</td>
+  <td>No</td>
 </tr>
 </table>
 
@@ -2875,7 +2902,7 @@ or <a href="#writer"><tt>writer</tt></a>.</p>
 </table>
 <p>A <tt>property</tt> element, when used as child of a <a href="#record"><tt>record</tt></a> or 
 <a href="#bean"><tt>bean</tt></a> element, can also be used to set 
-constant values on a record or bean object that do not map to field in the input or output stream.  
+constant values on a record or bean object that do not map to a field in the input or output stream.  
 The following additional attributes are accepted in this scenario:</p>
 <table>
 <tr>

@@ -126,6 +126,27 @@ public class FixedLengthReaderTest {
     public void testEmpty() throws IOException {
         assertNull(new FixedLengthReader(new StringReader("")).read());
     }
+    
+    @Test
+    public void testComments() throws IOException {
+        FixedLengthReaderConfiguration config = new FixedLengthReaderConfiguration();
+        config.setComments(new String[] { "#", "//" });
+        config.setRecordTerminator('+');
+        
+        StringReader input = new StringReader(
+            "# comment+" +
+            "one+" +
+            "/+" +
+            "+" +
+            "// ignored+" +
+            "//");
+        
+        FixedLengthReader in = new FixedLengthReader(input, config);
+        assertEquals("one", in.read());
+        assertEquals("/", in.read());
+        assertEquals("", in.read());
+        assertNull(in.read());
+    }
 
     private FixedLengthReader createReader(FixedLengthReaderFactory factory, String input) {
         return (FixedLengthReader) factory.createReader(createInput(input));

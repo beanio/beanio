@@ -19,6 +19,7 @@ import java.io.*;
 import java.util.*;
 
 import org.beanio.stream.*;
+import org.beanio.stream.util.CommentReader;
 
 /**
  * A <tt>DelimitedReader</tt> is used to parse delimited flat files into
@@ -60,7 +61,8 @@ public class DelimitedReader implements RecordReader {
     private char recordTerminator = 0;
     private boolean multilineEnabled = false;
     private boolean escapeEnabled = false;
-
+    private CommentReader commentReader = null;
+    
     private transient Reader in;
     private transient String recordText;
     private transient int recordLineNumber;
@@ -75,17 +77,17 @@ public class DelimitedReader implements RecordReader {
      * @param in the input stream to read from
      */
     public DelimitedReader(Reader in) {
-        this(in, '\t', null, null);
+        this(in, null);
     }
 
     /**
-     * Constructs a new <tt>DelimitedReader</tt>.  Escaping is and line 
+     * Constructs a new <tt>DelimitedReader</tt>.  Escaping and line 
      * continuation characters are disabled.
      * @param in the input stream to read from
      * @param delimiter the field delimiting character
      */
     public DelimitedReader(Reader in, char delimiter) {
-        this(in, delimiter, null, null);
+        this(in, new DelimitedReaderConfiguration(delimiter));
     }
 
     /**
@@ -97,6 +99,7 @@ public class DelimitedReader implements RecordReader {
      *   or <tt>null</tt> to disable line continuations
      * @throws IllegalArgumentException if the delimiter matches the escape character or
      *   or the line continuation character
+     * @deprecated use {@link DelimitedReader#DelimitedReader(Reader, DelimitedReaderConfiguration)} instead
      */
     public DelimitedReader(Reader in, char delimiter, Character escapeChar,
         Character lineContinuationCharacter) {
@@ -114,6 +117,7 @@ public class DelimitedReader implements RecordReader {
      *   <tt>null</tt> to allow any of LF, CR, or CRLF
      * @throws IllegalArgumentException if the delimiter matches the escape character or
      *   or the line continuation character
+     * @deprecated use {@link DelimitedReader#DelimitedReader(Reader, DelimitedReaderConfiguration)} instead
      */
     public DelimitedReader(Reader in, char delimiter, Character escapeChar,
         Character lineContinuationCharacter, Character recordTerminator) {
@@ -145,6 +149,56 @@ public class DelimitedReader implements RecordReader {
                 throw new IllegalArgumentException("The line continuation character and record terminator cannot match");
             }            
             this.recordTerminator = recordTerminator;
+        }
+    }
+    
+    /**
+     * Constructs a new <tt>DelimitedReader</tt>.
+     * @param in the input stream to read from
+     * @param config the reader configuration settings or <tt>null</tt> to use default values
+     * @throws IllegalArgumentException if the delimiter matches the escape character or
+     *   or the line continuation character
+     * @since 1.2
+     */
+    public DelimitedReader(Reader in, DelimitedReaderConfiguration config) {
+        if (config == null) {
+            config = new DelimitedReaderConfiguration();
+        }
+        
+        this.in = in;
+        this.delim = config.getDelimiter();
+        
+        if (config.getEscape() != null) {
+            this.escapeEnabled = true;
+            this.escapeChar = config.getEscape();
+            
+            if (delim == escapeChar) {
+                throw new IllegalArgumentException("The field delimiter canot match the escape character");
+            }    
+        }
+        
+        if (config.getLineContinuationCharacter() != null) {
+            this.multilineEnabled = true;
+            this.lineContinuationChar = config.getLineContinuationCharacter();
+            
+            if (delim == lineContinuationChar) {
+                throw new IllegalArgumentException("The field delimiter cannot match the line continuation character");
+            }
+        }
+        
+        if (config.getRecordTerminator() != null) {
+            this.recordTerminator = config.getRecordTerminator();
+            
+            if (recordTerminator == delim) {
+                throw new IllegalArgumentException("The record delimiter and record terminator characters cannot match");
+            }
+            if (multilineEnabled && recordTerminator == lineContinuationChar) {
+                throw new IllegalArgumentException("The line continuation character and record terminator cannot match");
+            }
+        }
+        
+        if (config.isCommentEnabled()) {
+            commentReader = new CommentReader(in, config.getComments(), config.getRecordTerminator());
         }
     }
 
@@ -183,6 +237,24 @@ public class DelimitedReader implements RecordReader {
         }
 
         ++lineNumber;
+        
+        // skip commented lines
+        if (commentReader != null) {
+            int lines = commentReader.skipComments(skipLF);
+            if (lines > 0) {
+                if (commentReader.isEOF()) {
+                    fieldList = null;
+                    recordText = null;
+                    recordLineNumber = -1;
+                    return null;
+                }
+                else {
+                    lineNumber += lines;
+                    skipLF = commentReader.isSkipLF();
+                }
+            }
+        }        
+        
         int lineOffset = 0;
 
         // clear the field list

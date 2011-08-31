@@ -210,12 +210,18 @@ public class DelimitedReaderTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testDelimiterCannotMatchContinuation() {
-        new DelimitedReader(new StringReader(""), ',', '\\', ',');
+        DelimitedReaderConfiguration config = new DelimitedReaderConfiguration(',');
+        config.setLineContinuationCharacter(',');
+        
+        new DelimitedReader(new StringReader(""), config);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testDelimiterCannotMatchEscape() {
-        new DelimitedReader(new StringReader(""), ',', ',', '\\');
+        DelimitedReaderConfiguration config = new DelimitedReaderConfiguration(',');
+        config.setEscape(',');
+        
+        new DelimitedReader(new StringReader(""), config);
     }
 
     @SuppressWarnings("unused")

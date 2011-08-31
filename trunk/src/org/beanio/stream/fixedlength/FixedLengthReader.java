@@ -18,6 +18,7 @@ package org.beanio.stream.fixedlength;
 import java.io.*;
 
 import org.beanio.stream.*;
+import org.beanio.stream.util.CommentReader;
 
 /**
  * A <tt>FixedLengthReader</tt> is used to read records from a fixed length
@@ -39,6 +40,7 @@ public class FixedLengthReader implements RecordReader {
     private char lineContinuationChar = '\\';
     private boolean multilineEnabled = false;
     private char recordTerminator = 0;
+    private CommentReader commentReader = null;
     
     private transient Reader in;
     private transient String recordText;
@@ -53,7 +55,7 @@ public class FixedLengthReader implements RecordReader {
      * @param in the input stream to read from
      */
     public FixedLengthReader(Reader in) {
-        this(in, null);
+        this(in, (FixedLengthReaderConfiguration) null);
     }
 
     /**
@@ -61,6 +63,7 @@ public class FixedLengthReader implements RecordReader {
      * @param in the input stream to read from
      * @param lineContinuationCharacter the line continuation character,
      *   or <tt>null</tt> to disable line continuations
+     * @deprecated use {@link FixedLengthReader#FixedLengthReader(Reader, FixedLengthReaderConfiguration)} instead
      */
     public FixedLengthReader(Reader in, Character lineContinuationCharacter) {
         this(in, lineContinuationCharacter, null);
@@ -72,6 +75,7 @@ public class FixedLengthReader implements RecordReader {
      * @param lineContinuationCharacter the line continuation character,
      *   or <tt>null</tt> to disable line continuations
      * @param recordTerminator the character used to signify the end of a record
+     * @deprecated use {@link FixedLengthReader#FixedLengthReader(Reader, FixedLengthReaderConfiguration)} instead
      */
     public FixedLengthReader(Reader in, Character lineContinuationCharacter, Character recordTerminator) {
         this.in = in;
@@ -89,6 +93,41 @@ public class FixedLengthReader implements RecordReader {
         
         if (recordTerminator != null) {
             this.recordTerminator = recordTerminator;
+        }
+    }
+    
+    /**
+     * Constructs a new <tt>FixedLengthReader</tt>.
+     * @param in the input stream to read from
+     * @param config the reader configuration settings or <tt>null</tt> to accept defaults
+     * @throws IllegalArgumentException if a configuration setting is invalid
+     * @since 1.2
+     */
+    public FixedLengthReader(Reader in, FixedLengthReaderConfiguration config) throws IllegalArgumentException {
+        if (config == null) {
+            config = new FixedLengthReaderConfiguration();
+        }
+        
+        this.in = in;
+        
+        if (config.getRecordTerminator() != null) {
+            this.recordTerminator = config.getRecordTerminator();
+        }
+        
+        if (config.getLineContinuationCharacter() == null) {
+            this.multilineEnabled = false;
+        }
+        else {
+            this.multilineEnabled = true;
+            this.lineContinuationChar = config.getLineContinuationCharacter();
+            
+            if (recordTerminator != 0 && lineContinuationChar == recordTerminator) {
+                throw new IllegalArgumentException("The line continuation character and recrod terminator cannot match.");
+            }
+        }
+        
+        if (config.isCommentEnabled()) {
+            commentReader = new CommentReader(in, config.getComments(), config.getRecordTerminator());
         }
     }
 
@@ -123,6 +162,24 @@ public class FixedLengthReader implements RecordReader {
         }
 
         ++lineNumber;
+        
+        // skip commented lines
+        if (commentReader != null) {
+            int lines = commentReader.skipComments(skipLF);
+            if (lines > 0) {
+                if (commentReader.isEOF()) {
+                    eof = true;
+                    recordText = null;
+                    recordLineNumber = -1;
+                    return null;
+                }
+                else {
+                    lineNumber += lines;
+                    skipLF = commentReader.isSkipLF();
+                }
+            }
+        }
+        
         int lineOffset = 0;
 
         boolean continued = false; // line continuation

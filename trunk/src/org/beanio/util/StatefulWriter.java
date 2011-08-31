@@ -4,10 +4,10 @@ import java.util.Map;
 
 /**
  * <tt>StatefulWriter</tt> can be implemented by writers that maintain state, so
- * that in case of error the last updated state of the writer can be restored and
+ * that in case of an error, the last updated state of the writer can be restored and
  * writing can resume.
  * 
- * <p>This interface is used to implement an restartable flat file item writer for
+ * <p>This interface is used to implement a restartable flat file item writer for
  * Spring Batch.</p>
  *  
  * @author Kevin Seim

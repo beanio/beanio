@@ -19,6 +19,7 @@ import java.io.*;
 import java.util.*;
 
 import org.beanio.stream.*;
+import org.beanio.stream.util.CommentReader;
 
 /**
  * A <tt>CsvReader</tt> is used to parse CSV formatted flat files into records
@@ -52,20 +53,21 @@ public class CsvReader implements RecordReader {
     private boolean multilineEnabled = false;
     private boolean whitespaceAllowed = false;
     private boolean unquotedQuotesAllowed = false;
-
+    private CommentReader commentReader = null;
+    
     private transient Reader in;
     private transient String recordText;
     private transient int recordLineNumber;
     private transient int lineNumber = 0;
     private transient boolean skipLF = false;
     private transient List<String> fieldList = new ArrayList<String>();
-
+    
     /**
      * Constructs a new <tt>CsvReader</tt>.
      * @param in the input stream to read from
      */
     public CsvReader(Reader in) {
-        this.in = in;
+        this(in, null);
     }
 
     /**
@@ -75,6 +77,7 @@ public class CsvReader implements RecordReader {
      * @param escape the escape character, or <tt>null</tt> to disable escaping
      * @param multilineEnabled set to <tt>true</tt> to allow quoted fields to contain
      *   newline and carriage return characters
+     * @deprecated use {@link CsvReader#CsvReader(Reader, CsvReaderConfiguration)} instead
      */
     public CsvReader(Reader in, char delimiter, Character escape, boolean multilineEnabled) {
         this(in, delimiter, '"', escape, multilineEnabled, false, false);
@@ -95,6 +98,7 @@ public class CsvReader implements RecordReader {
      *   Note that if the quotation mark is at the beginning of the field, the
      *   field is considered quoted and a trailing quotation mark is required.
      * @throws IllegalArgumentException if the configuration is invalid
+     * @deprecated use {@link CsvReader#CsvReader(Reader, CsvReaderConfiguration)} instead
      */
     public CsvReader(Reader in, char delimiter, char quote, Character escape,
         boolean multilineEnabled, boolean whitespaceAllowed, boolean unquotedQuotesAllowed)
@@ -121,6 +125,46 @@ public class CsvReader implements RecordReader {
         }
         else {
             this.escapeEnabled = false;
+        }
+    }
+    
+    /**
+     * Constructs a new <tt>CsvReader</tt>.
+     * @param in the input stream to read from
+     * @param config the reader configuration settings or <tt>null</tt> to accept defaults
+     * @throws IllegalArgumentException if a configuration setting is invalid
+     * @since 1.2
+     */
+    public CsvReader(Reader in, CsvReaderConfiguration config) throws IllegalArgumentException {
+        if (config == null) {
+            config = new CsvReaderConfiguration();
+        }
+        
+        this.in = in;
+        this.delim = config.getDelimiter();
+        this.quote = config.getQuote();
+        this.endQuote = quote;
+        if (this.quote == this.delim) {
+            throw new IllegalArgumentException("The CSV field delimiter cannot " +
+                "match the character used for the quotation mark.");
+        }
+        this.multilineEnabled = config.isMultilineEnabled();
+        this.whitespaceAllowed = config.isWhitespaceAllowed();
+        this.unquotedQuotesAllowed = config.isUnquotedQuotesAllowed();
+        if (config.getEscape() != null) {
+            this.escapeEnabled = true;
+            this.escapeChar = config.getEscape();
+            if (this.escapeChar == this.delim) {
+                throw new IllegalArgumentException(
+                    "The CSV field delimiter cannot match the escape character.");
+            }
+        }
+        else {
+            this.escapeEnabled = false;
+        }
+        
+        if (config.isCommentEnabled()) {
+            commentReader = new CommentReader(in, config.getComments());
         }
     }
 
@@ -157,6 +201,23 @@ public class CsvReader implements RecordReader {
         }
 
         ++lineNumber;
+
+        // skip commented lines
+        if (commentReader != null) {
+            int lines = commentReader.skipComments(skipLF);
+            if (lines > 0) {
+                if (commentReader.isEOF()) {
+                    fieldList = null;
+                    recordText = null;
+                    recordLineNumber = -1;
+                    return null;
+                }
+                else {
+                    lineNumber += lines;
+                    skipLF = commentReader.isSkipLF();
+                }
+            }
+        }
         
         // the record line number is set to the first line of the record
         recordLineNumber = lineNumber;
@@ -171,6 +232,7 @@ public class CsvReader implements RecordReader {
         StringBuffer text = new StringBuffer(); // holds the record text being read
         StringBuffer field = new StringBuffer(); // holds the latest field value being read
 
+        // parse an uncommented line
         int n;
         while (!eol && (n = in.read()) != -1) {
             char c = (char) n;
@@ -382,7 +444,7 @@ public class CsvReader implements RecordReader {
             return record;
         }
     }
-
+    
     /**
      * Advances the input stream to the end of the record so that subsequent reads
      * might be possible.

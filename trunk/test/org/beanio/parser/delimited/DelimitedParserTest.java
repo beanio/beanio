@@ -86,7 +86,7 @@ public class DelimitedParserTest extends ParserTest {
             
             StringWriter out = new StringWriter();
             factory.createWriter("d3", out).write(map);
-            assertEquals("xx1,xx2,xx3,xxx~", out.toString());
+            assertEquals("xx1\txx2\txx3\txxx~", out.toString());
         }
         finally {
             in.close();

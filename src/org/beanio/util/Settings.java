@@ -47,6 +47,20 @@ public class Settings {
     public static final String DEFAULT_DATETIME_FORMAT = "org.beanio.defaultDateTimeFormat";
     /** The default date format pattern for fields assigned type alias <tt>Time</tt> */
     public static final String DEFAULT_TIME_FORMAT = "org.beanio.defaultTimeFormat";
+    /** 
+     * Whether property values support the following escape sequences:  
+     * <ul>
+     *   <li><tt>\\</tt> - Backslash</li>
+     *   <li><tt>\n</tt> - Line Feed</li>
+     *   <li><tt>\r</tt> - Carriage Return</li>
+     *   <li><tt>\t</tt> - Tab</li>
+     *   <li><tt>\f</tt> - Form Feed</li>
+     * </ul>
+     * <p>A backslash preceding any other character is ignored.
+     * <p>Set to <tt>false</tt> to disable.
+     * @since 1.2
+     */
+    public static final String PROPERTY_ESCAPING_ENABLED = "org.beanio.propertyEscapingEnabled";
     /** The default XML type for a field definition, set to <tt>element</tt> or <tt>attribute</tt>. */
     public static final String DEFAULT_XML_TYPE = "org.beanio.xml.defaultXmlType";
     /** The default namespace prefix for 'http://www.w3.org/2001/XMLSchema-instance' */

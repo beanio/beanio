@@ -21,6 +21,7 @@ import java.util.*;
 
 import org.beanio.BeanIOConfigurationException;
 import org.beanio.types.*;
+import org.beanio.util.Settings;
 
 /**
  * Utility class for instantiating configurable bean classes.
@@ -30,11 +31,18 @@ import org.beanio.types.*;
  */
 class BeanUtil {
 
-    private static TypeHandlerFactory typeHandlerFactory;
+    private final static TypeHandlerFactory typeHandlerFactory;
     static {
         typeHandlerFactory = new TypeHandlerFactory();
+        
         // string arrays allowed for setting 'comments' on a csv/delimited/fixedlength reader
         typeHandlerFactory.registerHandlerFor(String[].class, new StringArrayTypeHandler());
+        
+        // override string and character type handlers is property escaping is enabled
+        if ("true".equals(Settings.getInstance().getProperty(Settings.PROPERTY_ESCAPING_ENABLED))) {
+            typeHandlerFactory.registerHandlerFor(String.class, new EscapedStringTypeHandler());
+            typeHandlerFactory.registerHandlerFor(Character.class, new EscapedCharacterTypeHandler());
+        }
     }
     
     private BeanUtil() { }
@@ -141,12 +149,141 @@ class BeanUtil {
             }
             catch (TypeConversionException e) {
                 throw new BeanIOConfigurationException("Type conversion failed for property '" +
-                    name + "' on class '" + clazz + "'", e);
+                    name + "' on class '" + clazz + "': " + e.getMessage(), e);
             }
             catch (Exception e) {
                 throw new BeanIOConfigurationException("Failed to invoke '" + method +
                     "' on class '" + clazz + "'", e);
             }
+        }
+    }
+
+    /*
+     * Type handler implementation for allowing escaped line feeds, carriage returns,
+     * tabs and form feeds using a backslash character.
+     */
+    private static class EscapedCharacterTypeHandler implements TypeHandler {
+
+        /*
+         * (non-Javadoc)
+         * @see org.beanio.types.TypeHandler#parse(java.lang.String)
+         */
+        public Character parse(String text) throws TypeConversionException {
+            if (text == null) {
+                return null;
+            }
+            
+            if (text.length() == 1) {
+                return text.charAt(0);
+            }
+            else if ("\\".equals(text)) {
+                return '\\';
+            }
+            else if ("\\n".equals(text)) {
+                return '\n';
+            }
+            else if ("\\r".equals(text)) {
+                return '\r';
+            }
+            else if ("\\t".equals(text)) {
+                return '\t';
+            }
+            else if ("\\f".equals(text)) {
+                return '\f';
+            }
+            
+            throw new TypeConversionException("Invalid character");
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see org.beanio.types.TypeHandler#format(java.lang.Object)
+         */
+        public String format(Object value) {
+            throw new UnsupportedOperationException();
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see org.beanio.types.TypeHandler#getType()
+         */
+        public Class<?> getType() {
+            return Character.class;
+        }
+    }
+    
+    /*
+     * Type handler implementation for allowing escaped line feeds, carriage returns,
+     * tabs and form feeds using a backslash character.
+     */
+    private static class EscapedStringTypeHandler implements TypeHandler {
+
+        /*
+         * (non-Javadoc)
+         * @see org.beanio.types.TypeHandler#parse(java.lang.String)
+         */
+        public String parse(String text) throws TypeConversionException {
+            if (text == null) {
+                return text;
+            }
+            
+            int n = text.indexOf('\\');
+            if (n < 0) {
+                return text;
+            }
+            
+            int len = text.length();
+            boolean escaped = false;
+            StringBuilder value = new StringBuilder(len).append(text.substring(0, n));
+            
+            for (int i=n; i<len; i++) {
+                char c = text.charAt(i);
+                
+                if (escaped) {
+                    switch (c) {
+                    case 'n':
+                        value.append('\n');
+                        break;
+                    case 'r':
+                        value.append('\r');
+                        break;
+                    case 't':
+                        value.append('\t');
+                        break;
+                    case 'f':
+                        value.append('\f');
+                        break;
+                    default:
+                        value.append(c);
+                        break;
+                    }
+                    escaped = false;
+                }
+                else if (c == '\\') {
+                    escaped = true;
+                }
+                else {
+                    value.append(c);
+                }
+            }
+            
+            return value.toString();
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see org.beanio.types.TypeHandler#format(java.lang.Object)
+         */
+        public String format(Object value) {
+            throw new UnsupportedOperationException();
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see org.beanio.types.TypeHandler#getType()
+         */
+        public Class<?> getType() {
+            return String.class;
         }
     }
     
@@ -160,7 +297,7 @@ class BeanUtil {
          * (non-Javadoc)
          * @see org.beanio.types.TypeHandler#parse(java.lang.String)
          */
-        public Object parse(String text) throws TypeConversionException {
+        public String[] parse(String text) throws TypeConversionException {
             if (text == null || "".equals(text)) {
                 return null;
             }
@@ -171,15 +308,12 @@ class BeanUtil {
             }
             
             boolean escaped = false;
-            StringBuffer item = new StringBuffer();
+            StringBuilder item = new StringBuilder();
             List<String> list = new ArrayList<String>();
             
             char[] ca = text.toCharArray();
             for (char c : ca) {
                 if (escaped) {
-                    if (c != ',' && c != '\\') {
-                        item.append('\\');
-                    }
                     item.append(c);
                     escaped = false;
                 }
@@ -188,7 +322,7 @@ class BeanUtil {
                 }
                 else if (c == ',') {
                     list.add(item.toString());
-                    item = new StringBuffer();
+                    item = new StringBuilder();
                 }
                 else {
                     item.append(c);

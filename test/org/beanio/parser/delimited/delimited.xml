@@ -44,11 +44,11 @@
 
   <stream name="d3" format="delimited" resourceBundle="org.beanio.parser.delimited.d1_messages">
     <reader>
-      <property name="delimiter" value="," />
+      <property name="delimiter" value="\t" />
       <property name="recordTerminator" value="~" />
     </reader>
     <writer>
-      <property name="delimiter" value="," />
+      <property name="delimiter" value="\t" />
       <property name="recordTerminator" value="~" />
     </writer>
     <record name="record1" class="map">

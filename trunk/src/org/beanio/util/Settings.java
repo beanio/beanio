@@ -121,6 +121,9 @@ public class Settings {
 
             // otherwise check the classpath
             if (configurationUrl == null) {
+                if (!location.startsWith("/")) {
+                    location = "/" + location;
+                }
                 configurationUrl = Settings.class.getResource(location);
             }
 

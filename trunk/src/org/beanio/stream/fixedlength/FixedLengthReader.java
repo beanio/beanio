@@ -184,8 +184,8 @@ public class FixedLengthReader implements RecordReader {
 
         boolean continued = false; // line continuation
         boolean eol = false; // end of record flag
-        StringBuffer text = new StringBuffer();
-        StringBuffer record = new StringBuffer();
+        StringBuilder text = new StringBuilder();
+        StringBuilder record = new StringBuilder();
 
         int n;
         while (!eol && (n = in.read()) != -1) {

@@ -56,7 +56,7 @@ public class InvalidRecordException extends BeanReaderException {
             return message;
         }
 
-        StringBuffer s = new StringBuffer(message);
+        StringBuilder s = new StringBuilder(message);
 
         if (context.hasRecordErrors()) {
             for (String error : context.getRecordErrors()) {

@@ -5,7 +5,7 @@
   <title>BeanIO Home</title>
   <meta http-equiv="Content-Type" content="text/html;" />
   <meta name="description" content="BeanIO is an open source Java library for marshalling and unmarshalling bean objects from a stream, with support for XML, CSV, delimited and fixed length file formats."/>
-  <meta name="keywords" content="beanio, java, xml, fixed length, csv, delimited, parser, file, stream, bean"/>
+  <meta name="keywords" content="beanio, java, oxm, xml, fixed length, csv, delimited, parser, file, stream, bean, binding, mapping"/>
   <link rel="stylesheet" href="style.css" type="text/css" />
   <link rel="icon" href="favicon.ico" />
   <link rel="shortcut icon" href="favicon.ico" />
@@ -36,17 +36,24 @@
     
     <div class="features"><b>Features:</b>
 	  <ul style="margin-top: 3px">
-	    <li>XML based field mapping</li>
 	    <li>Support for XML, CSV, delimited and fixed length stream formats</li>
 	    <li>Common field validation rules with customizable error messages</li>
 	    <li>Configurable record ordering and grouping rules</li>
+	    <li>XML based field mapping</li>
 	    <li>Extensible type handling</li>
+	    <li>Integration with <a href="http://static.springsource.org/spring-batch/">Spring Batch</a></li>
 	  </ul>
     </div>
     
     <p>The BeanIO project is hosted at <a href="http://code.google.com/p/beanio/">Google Code</a></p>
     
     <div class="news">
+      <h2>BeanIO 1.2.0 Released <span class="date">September 8, 2011</span></h2>
+      <p>Release 1.2.0 adds support for <a href="http://static.springsource.org/spring-batch/">Spring Batch</a>, 
+        includes several minor enhancements, and fixes all known defects.  For further details and migration information,
+        please refer to the <a href="http://beanio.org/docs/reference/index.html#Introduction">reference guide</a>.
+        The release can be downloaded <a href="http://code.google.com/p/beanio/downloads/list">here</a>.</p>
+        
       <h2>BeanIO 1.1.1 Released <span class="date">July 21, 2011</span></h2>
       <p>Release 1.1.1 clarifies and improves support for optional padded fields.
         Padded field behavior has been minorly impacted, although 

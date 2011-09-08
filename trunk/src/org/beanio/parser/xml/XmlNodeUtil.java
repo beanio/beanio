@@ -107,12 +107,12 @@ public class XmlNodeUtil {
      * @return the node text, or <tt>null</tt> if the node did not contain any text
      */
     public static String getText(Node node) {
-        StringBuffer s = null;
+        StringBuilder s = null;
         Node child = node.getFirstChild();
         while (child != null) {    
             if (child.getNodeType() == Node.TEXT_NODE) {
                 if (s == null) {
-                    s = new StringBuffer();
+                    s = new StringBuilder();
                 }
                 s.append(((Text)child).getTextContent());
             }

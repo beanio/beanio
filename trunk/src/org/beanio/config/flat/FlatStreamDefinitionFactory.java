@@ -56,7 +56,7 @@ public abstract class FlatStreamDefinitionFactory extends StreamDefinitionFactor
         }
         
         // if positions are not set, assign default positions to each field
-        if (!set) {
+        if (set == null || !set) {
             assignDefaultFieldPositions(recordConfig, definition);
         }
         else {

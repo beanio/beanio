@@ -194,7 +194,7 @@ class ElementStack {
      * @return a token representing this stack element
      */
     public String toToken() {
-        StringBuffer s = new StringBuffer(); 
+        StringBuilder s = new StringBuilder(); 
         if (ns != null) {
             s.append("{").append(ns).append("}");
         }

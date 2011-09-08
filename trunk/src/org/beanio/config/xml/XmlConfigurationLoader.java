@@ -82,7 +82,7 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
 
             Document document = builder.parse(in);
             if (!errorMessages.isEmpty()) {
-                StringBuffer message = new StringBuffer();
+                StringBuilder message = new StringBuilder();
                 message.append("Invalid mapping file");
                 for (String s : errorMessages) {
                     message.append("\n  ==> ");

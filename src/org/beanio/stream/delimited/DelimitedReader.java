@@ -263,8 +263,8 @@ public class DelimitedReader implements RecordReader {
         boolean continued = false; // line continuation
         boolean escaped = false; // last character read matched the escape char
         boolean eol = false; // end of record flag
-        StringBuffer text = new StringBuffer(); // holds the record text being read
-        StringBuffer field = new StringBuffer(); // holds the latest field value being read
+        StringBuilder text = new StringBuilder(); // holds the record text being read
+        StringBuilder field = new StringBuilder(); // holds the latest field value being read
 
         int n;
         while (!eol && (n = in.read()) != -1) {
@@ -328,7 +328,7 @@ public class DelimitedReader implements RecordReader {
             }
             else if (c == delim) {
                 fieldList.add(field.toString());
-                field = new StringBuffer();
+                field = new StringBuilder();
             }
             else if (endOfRecord(c, true)) {
                 fieldList.add(field.toString());

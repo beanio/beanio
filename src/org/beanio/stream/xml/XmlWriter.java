@@ -161,7 +161,7 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
         }
         
         if (config.isIndentationEnabled()) {
-            StringBuffer b = new StringBuffer();
+            StringBuilder b = new StringBuilder();
             for (int i=0; i<config.getIndentation(); i++) {
                 b.append(' ');
             }
@@ -625,7 +625,7 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
         }
         
         boolean first = true;
-        StringBuffer token = new StringBuffer();
+        StringBuilder token = new StringBuilder();
         for (Map.Entry<String,String> entry : map.entrySet()) {
             if (first) {
                 first = false;

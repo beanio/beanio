@@ -229,8 +229,8 @@ public class CsvReader implements RecordReader {
         int whitespace = 0;
         boolean escaped = false; // last character read matched the escape char
         boolean eol = false; // end of record flag
-        StringBuffer text = new StringBuffer(); // holds the record text being read
-        StringBuffer field = new StringBuffer(); // holds the latest field value being read
+        StringBuilder text = new StringBuilder(); // holds the record text being read
+        StringBuilder field = new StringBuilder(); // holds the latest field value being read
 
         // parse an uncommented line
         int n;
@@ -270,7 +270,7 @@ public class CsvReader implements RecordReader {
 
                 if (escapeChar == endQuote) {
                     fieldList.add(field.toString());
-                    field = new StringBuffer();
+                    field = new StringBuilder();
                     state = 10;
                 }
             }
@@ -317,7 +317,7 @@ public class CsvReader implements RecordReader {
                 }
                 else if (c == endQuote) {
                     fieldList.add(field.toString());
-                    field = new StringBuffer();
+                    field = new StringBuilder();
                     state = 10; // look for next delimiter
                 }
                 else if (c == '\r' || c == '\n') {
@@ -341,7 +341,7 @@ public class CsvReader implements RecordReader {
             case 2: // unquoted field, look for next delimiter
                 if (c == delim) {
                     fieldList.add(field.toString());
-                    field = new StringBuffer();
+                    field = new StringBuilder();
                     state = 0;
                 }
                 else if (c == quote && !unquotedQuotesAllowed) {
@@ -351,13 +351,13 @@ public class CsvReader implements RecordReader {
                 }
                 else if (c == '\n') {
                     fieldList.add(field.toString());
-                    field = new StringBuffer();
+                    field = new StringBuilder();
                     eol = true;
                 }
                 else if (c == '\r') {
                     skipLF = true;
                     fieldList.add(field.toString());
-                    field = new StringBuffer();
+                    field = new StringBuilder();
                     eol = true;
                 }
                 else {
@@ -452,7 +452,7 @@ public class CsvReader implements RecordReader {
      * @param text the current record text
      * @throws IOException
      */
-    private void recover(StringBuffer text) throws IOException {
+    private void recover(StringBuilder text) throws IOException {
         int n;
         while ((n = in.read()) != -1) {
             char c = (char) n;
@@ -487,7 +487,7 @@ public class CsvReader implements RecordReader {
         if (size == 0)
             return "";
 
-        StringBuffer b = new StringBuffer(size);
+        StringBuilder b = new StringBuilder(size);
         for (int i = 0; i < size; i++)
             b.append(' ');
         return b.toString();

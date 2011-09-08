@@ -39,6 +39,7 @@ public class CommentsParserTest extends ParserTest {
     }
     
     @Test
+    @SuppressWarnings("rawtypes")
     public void testCsvComments() {
         BeanReader in = factory.createReader("c1", new BufferedReader(new InputStreamReader(
             getClass().getResourceAsStream("c1.txt"))));

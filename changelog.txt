@@ -1,12 +1,21 @@
 Project BeanIO Change Log
 =========================
 
-Changes in version 1.2.0 (TBD)
+Changes in version 1.2.0 (2011-09-08)
 -------------------------------------
+* Added support for Spring Batch 2.1.x
 * Added 'property' mapping element for records and beans
+* Added support for skipping commented lines in an input stream
+* Added support for assigning global type handlers to a specific stream format
+* Added import mapping file capability
 * Added support for a stream 'mode' attribute, and modified mapping validations based on set mode
+* Added support for property value escape sequences: \t, \n, \r, \f, \\
+* Added 'skip' to BeanReader for skipping previously processed bean objects in a restart scenario
+* Added TypeHandler.NIL constant to allow format() to instruct an XML writer to write a nil element
 * Modified bean introspection to allow beans with setters only in 'read' mode, and beans with getters only and non-concrete classes in 'write' mode
 * gc0013 - Fixed mapping validation to allow for multiple record identifying fields 
+* gc0014 - When unmarshalling XML, setter method will not be called for missing elements and attributes
+* Converted StringBuffer use to StringBuilder throughout
 
 Changes in version 1.1.1 (2011-07-21)
 -------------------------------------

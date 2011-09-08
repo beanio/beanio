@@ -38,8 +38,10 @@ public class CommentReader {
      * Constructs a new <tt>CommentReader</tt>.
      * @param in the input stream to read
      * @param comments an array of comment identifying strings
+     * @throws IllegalArgumentException if the configured comments are invalid or the reader does
+     *   not support marking
      */
-    public CommentReader(Reader in, String [] comments) {
+    public CommentReader(Reader in, String [] comments) throws IllegalArgumentException {
         this(in, comments, null);
     }
     
@@ -48,13 +50,15 @@ public class CommentReader {
      * @param in the input stream to read from
      * @param comments an array of comment identifying strings
      * @param recordTerminator the record terminating character
+     * @throws IllegalArgumentException if the configured comments are invalid or the reader does
+     *   not support marking
      */
-    public CommentReader(Reader in, String [] comments, Character recordTerminator) {
+    public CommentReader(Reader in, String [] comments, Character recordTerminator) throws IllegalArgumentException {
         if (comments == null) {
-            throw new IllegalArgumentException("comments not set");
+            throw new IllegalArgumentException("Comments not set");
         }
         if (!in.markSupported()) {
-            throw new IllegalArgumentException("Comments require reader.markSupported() to be true.");
+            throw new IllegalArgumentException("Comments require reader.markSupported() to return true");
         }
         
         this.in = in;
@@ -65,10 +69,10 @@ public class CommentReader {
         
         int maximumCommentLength = 0;
         for (String s : comments) {
+            if (s == null || "".equals(s)) {
+                throw new IllegalArgumentException("Comment value cannot be null or empty string");
+            }
             maximumCommentLength = Math.max(maximumCommentLength, s.length());
-        }
-        if (maximumCommentLength == 0) {
-            throw new IllegalArgumentException("Invalid configured comments");
         }
         commentBuffer = new char[maximumCommentLength + 1];
     }

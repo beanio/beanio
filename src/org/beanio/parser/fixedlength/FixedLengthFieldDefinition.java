@@ -79,7 +79,7 @@ public class FixedLengthFieldDefinition extends FlatFieldDefinition {
         super.setPaddedLength(length);
         
         if (length > 0) {
-            StringBuffer s = new StringBuffer(length);
+            StringBuilder s = new StringBuilder(length);
             for (int i=0; i<length; i++) {
                 s.append(' ');
             }

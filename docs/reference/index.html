@@ -19,6 +19,10 @@ that each copy contains this Copyright Notice, whether distributed in print or e
 <h1>Table of Contents</h1>
 <div class="toc">
 <a href="#Introduction">1.0. Introduction</a><br />
+<div class="toc">
+  <a href="#WhatsNew">1.1. What's new in 1.2?</a><br />
+ <a href="#Migration">1.2. Migrating From 1.1.x</a><br />
+</div>
 <a href="#GettingStarted">2.0. Getting Started</a><br />
 <div class="toc"><a href="#MyFirstStream">2.1. My First Stream</a></div>
 <a href="#CoreConcepts">3.0. Core Concepts</a><br />
@@ -91,6 +95,10 @@ that each copy contains this Copyright Notice, whether distributed in print or e
   <a href="#SpringItemReaderWriter">6.1. BeanIO ItemReader/Writer Beans</a><br />
   <a href="#SpringStreamFactory">6.2. BeanIO StreamFactory Bean</a>
 </div>
+<a href="#Configuration">7.0. Configuration</a>
+<div class="toc">
+  <a href="#ConfigurationSettings">7.1. Settings</a>
+</div>
 <a href="#A">Appendix A: XML Mapping File Reference</a><br />
 <div class="toc">
   <a href="#beanio">A.1. <tt>beanio</tt></a><br />
@@ -113,6 +121,34 @@ that each copy contains this Copyright Notice, whether distributed in print or e
 objects (POJO's) from a flat file or stream.  BeanIO is ideally suited for batch processing, and
 currently supports XML, CSV, delimited and fixed length file formats. BeanIO is licensed under the <a
   href="http://www.apache.org/licenses/LICENSE-2.0">Apache 2.0 License</a>.</p>
+
+<h2><a name="WhatsNew">1.1. What's new in 1.2?</a></h2>
+<p>BeanIO Release 1.2 includes the following enhancements and bug fixes:</p>
+<ul>
+  <li>Added ItemReader/ItemWriter support for <a href="#SpringBatch">Spring Batch 2.1</a>.</li>
+  <li>Added support for mapping record/bean <a href="#property"><tt>property</tt></a> values that do
+    not correspond to a field in the stream.  See <a href="#PropertyDefinitions">
+    Section 4.4. Property Definitions</a>.</li>
+  <li>Added support for skipping commented lines in CSV, delimited and fixed length streams.</li>
+  <li>Added <a href="#import"><tt>import</tt></a> mapping file support.</li>
+  <li>Added support for assigning globally declared type handlers to a specific stream format.</li>
+  <li>Relaxed bean introspection validation rules based on a <a href="#stream">stream</a> <tt>mode</tt> setting.</li>
+  <li>Allow <a href="#property"><tt>property</tt></a> values to use the escape sequences <tt>\t</tt>, <tt>\n</tt>, 
+    <tt>\r</tt>, <tt>\f</tt>, and <tt>\\</tt>.</li>
+  <li>Fixed mapping validation rule to allow multiple record identifying fields.  
+    (<a href="http://code.google.com/p/beanio/issues/detail?id=13">gc0013</a>)</li>
+  <li>Modified XML unmarshalling to skip calling setter methods (with null) for missing elements and attributes.
+    (<a href="http://code.google.com/p/beanio/issues/detail?id=14">gc0014</a>)</li>
+  <li>Added the constant <tt>TypeHandler.NIL</tt> to allow <tt>format()</tt> to instruct an XML writer to write
+    a nil element even if <tt>minOccurs</tt> is set to 0.</li>
+</ul>
+
+<h2><a name="Migration">1.2. Migrating from 1.1.x</a></h2>
+<p>Release 1.2 is nearly 100% backwards compatible with 1.1.  The only feature that may require changes
+on your part is the added support for escaping <a href="#property"><tt>property</tt></a> values using 
+a backslash (e.g. <tt>\n</tt> is now recognized as a line feed).  If necessary, you can disable this feature
+by setting the configuration setting <tt>org.beanio.propertyEscapingEnabled</tt> to <tt>false.</tt>  For more
+information, see <a href="#Configuration">Section 7.0. Configuration</a>.</p>
 
 <h1><a name="GettingStarted">2.0. Getting Started</a></h1>
 <p>To get started with BeanIO, download the latest stable version from 
@@ -650,7 +686,9 @@ and record writer:</p>
   <td>String[]</td>
   <td>A comma separated list of values for identifying commented lines.  If a line read from an input
     stream begins with any of the configured values, the line is ignored.  A backslash may
-    be used to escape a comma and itself.  All whitespace is preserved.</td>
+    be used to escape a comma and itself.  All whitespace is preserved.
+    <p>Enabling comments require the input reader passed to <tt>StreamFactory</tt> to support marking.
+    Among others, <tt>BufferedReader</tt> and <tt>StringReader</tt> support marking.</p></td>
   <td>Yes</td>
   <td>No</td>
 </tr>
@@ -757,7 +795,9 @@ and record writer:</p>
   <td>String[]</td>
   <td>A comma separated list of values for identifying commented lines.  If a line read from an input
     stream begins with any of the configured values, the line is ignored.  A backslash may
-    be used to escape a comma and itself.  All whitespace is preserved.</td>
+    be used to escape a comma and itself.  All whitespace is preserved.
+    <p>Enabling comments require the input reader passed to <tt>StreamFactory</tt> to support marking.
+    Among others, <tt>BufferedReader</tt> and <tt>StringReader</tt> support marking.</p></td>
   <td>Yes</td>
   <td>No</td>
 </tr>
@@ -798,7 +838,9 @@ and record writer:</p>
   <td>String[]</td>
   <td>A comma separated list of values for identifying commented lines.  If a line read from an input
     stream begins with any of the configured values, the line is ignored.  A backslash may
-    be used to escape a comma and itself.  All whitespace is preserved.</td>
+    be used to escape a comma and itself.  All whitespace is preserved.
+    <p>Enabling comments require the input reader passed to <tt>StreamFactory</tt> to support marking.
+    Among others, <tt>BufferedReader</tt> and <tt>StringReader</tt> support marking.</p></td>
   <td>Yes</td>
   <td>No</td>
 </tr>
@@ -2786,6 +2828,69 @@ The following Spring beans configuration file illustrates this:</p>
   
 &lt;/beans&gt;</pre>
 
+
+<h1><a name="Configuration">7.0. Configuration</a></h1>
+<p>In some cases, BeanIO behavior can be controlled by setting optional property values.  Properties
+can be set using System properties or a property file.  BeanIO will load configuration
+setting in the following order of priority:</p>
+<ol>
+<li>System properties.</li>
+<li>A property file named <tt>beanio.properties</tt>.  The file will be looked for first in the application's
+  working directory, and then on the classpath.</li>
+</ol>
+<p>The name and location of <tt>beanio.properties</tt> can be overridden using the System
+property <tt>org.beanio.configuration</tt>.  In the following example, configuration settings will 
+be loaded from the file named <tt>config/settings.properties</tt>, first relative to the application's
+working directory, and if not found, then from the root of the application's classpath.</p>
+<pre class="indent">java <span class="highlight">-Dorg.beanio.configuration=config/settings.properties</span> org.beanio.example.Main</pre>
+
+<h2><a name="ConfigurationSettings">7.1. Settings</a></h2>
+<p>The following configuration settings are supported by BeanIO:</p>
+<table class="indent">
+<tr>
+  <th>Property</th>
+  <th>Description</th>
+  <th>Default</th>
+</tr>
+<tr>
+  <td><tt>org.beanio.propertyEscapingEnabled</tt></td>
+  <td>Whether <a href="#property"><tt>property</tt></a> values (for <tt>typeHandler</tt>, <tt>reader</tt> 
+    and <tt>writer</tt> elements) support escape patterns for line feeds, carriage returns, tabs, etc.  
+    Set to <tt>true</tt> or <tt>false</tt>.</td>
+  <td><tt>true</tt></td>
+</tr>
+<tr>
+  <td><tt>org.beanio.defaultDateFormat</tt></td>
+  <td>Sets the default <tt>SimpleDateFormat</tt> pattern for <tt>date</tt> type fields in
+    CSV, delimited and fixed length file formats.</td>
+  <td><tt>DateFormat. getDateInstance()</tt></td>
+</tr>
+<tr>
+  <td><tt>org.beanio.defaultDateTimeFormat</tt></td>
+  <td>Sets the default <tt>SimpleDateFormat</tt> pattern for <tt>datetime</tt> type fields in
+    CSV, delimited and fixed length file formats..</td>
+  <td><tt>DateFormat. getDateTimeInstance()</tt></td>
+</tr>
+<tr>
+  <td><tt>org.beanio.defaultTimeFormat</tt></td>
+  <td>Sets the default <tt>SimpleDateFormat</tt> pattern for <tt>time</tt> type fields in
+    CSV, delimited and fixed length file formats..</td>
+  <td><tt>DateFormat. getTimeInstance()</tt></td>
+</tr>
+<tr>
+  <td><tt>org.beanio.xml.defaultXmlType</tt></td>
+  <td>Sets the default XML type for a field in an XML formatted stream.  May be set
+    to <tt>element</tt> or <tt>attribute</tt>.</td>
+  <td><tt>element</tt></td>
+</tr>
+<tr>
+  <td><tt>org.beanio.xml.xsiNamespacePrefix</tt></td>
+  <td>Sets the default prefix for the namespace <tt>http://www.w3.org/2001/XMLSchema-instance</tt>.</td>
+  <td><tt>xsi</tt></td>
+</tr>
+</table>
+
+
 <!-- 
 
 	APPENDIX A
@@ -2890,18 +2995,23 @@ or <a href="#writer"><tt>writer</tt></a>.</p>
 </tr>
 <tr>
   <td><tt>name</tt></td>
-  <td>The type bean property name.</td>
+  <td>The property name.</td>
   <td>Yes</td>
 </tr>
 <tr>
   <td><tt>value</tt></td>
-  <td>The bean property value.  Only default type handlers can be used to convert
-    the property text to an object value. </td>
+  <td>The property value.
+    <p>When used to customize a <a href="#typeHandler"><tt>typeHandler</tt></a>, <a href="#reader"><tt>reader</tt></a>,
+      or <a href="#writer"><tt>writer</tt></a>, default type handlers only are used to convert
+      property text to an object value.  String and Character type property values can use the following escape
+      sequences: <tt>\\</tt> (Backslash), <tt>\n</tt> (Line Feed), <tt>\r</tt> (Carriage Return), <tt>\t</tt> (Tab),
+      and <tt>\f</tt> (Form Feed).  A backslash precending any other character is ignored.</p>
+  </td>
   <td>Yes</td>
 </tr>
 </table>
 <p>A <tt>property</tt> element, when used as child of a <a href="#record"><tt>record</tt></a> or 
-<a href="#bean"><tt>bean</tt></a> element, can also be used to set 
+<a href="#bean"><tt>bean</tt></a> element, can be used to set 
 constant values on a record or bean object that do not map to a field in the input or output stream.  
 The following additional attributes are accepted in this scenario:</p>
 <table>

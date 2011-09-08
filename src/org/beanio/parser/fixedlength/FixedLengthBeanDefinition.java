@@ -30,14 +30,14 @@ public class FixedLengthBeanDefinition extends FlatBeanDefinition {
     
     @Override
     public Object formatRecord(Object bean) {
-        StringBuffer record = new StringBuffer();
+        StringBuilder record = new StringBuilder();
         super.formatRecord(record, bean);
         return record.toString();
     }
 
     @Override
     protected void updateRecord(Object recordObject, int position, String text) {
-        StringBuffer record = (StringBuffer) recordObject;
+        StringBuilder record = (StringBuilder) recordObject;
         
         int size = record.length();
         if (position == size) {

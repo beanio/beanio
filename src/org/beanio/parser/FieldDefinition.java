@@ -315,7 +315,7 @@ public abstract class FieldDefinition extends PropertyDefinition {
         }
     
         int remaining = toLength - fromLength;
-        StringBuffer s = new StringBuffer(toLength);
+        StringBuilder s = new StringBuilder(toLength);
         if (justification == LEFT) {
             s.append(text);
             for (int i = 0; i < remaining; i++) {

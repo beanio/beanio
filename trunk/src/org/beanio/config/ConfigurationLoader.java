@@ -16,11 +16,12 @@
 package org.beanio.config;
 
 import java.io.*;
+import java.util.Collection;
 
 import org.beanio.BeanIOConfigurationException;
 
 /**
- * A <tt>ConfigurationLoader</tt> is used to load a BeanIO mapping configuration from
+ * A <tt>ConfigurationLoader</tt> is used to load BeanIO mapping configurations from
  * an input stream.
  * 
  * <p>Implementations must be thread safe.</p>
@@ -33,10 +34,11 @@ public interface ConfigurationLoader {
     /**
      * Loads a BeanIO configuration from an input stream.
      * @param in the input stream to read the configuration from
-     * @return the BeanIO configuration
+     * @return a collection of loaded BeanIO configurations
      * @throws IOException if an I/O error occurs
      * @throws BeanIOConfigurationException if the configuration is invalid or malformed
+     * @since 1.2.1
      */
-    public BeanIOConfig loadConfiguration(InputStream in) throws IOException, BeanIOConfigurationException;
+    public Collection<BeanIOConfig> loadConfiguration(InputStream in) throws IOException, BeanIOConfigurationException;
 
 }

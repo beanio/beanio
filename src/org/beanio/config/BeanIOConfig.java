@@ -23,15 +23,34 @@ import java.util.*;
  * @author Kevin Seim
  * @since 1.0
  */
-public class BeanIOConfig {
+public class BeanIOConfig implements Cloneable {
 
+    private String source;
     private List<StreamConfig> streamList = new ArrayList<StreamConfig>();
     private List<TypeHandlerConfig> handlerList = new ArrayList<TypeHandlerConfig>();
-
+    
     /**
      * Constructs a new <tt>BeanIOConfig</tt>.
      */
     public BeanIOConfig() { }
+
+    /**
+     * Returns the source of this configuration.  May be <tt>null</tt>
+     * if unknown or not specified.
+     * @return the configuration source
+     */
+    public String getSource() {
+        return source;
+    }
+
+    /**
+     * Sets the source of this configuration, which if present, may
+     * be included in error messages.
+     * @param source the configuration source
+     */
+    public void setSource(String source) {
+        this.source = source;
+    }
 
     /**
      * Adds a stream mapping configuration to this configuration.
@@ -63,5 +82,29 @@ public class BeanIOConfig {
      */
     public List<TypeHandlerConfig> getTypeHandlerList() {
         return handlerList;
+    }
+    
+    /**
+     * Sets the list of globally declared custom type handlers for 
+     * this configuration.
+     * @param list the list of custom type handlers
+     * @since 1.2.1
+     */
+    public void setTypeHandlerList(List<TypeHandlerConfig> list) {
+        handlerList.clear();
+        
+        if (list != null) {
+            handlerList.addAll(list);
+        }
+    }
+    
+    @Override
+    public BeanIOConfig clone() {
+        try {
+            return (BeanIOConfig) super.clone();
+        }
+        catch (CloneNotSupportedException ex) {
+            throw new IllegalStateException(ex);
+        }
     }
 }

@@ -16,6 +16,7 @@
 package org.beanio.util;
 
 import java.io.*;
+import java.net.URL;
 
 /**
  * Utility class for manipulating streams.
@@ -73,6 +74,32 @@ public class IOUtil {
                 out.close();
         }
         catch (IOException ex) { }
+    }
+    
+    /**
+     * Finds a resource on the classpath.  The resource is always loaded from
+     * the root of the classpath, whether the resource name includes a
+     * leading slash or not.
+     * @param resource the name of the resource to load
+     * @return the resource URL, or <tt>null</tt> if the resource was not found
+     * @since 1.2.1
+     */
+    public static URL getResource(String resource) {
+        ClassLoader cl = null;
+        try {
+            cl = Thread.currentThread().getContextClassLoader();
+        }
+        catch (Throwable ex) { }
+        
+        if (cl == null) {
+            cl = IOUtil.class.getClassLoader();
+        }
+        
+        if (resource.startsWith("/")) {
+            resource = resource.substring(1);
+        }
+        
+        return cl.getResource(resource);
     }
     
     /**

@@ -22,7 +22,7 @@ import org.beanio.BeanIOConfigurationException;
 import org.beanio.config.xml.XmlConfigurationLoader;
 import org.beanio.parser.*;
 import org.beanio.types.*;
-import org.beanio.util.*;
+import org.beanio.util.Settings;
 
 /**
  * Default configuration factory implementation.
@@ -53,7 +53,34 @@ public class DefaultConfigurationFactory implements ConfigurationFactory {
             loader = getDefaultConfigurationLoader();
         }
         
-        return createStreamDefinitions(loader.loadConfiguration(in));
+        Collection<BeanIOConfig> configList = loader.loadConfiguration(in);
+        if (configList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // check for duplicate stream names...
+        HashSet<String> set = new HashSet<String>();
+        for (BeanIOConfig config : configList) {
+            for (StreamConfig streamConfig : config.getStreamList()) {
+                if (!set.add(streamConfig.getName())) {
+                    throw new BeanIOConfigurationException("Duplicate stream name '" + 
+                        streamConfig.getName() + "' in mapping file");
+                }
+            }
+        }
+        set = null;
+        
+        // create the stream definitions
+        if (configList.size() == 1) {
+            return createStreamDefinitions(configList.iterator().next());
+        }
+        else {
+            List<StreamDefinition> list = new ArrayList<StreamDefinition>();
+            for (BeanIOConfig config : configList) {
+                list.addAll(createStreamDefinitions(config));
+            }
+            return list;
+        }
     }
     
     /**
@@ -84,16 +111,6 @@ public class DefaultConfigurationFactory implements ConfigurationFactory {
         Collection<StreamConfig> streamConfigList = config.getStreamList();
         Collection<StreamDefinition> streamDefinitionList = new ArrayList<StreamDefinition>(
             streamConfigList.size());
-
-        // check for duplicate stream names
-        HashSet<String> set = new HashSet<String>();
-        for (StreamConfig streamConfig : streamConfigList) {
-            if (!set.add(streamConfig.getName())) {
-                throw new BeanIOConfigurationException("Duplicate stream name '" + 
-                    streamConfig.getName() + "' in mapping file");
-            }
-        }
-        set = null;
         
         for (StreamConfig streamConfig : streamConfigList) {
             StreamDefinitionFactory factory = createStreamDefinitionFactory(streamConfig.getFormat());

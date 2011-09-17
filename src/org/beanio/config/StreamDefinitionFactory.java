@@ -293,6 +293,7 @@ public abstract class StreamDefinitionFactory {
         BeanDefinition beanDefinition = newBeanDefinition(config.getBean());
         beanDefinition.setName(recordDefinition.getName());
         beanDefinition.setPropertyType(getBeanClass(config.getBean()));
+        beanDefinition.setLazy(false);
         updateBeanDefinition(config.getBean(), beanDefinition);
         recordDefinition.setBeanDefinition(beanDefinition);
     }
@@ -419,6 +420,23 @@ public abstract class StreamDefinitionFactory {
                 }
                 parent.setRecordIdentifier(true);
             }
+            
+            // bean existence is typically determined by whether a property of
+            // this bean is found in the input stream, there are 2 exceptions:
+            // 1.  Existence is known up front in an XML formatted stream.
+            // 2.  If there are no non-constant properties configured for the bean and
+            //     the bean is not a collection, existence is assumed.
+            boolean assumeExistence = definition.isBeanExistenceKnown();
+            if (!assumeExistence && !definition.isCollection()) {
+                assumeExistence = true;
+                for (PropertyDefinition property : definition.getPropertyList()) {
+                    if (!property.isConstant()) {
+                        assumeExistence = false;
+                        break;
+                    }
+                }
+            }
+            definition.setLazy(!assumeExistence);
         }
         catch (BeanIOConfigurationException ex) {
             throw new BeanIOConfigurationException("Invalid '" + definition.getName() +
@@ -473,7 +491,10 @@ public abstract class StreamDefinitionFactory {
                 FieldDefinition fieldDefinition = newFieldDefinition(fieldConfig);
                 compileFieldDefinition(beanDefinition, fieldConfig, fieldDefinition);
             }
-            else {
+            else { // configure a bean property
+                // even if the bean class is not set, we still add the property because
+                // other parts of the code assume the number of properties always matches
+                // the number of configured properties...
                 BeanPropertyDefinition definition = new BeanPropertyDefinition();
                 compileBeanPropertyDefinition(beanDefinition, (BeanPropertyConfig)property, definition);
             }
@@ -492,9 +513,17 @@ public abstract class StreamDefinitionFactory {
         if (config.getName() == null) {
             throw new BeanIOConfigurationException("Missing property name");
         }
-        
+
         try {
             definition.setName(config.getName());
+            
+            if (beanDefinition.getPropertyType() == null) {
+                definition.setProperty(false);
+                definition.setPropertyType(null);
+                beanDefinition.addProperty(definition);
+                return;
+            }
+            
             definition.setRecordIdentifier(config.isRecordIdentifier());
             definition.setProperty(true);
             
@@ -772,18 +801,7 @@ public abstract class StreamDefinitionFactory {
      */
     private void updateFieldType(FieldConfig config, FieldDefinition fieldDefinition,
         BeanDefinition beanDefinition) {
-
-        // handle ignored fields
-        if (config.isIgnored() || beanDefinition.getPropertyType() == null) {
-            fieldDefinition.setProperty(false);
-            fieldDefinition.setPropertyType(null);
-            fieldDefinition.setPropertyDescriptor(null);
-            return;
-        }
-
-        // update the definition to indicate the field is a bean property
-        fieldDefinition.setProperty(true);
-
+        
         // determine the field property type
         Class<?> propertyType = null;
         if (config.getType() != null) {
@@ -793,70 +811,80 @@ public abstract class StreamDefinitionFactory {
             }
         }
         
-        // determine the field collection type
-        Class<? extends Collection<Object>> collectionType = null;
-        if (config.getCollection() != null) {
-            collectionType = TypeUtil.toCollectionType(config.getCollection());
-            if (collectionType == null) {
-                throw new BeanIOConfigurationException("Invalid collection type or " +
-                    "collection type alias '" + config.getCollection() + "'");
-            }
-            collectionType = getConcreteCollectionType(collectionType);
+        // handle ignored fields
+        if (config.isIgnored() || beanDefinition.getPropertyType() == null) {
+            fieldDefinition.setProperty(false);
+            fieldDefinition.setPropertyDescriptor(null);
         }
-        fieldDefinition.setCollectionType(collectionType);
-        
-        // set the property descriptor on the field
-        PropertyDescriptor descriptor = null;
-        if (!beanDefinition.isPropertyTypeMap()) {
-            descriptor = getPropertyDescriptor(config, beanDefinition.getPropertyType());
-
-            if (collectionType != null) {
-                if (collectionType == TypeUtil.ARRAY_TYPE) {
-                    if (!descriptor.getPropertyType().isArray()) {
-                        throw new BeanIOConfigurationException("Collection type 'array' does not " +
-                            "match bean property type '" + descriptor.getPropertyType().getName() + "'");
+        else {
+            // update the definition to indicate the field is a bean property
+            fieldDefinition.setProperty(true);
+            
+            // determine the field collection type
+            Class<? extends Collection<Object>> collectionType = null;
+            if (config.getCollection() != null) {
+                collectionType = TypeUtil.toCollectionType(config.getCollection());
+                if (collectionType == null) {
+                    throw new BeanIOConfigurationException("Invalid collection type or " +
+                        "collection type alias '" + config.getCollection() + "'");
+                }
+                collectionType = getConcreteCollectionType(collectionType);
+            }
+            fieldDefinition.setCollectionType(collectionType);
+            
+            // set the property descriptor on the field
+            PropertyDescriptor descriptor = null;
+            if (!beanDefinition.isPropertyTypeMap()) {
+                descriptor = getPropertyDescriptor(config, beanDefinition.getPropertyType());
+    
+                if (collectionType != null) {
+                    if (collectionType == TypeUtil.ARRAY_TYPE) {
+                        if (!descriptor.getPropertyType().isArray()) {
+                            throw new BeanIOConfigurationException("Collection type 'array' does not " +
+                                "match bean property type '" + descriptor.getPropertyType().getName() + "'");
+                        }
+                        
+                        Class<?> arrayType = descriptor.getPropertyType().getComponentType();
+                        if (propertyType == null) {
+                            propertyType = arrayType;
+                        }
+                        else if (!TypeUtil.isAssignable(arrayType, propertyType)) {
+                            throw new BeanIOConfigurationException("Configured field array of type '" + 
+                                config.getType() + "' is not assignable to bean property " +
+                                "array of type '" + arrayType.getName() + "'");
+                        }
                     }
-                    
-                    Class<?> arrayType = descriptor.getPropertyType().getComponentType();
-                    if (propertyType == null) {
-                        propertyType = arrayType;
-                    }
-                    else if (!TypeUtil.isAssignable(arrayType, propertyType)) {
-                        throw new BeanIOConfigurationException("Configured field array of type '" + 
-                            config.getType() + "' is not assignable to bean property " +
-                            "array of type '" + arrayType.getName() + "'");
+                    else {
+                        if (!descriptor.getPropertyType().isAssignableFrom(collectionType)) {
+                            Class<?> beanPropertyType = descriptor.getPropertyType();
+                            String beanPropertyTypeName;
+                            if (beanPropertyType.isArray()) {
+                                beanPropertyTypeName = beanPropertyType.getComponentType().getName() + "[]";
+                            }
+                            else {
+                                beanPropertyTypeName = beanPropertyType.getName();                
+                            }
+                            
+                            throw new BeanIOConfigurationException("Configured collection type '" +
+                                config.getCollection() + "' is not assignable to bean property " +
+                                "type '" + beanPropertyTypeName + "'");
+                        }
                     }
                 }
                 else {
-                    if (!descriptor.getPropertyType().isAssignableFrom(collectionType)) {
-                        Class<?> beanPropertyType = descriptor.getPropertyType();
-                        String beanPropertyTypeName;
-                        if (beanPropertyType.isArray()) {
-                            beanPropertyTypeName = beanPropertyType.getComponentType().getName() + "[]";
-                        }
-                        else {
-                            beanPropertyTypeName = beanPropertyType.getName();                
-                        }
-                        
-                        throw new BeanIOConfigurationException("Configured collection type '" +
-                            config.getCollection() + "' is not assignable to bean property " +
-                            "type '" + beanPropertyTypeName + "'");
+                    if (propertyType == null) {
+                        propertyType = descriptor.getPropertyType();
+                    }
+                    else if (!TypeUtil.isAssignable(descriptor.getPropertyType(), propertyType)) {
+                        throw new BeanIOConfigurationException("Configured field type '" + 
+                            config.getType() + "' is not assignable to bean property " +
+                            "type '" + descriptor.getPropertyType().getName() + "'");
                     }
                 }
             }
-            else {
-                if (propertyType == null) {
-                    propertyType = descriptor.getPropertyType();
-                }
-                else if (!TypeUtil.isAssignable(descriptor.getPropertyType(), propertyType)) {
-                    throw new BeanIOConfigurationException("Configured field type '" + 
-                        config.getType() + "' is not assignable to bean property " +
-                        "type '" + descriptor.getPropertyType().getName() + "'");
-                }
-            }
+            fieldDefinition.setPropertyDescriptor(descriptor);
         }
-        fieldDefinition.setPropertyDescriptor(descriptor);
-
+        
         // configure type handler properties
         Properties typeHandlerProperties = null;
         if (config.getFormat() != null) {

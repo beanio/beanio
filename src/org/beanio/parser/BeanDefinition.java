@@ -73,13 +73,20 @@ public abstract class BeanDefinition extends PropertyDefinition {
     protected Object parsePropertyValue(Record record) throws InvalidRecordException {
         Object[] propertyValue = new Object[propertyList.size()];
 
-        // validate and parse each property of this bean
         int index = 0;
-        boolean exists = isBeanExistenceKnown();
+        
+        // whether a bean object should be created
+        boolean exists = !isLazy();
+        
+        // validate and parse each property of this bean
         for (PropertyDefinition property : propertyList) {
             Object value = property.parseValue(record);
 
-            if (value != MISSING && !property.isCollection()) {
+            if (!exists && 
+                value != MISSING && 
+                !property.isConstant() && 
+                !property.isCollection()) 
+            {
                 exists = true;
             }
             
@@ -87,8 +94,9 @@ public abstract class BeanDefinition extends PropertyDefinition {
         }
 
         // determine if any bean field was in the input stream
-        index = 0;
         if (!exists) {
+            index = 0;
+            
             // still need to check collections...
             for (PropertyDefinition property : propertyList) {
                 if (property.isCollection()) {
@@ -166,7 +174,7 @@ public abstract class BeanDefinition extends PropertyDefinition {
      * in the stream before the bean is created.
      * @return <tt>true</tt> if a bean is known to exist before parsing its fields
      */
-    protected boolean isBeanExistenceKnown() {
+    public boolean isBeanExistenceKnown() {
         return false;
     }
 
@@ -325,7 +333,7 @@ public abstract class BeanDefinition extends PropertyDefinition {
      * @return the formatted record
      */
     public abstract Object formatRecord(Object bean);
-
+    
     /**
      * Adds a property definition to this bean definition.
      * @param f the property definition to add

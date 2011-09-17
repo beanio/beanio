@@ -74,6 +74,16 @@ public abstract class PropertyDefinition {
     }
     
     /**
+     * Returns whether this property describes a constant value and does
+     * not map to field found in the stream.
+     * @return <tt>true</tt> if this property describes a constant value
+     * @since 1.2.1
+     */
+    public boolean isConstant() {
+        return false;
+    }
+    
+    /**
      * Tests if the field text in the record matches this field definition.
      * @param record the record containing the field to test
      * @return <tt>true</tt> if the text is a match

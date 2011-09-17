@@ -46,7 +46,7 @@ public class XmlMappingConfigurationTest extends ParserTest {
     @Test
     public void testInvalidImport_ResourceNotFound() throws IOException {
         loadInvalidMappingFile("invalidImport_ResourceNotFound.xml", 
-            "Import resource 'org/beanio/config/doesnotexist.xml' not found in classpath");
+            "Resource 'classpath:org/beanio/config/doesnotexist.xml' not found in classpath for import");
     }
 
     @Test

@@ -160,7 +160,7 @@ public class XmlBeanDefinition extends BeanDefinition implements XmlNode {
     }
     
     @Override
-    protected boolean isBeanExistenceKnown() {
+    public boolean isBeanExistenceKnown() {
         return true;
     }
     

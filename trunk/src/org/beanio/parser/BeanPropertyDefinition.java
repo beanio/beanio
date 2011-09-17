@@ -35,6 +35,11 @@ public class BeanPropertyDefinition extends PropertyDefinition {
     public BeanPropertyDefinition() { }
 
     @Override
+    public boolean isConstant() {
+        return true;
+    }
+    
+    @Override
     public boolean matches(Record record) {
         return true;
     }

@@ -44,6 +44,8 @@ public class XmlMappingParser {
     /* a Map of all loaded mappings (except the root) */
     private Map<String,XmlMapping> mappings;
     
+    private LinkedList<Include> includeStack = new LinkedList<Include>();
+        
     /**
      * Constructs a new <tt>XmlMappingParser</tt>.
      * @param reader the XML mapping reader for reading XML mapping files
@@ -138,6 +140,20 @@ public class XmlMappingParser {
     }
     
     /**
+     * Returns the amount to offset a field position, which is calculated
+     * according to included template offset configurations.
+     * @return the current field position offset
+     */
+    protected final int getPositionOffset() {
+        if (includeStack.isEmpty()) {
+            return 0;
+        }
+        else {
+            return includeStack.getFirst().getOffset();
+        }
+    }
+    
+    /**
      * Loads a mapping file from an input stream.
      * @param in the input stream to read
      * @throws IOException if an I/O error occurs
@@ -166,7 +182,16 @@ public class XmlMappingParser {
                 importConfiguration(child);
             }
             else if ("typeHandler".equals(name)) {
+                TypeHandlerConfig handler = createHandlerConfig(child);
+                if (handler.getName() != null &&
+                    mapping.isDeclaredGlobalTypeHandler(handler.getName())) {
+                    throw new BeanIOConfigurationException(
+                        "Duplicate global type handler named '" + handler.getName() + "'");
+                }
                 config.addTypeHandler(createHandlerConfig(child));
+            }
+            else if ("template".equals(name)) {
+                createTemplate(child);
             }
             else if ("stream".equals(name)) {
                 config.addStream(createStreamConfig(child));
@@ -237,7 +262,7 @@ public class XmlMappingParser {
             in = new BufferedInputStream(url.openStream());
             
             // push a new Mapping instance onto the stack for this url
-            push(name, key);
+            push(name, key).getConfiguration().setSource(name);
             
             loadMapping(in);
             
@@ -269,6 +294,18 @@ public class XmlMappingParser {
         config.setFormat(getAttribute(element, "format"));
         config.setProperties(createProperties(element));
         return config;
+    }
+    
+    /**
+     * Adds a template to the active mapping.
+     * @param element the DOM element that defines the template
+     */
+    protected void createTemplate(Element element) {
+        String templateName = element.getAttribute("name");
+        if (!mapping.addTemplate(templateName, element)) {
+            throw new BeanIOConfigurationException(
+                "Duplicate template named '" + templateName + "'");
+        }
     }
     
     /**
@@ -314,7 +351,7 @@ public class XmlMappingParser {
 
     /**
      * Parses a <tt>StreamConfig</tt> from a DOM element. 
-     * @param element the DOM element to parse
+     * @param element the <tt>stream</tt> DOM element to parse
      * @return the new <tt>StreamConfig</tt>
      */
     protected StreamConfig createStreamConfig(Element element) {
@@ -365,7 +402,7 @@ public class XmlMappingParser {
 
     /**
      * Parses a group configuration from a DOM element.
-     * @param element the DOM element to parse
+     * @param element the <tt>group</tt> DOM element to parse
      * @return the parsed group configuration
      */
     protected GroupConfig createGroupConfig(Element element) {
@@ -397,13 +434,26 @@ public class XmlMappingParser {
 
         return config;
     }
-
+    
     /**
      * Parses a record configuration from the given DOM element.
-     * @param record the DOM element to parse
+     * @param record the <tt>record</tt> DOM element to parse
      * @return the parsed record configuration
      */
     protected RecordConfig createRecordConfig(Element record) {
+        BeanConfig beanConfig = new BeanConfig();
+        beanConfig.setName(getAttribute(record, "name"));
+        beanConfig.setType(getAttribute(record, "class"));
+        beanConfig.setXmlName(getAttribute(record, "xmlName"));
+        beanConfig.setXmlNamespace(getOptionalAttribute(record, "xmlNamespace"));
+        beanConfig.setXmlPrefix(getOptionalAttribute(record, "xmlPrefix"));
+        
+        String template = getOptionalAttribute(record, "template");
+        if (template != null) {
+            includeTemplate(beanConfig, template, 0);
+        }
+        addProperties(beanConfig, record);
+        
         RecordConfig config = new RecordConfig();
         config.setName(getAttribute(record, "name"));
         config.setOrder(getIntAttribute(record, "order", -1));
@@ -411,15 +461,17 @@ public class XmlMappingParser {
         config.setMaxOccurs(getUnboundedIntegerAttribute(record, "maxOccurs", -1));
         config.setMinLength(getIntegerAttribute(record, "minLength"));
         config.setMaxLength(getUnboundedIntegerAttribute(record, "maxLength", -1));
-        
-        BeanConfig beanConfig = new BeanConfig();
-        beanConfig.setName(config.getName());
-        beanConfig.setType(getAttribute(record, "class"));
-        beanConfig.setXmlName(getAttribute(record, "xmlName"));
-        beanConfig.setXmlNamespace(getOptionalAttribute(record, "xmlNamespace"));
-        beanConfig.setXmlPrefix(getOptionalAttribute(record, "xmlPrefix"));
-        
-        NodeList children = record.getChildNodes();
+        config.setBean(beanConfig);
+        return config;
+    }
+    
+    /**
+     * Parses bean properties from the given DOM element.
+     * @param beanConfig the enclosing bean configuration to add the properties to
+     * @param element the <tt>bean</tt> or <tt>record</tt> DOM element to parse
+     */
+    protected void addProperties(BeanConfig beanConfig, Element element) {
+        NodeList children = element.getChildNodes();
         for (int i = 0, j = children.getLength(); i < j; i++) {
             Node node = children.item(i);
             if (node.getNodeType() != Node.ELEMENT_NODE)
@@ -436,10 +488,52 @@ public class XmlMappingParser {
             else if ("property".equals(name)) {
                 beanConfig.addProperty(createBeanPropertyConfig(child));
             }
+            else if ("include".equals(name)) {
+                includeTemplate(beanConfig, child);
+            }
+        }
+    }
+    
+    /**
+     * Includes a template.
+     * @param beanConfig the parent bean configuration
+     * @param element the <tt>include</tt> DOM element to parse
+     */
+    protected void includeTemplate(BeanConfig beanConfig, Element element) {
+        String template = getAttribute(element, "template");
+        int offset = getIntAttribute(element, "offset", 0);
+        includeTemplate(beanConfig, template, offset);
+    }
+    
+    /**
+     * Includes a template.
+     * @param beanConfig the parent bean configuration
+     * @param template the name of the template to include
+     * @param offset the value to offset configured positions by
+     */
+    protected void includeTemplate(BeanConfig beanConfig, String template, int offset) {
+        Element element = mapping.findTemplate(template);
+        
+        // validate the template was declared
+        if (element == null) {
+            throw new BeanIOConfigurationException("Template '" + template + "' not found");
         }
         
-        config.setBean(beanConfig);
-        return config;
+        // validate there is no circular reference
+        for (Include include : includeStack) {
+            if (template.equals(include.getTemplate())) {
+                throw new BeanIOConfigurationException(
+                    "Circular reference detected in template '" + template + "'");
+            }
+        }
+        
+        // adjust the configured offset by any previous offset
+        offset += getPositionOffset();
+        
+        Include inc = new Include(template, offset);
+        includeStack.push(inc);
+        addProperties(beanConfig, element);
+        includeStack.pop();
     }
         
     private void populatePropertyConfig(PropertyConfig config, Element element) {
@@ -453,7 +547,7 @@ public class XmlMappingParser {
     
     /**
      * Parses a bean configuration from a DOM element.
-     * @param element the DOM element to parse
+     * @param element the <tt>bean</tt> DOM element to parse
      * @return the parsed bean configuration
      */
     protected BeanConfig createBeanConfig(Element element) {
@@ -466,38 +560,30 @@ public class XmlMappingParser {
         config.setXmlType(getOptionalAttribute(element, "xmlType"));
         config.setNillable(getBooleanAttribute(element, "nillable", config.isNillable()));
         config.setXmlWrapper(getOptionalAttribute(element, "xmlWrapper"));
-        
-        NodeList children = element.getChildNodes();
-        for (int i = 0, j = children.getLength(); i < j; i++) {
-            Node node = children.item(i);
-            if (node.getNodeType() != Node.ELEMENT_NODE)
-                continue;
-
-            Element child = (Element) node;
-            String name = child.getTagName();
-            if ("field".equals(name)) {
-                config.addProperty(createFieldConfig(child));
-            }
-            else if ("bean".equals(name)) {
-                config.addProperty(createBeanConfig(child));
-            }
-            else if ("property".equals(name)) {
-                config.addProperty(createBeanPropertyConfig(child));
-            }
+        String template = getOptionalAttribute(element, "template");
+        if (template != null) {
+            includeTemplate(config, template, 0);
         }
-        
+        addProperties(config, element);
         return config;
     }
 
     /**
      * Parses a field configuration from a DOM element.
-     * @param element the DOM element to parse
+     * @param element the <tt>field</tt> DOM element to parse
      * @return the parsed field configuration
      */
     protected FieldConfig createFieldConfig(Element element) {
         FieldConfig config = new FieldConfig();
         populatePropertyConfig(config, element);
-        config.setPosition(getIntAttribute(element, "position", config.getPosition()));
+        
+        // adjust the position by the configured include offset
+        int position = getIntAttribute(element, "position", -1);
+        if (position >= 0) {
+            position += getPositionOffset();
+            config.setPosition(position);
+        }
+        
         config.setMinLength(getIntegerAttribute(element, "minLength"));
         config.setMaxLength(getUnboundedIntegerAttribute(element, "maxLength", -1));
         config.setRegex(getAttribute(element, "regex"));
@@ -525,7 +611,7 @@ public class XmlMappingParser {
 
     /**
      * Parses a bean property configuration from a DOM element.
-     * @param element the DOM element to parse
+     * @param element the <tt>property</tt> DOM element to parse
      * @return the parsed bean property configuration
      */
     protected BeanPropertyConfig createBeanPropertyConfig(Element element) {
@@ -610,5 +696,23 @@ public class XmlMappingParser {
         if (text == null)
             return defaultValue;
         return "true".equals(text) || "1".equals(text);
+    }
+    
+    private static final class Include {
+        private String template;
+        private int offset = 0;
+        
+        public Include(String template, int offset) {
+            this.template = template;
+            this.offset = offset;
+        }
+        
+        public String getTemplate() {
+            return template;
+        }
+        
+        public int getOffset() {
+            return offset;
+        }
     }
 }

@@ -11,11 +11,11 @@
 <body>
 
 <div class="title">BeanIO 1.2 - Reference Documentation</div>
-<p>&copy; 2010-2011 Kevin Seim</p>
-<i style="font-size: 90%">Copies of this document may be made for your own use and for
+<p><i>Revision 2</i>, &copy; 2010-2011 Kevin Seim</p>
+<p style="font-size: 90%"><i>Copies of this document may be made for your own use and for
 distribution to others, provided that you do not charge any fee for such copies and further provided
-that each copy contains this Copyright Notice, whether distributed in print or electronically.</i>
-
+that each copy contains this Copyright Notice, whether distributed in print or electronically.</i></p>
+<p style="font-size: 100%;"></p>
 <h1>Table of Contents</h1>
 <div class="toc">
 <a href="#Introduction">1.0. Introduction</a><br />
@@ -69,6 +69,7 @@ that each copy contains this Copyright Notice, whether distributed in print or e
     <a href="#RecordValidation">4.6.1. Record Validation</a><br />
     <a href="#FieldValidation">4.6.2. Field Validation</a><br />
   </div>
+  <a href="#Templates">4.7. Templates</a><br />
 </div>
 <a href="#MappingXmlStreams">5.0.  Mapping XML Streams</a><br />
 <div class="toc">
@@ -105,13 +106,15 @@ that each copy contains this Copyright Notice, whether distributed in print or e
   <a href="#import">A.2. <tt>import</tt></a><br />
   <a href="#typeHandler">A.3. <tt>typeHandler</tt></a><br />
   <a href="#property">A.4. <tt>property</tt></a><br />
-  <a href="#stream">A.5. <tt>stream</tt></a><br />
-  <a href="#reader">A.6. <tt>reader</tt></a><br />
-  <a href="#writer">A.7. <tt>writer</tt></a><br />
-  <a href="#group">A.8. <tt>group</tt></a><br />
-  <a href="#record">A.9. <tt>record</tt></a><br />
-  <a href="#bean">A.10. <tt>bean</tt></a><br />
-  <a href="#field">A.11. <tt>field</tt></a><br />
+  <a href="#template">A.5. <tt>template</tt></a><br />
+  <a href="#include">A.6. <tt>include</tt></a><br />
+  <a href="#stream">A.7. <tt>stream</tt></a><br />
+  <a href="#reader">A.8. <tt>reader</tt></a><br />
+  <a href="#writer">A.9. <tt>writer</tt></a><br />
+  <a href="#group">A.10. <tt>group</tt></a><br />
+  <a href="#record">A.11. <tt>record</tt></a><br />
+  <a href="#bean">A.12. <tt>bean</tt></a><br />
+  <a href="#field">A.13. <tt>field</tt></a><br />
 </div>
 <a href="#B">Appendix B: Error Message Parameters</a><br />
 </div>
@@ -131,6 +134,7 @@ currently supports XML, CSV, delimited and fixed length file formats. BeanIO is 
     Section 4.4. Property Definitions</a>.</li>
   <li>Added support for skipping commented lines in CSV, delimited and fixed length streams.</li>
   <li>Added <a href="#import"><tt>import</tt></a> mapping file support.</li>
+  <li>Added support for bean property templates</li>
   <li>Added support for assigning globally declared type handlers to a specific stream format.</li>
   <li>Relaxed bean introspection validation rules based on a <a href="#stream">stream</a> <tt>mode</tt> setting.</li>
   <li>Allow <a href="#property"><tt>property</tt></a> values to use the escape sequences <tt>\t</tt>, <tt>\n</tt>, 
@@ -144,11 +148,13 @@ currently supports XML, CSV, delimited and fixed length file formats. BeanIO is 
 </ul>
 
 <h2><a name="Migration">1.2. Migrating from 1.1.x</a></h2>
-<p>Release 1.2 is nearly 100% backwards compatible with 1.1.  The only feature that may require changes
-on your part is the added support for escaping <a href="#property"><tt>property</tt></a> values using 
+<p>Release 1.2 is functionally backwards compatible with 1.1.  The only feature that may require mapping
+file changes is the added support for escaping <a href="#property"><tt>property</tt></a> values using 
 a backslash (e.g. <tt>\n</tt> is now recognized as a line feed).  If necessary, you can disable this feature
 by setting the configuration setting <tt>org.beanio.propertyEscapingEnabled</tt> to <tt>false.</tt>  For more
 information, see <a href="#Configuration">Section 7.0. Configuration</a>.</p>
+<p>Programatically, significant changes were made to <tt>org.beanio.config.ConfigurationLoader</tt> interface
+and its implementation.  All other major interfaces are backwards compatible with release 1.1.</p>
 
 <h1><a name="GettingStarted">2.0. Getting Started</a></h1>
 <p>To get started with BeanIO, download the latest stable version from 
@@ -1963,6 +1969,77 @@ writing to an output stream.
 </tr>
 </table>
 
+
+<h2><a name="Templates">4.7. Templates</a></h2>
+<p>When a common set of fields is used by multiple record types, configuration may
+be simplified using templates.  A template is a reusable list of bean properties (fields,
+properties and child beans) that can be included by a record, bean or other template.
+The following example illustrates some of the ways a template can be used:</p>
+
+<pre class="file">
+&lt;beanio&gt;
+
+  <span class="highlight">&lt;template name="address"&gt;
+    &lt;field name="street1" /&gt;
+    &lt;field name="street2" /&gt;
+    &lt;field name="city" /&gt;
+    &lt;field name="state" /&gt;
+    &lt;field name="zip" /&gt;
+  &lt;/template&gt;</span>
+
+  &lt;template name="employee"&gt;
+    &lt;field name="firstName" /&gt;
+    &lt;field name="lastName" /&gt;
+    &lt;field name="title" /&gt;
+    &lt;field name="salary" /&gt;
+    &lt;field name="hireDate" format="MMddyyyy" /&gt;
+    &lt;bean name="mailingAddress" <span class="highlight">template="address"</span> class="org.beanio.example.Address" /&gt;
+  &lt;/template&gt;
+      
+  &lt;stream name="employeeFile" format="csv"&gt;
+    &lt;record name="employee" <span class="highlight">template="employee"</span> class="org.beanio.example.Employee" /&gt;
+  &lt;/stream&gt;
+
+  &lt;stream name="addressFile" format="csv"&gt;
+    &lt;record name="address" class="org.beanio.example.Address"&gt;
+      &lt;field name="location" /&gt;
+      <span class="highlight">&lt;include template="address"/&gt;</span>
+      &lt;field name="attention" /&gt;
+    &lt;/record&gt; 
+  &lt;/stream&gt;
+
+&lt;/beanio&gt;</pre>
+
+<p>Templates are essentially copied into their destination using the <tt>include</tt> element.
+For convenience, <tt>record</tt> and <tt>bean</tt> elements support a <tt>template</tt> attribute
+which includes the template before any other children.</p>
+
+<p>The <tt>include</tt> element can optionally specify a positional offset for included fields
+using the <tt>offset</tt> attribute.  The following example illustrates this behavior.  Even when
+using templates, remember that <tt>position</tt> must be declared for all fields or none.</p>
+
+<pre class="file">
+&lt;beanio&gt;
+
+  &lt;template name="address"&gt;
+    &lt;field name="street1" position="0" /&gt;
+    &lt;field name="street2" position="1" /&gt;
+    &lt;field name="city" position="2" /&gt;
+    &lt;field name="state" position="3" /&gt;
+    &lt;field name="zip" position="4" /&gt;
+  &lt;/template&gt;
+
+  &lt;stream name="addressFile" format="csv"&gt;
+    &lt;record name="address" class="org.beanio.example.Address"&gt;
+      &lt;field name="location" position="0" /&gt;
+      &lt;include template="address" <span class="highlight">offset="1"</span>/&gt;
+      &lt;field name="attention" position="6" /&gt;
+    &lt;/record&gt; 
+  &lt;/stream&gt;
+
+&lt;/beanio&gt;</pre>
+
+
 <!-- 
 
   5.0. MAPPING XML FORMATTED STREAMS
@@ -2911,15 +2988,16 @@ allowed number of child elements:
 <h2><a name="beanio">A.1. <tt>beanio</tt></a></h2>
 <p>The <tt>beanio</tt> element is the root element for a BeanIO mapping configuration file.</p>
 <p>Children:
-<a href="#import"><tt>import</tt></a>*,  
-<a href="#typeHandler"><tt>typeHandler</tt></a>*, 
+<a href="#import"><tt>import</tt></a>*,
+<a href="#typeHandler"><tt>typeHandler</tt></a>*,
+<a href="#template"><tt>template</tt></a>*,
 <a href="#stream"><tt>stream</tt></a>*
 </p>
 
 <h2><a name="import">A.2. <tt>import</tt></a></h2>
-<p>An <tt>import</tt> element is used to import another mapping file.  Imported mapping files work
-as if the imported file was directly copied into the file that imported it.  A typical use for this
-might be to import a mapping file of customized type handlers.</p> 
+<p>The <tt>import</tt> element is used to import type handlers, templates and stream definitions
+from an external mapping file.  Stream definitions declared in a mapping file being imported are 
+not affected by global type handlers or templates declared in the file that imported it.</p> 
 <p>Attributes:</p>
 <table>
 <tr>
@@ -2939,7 +3017,8 @@ might be to import a mapping file of customized type handlers.</p>
 
 <h2><a name="typeHandler">A.3. <tt>typeHandler</tt></a></h2>
 <p>A <tt>typeHandler</tt> element is used to declare a custom field type handler
-that implement the <tt>org.beanio.types.TypeHandler</tt> interface.  A type handler
+that implements the <a href="http://beanio.org/docs/api/org/beanio/types/TypeHandler.html">
+<tt>org.beanio.types.TypeHandler</tt></a> interface.  A type handler
 can be registered for a specific Java type, or registered for a Java type and stream format 
 combination, or explicitly named.</p> 
 <p>Attributes:</p>
@@ -2953,7 +3032,9 @@ combination, or explicitly named.</p>
   <td><tt>name</tt></td>
   <td>The type handler name.  A <a href="#field">field</a> can always reference a type
     handler by name, even if the stream format does not match the
-    configured type handler <tt>format</tt> attribute.</td>
+    configured type handler <tt>format</tt> attribute.
+    <p>When configured, the name of a globally declared type handler must be unique
+      within a mapping and any imported mapping files.</p></td>
   <td>One of <tt>name</tt> or <tt>type</tt> is required.</td>
 </tr>
 <tr>
@@ -3014,6 +3095,7 @@ or <a href="#writer"><tt>writer</tt></a>.</p>
 <a href="#bean"><tt>bean</tt></a> element, can be used to set 
 constant values on a record or bean object that do not map to a field in the input or output stream.  
 The following additional attributes are accepted in this scenario:</p>
+<p>Attributes:</p>
 <table>
 <tr>
   <th>Attribute</th>
@@ -3075,8 +3157,53 @@ The following additional attributes are accepted in this scenario:</p>
 </table>
 
 
+<h2><a name="template">A.5. <tt>template</tt></a></h2>
+<p>The <tt>template</tt> element is used to create reusable lists of bean properties.</p>
+<p>Attributes:</p>
+<table>
+<tr>
+  <th>Attribute</th>
+  <th>Description</th>
+  <th>Required</th>
+</tr>
+<tr>
+  <td><tt>name</tt></td>
+  <td>The name of the template.  Template names must be unique within a mapping file
+    and any imported mapping files.</td>
+  <td>Yes</td>
+</tr>
+</table>
+<p>Children: 
+( <a href="#field"><tt>field</tt></a> | 
+<a href="#property"><tt>property</tt></a> |
+<a href="#bean"><tt>bean</tt></a> |
+<a href="#include"><tt>include</tt></a> )*
+</p>
 
-<h2><a name="stream">A.5. <tt>stream</tt></a></h2>
+<h2><a name="include">A.6. <tt>include</tt></a></h2>
+<p>The <tt>include</tt> element is used to include a template in a <a href="#record"><tt>record</tt></a>,
+<a href="#bean"><tt>bean</tt></a>, or another <a href="#template"><tt>template</tt></a>.</p>
+<p>Attributes:</p>
+<table>
+<tr>
+  <th>Attribute</th>
+  <th>Description</th>
+  <th>Required</th>
+</tr>
+<tr>
+  <td><tt>template</tt></td>
+  <td>The name of the template to include.</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><tt>offset</tt></td>
+  <td>The offset added to field positions included by the template.  Defaults to 0. </td>
+  <td>No</td>
+</tr>
+</table>
+
+
+<h2><a name="stream">A.7. <tt>stream</tt></a></h2>
 <p>A <tt>stream</tt> element defines the record layout of an input or output stream.</p> 
 <p>Attributes:</p>
 <table>
@@ -3175,11 +3302,11 @@ The following additional attributes are accepted in this scenario:</p>
 <a href="#reader"><tt>reader</tt></a>?,
 <a href="#writer"><tt>writer</tt></a>?,
 <a href="#typeHandler"><tt>typeHandler</tt></a>*,
-<a href="#record"><tt>record</tt></a>* or
-<a href="#group"><tt>group</tt></a>*
+( <a href="#record"><tt>record</tt></a> |
+<a href="#group"><tt>group</tt></a> )+
 </p>
 
-<h2><a name="reader">A.6. <tt>reader</tt></a></h2>
+<h2><a name="reader">A.8. <tt>reader</tt></a></h2>
 <p>A <tt>reader</tt> element is used to customize or replace the default record reader factory
 for the stream..</p> 
 <p>Attributes:</p>
@@ -3191,13 +3318,14 @@ for the stream..</p>
 </tr>
 <tr>
   <td><tt>class</tt></td>
-  <td>The fully qualified classname of the <tt>RecordReaderFactory</tt> implementation
+  <td>The fully qualified class name of the <a href="../api/org/beanio/stream/RecordReaderFactory.html">
+    <tt>org.beanio.stream.RecordReaderFactory</tt></a> implementation
     to use for this stream.  If not specified, one of the following default factories is 
     used based on the stream format:<br />
-    <br />csv - <tt>org.beanio.stream.csv.CsvReaderFactory</tt>
-    <br />delimited - <tt>org.beanio.stream.delimited.DelimitedReaderFactory</tt>
-    <br />fixedlength - <tt>org.beanio.stream.fixedlength.FixedLengthReaderFactory</tt>
-    <br />xml - <tt>org.beanio.stream.xml.XmlReaderFactory</tt>
+    <br />csv - <a href="../api/org/beanio/stream/csv/CsvReaderFactory.html"><tt>org.beanio.stream.csv.CsvReaderFactory</tt></a>
+    <br />delimited - <a href="../api/org/beanio/stream/delimited/DelimitedReaderFactory.html"><tt>org.beanio.stream.delimited.DelimitedReaderFactory</tt></a>
+    <br />fixedlength - <a href="../api/org/beanio/stream/fixedlength/FixedLengthReaderFactory.html"><tt>org.beanio.stream.fixedlength.FixedLengthReaderFactory</tt></a>
+    <br />xml - <a href="../api/org/beanio/stream/xml/XmlReaderFactory.html"><tt>org.beanio.stream.xml.XmlReaderFactory</tt></a>
     <p>Overriding the record reader factory for XML is not supported.</p>
   </td>
   <td>No</td>
@@ -3208,7 +3336,7 @@ for the stream..</p>
 <a href="#property"><tt>property</tt></a>*
 </p>
 
-<h2><a name="writer">A.7. <tt>writer</tt></a></h2>
+<h2><a name="writer">A.9. <tt>writer</tt></a></h2>
 <p>A <tt>writer</tt> element is used to customize or replace the default record writer factory
 for the stream..</p> 
 <p>Attributes:</p>
@@ -3220,13 +3348,14 @@ for the stream..</p>
 </tr>
 <tr>
   <td><tt>class</tt></td>
-  <td>The fully qualified classname of the <tt>RecordWriterFactory</tt> implementation
+  <td>The fully qualified class name of the <a href="../api/org/beanio/stream/RecordWriterFactory.html">
+    <tt>org.beanio.stream.RecordWriterFactory</tt></a> implementation
     to use for this stream.  If not specified, one of the following default factories is 
     used based on the stream format:<br />
-    <br />csv - <tt>org.beanio.stream.csv.CsvWriterFactory</tt>
-    <br />delimited - <tt>org.beanio.stream.delimited.DelimitedWriterFactory</tt>
-    <br />fixedlength - <tt>org.beanio.stream.fixedlength.FixedLengthWriterFactory</tt>
-    <br />xml - <tt>org.beanio.stream.xml.XmlWriterFactory</tt> 
+    <br />csv - <a href="../api/org/beanio/stream/csv/CsvWriterFactory.html"><tt>org.beanio.stream.csv.CsvWriterFactory</tt></a>
+    <br />delimited - <a href="../api/org/beanio/stream/delimited/DelimitedWriterFactory.html"><tt>org.beanio.stream.delimited.DelimitedWriterFactory</tt></a>
+    <br />fixedlength - <a href="../api/org/beanio/stream/fixedlength/FixedLengthWriterFactory.html"><tt>org.beanio.stream.fixedlength.FixedLengthWriterFactory</tt></a>
+    <br />xml - <a href="../api/org/beanio/stream/xml/XmlWriterFactory.html"><tt>org.beanio.stream.xml.XmlWriterFactory</tt></a>
     <p>Overriding the record writer factory for XML is not supported.</p>
   </td>
   <td>No</td>
@@ -3237,7 +3366,7 @@ for the stream..</p>
 <a href="#property"><tt>property</tt></a>*
 </p>
 
-<h2><a name="group">A.8. <tt>group</tt></a></h2>
+<h2><a name="group">A.10. <tt>group</tt></a></h2>
 <p>A <tt>group</tt> element is used to group records together for validating occurrences of
 the group as a whole.</p> 
 <p>Attributes:</p>
@@ -3311,7 +3440,7 @@ the group as a whole.</p>
 <a href="#record"><tt>record</tt></a>*
 </p>
 
-<h2><a name="record">A.9. <tt>record</tt></a></h2>
+<h2><a name="record">A.11. <tt>record</tt></a></h2>
 <p>A <tt>record</tt> is used to define a record mapping within a stream.</p> 
 <p>Attributes:</p>
 <table>
@@ -3364,10 +3493,11 @@ the group as a whole.</p>
 <tr>
   <td><tt>maxLength</tt></td>
   <td>If the stream format is <tt>delimited</tt> or <tt>csv</tt>, <tt>maxLength</tt> is the maximum number
-    of fields allowed by this record.  Defaults to the number of fields defined for the record.
+    of fields allowed by this record.  Defaults to the number of fields defined for the record, or
+    if no fields are declared, then unbounded.
     <p>If the stream format is <tt>fixedlength</tt>, <tt>maxLength</tt> is the maximum number 
     of characters allowed by this record.  Defaults to the sum of all field lengths defined for
-    the record.</p>
+    the record, or if no fields are declared, then unbounded.</p>
     </td>
   <td>No</td>
   <td>csv, delimited, fixedlength</td>
@@ -3379,6 +3509,14 @@ the group as a whole.</p>
     and the reader will continue reading the next record.  If set to <tt>map</tt> or 
     any <tt>java.util.Map</tt> implementation, a Map object will be used with field names
     for keys and field values for values.
+  </td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>template</tt></td>
+  <td>The name of the template to include.  Children of this record
+    are added after all properties included from the template.
   </td>
   <td>No</td>
   <td>*</td>
@@ -3406,13 +3544,14 @@ the group as a whole.</p>
 </table>
 
 <p>Children: 
-<a href="#field"><tt>field</tt></a>*
-<a href="#property"><tt>property</tt></a>*
-<a href="#bean"><tt>bean</tt></a>*
+( <a href="#field"><tt>field</tt></a> | 
+<a href="#property"><tt>property</tt></a> |
+<a href="#bean"><tt>bean</tt></a> |
+<a href="#include"><tt>include</tt></a> )*
 </p>
 
 
-<h2><a name="bean">A.10. <tt>bean</tt></a></h2>
+<h2><a name="bean">A.12. <tt>bean</tt></a></h2>
 <p>A <tt>bean</tt> element is used to map fields and other bean objects to a parent bean or record.</p> 
 <p>Attributes:</p>
 <table>
@@ -3452,6 +3591,14 @@ the group as a whole.</p>
     be used with field/bean names for keys and field/bean values for values.
   </td>
   <td>Yes</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>template</tt></td>
+  <td>The name of the template to include.  Children of this bean
+    are added after all properties included from the template.
+  </td>
+  <td>No</td>
   <td>*</td>
 </tr>
 <tr>
@@ -3547,13 +3694,14 @@ the group as a whole.</p>
 </table>
 
 <p>Children: 
-<a href="#field"><tt>field</tt></a>*
-<a href="#property"><tt>property</tt></a>*
-<a href="#bean"><tt>bean</tt></a>*
+( <a href="#field"><tt>field</tt></a> |
+<a href="#property"><tt>property</tt></a > |
+<a href="#bean"><tt>bean</tt></a> |
+<a href="#include"><tt>include</tt></a> )*
 </p>
 
 
-<h2><a name="field">A.11. <tt>field</tt></a></h2>
+<h2><a name="field">A.13. <tt>field</tt></a></h2>
 <p>A <tt>field</tt> element is used to define and map a field from a record to a bean property
 and vice versa.</p> 
 <p>Attributes:</p>

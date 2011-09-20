@@ -64,7 +64,7 @@ public class DefaultConfigurationFactory implements ConfigurationFactory {
             for (StreamConfig streamConfig : config.getStreamList()) {
                 if (!set.add(streamConfig.getName())) {
                     throw new BeanIOConfigurationException("Duplicate stream name '" + 
-                        streamConfig.getName() + "' in mapping file");
+                        streamConfig.getName() + "'");
                 }
             }
         }
@@ -125,10 +125,21 @@ public class DefaultConfigurationFactory implements ConfigurationFactory {
             typeHandlerFactory = manager.createStreamTypeHandlerFactory(typeHandlerFactory, streamConfig.getFormat());
 
             // create stream specific type handlers
-            createTypeHandlers(manager, streamConfig.getHandlerList());   
-            
+            createTypeHandlers(manager, streamConfig.getHandlerList());
             factory.setTypeHandlerFactory(typeHandlerFactory);
-            streamDefinitionList.add(factory.createStreamDefinition(streamConfig));
+            
+            try {
+                streamDefinitionList.add(factory.createStreamDefinition(streamConfig));
+            }
+            catch (BeanIOConfigurationException ex) {
+                if (config.getSource() != null) {
+                    throw new BeanIOConfigurationException("Invalid mapping file '" +
+                        config.getSource() + "': " + ex.getMessage());
+                }
+                else {
+                    throw ex;
+                }
+            }
             
             // clear out the stream specific type handler
             manager.clearStreamTypeHandlerFactory();

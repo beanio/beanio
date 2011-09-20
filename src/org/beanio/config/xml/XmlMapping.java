@@ -18,6 +18,7 @@ package org.beanio.config.xml;
 import java.util.*;
 
 import org.beanio.config.*;
+import org.w3c.dom.Element;
 
 /**
  * Stores parsing information about an XML mapping file. 
@@ -27,13 +28,14 @@ import org.beanio.config.*;
  */
 public class XmlMapping {
 
-    public static final int TYPE_HANDLER_NAMESPACE = 0;
+    private static final int TYPE_HANDLER_NAMESPACE = 0;
     
     private String name;
     private String location;
     private XmlMapping parent;
     private BeanIOConfig config = new BeanIOConfig();
     private List<XmlMapping> importList = new LinkedList<XmlMapping>();
+    private Map<String,Element> templateMap = new HashMap<String,Element>();
     
     /**
      * Constructs a new <tt>XmlMapping</tt>.
@@ -122,7 +124,54 @@ public class XmlMapping {
         list.addAll(config.getTypeHandlerList());
     }
     
-    public boolean isName(int type, String name) {
+    /**
+     * Adds a template configuration to this mapping file.
+     * @param name the name of the template
+     * @param element the 'template' DOM element
+     * @return <tt>true</tt> if the template was successfuly added, or
+     *   <tt>false</tt> if the template name already existed
+     */
+    public boolean addTemplate(String name, Element element) {
+        if (findTemplate(name) != null) {
+            return false;
+        }
+        
+        templateMap.put(name, element);
+        return true;
+    }
+    
+    /**
+     * Recursively finds the <tt>template</tt> DOM element for a given template 
+     * name in this mapping file and its parents.
+     * @param name the name of the template to retrieve
+     * @return
+     */
+    public Element findTemplate(String name) {
+        Element template = templateMap.get(name);
+        if (template == null) {
+            for (XmlMapping m : importList) {
+                template = m.findTemplate(name);
+                if (template != null) {
+                    break;
+                }
+            }
+        }
+        return template;
+    }
+    
+    /**
+     * Returns whether a global type handler was configured for the
+     * given type handler name.  Recursively checks all imported
+     * mapping files.
+     * @param name the type handler name
+     * @return <tt>true</tt> if a type handler was declared globally
+     *   for the given name
+     */
+    public boolean isDeclaredGlobalTypeHandler(String name) {
+        return isDeclared(TYPE_HANDLER_NAMESPACE, name);
+    }
+    
+    private boolean isDeclared(int type, String name) {
         switch (type) {
         case TYPE_HANDLER_NAMESPACE:
             for (TypeHandlerConfig handler : config.getTypeHandlerList()) {
@@ -137,7 +186,7 @@ public class XmlMapping {
         }
         
         for (XmlMapping m : importList) {
-            if (m.isName(type, name)) {
+            if (m.isDeclared(type, name)) {
                 return true;
             }
         }

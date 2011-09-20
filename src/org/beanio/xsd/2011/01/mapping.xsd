@@ -6,7 +6,7 @@
   elementFormDefault="qualified" 
   targetNamespace="http://www.beanio.org/2011/01"
   xml:lang="en"
-  version="2.1.0">
+  version="2.2.0">
 
   <annotation>
     <documentation>
@@ -47,6 +47,14 @@
           <annotation>
             <documentation>
               Declares a custom type handler for all streams.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="template" minOccurs="0" maxOccurs="unbounded" type="tns:Template">
+          <annotation>
+            <documentation>
+              Declares a reusable template that may include child beans, fields,
+              and properties.
             </documentation>
           </annotation>
         </element>
@@ -345,7 +353,67 @@
       </annotation>
     </attribute>
   </complexType>
-  
+
+  <complexType name="Template">
+    <choice minOccurs="0" maxOccurs="unbounded">
+      <element name="field" minOccurs="0" maxOccurs="unbounded" type="tns:Field">
+        <annotation>
+          <documentation>
+            A field is used to map a portion of a record to a bean property.
+          </documentation>
+        </annotation>
+      </element>
+      <element name="property" minOccurs="0" maxOccurs="unbounded" type="tns:BeanProperty">
+        <annotation>
+          <documentation>
+            A property is used to set a constant property value (not found in the stream)
+            on a bean object.
+          </documentation>
+        </annotation>
+      </element>
+      <element name="bean" minOccurs="0" maxOccurs="unbounded" type="tns:Bean">
+        <annotation>
+          <documentation>
+            A bean is used to group fields into a child bean object, which is in
+            turn a bean property.
+          </documentation>
+        </annotation>
+      </element>
+      <element name="include" minOccurs="0" maxOccurs="unbounded" type="tns:Include">
+        <annotation>
+          <documentation>
+            Includes a template.
+          </documentation>
+        </annotation>
+      </element>      
+    </choice>
+    <attribute name="name" type="xsd:string" use="required">
+      <annotation>
+        <documentation>
+          The name of this template.
+        </documentation>
+      </annotation>
+    </attribute>
+  </complexType>
+
+  <complexType name="Include">
+    <attribute name="template" type="xsd:string" use="required">
+      <annotation>
+        <documentation>
+          The name of the template to include.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="offset" type="xsd:nonNegativeInteger" use="optional">
+      <annotation>
+        <documentation>
+          The amount to offset positions from included fields.  This value
+          is additive with previous includes when a template is expanded.
+        </documentation>
+      </annotation>
+    </attribute>
+  </complexType>
+
   <attributeGroup name="NodeAttributes">
     <attribute name="minOccurs" type="xsd:nonNegativeInteger" use="optional" default="1">
       <annotation>
@@ -423,6 +491,13 @@
           </documentation>
         </annotation>
       </element>
+      <element name="include" minOccurs="0" maxOccurs="unbounded" type="tns:Include">
+        <annotation>
+          <documentation>
+            Includes a template.
+          </documentation>
+        </annotation>
+      </element>      
     </choice>
     <attribute name="name" type="xsd:string" use="required">
       <annotation>
@@ -456,6 +531,13 @@
           The class name or type alias of the bean object mapped to this record.
         </documentation>
       </annotation>
+    </attribute>
+    <attribute name="template" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The name of the template this record extends.
+        </documentation>
+      </annotation>    
     </attribute>
     <attributeGroup ref="tns:NodeAttributes" />
   </complexType>
@@ -735,6 +817,13 @@
           </documentation>
         </annotation>
       </element>
+      <element name="include" minOccurs="0" maxOccurs="unbounded" type="tns:Include">
+        <annotation>
+          <documentation>
+            Includes a template.
+          </documentation>
+        </annotation>
+      </element>
     </choice>
     <attribute name="name" type="xsd:string" use="required">
       <annotation>
@@ -789,6 +878,13 @@
           Defaults to 'minOccurs' or 1, whichever is greater.
         </documentation>
       </annotation>
+    </attribute>
+    <attribute name="template" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The name of the template this bean extends.
+        </documentation>
+      </annotation>    
     </attribute>
     <attribute name="xmlType" type="xsd:string" use="optional">
       <annotation>

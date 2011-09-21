@@ -1,6 +1,13 @@
 Project BeanIO Change Log
 =========================
 
+Changes in version 1.2.1 (2011-09-21)
+-------------------------------------
+* Added support for templates
+* Fixed import logic (gc0016, gc0017)
+* Fixed behavior when reading a record with no field declarations (gc0015)
+* Fixed type validation for fields in a record/bean with no declared class, or where ignore=true (gc0018)
+
 Changes in version 1.2.0 (2011-09-08)
 -------------------------------------
 * Added support for Spring Batch 2.1.x

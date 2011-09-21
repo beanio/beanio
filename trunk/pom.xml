@@ -4,7 +4,7 @@
   <artifactId>beanio</artifactId>
   <packaging>jar</packaging>
   <name>BeanIO</name>
-  <version>1.2.0</version>
+  <version>1.2.1</version>
   <description>The BeanIO Project</description>
   <url>http://beanio.org</url>
   <licenses>

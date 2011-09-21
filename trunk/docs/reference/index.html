@@ -3629,6 +3629,8 @@ the group as a whole.</p>
     <p>For XML streams, <tt>minOccurs</tt> defaults to 1 if <tt>nillable</tt> is true, or
      0 otherwise.  <tt>minOccurs</tt> controls whether an element is marshalled for a null bean object
      or required during unmarshalling.</p>
+    <p>During unmarshalling, if the configured minimum occurrences is not met, 
+      an <tt>InvalidRecordException</tt> is thrown.</p>
   </td>
   <td>No</td>
   <td>*</td>
@@ -3640,6 +3642,9 @@ the group as a whole.</p>
     a CSV, delimited or fixed length stream, the value can only exceed <tt>minOccurs</tt> if the bean 
     appears at the end of a record.  If there is no limit to the number of occurrences, the value may 
     be set to <tt>unbounded</tt>.
+    <p>Maximum occurrences is not used for validation.  When bounded, the
+      size of a bean collection will not exceed the configured value, and additional occurrences
+      are ignored.</p>
   </td>
   <td>No</td>
   <td>*</td>
@@ -3838,6 +3843,8 @@ and vice versa.</p>
     <p>For XML streams, <tt>minOccurs</tt> defaults to 1 if <tt>nillable</tt> is true, or
      0 otherwise.  <tt>minOccurs</tt> controls whether an element is marshalled for a null field object
      or required during unmarshalling.</p>
+    <p>During unmarshalling, if the configured minimum occurrences is not met, 
+      an <tt>InvalidRecordException</tt> is thrown.</p>
   </td>
   <td>No</td>
   <td>*</td>
@@ -3849,6 +3856,8 @@ and vice versa.</p>
     for a non-XML stream format, the value can only exceed <tt>minOccurs</tt> if this is the last field
     in the record.  The value may be set to <tt>unbounded</tt> if there is no limit to the 
     number of occurrences of this field.
+    <p>Maximum occurrences is not used for validation. When bounded, the size of a 
+    collection will not exceed the configured value, and additional occurrences are ignored.</p>
   </td>
   <td>No</td>
   <td>*</td>

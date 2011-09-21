@@ -69,7 +69,6 @@ public abstract class BeanDefinition extends PropertyDefinition {
      * @return the parsed Java bean
      * @throws InvalidRecordException
      */
-    @SuppressWarnings("unchecked")
     protected Object parsePropertyValue(Record record) throws InvalidRecordException {
         Object[] propertyValue = new Object[propertyList.size()];
 
@@ -82,50 +81,20 @@ public abstract class BeanDefinition extends PropertyDefinition {
         for (PropertyDefinition property : propertyList) {
             Object value = property.parseValue(record);
 
-            if (!exists && 
-                value != MISSING && 
-                !property.isConstant() && 
-                !property.isCollection()) 
-            {
-                exists = true;
+            if (!exists && value != MISSING && !property.isConstant()) {
+                if (property.isCollection()) {
+                    exists = isCollectionFilled(property, value);
+                }
+                else {
+                    exists = true;
+                }
             }
             
             propertyValue[index++] = value;
         }
 
-        // determine if any bean field was in the input stream
         if (!exists) {
-            index = 0;
-            
-            // still need to check collections...
-            for (PropertyDefinition property : propertyList) {
-                if (property.isCollection()) {
-                    Object value = propertyValue[index];
-                    if (value == null || value == MISSING) {
-                        continue;
-                    }
-                    else if (value == INVALID) {
-                        exists = true;
-                        break;
-                    }
-                    else if (property.isArray()) {
-                        if (Array.getLength(value) > 0) {
-                            exists = true;
-                            break;
-                        }
-                    }
-                    else {
-                        if (!((Collection<Object>)value).isEmpty()) {
-                            exists = true;
-                            break;
-                        }
-                    }
-                }
-                index++;
-            }
-            if (!exists) {
-                return MISSING;
-            }
+            return MISSING;
         }
         
         // if field errors were detected, no need to instantiate a bean
@@ -166,6 +135,24 @@ public abstract class BeanDefinition extends PropertyDefinition {
         }
 
         return bean;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private boolean isCollectionFilled(PropertyDefinition property, Object value) {
+        // we've already checked for MISSING before this method is called...
+        
+        if (value == null) {
+            return false;
+        }
+        else if (value == INVALID) {
+            return true;
+        }
+        else if (property.isArray()) {
+            return Array.getLength(value) > 0;
+        }
+        else {
+            return (!((Collection<Object>)value).isEmpty());
+        }
     }
     
     /**

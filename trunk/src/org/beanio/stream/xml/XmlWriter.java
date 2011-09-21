@@ -180,7 +180,7 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
             // write the XMl header if needed
             if (outputHeader) {
                 String encoding = config.getEncoding();
-                if (encoding != null && !"".equals(encoding)) {
+                if (encoding != null && encoding.length() != 0) {
                     out.writeStartDocument(encoding, config.getVersion());
                 }
                 else {

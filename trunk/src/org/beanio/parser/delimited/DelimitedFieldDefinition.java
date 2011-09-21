@@ -46,7 +46,7 @@ public class DelimitedFieldDefinition extends FlatFieldDefinition {
 		    return null;
 		}
 		else if (isPadded()) {
-		    if ("".equals(text)) {
+		    if (text.length() == 0) {
 		        // this will either cause a required validation error or map
 		        // to a null value depending on the value of 'required'
 		        return "";

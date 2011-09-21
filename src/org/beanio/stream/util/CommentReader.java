@@ -69,7 +69,7 @@ public class CommentReader {
         
         int maximumCommentLength = 0;
         for (String s : comments) {
-            if (s == null || "".equals(s)) {
+            if (s == null || s.length() == 0) {
                 throw new IllegalArgumentException("Comment value cannot be null or empty string");
             }
             maximumCommentLength = Math.max(maximumCommentLength, s.length());

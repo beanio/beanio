@@ -255,7 +255,7 @@ public class GroupMarshaller extends Marshaller {
         if (lastMatchedChildName == null) {
             throw new IllegalStateException("Missing state information for key '" + key + "'");
         }
-        if ("".equals(lastMatchedChildName)) {
+        if (lastMatchedChildName.length() == 0) {
             lastMatchedChild = null;
             lastMatchedChildName = null;
         }

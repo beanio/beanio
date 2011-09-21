@@ -157,7 +157,7 @@ public abstract class FieldDefinition extends PropertyDefinition {
         }
         
         // check if field exists
-        if (text == null || "".equals(text)) {
+        if (text == null || text.length() == 0) {
             // validation for required fields
             if (required) {
                 record.addFieldError(getName(), fieldText, "required");

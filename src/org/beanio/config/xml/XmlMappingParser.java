@@ -531,9 +531,9 @@ public class XmlMappingParser {
         offset += getPositionOffset();
         
         Include inc = new Include(template, offset);
-        includeStack.push(inc);
+        includeStack.addFirst(inc);
         addProperties(beanConfig, element);
-        includeStack.pop();
+        includeStack.removeFirst();
     }
         
     private void populatePropertyConfig(PropertyConfig config, Element element) {

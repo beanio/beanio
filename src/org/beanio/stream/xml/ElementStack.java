@@ -97,7 +97,7 @@ class ElementStack {
             return true;
         }
         else if (parent == null) {
-            return "".equals(ns);
+            return ns.length() == 0;
         }
         else {
             return ns.equals(dns);

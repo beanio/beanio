@@ -198,7 +198,7 @@ public class XmlNodeUtil {
             if (definition.isNamespaceAware()) {
                 String ns = element.getNamespaceURI();
                 if (ns == null) {
-                    if (xmlNamespace != null && !"".equals(xmlNamespace)) {
+                    if (xmlNamespace != null && xmlNamespace.length() != 0) {
                         continue;
                     }
                 }

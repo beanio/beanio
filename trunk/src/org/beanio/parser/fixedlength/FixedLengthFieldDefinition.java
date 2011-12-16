@@ -58,7 +58,7 @@ public class FixedLengthFieldDefinition extends FlatFieldDefinition {
         }
         // return null if the field is all spaces, to allow for optional
         // zero padded fields
-        else if (!getPropertyType().equals(Character.class) && fieldText.trim().length() == 0) {
+        else if (!Character.class.equals(getPropertyType()) && fieldText.trim().length() == 0) {
             return "";
         }
         else {

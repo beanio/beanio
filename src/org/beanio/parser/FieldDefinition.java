@@ -20,7 +20,7 @@ import java.util.regex.*;
 
 import org.beanio.*;
 import org.beanio.types.*;
-import org.beanio.util.TypeUtil;
+import org.beanio.util.*;
 
 /**
  * A <tt>FieldDefinition</tt> is used to parse and format field values that
@@ -36,6 +36,9 @@ public abstract class FieldDefinition extends PropertyDefinition {
     /** Right justification */
     public static final char RIGHT = 'R';
 
+    private static final boolean marshalDefault = "true".equalsIgnoreCase(
+        Settings.getInstance().getProperty(Settings.DEFAULT_MARSHALLING_ENABLED));
+    
     private int position = -1;
     private boolean trim = true;
     private boolean required = false;
@@ -244,6 +247,12 @@ public abstract class FieldDefinition extends PropertyDefinition {
     public String formatValue(Object value) {
         if (literal != null) {
             return literal;
+        }
+        
+        // the default value may be used to override null property values
+        // if enabled (since 1.2.2)
+        if (marshalDefault && value == null) {
+            value = defaultValue;
         }
         
         String text = null;

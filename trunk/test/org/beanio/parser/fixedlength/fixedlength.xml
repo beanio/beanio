@@ -82,5 +82,14 @@
     </record>
   </stream>
 
+  <stream name="f5" format="fixedlength">
+    <writer>
+      <property name="recordTerminator" value="" />
+    </writer>
+    <record name="record" class="map">
+      <field name="firstName" length="10" ignore="true" padding="A" default="" />
+      <field name="lastName" length="10"/>
+    </record>
+  </stream>
 
 </beanio>

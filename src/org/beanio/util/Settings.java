@@ -72,6 +72,12 @@ public class Settings {
      * the optimization will not impact state updates. 
      */
     public static final String XML_WRITER_UPDATE_STATE_USING_DELTA = "org.beanio.stream.xml.XmlWriter.deltaEnabled";
+    /** 
+     * Whether a configured field default is marshalled for null property values.  The default configuration
+     * sets this property to <tt>true</tt>.
+     * @since 1.2.2
+     */
+    public static final String DEFAULT_MARSHALLING_ENABLED = "org.beanio.marshalDefaultEnabled";
     
     private static final String DEFAULT_CONFIGURATION_PATH = "/org/beanio/config/beanio.properties";
     private static final String DEFAULT_CONFIGURATION_FILENAME = "beanio.properties";

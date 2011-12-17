@@ -15,14 +15,13 @@
  */
 package org.beanio.parser.fixedlength;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.io.*;
 import java.util.*;
 
 import org.beanio.*;
-import org.beanio.parser.ParserTest;
+import org.beanio.parser.*;
 import org.junit.*;
 
 /**
@@ -195,6 +194,26 @@ public class FixedLengthParserTest extends ParserTest {
             text = new StringWriter();
             factory.createWriter("f4", text).write(map);
             assertEquals("STRTXT TX  T   ", text.toString());
+        }
+        finally {
+            in.close();
+        }
+    }
+    
+    @Test
+    @SuppressWarnings("rawtypes")
+    public void testIgnoredField() {
+        BeanReader in = factory.createReader("f5", new InputStreamReader(
+            getClass().getResourceAsStream("f5_valid.txt")));
+        
+        StringWriter text;
+        try {
+            Map map = (Map) in.read();
+            assertEquals("Smith", map.get("lastName"));
+            
+            text = new StringWriter();
+            factory.createWriter("f5", text).write(map);
+            assertEquals("AAAAAAAAAASmith     ", text.toString());
         }
         finally {
             in.close();

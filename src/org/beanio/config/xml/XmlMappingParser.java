@@ -591,7 +591,7 @@ public class XmlMappingParser {
         config.setTypeHandler(getTypeHandler(element, "typeHandler"));
         config.setType(getAttribute(element, "type"));
         config.setFormat(getAttribute(element, "format"));
-        config.setDefault(getAttribute(element, "default"));
+        config.setDefault(getOptionalAttribute(element, "default"));
         config.setRequired(getBooleanAttribute(element, "required", config.isRequired()));
         config.setTrim(getBooleanAttribute(element, "trim", config.isTrim()));
         config.setRecordIdentifier(getBooleanAttribute(element, "rid", 

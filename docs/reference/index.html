@@ -276,7 +276,7 @@ public class BeanReaderExample {
         <span class="comment">// use a StreamFactory to create a BeanReader</span>
         BeanReader in = factory.createReader("employeeFile", new File("employee.csv"));
         Employee employee;
-        while ((employee = in.read()) != null) {
+        while ((employee = (Employee) in.read()) != null) {
             <span class="comment">// process the employee...</span>
         }
         in.close();
@@ -2937,6 +2937,13 @@ working directory, and if not found, then from the root of the application's cla
   <td><tt>true</tt></td>
 </tr>
 <tr>
+  <td><tt>org.beanio.marshalDefaultEnabled</tt></td>
+  <td>Whether a configured <a href="#field"><tt>field</tt></a> default is marshalled for null property values.
+    May be disabled for backwards compatibility by setting the value to <tt>false</tt>.
+    </td>
+  <td><tt>true</tt></td>
+</tr>
+<tr>
   <td><tt>org.beanio.defaultDateFormat</tt></td>
   <td>Sets the default <tt>SimpleDateFormat</tt> pattern for <tt>date</tt> type fields in
     CSV, delimited and fixed length file formats.</td>
@@ -3808,9 +3815,13 @@ and vice versa.</p>
 </tr>
 <tr>
   <td><tt>default</tt></td>
-  <td>The default value of this field.  This value will be set on the bean object when the
-    field text is null or the empty string.  The default value will be converted to a 
-    bean property value using the same type handler configured for this field.</td>
+  <td>The default value of this field.
+    <p>When unmarshalling a stream, this value is set on the bean object when the
+    field text is null or the empty string.  And when marshalling, the
+    default value is used when the property value is null or ignore is set to 
+    <tt>true</tt> (unless disabled).</p>
+    <p>The default value is converted to a Java object using the same type 
+    handler configured for this field.</p></td>
   <td>No</td>
   <td>*</td>
 </tr>

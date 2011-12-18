@@ -234,7 +234,7 @@ public abstract class StreamFactory {
         }
 
         try {
-            return (StreamFactory) Class.forName(className).newInstance();
+            return (StreamFactory) TypeUtil.loadClass(className).newInstance();
         }
         catch (Exception ex) {
             throw new BeanIOException("Failed to load stream factory implementation class '" +

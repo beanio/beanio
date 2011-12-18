@@ -1,6 +1,13 @@
 Project BeanIO Change Log
 =========================
 
+Changes in version 1.2.2 (2011-12-18)
+-------------------------------------
+* NPE prevented in FixedLengthFieldDefinition.parseField() (gc0019).
+* Configured field defaults are marshalled for null property values and ignored fields (gc0020)
+  May be disabled by setting 'org.beanio.marshalDefaultEnabled' to 'false'.
+* Fixed class loading so that Thread.getContextClassLoader() is observed throughout.
+  
 Changes in version 1.2.1 (2011-09-21)
 -------------------------------------
 * Added support for templates

@@ -148,7 +148,7 @@ public class TypeUtil {
             return Date.class;
         
         try {
-            return Class.forName(type);
+            return TypeUtil.loadClass(type);
         }
         catch (ClassNotFoundException e) {
             return null;
@@ -191,7 +191,7 @@ public class TypeUtil {
             return (Class<? extends Collection<Object>>)(Class<?>) Set.class;
         
         try {
-            Class<?> clazz = Class.forName(type);
+            Class<?> clazz = TypeUtil.loadClass(type);
             if (!Collection.class.isAssignableFrom(clazz)) {
                 return null;
             }
@@ -199,6 +199,31 @@ public class TypeUtil {
         }
         catch (ClassNotFoundException ex) {
             return null;
+        }
+    }
+    
+    /**
+     * Loads a named class.  If set, the current thread's context
+     * class loader is used before delegating to the default class loader
+     * used to load this class.
+     * @param name the name of the class to load
+     * @return the loaded <tt>Class</tt>
+     * @throws ClassNotFoundException if the class failed to load
+     * @since 1.2.2
+     */
+    public static Class<?> loadClass(String name) throws ClassNotFoundException {
+        ClassLoader cl = null;
+        try {
+            cl = Thread.currentThread().getContextClassLoader();
+        }
+        catch (Throwable ex) { }
+        
+        // load the class
+        if (cl == null) {
+            return Class.forName(name);
+        }
+        else {
+            return Class.forName(name, true, cl);
         }
     }
     

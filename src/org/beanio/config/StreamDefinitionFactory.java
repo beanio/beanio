@@ -1026,7 +1026,7 @@ public abstract class StreamDefinitionFactory {
             }
             else {
                 try {
-                    beanClass = Class.forName(config.getType());
+                    beanClass = TypeUtil.loadClass(config.getType());
                     if (isReadEnabled() && (beanClass.isInterface() || Modifier.isAbstract(beanClass.getModifiers()))) {
                         throw new BeanIOConfigurationException("Class must be concrete unless " +
                             "stream mode is set to '" + StreamConfig.WRITE_ONLY_MODE + "'");

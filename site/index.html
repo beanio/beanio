@@ -48,6 +48,14 @@
     <p>The BeanIO project is hosted at <a href="http://code.google.com/p/beanio/">Google Code</a></p>
     
     <div class="news">
+      <h2>BeanIO 1.2.2 Released <span class="date">December 18, 2011</span></h2>
+      <p>Release 1.2.2 is a minor patch release.  The only functional change is the marshaling
+        of configured field defaults for null property values or fields where <tt>ignore="true"</tt>.
+        In prior releases, a field default was only used during unmarshaling.
+        This behavior can be disabled for backwards compatibility by setting
+        <tt>org.beanio.marshalDefaultEnabled</tt> to <tt>false</tt>.  The release can be downloaded 
+        <a href="http://code.google.com/p/beanio/downloads/list">here</a>.</p>
+        
       <h2>BeanIO 1.2.1 Released <span class="date">September 21, 2011</span></h2>
       <p>Release 1.2.1 introduces templates, and fixes the mapping file import logic and
         other minor defects.  The <tt>ConfigurationLoader</tt> interface and its implementation

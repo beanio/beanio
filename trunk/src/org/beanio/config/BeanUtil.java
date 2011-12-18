@@ -21,7 +21,7 @@ import java.util.*;
 
 import org.beanio.BeanIOConfigurationException;
 import org.beanio.types.*;
-import org.beanio.util.Settings;
+import org.beanio.util.*;
 
 /**
  * Utility class for instantiating configurable bean classes.
@@ -72,7 +72,7 @@ class BeanUtil {
         Class<?> clazz = null;
         try {
             // load the class
-            clazz = Class.forName(className);
+            clazz = TypeUtil.loadClass(className);
         }
         catch (ClassNotFoundException e) {
             throw new BeanIOConfigurationException(

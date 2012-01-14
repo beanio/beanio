@@ -96,7 +96,8 @@ public abstract class StreamFactory {
      * Creates a new <tt>BeanReader</tt> for reading from a stream.
      * @param name the configured stream mapping name
      * @param in the input stream to read from
-     * @param locale the locale used to format error messages 
+     * @param locale the locale used to format error messages, or if null,
+     *   {@link Locale#getDefault()} is used
      * @return the new <tt>BeanReader</tt>
      * @throws IllegalArgumentException if there is no stream configured for the given name, or
      *   if the stream mapping mode does not support reading an input stream

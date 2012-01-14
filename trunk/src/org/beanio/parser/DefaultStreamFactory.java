@@ -57,6 +57,10 @@ public class DefaultStreamFactory extends StreamFactory {
      * @see org.beanio.StreamManager#createBeanReader(java.lang.String, java.io.Reader, java.util.Locale)
      */
     public BeanReader createReader(String name, Reader in, Locale locale) {
+        if (locale == null) {
+            locale = Locale.getDefault();
+        }
+        
         StreamDefinition stream = getStream(name);
         switch (stream.getMode()) {
             case StreamDefinition.READ_WRITE_MODE:

@@ -1,6 +1,13 @@
 Project BeanIO Change Log
 =========================
 
+Changes in version 1.2.3 (TBD)
+-------------------------------------
+* Modified DefaultStreamFactory to use default locale if 'locale' is null (gc0022)
+* Updated build.xml to include OSGi JAR manifest entries (gc0026)
+* Fixed build.xml to include correct BeanIO version in javadocs.
+* Updated copyrights for 2012
+
 Changes in version 1.2.2 (2011-12-18)
 -------------------------------------
 * NPE prevented in FixedLengthFieldDefinition.parseField() (gc0019).

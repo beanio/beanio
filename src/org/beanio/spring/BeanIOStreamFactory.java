@@ -19,7 +19,7 @@ import java.io.*;
 import java.util.List;
 
 import org.beanio.*;
-import org.beanio.util.IOUtil;
+import org.beanio.internal.util.IOUtil;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.core.io.Resource;
 

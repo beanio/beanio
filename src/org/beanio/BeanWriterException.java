@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Kevin Seim
+ * Copyright 2010-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,19 @@
 package org.beanio;
 
 /**
- * A subclass of <tt>BeanWriterException</tt> is thrown for any exception
- * that occurs while using a <tt>BeanWriter</tt> to write to an output stream.
+ * Exception thrown by a {@link BeanWriter}.
+ * 
+ * <p>In most cases, a subclass of this exception is thrown when an error occurs
+ * while writing to a <tt>BeanWriter</tt>.  In a few rare fatal cases, this exception
+ * may be thrown directly.
  * 
  * @author Kevin Seim
  * @since 1.0
  * @see BeanWriter
  */
-public abstract class BeanWriterException extends BeanIOException {
+public class BeanWriterException extends BeanIOException {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     /**
      * Constructs a new <tt>BeanWriterException</tt>.

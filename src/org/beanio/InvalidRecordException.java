@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Kevin Seim
+ * Copyright 2010-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,46 +18,67 @@ package org.beanio;
 import java.util.*;
 
 /**
- * Exception thrown when a record or one of its fields does not pass
- * validation. 
+ * Exception thrown when a record or one of its fields does not pass validation. 
+ * 
+ * <p>An invalid record does not affect the state of a {@link BeanReader}, and
+ * subsequent calls to <tt>read()</tt> are not affected.
  * 
  * @author Kevin Seim
  * @since 1.0
  */
 public class InvalidRecordException extends BeanReaderException {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     /**
      * Constructs a new <tt>InvalidRecordException</tt>.
-     * @param context the current context of the reader
      * @param message the error message
-     * @param cause the root cause
      */
-    public InvalidRecordException(BeanReaderContext context, String message, Throwable cause) {
-        super(context, message, cause);
+    protected InvalidRecordException(String message) {
+        this(null, message);
     }
-
+    
     /**
      * Constructs a new <tt>InvalidRecordException</tt>.
-     * @param context the current context of the reader
+     * @param context the {@link RecordContext} that caused the exception
      * @param message the error message
      */
-    public InvalidRecordException(BeanReaderContext context, String message) {
-        super(context, message);
+    public InvalidRecordException(RecordContext context, String message) {
+        super(message);
+        setRecordContext(context);
+    }
+    
+    /**
+     * Returns the name of the record or group that failed validation.
+     * @return the record or group name
+     * @since 2.0
+     */
+    public String getRecordName() {
+        RecordContext ctx = getRecordContext();
+        return ctx != null ? ctx.getRecordName() : null;
     }
     
     @Override
     public String toString() {
-        BeanReaderContext context = super.getContext();
-        
         String message = super.toString();
-        if (context == null || !(context.hasFieldErrors() || context.hasRecordErrors())) {
+        if (getRecordCount() == 0) {
             return message;
         }
-
-        StringBuilder s = new StringBuilder(message);
-
+        else {
+            StringBuilder s = new StringBuilder(message);
+            appendMessageDetails(s);
+            return s.toString();
+        }
+    }
+    
+    /**
+     * Called by {@link #toString()} to append record context details to the
+     * error message.
+     * @param s the message to append
+     */
+    protected void appendMessageDetails(StringBuilder s) {
+        RecordContext context = getRecordContext();
+        
         if (context.hasRecordErrors()) {
             for (String error : context.getRecordErrors()) {
                 s.append("\n ==> ");
@@ -75,6 +96,5 @@ public class InvalidRecordException extends BeanReaderException {
                 }
             }
         }
-        return s.toString();
     }
 }

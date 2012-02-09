@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Kevin Seim
+ * Copyright 2010-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 package org.beanio;
 
-import org.beanio.BeanIOException;
-
 /**
  * Exception thrown when an invalid BeanIO mapping configuration file is loaded.
  * 
@@ -25,7 +23,7 @@ import org.beanio.BeanIOException;
  */
 public class BeanIOConfigurationException extends BeanIOException {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     /**
      * Constructs a new <tt>BeanIOConfigurationException</tt>.

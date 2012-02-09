@@ -21,8 +21,8 @@ import java.util.*;
 import javax.xml.XMLConstants;
 import javax.xml.stream.*;
 
+import org.beanio.internal.util.*;
 import org.beanio.stream.RecordWriter;
-import org.beanio.util.*;
 import org.w3c.dom.*;
 
 /**

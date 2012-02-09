@@ -20,7 +20,7 @@ import java.nio.charset.Charset;
 import java.util.Locale;
 
 import org.beanio.*;
-import org.beanio.util.IOUtil;
+import org.beanio.internal.util.IOUtil;
 import org.springframework.batch.item.file.*;
 import org.springframework.batch.item.support.AbstractItemCountingItemStreamItemReader;
 import org.springframework.beans.factory.InitializingBean;
@@ -81,11 +81,19 @@ public class BeanIOFlatFileItemReader<T> extends AbstractItemCountingItemStreamI
         try {
             return (T) reader.read();
         }
+        catch (BeanReaderIOException ex) {
+            throw ex.getCause();
+        }
         catch (BeanReaderException ex) {
             if (useSpringExceptions) {
-                BeanReaderContext ctx = ex.getContext();
-                throw new FlatFileParseException(ex.getMessage(), ex, ctx.getRecordText(), 
-                    ctx.getRecordLineNumber());
+                RecordContext ctx = ex.getRecordContext();
+                if (ctx != null) {
+                    throw new FlatFileParseException(ex.getMessage(), ex, 
+                        ctx.getRecordText(), ctx.getLineNumber());
+                }
+                else {
+                    throw new FlatFileParseException(ex.getMessage(), ex, null, 0);
+                }
             }
             else {
                 throw ex;

@@ -58,6 +58,16 @@
       <manifest>
         <attribute name="Implementation-Title" value="BeanIO ${version}" />
         <attribute name="Implementation-Version" value="${version}" />
+    	<!-- OSGi manifest headers -->
+        <attribute name="Bundle-ManifestVersion" value="2"/>
+        <attribute name="Bundle-Vendor" value="Kevin Seim"/>
+        <attribute name="Bundle-Name" value="BeanIO"/>
+        <attribute name="Bundle-Description" value="BeanIO OSGi support"/>
+        <attribute name="Bundle-SymbolicName" value="org.beanio"/>
+        <attribute name="Bundle-Version" value="${version}"/>
+        <attribute name="Bundle-License" value="http://www.apache.org/licenses/LICENSE-2.0"/>
+        <attribute name="Bundle-DocURL" value="http://beanio.org"/>
+        <attribute name="Export-Package" value='org.beanio;version="${version}",org.beanio.types;version="${version}",org.beanio.types.xml;version="${version}",org.beanio.stream;version="${version}",org.beanio.spring;version="${version}"'/>
       </manifest>
       <metainf dir="${basedir}">
         <include name="LICENSE.txt" />
@@ -78,10 +88,10 @@
   </target>
   <!-- Create API documentation -->
   <target name="docs-api" depends="docs-init">
-    <javadoc sourcepath="src" destdir="${target}/docs/api" windowtitle="BeanIO 1.2.1 API" access="protected"
-      header="BeanIO 1.2.1" classpathref="classpath.main">
-      <doctitle><![CDATA[<h2>BeanIO 1.2.1 API</h2>]]></doctitle>
-      <bottom><![CDATA[<i>Copyright &copy; 2010-2011 Kevin Seim</i>]]></bottom>
+    <javadoc sourcepath="src" destdir="${target}/docs/api" windowtitle="BeanIO ${version} API" access="protected"
+      header="BeanIO ${version}" classpathref="classpath.main">
+      <doctitle><![CDATA[<h2>BeanIO ${version} API</h2>]]></doctitle>
+      <bottom><![CDATA[<i>Copyright &copy; 2010-2012 Kevin Seim</i>]]></bottom>
       <link href="http://download.oracle.com/javase/6/docs/api/" />
       <link href="http://static.springsource.org/spring-batch/apidocs/" />
       <link href="http://static.springsource.org/spring/docs/2.5.x/api/" />

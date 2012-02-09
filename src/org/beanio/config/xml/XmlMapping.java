@@ -144,7 +144,7 @@ public class XmlMapping {
      * Recursively finds the <tt>template</tt> DOM element for a given template 
      * name in this mapping file and its parents.
      * @param name the name of the template to retrieve
-     * @return
+     * @return the matching template Element
      */
     public Element findTemplate(String name) {
         Element template = templateMap.get(name);

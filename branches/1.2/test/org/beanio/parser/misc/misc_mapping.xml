@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<beanio xmlns="http://www.beanio.org/2011/01" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.beanio.org/2011/01 http://www.beanio.org/2011/01/mapping.xsd">
+
+  <stream name="stream1" format="csv">
+    <record name="header" minOccurs="1" maxOccurs="1" />
+    <record name="record" class="map">
+      <field name="field1" />
+      <field name="field2" />
+    </record>
+  </stream>
+
+  <stream name="stream2" format="csv">
+    <record name="header" class="map" minOccurs="1" maxOccurs="1" />
+    <record name="record" class="map">
+      <field name="field1" />
+      <field name="field2" />
+    </record>
+  </stream>
+
+  <stream name="stream3" format="csv">
+    <record name="header" class="map" minOccurs="1" maxOccurs="1">
+      <property name="key" value="value" />
+    </record>
+    <record name="record" class="map">
+      <field name="field1" />
+      <field name="field2" />
+    </record>
+  </stream>
+
+  <stream name="stream4" format="csv">
+    <record name="header" minOccurs="1" maxOccurs="1">
+      <property name="key" value="value" />
+      <field name="field1" type="date" />
+      <field name="field2" />
+    </record>
+    <record name="record" class="map">
+      <field name="field1" />
+      <field name="field2" />
+    </record>
+  </stream>
+
+  <stream name="stream5" format="csv">
+    <record name="header" minOccurs="1" maxOccurs="1">
+      <property name="key" value="value" />
+    </record>
+    <record name="record" class="map" minLength="2">
+      <field name="field1" />
+      <field name="field2" />
+      <bean name="skipbean" class="map">
+        <field name="field3" />
+      </bean>
+      <bean name="bean" class="map">
+        <property name="key" value="value" />
+      </bean>
+    </record>
+  </stream>
+
+</beanio>

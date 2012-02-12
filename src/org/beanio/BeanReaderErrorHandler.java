@@ -28,10 +28,10 @@ package org.beanio;
 public interface BeanReaderErrorHandler {
 
     /**
-     * Callback method for handling a {@link BeanReaderException} when using
-     * a {@link BeanReader}.
-     * @param ex the {@link BeanReaderException} to handle
-     * @throws Exception if the <tt>BeanReaderException</tt> is rethrown or the error
+     * Callback method for handling <tt>BeanReaderExceptions</tt> when using
+     * a bean reader.
+     * @param ex the <tt>BeanReaderException</tt> to handle
+     * @throws Exception if the BeanReaderException is rethrown or the error
      *   handler throws a new Exception
      */
     public void handleError(BeanReaderException ex) throws Exception;

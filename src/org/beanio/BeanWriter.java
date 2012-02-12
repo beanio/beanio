@@ -51,7 +51,7 @@ public interface BeanWriter {
 
     /**
      * Closes this output stream.
-     * @throws BeanWriterIOException if the IOException is thrown when the output
+     * @throws BeanIOException if the IOException is thrown when the output
      *   stream is closed
      */
     public void close() throws BeanWriterIOException;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Kevin Seim
+ * Copyright 2010 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,15 +25,14 @@ package org.beanio;
  */
 public class UnexpectedRecordException extends BeanReaderException {
 
-	private static final long serialVersionUID = 2L;
-
+	private static final long serialVersionUID = 1L;
+	
 	/**
 	 * Constructs a new <tt>UnexpectedRecordException</tt>.
 	 * @param context the current context of the bean reader
 	 * @param message the error message
 	 */
-	public UnexpectedRecordException(RecordContext context, String message) {
-		super(message);
-		setRecordContext(context);
+	public UnexpectedRecordException(BeanReaderContext context, String message) {
+		super(context, message);
 	}
 }

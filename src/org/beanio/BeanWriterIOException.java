@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,10 @@
  */
 package org.beanio;
 
-import java.io.IOException;
-
 /**
- * A <tt>BeanWriterIOException</tt> is thrown only when a {@link BeanWriter}'s underlying
- * output stream throws an {@link IOException}.
+ * A <tt>BeanWriterIOException</tt> is thrown when a BeanWriter's underlying
+ * output stream throws an <tt>IOException</tt> or another otherwise fatal error
+ * occurs while using a <tt>BeanWriter</tt>.
  * 
  * @author Kevin Seim
  * @since 1.0
@@ -27,14 +26,14 @@ import java.io.IOException;
  */
 public class BeanWriterIOException extends BeanWriterException {
 
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Constructs a new <tt>BeanWriterIOException</tt>.
      * @param message the error message
      * @param cause the root cause
      */
-    public BeanWriterIOException(String message, IOException cause) {
+    public BeanWriterIOException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -50,12 +49,7 @@ public class BeanWriterIOException extends BeanWriterException {
      * Constructs a new <tt>BeanWriterIOException</tt>.
      * @param cause the root cause
      */
-    public BeanWriterIOException(IOException cause) {
+    public BeanWriterIOException(Throwable cause) {
         super(cause);
-    }
-    
-    @Override
-    public IOException getCause() {
-        return (IOException) super.getCause();
     }
 }

@@ -24,8 +24,8 @@ import java.io.*;
 
 import javax.xml.stream.*;
 
-import org.beanio.internal.util.DomUtil;
 import org.beanio.stream.*;
+import org.beanio.util.DomUtil;
 import org.w3c.dom.*;
 
 /**
@@ -139,9 +139,7 @@ public class XmlReader implements RecordReader {
         
         try {
             if (parentNode != null) {
-                if (recordNode != null) {
-                    parentNode.removeChild(recordNode);
-                }
+                parentNode.removeChild(recordNode);
                 recordNode = null;
             }
 

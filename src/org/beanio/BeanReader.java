@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 package org.beanio;
-
-import java.io.IOException;
 
 /**
  * Interface for readers capable of reading bean objects from an input stream.
@@ -64,44 +62,20 @@ public interface BeanReader {
         UnidentifiedRecordException, UnexpectedRecordException;
 	
 	/**
-	 * Returns the record or group name associated with the most recent bean object
-	 * read from this reader, or null when the end of the stream is reached.
-	 * @return the record or group name
+	 * Returns the name of the last record read.
+	 * @return the name of the last record read
 	 */
 	public String getRecordName();
 	
 	/**
-	 * Returns the starting line number of the first record for the most recent bean
-	 * object read from this reader, or -1 when the end of the stream is reached.  
-	 * The line number may be zero if new lines are not used to separate characters.  
+	 * The beginning line number of the last record read.
 	 * @return the line number
 	 */
 	public int getLineNumber();
 	
 	/**
-	 * Returns the number of records read from the underlying input stream for the
-	 * most recent bean object read from this reader.  This typically returns 1
-	 * unless a bean object was mapped to a record group which may span
-	 * multiple records.
-	 * @return the record count
-	 * @since 2.0
-	 */
-	public int getRecordCount();
-	
-	/**
-	 * Returns the record context for a record read from the underlying input stream
-	 * for the most recent bean object read from this reader.
-	 * @param index the index of the record
-	 * @return the {@link RecordContext}
-	 * @throws IndexOutOfBoundsException if there is no record for the given index
-	 * @see #getRecordCount()
-	 * @since 2.0
-	 */
-	public RecordContext getRecordContext(int index) throws IndexOutOfBoundsException;
-	
-	/**
 	 * Closes the underlying input stream.
-	 * @throws BeanReaderIOException if an {@link IOException} is caught closing the stream
+	 * @throws BeanReaderIOException if an IOException is thrown when closing the stream
 	 */
     public void close() throws BeanReaderIOException;
 

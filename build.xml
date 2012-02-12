@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!-- 
-    Copyright 2010-2011 Kevin Seim
+    Copyright 2010-2012 Kevin Seim
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -68,6 +68,7 @@
         <attribute name="Bundle-License" value="http://www.apache.org/licenses/LICENSE-2.0"/>
         <attribute name="Bundle-DocURL" value="http://beanio.org"/>
         <attribute name="Export-Package" value='org.beanio;version="${version}",org.beanio.types;version="${version}",org.beanio.types.xml;version="${version}",org.beanio.stream;version="${version}",org.beanio.spring;version="${version}"'/>
+        <attribute name="DynamicImport-Package" value="*"/>
       </manifest>
       <metainf dir="${basedir}">
         <include name="LICENSE.txt" />

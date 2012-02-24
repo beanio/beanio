@@ -54,7 +54,6 @@ public class FlatPreprocessor extends Preprocessor {
     protected void finalizeRecord(RecordConfig record) {
         super.finalizeRecord(record);
         
-        // TODO calculate record lengths if strict and not set...
         boolean minSet = record.getMinLength() != null;
         if (stream.isStrict()) {
             if (record.getMinLength() == null) {

@@ -56,11 +56,12 @@ public class BeanWriterImpl implements BeanWriter, StatefulWriter {
      * @see org.beanio.BeanWriter#write(java.lang.String, java.lang.Object)
      */
     public void write(String recordName, Object bean) throws BeanWriterException {
+        ensureOpen();
+        
         if (bean == null) {
             throw new BeanWriterException("null bean object");
         }
         
-        ensureOpen();
         try {
             // set the name of the component to be marshalled (may be null if we're just matching on bean)
             context.setComponentName(recordName);
@@ -70,15 +71,22 @@ public class BeanWriterImpl implements BeanWriter, StatefulWriter {
             // find the parser in the layout that defines the given bean
             Selector matched = layout.matchNext(context);
             if (matched == null) {
-                throw new BeanWriterException("No record or group mapping for class '"
+                throw new BeanWriterException("Bean identification failed: No record or group mapping for class '"
                     + bean.getClass() + "' at the current stream position");                
             }
-
+            
             // marshal the bean object
             matched.marshal(context);
         }
         catch (IOException e) {
             throw new BeanWriterIOException(e);
+        }
+        catch (BeanWriterException ex) {
+            throw ex;
+        }
+        catch (BeanIOException ex) {
+            // wrap the generic exception in a BeanReaderException
+           throw new BeanWriterException("Fatal BeanIOException caught", ex);
         }
         finally {
             // clear the marshaling context

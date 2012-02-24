@@ -35,7 +35,10 @@ import org.w3c.dom.Document;
  */
 public class XmlStreamFormat extends StreamFormatSupport {
 
+    // the root node of the parser tree
     private Selector layout;
+    // the maximum depth of a group component in the parser tree 
+    private int groupDepth;
     
     /**
      * Constructs a new <tt>XmlStreamFormat</tt>.
@@ -47,7 +50,7 @@ public class XmlStreamFormat extends StreamFormatSupport {
      * @see org.beanio.parser2.StreamFormat#createUnmarshallingContext()
      */
     public UnmarshallingContext createUnmarshallingContext() {
-        return new XmlUnmarshallingContext();
+        return new XmlUnmarshallingContext(groupDepth);
     }
 
     /*
@@ -55,7 +58,7 @@ public class XmlStreamFormat extends StreamFormatSupport {
      * @see org.beanio.parser2.StreamFormat#createMarshallingContext()
      */
     public MarshallingContext createMarshallingContext() {
-        return new XmlMarshallingContext();
+        return new XmlMarshallingContext(groupDepth);
     }
 
     @Override
@@ -102,5 +105,13 @@ public class XmlStreamFormat extends StreamFormatSupport {
         else {
             return DomUtil.newDocument();
         }
+    }
+
+    /**
+     * 
+     * @param groupDepth
+     */
+    public void setGroupDepth(int groupDepth) {
+        this.groupDepth = groupDepth;
     }
 }

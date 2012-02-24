@@ -49,8 +49,8 @@ public interface Parser {
     /**
      * Marshals a record.
      * @param context the {@link MarshallingContext}
-     * @return TODO
-     * @throws IOException
+     * @return whether a value was marshalled
+     * @throws IOException if an I/O error occurs
      */
     public boolean marshal(MarshallingContext context) throws IOException;
     

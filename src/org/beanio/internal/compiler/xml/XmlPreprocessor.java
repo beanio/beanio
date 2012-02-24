@@ -157,9 +157,9 @@ public class XmlPreprocessor extends Preprocessor {
         }
         // repeating fields must be of type 'element'
         if (field.isRepeating() && !XmlTypeConstants.XML_TYPE_ELEMENT.equals(type)) {
-            throw new BeanIOConfigurationException("Collection type bean/field must have xmlType 'element'");
+            throw new BeanIOConfigurationException("Repeating fields must have xmlType 'element'");
         }
-        
+
         if (field.getXmlNamespace() != null &&
             !XmlTypeConstants.XML_TYPE_ELEMENT.equals(type) &&
             !XmlTypeConstants.XML_TYPE_ATTRIBUTE.equals(type)) {
@@ -201,8 +201,11 @@ public class XmlPreprocessor extends Preprocessor {
             field.setXmlNamespaceAware(true);
         }
         
-        if (field.getMinOccurs() == null && !field.isNillable()) {
-            field.setMinOccurs(0);
+        // default minOccurs for an attribute is 0
+        if (XmlTypeConstants.XML_TYPE_ATTRIBUTE.equals(type)) {
+            if (field.getMinOccurs() == null) {
+                field.setMinOccurs(0);
+            }
         }
         
         super.handleField(field);

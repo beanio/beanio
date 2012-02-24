@@ -44,6 +44,10 @@ public class Preprocessor extends ProcessorSupport {
      * @param stream the stream configuration to process
      */
     protected void initializeStream(StreamConfig stream) throws BeanIOConfigurationException { 
+        if (stream.getMaxOccurs() == null) {
+            stream.setMaxOccurs(1);
+        }
+        
         initializeGroup(stream);
     }
     
@@ -250,7 +254,6 @@ public class Preprocessor extends ProcessorSupport {
         if (field.getMaxOccurs() < field.getMinOccurs()) {
             throw new BeanIOConfigurationException("maxOccurs cannot be less than minOccurs");
         }
-        //field.setLazy(field.getMinOccurs() == 0);
         
         // set and validate min and max length
         if (field.getMinLength() == null) {

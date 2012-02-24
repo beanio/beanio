@@ -75,15 +75,23 @@ public abstract class ParsingContext {
     }
     
     /**
-     * Returns the current field index adjusting for any applied iterations.
-     * @return the current field index
+     * Returns the current field index relative to any current iteration.
+     * @return the field index
      */
-    public final int getAdjustedFieldIndex() {
+    public final int getRelativeFieldIndex() {
         if (iterationStack.isEmpty()) {
             return 0;
         }
         else {
             return iterationStack.get(iterationStack.size() - 1).getIterationIndex();
         }
+    }
+
+    /**
+     * Returns whether a repeating segment or field is being parsed.
+     * @return true if repeating, false otherwise
+     */
+    public final boolean isRepeating() {
+        return !iterationStack.isEmpty();
     }
 }

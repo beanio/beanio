@@ -25,7 +25,7 @@ package org.beanio.internal.parser;
 public interface Iteration {
 
     /**
-     * Returns the index of the current iteration.
+     * Returns the index of the current iteration relative to its parent.
      * @return the index of the current iteration
      */
     public int getIterationIndex();
@@ -35,5 +35,4 @@ public interface Iteration {
      * @return the iteration size
      */
     public int getIterationSize();
-    
 }

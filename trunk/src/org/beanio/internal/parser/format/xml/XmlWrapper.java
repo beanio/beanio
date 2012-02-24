@@ -50,8 +50,7 @@ public class XmlWrapper extends DelegatingParser implements XmlNode {
         }
         
         XmlUnmarshallingContext ctx = (XmlUnmarshallingContext) context;
-        Element parent = ctx.updatePosition(this);
-        if (parent == null) {
+        if (ctx.pushPosition(this) == null) {
             return false;
         }
         
@@ -59,60 +58,67 @@ public class XmlWrapper extends DelegatingParser implements XmlNode {
             return super.matches(context);
         }
         finally {
-            ctx.setPosition(parent);
+            ctx.popPosition();
         }
     }
 
     @Override
     public boolean unmarshal(UnmarshallingContext context) {
         XmlUnmarshallingContext ctx = (XmlUnmarshallingContext) context;
-        
-        Element parent = ctx.updatePosition(this);
-        if (parent == null) {
+        if (ctx.pushPosition(this) == null) {
             return false;
         }
         
-        // check for nil
-        if (XmlNodeUtil.isNil(ctx.getPosition())) {
-            if (!isNillable()) {
-                context.addFieldError(getName(), null, "nillable");
-            }
-            return true;
-        }
-        
         try {
-            super.unmarshal(context);
+            // check for nil
+            if (XmlNodeUtil.isNil(ctx.getPosition())) {
+                if (!isNillable()) {
+                    context.addFieldError(getName(), null, "nillable");
+                }
+            }
+            else {
+                super.unmarshal(context);
+            }
+            
             return true;
         }
         finally {
-            ctx.setPosition(parent);
+            ctx.popPosition();
         }
     }
 
     @Override
     public boolean marshal(MarshallingContext context) throws IOException {
+        boolean contentChecked = false;
+        
         if (lazy && !repeating) {
             if (!hasContent()) {
                 return false;
             }
+            contentChecked = true;
         }
         
         XmlMarshallingContext ctx = (XmlMarshallingContext) context;
+        
+        // create an element for this node
         Element element = ctx.getDocument().createElementNS(getNamespace(), getLocalName());
         
+        // append the new element to its parent
         Node parent = ctx.getParent();
-        if (isNillable() && getValue() == Value.MISSING) {
-            element.setAttributeNS(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "nil", "true");
-        }
         parent.appendChild(element);
         
-        boolean marshalled = false;
+        // if nillable and there is no descendant with content, mark the element nil
+        if (isNillable() && !contentChecked && !hasContent()) {
+            element.setAttributeNS(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "nil", "true");
+        }
+        // otherwise marshal our descendants
+        else {
+            ctx.setParent(element);
+            super.marshal(context);
+            ctx.setParent(parent);
+        }
         
-        ctx.setParent(element);
-        marshalled = super.marshal(context);
-        ctx.setParent(parent);
-        
-        return marshalled;
+        return true;
     }
 
     public String getLocalName() {

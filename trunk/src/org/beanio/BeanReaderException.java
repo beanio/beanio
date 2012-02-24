@@ -65,6 +65,19 @@ public class BeanReaderException extends BeanIOException {
      * equivalent to calling getRecordContext(0).
      * @return the {@link RecordContext}
      * @since 2.0
+     * @deprecated use {@link #getRecordContext()}
+     */
+    public RecordContext getContext() {
+        return getRecordContext();
+    }
+    
+    /**
+     * Returns the record context that caused the error.  May be null if there is no
+     * context information associated with the exception.  If there is more than one
+     * record context, this method returns the context of the first record and is
+     * equivalent to calling getRecordContext(0).
+     * @return the {@link RecordContext}
+     * @since 2.0
      * @see #getRecordContext(int)
      */
     public RecordContext getRecordContext() {

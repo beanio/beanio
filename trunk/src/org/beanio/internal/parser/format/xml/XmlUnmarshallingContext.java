@@ -21,6 +21,9 @@ import org.beanio.internal.parser.*;
 import org.w3c.dom.*;
 
 /**
+ * An {@link UnmarshallingContext} for an XML formatted record.
+ * 
+ * <p>The record value type is a {@link Document}.
  * 
  * @author Kevin Seim
  * @since 2.0
@@ -33,6 +36,16 @@ public class XmlUnmarshallingContext extends UnmarshallingContext {
     private Element position;
     /* This stack of elements is used to store the last XML node parsed for a field or bean collection. */
     private LinkedList<Element> elementStack = new LinkedList<Element>();
+    /* Store previously matched groups for parsing subsequent records in a record group */
+    private XmlNode[] groupStack;
+    
+    /**
+     * Constructs a new <tt>XmlUnmarshallingContext</tt>
+     * @param groupDepth the maximum depth of an element mapped to a {@link Group} in the DOM
+     */
+    public XmlUnmarshallingContext(int groupDepth) {
+        groupStack = new XmlNode[groupDepth];
+    }
     
     @Override
     public void setRecordValue(Object value) {
@@ -77,45 +90,104 @@ public class XmlUnmarshallingContext extends UnmarshallingContext {
     }
     
     /**
-     * Returns the parent node currently being parsed in the DOM tree. 
+     * Returns the current unmarshalled position in the DOM tree, or null
+     * if a node has not been matched yet.
      * @return the current parent DOM node
+     * @see #pushPosition(XmlNode, int, boolean)
+     * @see #pushPosition(XmlNode)
      */
     public Element getPosition() {
         return position;
     }
-
+    
     /**
-     * Sets the parent node currently being parsed in the DOM tree.
-     * @param position the current parent DOM node
+     * Updates <tt>position</tt> by finding a child of the current position
+     * that matches a given node.  If <tt>isGroup</tt> is true, the node is
+     * indexed by its depth so that calls to this method for subsequent records
+     * in the same group can update <tt>position</tt> according to the depth
+     * of the record.
+     * @param node the {@link XmlNode} to match
+     * @param depth the depth of the node in the DOM tree 
+     * @param isGroup whether the node is mapped to a {@link Group}
+     * @return the matched node or null if not matched
      */
-    public void setPosition(Element position) {
-        this.position = position;
+    public Element pushPosition(XmlNode node, int depth, boolean isGroup) {
+        // if the pushed node is a group node, add it to the group stack
+        // for the workaround below
+        if (isGroup) {
+            groupStack[depth] = node;
+        }
+        
+        // this is a workaround for handling bean objects that span multiple records
+        // once the first record is identified, parent groups are not called for
+        // subsequent records so the current position will be null even though we
+        // already deeper in the parser tree
+        if (position == null && depth > 0) {
+            for (int i=0; i<depth; i++) {   
+                position = findElement(groupStack[i]);
+                if (position == null) {
+                    return null;
+                }
+            }
+            
+            // if we still don't match, update the position back to null
+            Element element = pushPosition(node);
+            if (element == null) {
+                position = null;
+            }
+            return element;
+        }
+        else {
+            return pushPosition(node);
+        }
     }
     
     /**
-     * 
-     * @param node
-     * @return the previous position, or null if not found
+     * Updates <tt>position</tt> by finding a child of the current position
+     * that matches a given node.
+     * @param node the {@link XmlNode} to match
+     * @return the matching element, or null if not found
+     * @see #getPosition()
      */
-    public Element updatePosition(XmlNode node) {
-        Element parent = position;
-        
+    public Element pushPosition(XmlNode node) {
         Element element = findElement(node);
         if (element == null) {
             return null;
         }
         else {
             position = element;
-            return parent;
+            return position;
         }
     }
     
+    /**
+     * Updates <tt>position</tt> to its parent (element), 
+     * or null if the parent element is the document itself.
+     * @see #getPosition()
+     */
+    public void popPosition() {
+        if (position != null) {
+            Node n = position.getParentNode();
+            if (n == null || n.getNodeType() == Node.DOCUMENT_NODE){
+                position = null;
+            }
+            else {
+                position = (Element) n;
+            }
+        }
+    }
+    
+    /**
+     * Finds a child element of the current <tt>position</tt>.
+     * @param node the {@link XmlNodeUtil}
+     * @return the matched element or null if not found
+     */
     public Element findElement(XmlNode node) {
         Element parent = position;
         
         Element element;
         if (node.isRepeating()) {
-            int index = getAdjustedFieldIndex();
+            int index = getRelativeFieldIndex();
             
             if (index > 0) {
                 element = XmlNodeUtil.findSibling(getPreviousElement(), node);

@@ -37,6 +37,10 @@ public class XmlParserFactory extends ParserFactorySupport {
      */
     public XmlParserFactory() { }
     
+    // the current depth of the parser tree
+    private int groupDepth = 0;
+    private int maxGroupDepth = 0;
+    
     @Override
     protected Preprocessor createPreprocessor(StreamConfig config) {
         return new XmlPreprocessor(config);
@@ -46,6 +50,7 @@ public class XmlParserFactory extends ParserFactorySupport {
     public Stream createStream(StreamConfig config) throws BeanIOConfigurationException {
         Stream stream =  super.createStream(config);
         ((XmlStreamFormat)stream.getFormat()).setLayout(stream.getLayout());
+        ((XmlStreamFormat)stream.getFormat()).setGroupDepth(maxGroupDepth);
         return stream;
     }
     
@@ -59,7 +64,10 @@ public class XmlParserFactory extends ParserFactorySupport {
             wrapper.setNamespaceAware(config.isXmlNamespaceAware());
             wrapper.setPrefix(config.getXmlPrefix());
             wrapper.setGroup(true);
+            wrapper.setDepth(groupDepth++);
             pushParser(wrapper);
+            
+            maxGroupDepth = Math.max(groupDepth, maxGroupDepth);
         }
         super.initializeGroup(config);
     }
@@ -69,11 +77,14 @@ public class XmlParserFactory extends ParserFactorySupport {
         super.finalizeGroup(config);
         if (!XmlTypeConstants.XML_TYPE_NONE.equals(config.getXmlType())) {
             popParser();
+            --groupDepth;
         }
     }
 
     @Override
-    protected void initializeRecord(RecordConfig config) {
+    protected void initializeRecordMain(RecordConfig config, Bean bean) {
+        // a record is always mapped to an XML element
+        
         XmlSelectorWrapper wrapper = new XmlSelectorWrapper();
         wrapper.setName(config.getName());
         wrapper.setLocalName(config.getXmlName());
@@ -81,14 +92,15 @@ public class XmlParserFactory extends ParserFactorySupport {
         wrapper.setNamespaceAware(config.isXmlNamespaceAware());
         wrapper.setPrefix(config.getXmlPrefix());
         wrapper.setGroup(false);
+        wrapper.setDepth(groupDepth);
         pushParser(wrapper);
         
-        super.initializeRecord(config);
+        super.initializeRecordMain(config, bean);
     }
     
     @Override
-    protected void finalizeRecord(RecordConfig config) throws BeanIOConfigurationException {
-        super.finalizeRecord(config);
+    protected void finalizeRecordMain(RecordConfig config) throws BeanIOConfigurationException {
+        super.finalizeRecordMain(config);
         popParser();
     }
     
@@ -96,22 +108,6 @@ public class XmlParserFactory extends ParserFactorySupport {
     protected void finalizeRecord(RecordConfig config, Record record) {
         super.finalizeRecord(config, record);
         record.setExistencePredetermined(true);
-    }
-    
-    @Override
-    protected void initializeSegmentMain(SegmentConfig config, Bean bean) {
-        if (isWrappingRequired(config)) {
-            XmlWrapper wrapper = new XmlWrapper();
-            wrapper.setLocalName(config.getXmlName());
-            wrapper.setNamespace(config.getXmlNamespace());
-            wrapper.setNamespaceAware(config.isXmlNamespaceAware());
-            wrapper.setPrefix(config.getXmlPrefix());
-            wrapper.setNillable(config.isNillable());
-            wrapper.setRepeating(config.isRepeating());
-            wrapper.setLazy(config.getMinOccurs() == 0);
-            pushParser(wrapper);
-        }
-        super.initializeSegmentMain(config, bean);
     }
     
     @Override
@@ -129,6 +125,22 @@ public class XmlParserFactory extends ParserFactorySupport {
             return true;
         }
         return false;
+    }
+    
+    @Override
+    protected void initializeSegmentMain(SegmentConfig config, Bean bean) {
+        if (isWrappingRequired(config)) {
+            XmlWrapper wrapper = new XmlWrapper();
+            wrapper.setLocalName(config.getXmlName());
+            wrapper.setNamespace(config.getXmlNamespace());
+            wrapper.setNamespaceAware(config.isXmlNamespaceAware());
+            wrapper.setPrefix(config.getXmlPrefix());
+            wrapper.setNillable(config.isNillable());
+            wrapper.setRepeating(config.isRepeating());
+            wrapper.setLazy(config.getMinOccurs() == 0);
+            pushParser(wrapper);
+        }
+        super.initializeSegmentMain(config, bean);
     }
     
     @Override

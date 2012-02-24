@@ -298,6 +298,43 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
 
     @Override
     protected void initializeRecord(RecordConfig config) throws BeanIOConfigurationException {
+        // determine and validate the bean class
+        Bean bean = null;
+        Class<?> beanClass = getBeanClass(config);
+        if (beanClass != null) {
+            bean = new Bean();
+            bean.setName(config.getName());
+            bean.setType(beanClass);
+            bean.setRequired(propertyStack.isEmpty());
+        }
+        
+        // handle records bound to a parent bean object assigned to a group
+        if (config.isBound()) {
+            // handle repeating records mapped to a collection
+            if (config.isRepeating()) {
+                initializeRecordIteration(config, bean);
+                reflectPropertyType(config, bean);
+            }
+            // or a record mapped to a property of its parent
+            else if (bean != null) {
+                reflectPropertyType(config, bean);
+            }
+        }
+        
+        initializeRecordMain(config, bean);
+    }
+    
+    protected void initializeRecordIteration(RecordConfig config, Bean bean) {
+        // wrap the segment in an iteration
+        Component collection = createSelectorIteration(config, bean);
+
+        pushParser(collection);
+        if (bean != null) {
+            pushProperty(collection);
+        }
+    }
+    
+    protected void initializeRecordMain(RecordConfig config, Bean bean) {
         Record record = new Record();
         record.setName(config.getName());
         record.setMinOccurs(config.getMinOccurs());
@@ -308,36 +345,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         record.setFormat(createRecordFormat(config));
         record.setOrder(config.getOrder());
         record.setIdentifier(config.isIdentifier());
-        
-        // determine and validate the bean class
-        Bean bean = null;
-        Class<?> beanClass = getBeanClass(config);
-        if (beanClass != null) {
-            bean = new Bean();
-            bean.setName(config.getName());
-            bean.setType(beanClass);
-            bean.setRequired(propertyStack.isEmpty());
-            
-            record.setProperty(bean);
-        }
-        
-        // TODO handle record collections for xml
-        if (config.isBound()) {
-            if (config.isRepeating()) {
-                // wrap the segment in an iteration
-                Component collection = createSelectorIteration(config, bean);
-    
-                pushParser(collection);
-                if (bean != null) {
-                    pushProperty(collection);
-                }
-                
-                reflectPropertyType(config, bean);
-            }
-            else if (bean != null) {
-                reflectPropertyType(config, bean);
-            }
-        }
+        record.setProperty(bean);
         
         pushParser(record);
         if (bean != null) {
@@ -351,25 +359,30 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      */
     @Override
     protected void finalizeRecord(RecordConfig config) throws BeanIOConfigurationException {
+        finalizeRecordMain(config);
         
+        if (config.isBound() && config.isRepeating()) {
+            finalizeRecordIteration(config);
+        }
+    }
+    
+    protected void finalizeRecordMain(RecordConfig config) {
         // pop the record bean from the property stack
         if (config.getType() != null) {
             popProperty();
         }
         // pop the record from the parser stack
         finalizeRecord(config, (Record)popParser());
-        
-        if (config.isBound()) {
-            if (config.isRepeating()) {
-                // pop the collection from the property stack
-                if (config.getType() != null) {
-                    popProperty();
-                }
-                
-                // pop the iteration from the parser stack
-                popParser();
-            }
+    }
+    
+    protected void finalizeRecordIteration(RecordConfig config) {
+        // pop the collection from the property stack
+        if (config.getType() != null) {
+            popProperty();
         }
+        
+        // pop the iteration from the parser stack
+        popParser();
     }
     
     /**

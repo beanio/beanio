@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Kevin Seim
+ * Copyright 2010-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,14 @@ public class BeanReaderIOException extends BeanReaderException {
 
     private static final long serialVersionUID = 2L;
 
+    /**
+     * Constructs a new <tt>BeanReaderIOException</tt>.
+     * @param message the error message
+     */
+    public BeanReaderIOException(String message) {
+        this(message, null);
+    }
+    
     /**
      * Constructs a new <tt>BeanReaderIOException</tt>.
      * @param message the error message

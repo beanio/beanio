@@ -40,7 +40,6 @@ public class Field extends ParserComponent implements Property {
     private boolean bound;
     private boolean identifier;
     
-    
     /* validation settings */
     private boolean trim;
     private boolean required;
@@ -66,7 +65,7 @@ public class Field extends ParserComponent implements Property {
     public Field() {
         super(0);
     }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Parser#hasContent()
@@ -89,8 +88,6 @@ public class Field extends ParserComponent implements Property {
     public int type() {
         return Property.SIMPLE;
     }
-    
-
     
     /*
      * (non-Javadoc)
@@ -546,8 +543,4 @@ public class Field extends ParserComponent implements Property {
     public void setBound(boolean property) {
         this.bound = property;
     }
-
-
-
-
 }

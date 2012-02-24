@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Kevin Seim
+ * Copyright 2011-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,35 @@
 package org.beanio.internal.parser.format.xml;
 
 import java.io.IOException;
-import java.util.*;
 
 import org.beanio.internal.parser.MarshallingContext;
 import org.beanio.internal.util.DomUtil;
 import org.beanio.stream.xml.XmlWriter;
 import org.w3c.dom.*;
 
+/**
+ * A {@link MarshallingContext} for XML records.
+ * 
+ * @author Kevin Seim
+ * @since 2.0
+ */
 public class XmlMarshallingContext extends MarshallingContext {
 
     protected Document document;
     protected Node parent;
     
-    private List<XmlNode> groupStack = new ArrayList<XmlNode>();
+    private XmlNode[] groupStack;
+    private int groupStackCount = 0;
+    
     private int ungroup = 0;
+    
+    /**
+     * Constructs a new <tt>XmlMarshallingContext</tt>.
+     * @param groupDepth the maximum depth of a group in the parser tree
+     */
+    public XmlMarshallingContext(int groupDepth) {
+        groupStack = new XmlNode[groupDepth];
+    }
     
     @Override
     public void clear() {
@@ -38,9 +53,10 @@ public class XmlMarshallingContext extends MarshallingContext {
     
     @Override
     public Object getRecordObject() {
-        return document;
+        return getDocument();
     }
     
+    @Override
     public void writeRecord() throws IOException {
         super.clear();
         
@@ -48,34 +64,56 @@ public class XmlMarshallingContext extends MarshallingContext {
             getRecordWriter().write(null);
         }
         ungroup = 0;
+        
         super.writeRecord();
     }
     
-    public void removeGroup(XmlNode element) {
-        ++ungroup;
-    }
-    
-    public void addGroup(XmlNode element) {
-        groupStack.add(element);
-    }
-
+    /**
+     * Returns the document being marshalled.
+     * @return the {@link Document} being marshalled
+     */
     public Document getDocument() {
         return document;
     }
 
-    public void setDocument(Document document) {
+    /**
+     * Sets the document being marshalled.
+     * @param document the {@link Document} being marshalled
+     */
+    private void setDocument(Document document) {
         this.document = document;
         this.parent = document;
     }
 
+    /**
+     * Adds a group to be marshalled when the next record is written to
+     * the output stream.
+     * @param element the group element to add
+     */
+    public void openGroup(XmlNode node) {
+        groupStack[groupStackCount++] = node;
+    }
+    
+    /**
+     * Indicates a group element should be closed before marshalling the next record.
+     * @param element the {@link XmlNode} to close
+     */
+    public void closeGroup(XmlNode node) {
+        ++ungroup;
+    }
+
+    /**
+     * Returns the parent node to append in the document being marshalled.
+     * @return the parent {@link Node}
+     */
     public Node getParent() {
         if (parent == null) {
             this.document = DomUtil.newDocument();
             this.parent = document;
             
-            if (!groupStack.isEmpty()) {
-                for (int i=groupStack.size()-1; i>=0; i--) {
-                    XmlNode xml = groupStack.get(i);
+            if (groupStackCount > 0) {
+                for (int i=groupStackCount-1; i>=0; i--) {
+                    XmlNode xml = groupStack[i];
                     
                     Node node = parent.appendChild(document.createElementNS(
                         xml.getNamespace(), xml.getLocalName()));
@@ -87,12 +125,16 @@ public class XmlMarshallingContext extends MarshallingContext {
                     
                     this.parent = node;
                 }
-                groupStack.clear();
+                groupStackCount = 0;
             }
         }
         return parent;
     }
 
+    /**
+     * Sets the parent node to append in the document being marshalled.
+     * @param parent the parent {@link Node}
+     */
     public void setParent(Node parent) {
         this.parent = parent;
     }

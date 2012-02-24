@@ -33,7 +33,8 @@ public interface BeanReader {
 	 * Reads a single bean from the input stream.  If the end of the stream is
 	 * reached, null is returned.
 	 * @return the Java bean read, or null if the end of the stream was reached
-	 * @throws BeanReaderIOException if an IOException or other fatal error is caught
+	 * @throws BeanReaderIOException if the underlying input stream throws an
+	 *   {@link IOException} or this reader was closed
 	 * @throws MalformedRecordException if the underlying input stream is malformed
 	 *   and the record could not be accurately read
 	 * @throws UnidentifiedRecordException if the record type could not be identified
@@ -53,7 +54,8 @@ public interface BeanReader {
 	 *   by calling {@link #read()}
 	 * @return the number of skipped bean objects, which may be less than <tt>count</tt>
 	 *   if the end of the stream was reached
-     * @throws BeanReaderIOException if an IOException or other fatal error is caught
+     * @throws BeanReaderIOException if the underlying input stream throws an
+     *   {@link IOException} or this reader was closed
      * @throws MalformedRecordException if the underlying input stream is malformed
      *   and a record could not be accurately skipped
      * @throws UnidentifiedRecordException if a record could not be identified
@@ -101,7 +103,8 @@ public interface BeanReader {
 	
 	/**
 	 * Closes the underlying input stream.
-	 * @throws BeanReaderIOException if an {@link IOException} is caught closing the stream
+	 * @throws BeanReaderIOException if the underlying input stream throws an
+     *   {@link IOException} or this reader was closed
 	 */
     public void close() throws BeanReaderIOException;
 

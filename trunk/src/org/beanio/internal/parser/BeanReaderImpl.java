@@ -53,6 +53,8 @@ public class BeanReaderImpl implements BeanReader {
      * @see org.beanio.BeanReader#read()
      */
     public Object read() {
+        ensureOpen();
+        
         if (layout == null) {
             return null;
         }
@@ -71,6 +73,13 @@ public class BeanReaderImpl implements BeanReader {
                 // if an exception is thrown when parsing a dependent record,
                 // there is little chance of recovery
                 handleError(ex);
+                continue;
+            }
+            catch (BeanIOException ex) {
+                // wrap the generic exception in a BeanReaderException
+                BeanReaderException e = (BeanReaderException) new BeanReaderException(
+                    "Fatal BeanIOException caught", ex).fillInStackTrace();
+                handleError(e);
                 continue;
             }
         }
@@ -167,6 +176,9 @@ public class BeanReaderImpl implements BeanReader {
      */
     public int skip(int count) throws BeanReaderIOException, MalformedRecordException,
         UnidentifiedRecordException, UnexpectedRecordException {
+        
+        ensureOpen();
+        
         if (layout == null) {
             return 0;
         }
@@ -198,6 +210,8 @@ public class BeanReaderImpl implements BeanReader {
      * @see org.beanio.impl.AbstractBeanReader#close()
      */
     public void close() throws BeanReaderIOException {
+        ensureOpen();
+        
         try {
             context.getRecordReader().close();
         }
@@ -250,6 +264,15 @@ public class BeanReaderImpl implements BeanReader {
      */
     public void setErrorHandler(BeanReaderErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
+    }
+    
+    /*
+     * Throws an exception if the stream has already been closed.
+     */
+    private void ensureOpen() {
+        if (context == null) {
+            throw new BeanReaderIOException("Stream closed");
+        }
     }
 
     private void handleError(BeanReaderException ex) {

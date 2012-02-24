@@ -115,7 +115,6 @@ public class Group extends ParserComponent implements Selector {
         
         try {
             Selector child = (Selector) lastMatched;
-            
             child.unmarshal(context);
             
             // read the next record
@@ -205,8 +204,7 @@ public class Group extends ParserComponent implements Selector {
             }
         }
         catch (UnsatisfiedNodeException ex) {
-            // TODO create a proper exception class for this...
-            throw new BeanWriterException("Expected record type '" + 
+            throw new BeanWriterException("Bean identification failed.  Expected record type '" + 
                 ex.getNode().getName() + "'", ex);
         }
     }
@@ -250,7 +248,6 @@ public class Group extends ParserComponent implements Selector {
      * @throws UnsatisfiedNodeException
      */
     private Selector matchCurrent(ParsingContext context) throws UnsatisfiedNodeException {
-        
         Selector match = null;
         Selector unsatisfied = null;
         

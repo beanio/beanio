@@ -18,10 +18,9 @@ package org.beanio;
 import java.util.*;
 
 /**
- * TODO check javadoc
- * When a <tt>BeanReaderException</tt> is thrown, all errors and the current state of the 
- * <tt>BeanReader</tt> can be accessed from the <tt>BeanReaderContext</tt>.  Depending on the type
- * of exception, some information may be missing.
+ * Provides information about a record read from a stream using a {@link BeanReader}.  
+ * Depending on the current state of the <tt>BeanReader</tt>, some information may not
+ * be available.
  * 
  * @author Kevin Seim
  * @since 2.0
@@ -29,12 +28,20 @@ import java.util.*;
 public interface RecordContext {
 
     /**
-     * Returns the line number of the failed record, or 0 if the stream does not use
+     * Returns the line number of this record, or 0 if the stream does not use
      * new lines to terminate records.
-     * @return the line number of the failed record
+     * @return the line number of this record
      */
     public int getLineNumber();
 
+    /**
+     * Returns the line number of this record, or 0 if the stream does not use
+     * new lines to terminate records.
+     * @return the line number of this record
+     * @deprecated use {@link #getLineNumber()}
+     */
+    public int getRecordLineNumber();
+    
     /**
      * Returns the raw text of the record being parsed, or <tt>null</tt> if not supported
      * by the input stream format (such as XML).
@@ -44,7 +51,7 @@ public interface RecordContext {
 
     /**
      * Returns the name of the record from the stream configuration.  The record name
-     * may be null if was not determined before the exception occurred.
+     * may be null if was not determined before an exception was thrown.
      * @return the name of the record from the stream configuration
      */
     public String getRecordName();
@@ -56,8 +63,8 @@ public interface RecordContext {
     public boolean hasErrors();
     
     /**
-     * Returns <tt>true</tt> if there are one or more record level errors.
-     * @return <tt>true</tt> if there are one or more record level errors
+     * Returns whether there are one or more record level errors.
+     * @return true if there are one or more record level error, false otherwise
      */
     public boolean hasRecordErrors();
 
@@ -72,47 +79,55 @@ public interface RecordContext {
      * under the following circumstances:
      * <ul>
      * <li>A record level exception was thrown before a field was parsed</li>
-     * <li>The field name is invalid</li>
-     * <li>The field did not exist in the record</li>
+     * <li><tt>fieldName</tt> was not declared in the mapping file</li>
+     * <li>The field was not present in the record</li>
      * </ul>
-     * <p>If the field is a collection, this method returns the field text for
+     * <p>If the field repeats in the stream, this method returns the field text for
      * the first occurrence of the field.</p>
-     * @param fieldName the name of the field to get the text for
+     * @param fieldName the name of the field
      * @return the unparsed field text
      */
     public String getFieldText(String fieldName);
 
     /**
+     * Returns the number of times the given field was present in the stream.
+     * @param fieldName the name of the field
+     * @return the number of times the field was present in the stream
+     */
+    public int getFieldCount(String fieldName);
+    
+    /**
      * Returns the unparsed text of a field from the record.  Field text may be null
      * under the following circumstances:
      * <ul>
      * <li>A record level exception was thrown before a field was parsed</li>
-     * <li>The field name is invalid</li>
-     * <li>The field did not exist in the record</li>
+     * <li><tt>fieldName</tt> was not declared in the mapping file</li>
+     * <li>The field was not present in the record</li>
      * </ul>
      * @param fieldName the name of the field to get the text for
-     * @param index the index of the field, beginning at 0, for collection type
-     *   fields
+     * @param index the index of the field (beginning at 0), for repeating fields
      * @return the unparsed field text
      */
     public String getFieldText(String fieldName, int index);
     
     /**
-     * Returns <tt>true</tt> if there are one or more field level errors.
-     * @return <tt>true</tt> if there are one or more field level errors.
+     * Returns whether there are one or more field level errors.
+     * @return <tt>true</tt> if there are one or more field level errors, false otherwise
      */
     public boolean hasFieldErrors();
 
     /**
-     * Returns a Map of all field errors, where the Map key is the field name.
-     * @return a Map of all field errors
+     * Returns a {@link Map} of all field errors.  The name of the field is used for the
+     * <tt>Map</tt> key, and the value is a {@link Collection} of field error messages.
+     * @return a {@link Map} of all field errors
      */
     public Map<String, Collection<String>> getFieldErrors();
 
     /**
      * Returns the field errors for a given field.
      * @param fieldName the name of the field
-     * @return the collection of field errors for the named field
+     * @return the {@link Collection} of field errors, or null if no errors were
+     *   reported for the field
      */
     public Collection<String> getFieldErrors(String fieldName);
 

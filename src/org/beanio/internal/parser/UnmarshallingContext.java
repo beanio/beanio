@@ -81,7 +81,7 @@ public abstract class UnmarshallingContext extends ParsingContext {
      * @param componentName the record or group name to be unmarshalled
      * @param isRecordGroup true if the component is a group, false if it is a record
      */
-    public final void prepare(String componentName, boolean isRecordGroup) {
+    public void prepare(String componentName, boolean isRecordGroup) {
         // clear any context state information before parsing the next record
         if (dirty) {
             // create a new context
@@ -203,7 +203,7 @@ public abstract class UnmarshallingContext extends ParsingContext {
      * @param text the raw field text
      */
     public final void setFieldText(String fieldName, String text) {
-        recordContext.setFieldText(fieldName, getAdjustedFieldIndex(), text);
+        recordContext.setFieldText(fieldName, text, isRepeating());
     }
     
     /**
@@ -233,7 +233,7 @@ public abstract class UnmarshallingContext extends ParsingContext {
      * @return the formatted field error message 
      */
     public String addFieldError(String fieldName, String fieldText, String rule, Object... params) {
-        int lineNumber = recordContext.getRecordLineNumber();
+        int lineNumber = recordContext.getLineNumber();
         String recordName = recordContext.getRecordName();
         String recordLabel = messageFactory.getRecordLabel(recordName);
         String fieldLabel = messageFactory.getFieldLabel(recordName, fieldName);
@@ -281,7 +281,7 @@ public abstract class UnmarshallingContext extends ParsingContext {
      * @return the formatted record error message 
      */
     protected String addRecordError(ErrorContext errorContext, String rule, Object... params) {
-        int lineNumber = errorContext.getRecordLineNumber();
+        int lineNumber = errorContext.getLineNumber();
         String recordName = errorContext.getRecordName();
         
         // find the record label
@@ -352,7 +352,7 @@ public abstract class UnmarshallingContext extends ParsingContext {
         ec.setRecordName(recordName);
         ec.setLineNumber(getLineNumber());
         ec.setRecordText(recordReader.getRecordText());
-        addRecordError(ec, recordName, rule, params);
+        addRecordError(ec, rule, params);
         return ec;
     }
     
@@ -368,9 +368,6 @@ public abstract class UnmarshallingContext extends ParsingContext {
         // reset the processed flag
         processed = false;
         
-        // clear the last record
-        setRecordValue(null);
-
         // read the next record
         Object recordValue;
         try {

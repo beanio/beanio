@@ -31,7 +31,7 @@ public class ErrorContext implements RecordContext, Cloneable {
     private String recordName;
     private ArrayList<String> recordErrors;
     private HashMap<String, String> fieldTextMap;
-    private HashMap<String, List<String>> collectionFieldTextMap;
+    private HashMap<String, Counter> fieldCountMap;
     private HashMap<String, Collection<String>> fieldErrorMap;
     
     /**
@@ -49,8 +49,8 @@ public class ErrorContext implements RecordContext, Cloneable {
         
         if (fieldTextMap != null)
             fieldTextMap.clear();
-        if (collectionFieldTextMap != null)
-            collectionFieldTextMap.clear();
+        if (fieldCountMap != null)
+            fieldCountMap.clear();
         if (fieldErrorMap != null)
             fieldErrorMap = null;
         if (recordErrors != null)
@@ -60,15 +60,15 @@ public class ErrorContext implements RecordContext, Cloneable {
     /**
      * Returns a deep copy of this context.
      * @return the copy
-     */
+     *
     @SuppressWarnings("unchecked")
     public ErrorContext copy() {
         try {
             ErrorContext ec = (ErrorContext) clone();
-            if (fieldTextMap != null)
-                ec.fieldTextMap = (HashMap<String, String>) fieldTextMap.clone();
-            if (collectionFieldTextMap != null)
-                ec.collectionFieldTextMap = (HashMap<String, List<String>>) collectionFieldTextMap.clone();
+            if (fieldMap != null)
+                ec.fieldMap = (HashMap<String, Object>) fieldMap.clone();
+            //if (collectionFieldTextMap != null)
+            //    ec.collectionFieldTextMap = (HashMap<String, List<String>>) collectionFieldTextMap.clone();
             if (fieldErrorMap != null)
                 ec.fieldErrorMap = (HashMap<String, Collection<String>>) fieldErrorMap.clone();
             if (recordErrors != null)
@@ -79,6 +79,7 @@ public class ErrorContext implements RecordContext, Cloneable {
             throw new IllegalStateException(ex);
         }
     }
+    */
     
     /**
      * Returns the raw text of the last record read from the record reader.
@@ -165,41 +166,38 @@ public class ErrorContext implements RecordContext, Cloneable {
      * Sets the raw field text for a named field.
      * @param fieldName the name of the field
      * @param text the raw field text
+     * @param whether the field repeats in the stream
      */
-    public void setFieldText(String fieldName, int fieldIndex, String text) {
+    public void setFieldText(String fieldName, String text, boolean repeating) {
         if (fieldTextMap == null) {
             fieldTextMap = new HashMap<String,String>();
         }
         
-        if (fieldIndex == 0) {
-            if (fieldTextMap == null) {
-                fieldTextMap = new HashMap<String,String>();
-            }
-            fieldTextMap.put(fieldName, text);
-        }
-        else {
-            if (collectionFieldTextMap == null) {
-                collectionFieldTextMap = new HashMap<String,List<String>>();
+        if (repeating) {
+            // update the field count
+            if (fieldCountMap == null) {
+                fieldCountMap = new HashMap<String,Counter>();
             }
             
-            List<String> list = collectionFieldTextMap.get(fieldName);
-            if (list == null) {
-                list = new ArrayList<String>();
-                collectionFieldTextMap.put(fieldName, list);
+            Counter counter = fieldCountMap.get(fieldName);
+            if (counter == null) {
+                counter = new Counter();
+                fieldCountMap.put(fieldName, counter);
             }
-            int index = fieldIndex - 1;
-            if (index < list.size()) {
-                list.set(fieldIndex - 1, text);
-            }
-            else {
-                while (index > list.size()) {
-                    list.add(null);
-                }
-                list.add(text);
-            }
+            
+            fieldTextMap.put(counter.getCount() + ":" + fieldName, text);
+            
+            counter.incrementCount();
+        }
+        else {
+            fieldTextMap.put(fieldName, text);
         }
     }
-    
+        
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.RecordContext#hasErrors()
+     */
     public boolean hasErrors() {
         return hasRecordErrors() || hasFieldErrors();
     }
@@ -224,13 +222,29 @@ public class ErrorContext implements RecordContext, Cloneable {
 
     /*
      * (non-Javadoc)
+     * @see org.beanio.RecordContext#getFieldCount(java.lang.String)
+     */
+    public int getFieldCount(String fieldName) {
+        if (fieldTextMap == null) {
+            return 0;
+        }
+        
+        if (fieldCountMap != null) {
+            Counter counter = fieldCountMap.get(fieldName);
+            if (counter != null) {
+                return counter.getCount();
+            }
+        }
+
+        return fieldTextMap.containsKey(fieldName) ? 1 : 0;
+    }
+    
+    /*
+     * (non-Javadoc)
      * @see org.beanio.BeanReaderContext#getFieldText(java.lang.String)
      */
     public String getFieldText(String fieldName) {
-        if (fieldTextMap == null)
-            return null;
-        else
-            return fieldTextMap.get(fieldName);
+        return getFieldText(fieldName, 0);
     }
     
     /*
@@ -245,18 +259,7 @@ public class ErrorContext implements RecordContext, Cloneable {
             return fieldTextMap.get(fieldName);
         }
         else {
-            List<String> list = collectionFieldTextMap.get(fieldName);
-            if (list == null) {
-                return null;
-            }
-            
-            index = index - 1;
-            if (index < list.size()) {
-                return list.get(index);
-            }
-            else {
-                return null;
-            }
+            return fieldTextMap.get(index + ":" + fieldName);
         }
     }
 
@@ -290,7 +293,18 @@ public class ErrorContext implements RecordContext, Cloneable {
             return fieldErrorMap.get(fieldName);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.RecordContext#getLineNumber()
+     */
     public int getLineNumber() {
         return getRecordLineNumber();
+    }
+    
+    private static class Counter {
+        private int count = 0;
+        public Counter() { }
+        public int getCount() { return count; }
+        public void incrementCount() { ++count; }
     }
 }

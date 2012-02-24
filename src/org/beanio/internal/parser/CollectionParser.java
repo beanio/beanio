@@ -43,7 +43,7 @@ public class CollectionParser extends DelegatingParser implements Property, Iter
     private Object value = null;    
     // the current iteration index
     private int index = 0;
-
+    
     /**
      * Constructs a new <tt>CollectionParser</tt>.
      */
@@ -339,7 +339,7 @@ public class CollectionParser extends DelegatingParser implements Property, Iter
     public int getIterationIndex() {
         return index;
     }
-    
+
     @Override
     public boolean hasContent() {
         Collection<Object> collection = getCollection();

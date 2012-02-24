@@ -38,7 +38,8 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
     
     /* marshalling flags */
     private boolean group;
-
+    private int depth;
+    
     /* xml node attributes */
     private String localName;
     private String prefix;
@@ -90,8 +91,8 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
         XmlMarshallingContext ctx = (XmlMarshallingContext) context;
         
         Node parent = ctx.getParent();
-        Node node = parent.appendChild(ctx.getDocument().createElementNS(
-            getNamespace(), getLocalName()));
+        Node node = parent.appendChild(
+            ctx.getDocument().createElementNS(getNamespace(), getLocalName()));
         node.setPrefix(getPrefix());
         if (group) {
             node.setUserData(XmlWriter.IS_GROUP_ELEMENT, Boolean.TRUE, null);
@@ -102,7 +103,15 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
         }
         ctx.setParent(node);
         
-        return getDelegate().marshal(context);
+        boolean b = getDelegate().marshal(context);
+        
+        if (group) {
+            ((XmlMarshallingContext)context).closeGroup(this);
+            written = false;
+        }
+        ctx.setParent(null);
+        
+        return b;
     }
 
     /*
@@ -110,7 +119,6 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
      * @see org.beanio.internal.parser.Parser#unmarshal(org.beanio.internal.parser.UnmarshallingContext)
      */
     public boolean unmarshal(UnmarshallingContext context) {
-        // TODO test xml record group unmarshalling
         return getDelegate().unmarshal(context);
     }
     
@@ -133,20 +141,20 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
         if (match == null) {
             if (written) {
                 written = false;
-                ((XmlMarshallingContext)context).removeGroup(this);
+                ((XmlMarshallingContext)context).closeGroup(this);
             }
             return null;
         }
         
         if (group) {
             // if the group count increased, we need to close the current group
-            // element (by calling remove) and add a new one
+            // element (by calling remove) and adding a new one
             if (written && getCount() > initialCount) {
-                ((XmlMarshallingContext)context).removeGroup(this);
+                ((XmlMarshallingContext)context).closeGroup(this);
                 written = false;
             }
             if (!written) {
-                ((XmlMarshallingContext)context).addGroup(this);
+                ((XmlMarshallingContext)context).openGroup(this);
                 written = true;
             }
             return match;
@@ -180,50 +188,45 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
      */
     private Selector match(UnmarshallingContext context, boolean stateful) {
         // validate the next element in the document matches this record
-        XmlUnmarshallingContext xmlRecord = (XmlUnmarshallingContext) context;
-        
-        Element previousParent = xmlRecord.getPosition();
-        org.w3c.dom.Node parent = previousParent;
-        if (parent == null) {
-            parent = xmlRecord.getDocument();
-        }
-        
-        // find this node in the DOM tree, if not found, return null to indicate no match
-        Element matchedDomNode = XmlNodeUtil.findChild(parent, this, 0);
+        XmlUnmarshallingContext ctx = (XmlUnmarshallingContext) context;
+
+        // update the position in the DOM tree (if null the node is matched)
+        Element matchedDomNode = ctx.pushPosition(this, depth, group);
         if (matchedDomNode == null) {
             return null;
         }
         
-        if (stateful) {
-            // get the number of times this node was read from the stream for comparing to our group count
-            Integer n = (Integer) matchedDomNode.getUserData(XmlReader.GROUP_COUNT);
-            /*
-                if the group count is null, it means we expected a group and got a record, therefore no match
-                if (n == null) {
-                    return null;
+        Selector match = null;
+        try {
+            if (stateful) {
+                // get the number of times this node was read from the stream for comparing to our group count
+                Integer n = (Integer) matchedDomNode.getUserData(XmlReader.GROUP_COUNT);
+                /*
+                    if the group count is null, it means we expected a group and got a record, therefore no match
+                    if (n == null) {
+                        return null;
+                    }
+                */
+                if (n != null && n > getCount()) {
+                    if (isMaxOccursReached()) {
+                        return null;
+                    }
+                    setCount(n);
+                    reset();
                 }
-            */
-            if (n != null && n > getCount()) {
-                if (isMaxOccursReached()) {
-                    return null;
-                }
-                setCount(n);
-                reset();
+            }
+            
+            // continue matching now that we've updated the DOM position...
+            match = getDelegate().matchNext(context);
+            
+            return match;
+        }
+        finally {
+            // if there was no match, reset the DOM position
+            if (match == null) {
+                ctx.popPosition();
             }
         }
-        
-        // update the position in the DOM tree
-        xmlRecord.setPosition(matchedDomNode);
-
-        // continue matching now that we've updated the DOM position...
-        Selector match = getDelegate().matchNext(context);
-        
-        // if there was no match, reset the DOM position
-        if (match == null) {
-            xmlRecord.setPosition(previousParent);    
-        }
-        
-        return match;
     }
     
     /*
@@ -522,9 +525,19 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
         return false;
     }
     
+    public int getDepth() {
+        return depth;
+    }
+
+    public void setDepth(int depth) {
+        this.depth = depth;
+    }
+
     @Override
     protected void toParamString(StringBuilder s) {
         super.toParamString(s);
+        s.append(", depth=").append(depth);
+        s.append(", group=").append(group);
         s.append(", element=").append(getLocalName());
         if (isNamespaceAware()) {
             s.append(", xmlns=").append(getNamespace());

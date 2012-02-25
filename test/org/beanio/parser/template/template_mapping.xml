@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<beanio xmlns="http://www.beanio.org/2011/01" 
+<beanio xmlns="http://www.beanio.org/2012/03" 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.beanio.org/2011/01 http://www.beanio.org/2011/01/mapping.xsd">
+  xsi:schemaLocation="http://www.beanio.org/2012/03 http://www.beanio.org/2012/03/mapping.xsd">
 
   <template name="t1">
     <field name="id" type="int" />
@@ -25,7 +25,7 @@
   </stream>
   <stream name="stream2" format="csv">
     <record name="record" class="map">
-      <bean name="bean" template="t2" class="map" />
+      <segment name="bean" template="t2" class="map" />
       <field name="gender" type="char" />
     </record>
   </stream>

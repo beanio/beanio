@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 import java.io.*;
 import java.util.Locale;
 
-import org.beanio.parser.DefaultStreamFactory;
+import org.beanio.internal.DefaultStreamFactory;
 import org.junit.Test;
 
 /**
@@ -33,7 +33,7 @@ import org.junit.Test;
 public class StreamFactoryTest {
     
     @Test
-    public void testLoadMappingFile() {
+    public void testLoadMappingFile() throws Exception {
         StreamFactory factory = StreamFactory.newInstance();
         
         String filename = "test/org/beanio/mapping.xml";
@@ -54,7 +54,7 @@ public class StreamFactoryTest {
         StreamFactory factory = StreamFactory.newInstance();
         
         // assert we get the default instance
-        assertEquals(factory.getClass(), DefaultStreamFactory.class);
+        assertEquals(factory.getClass(), org.beanio.internal.DefaultStreamFactory.class);
         
         // load the mapping file
         factory.load(getClass().getResourceAsStream("mapping.xml"));

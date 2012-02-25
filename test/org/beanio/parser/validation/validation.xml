@@ -1,28 +1,13 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!-- 
-    Copyright 2010 Kevin Seim
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-    
-       http://www.apache.org/licenses/LICENSE-2.0
-    
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
--->
-<beanio xmlns="http://www.beanio.org/2011/01" 
+<beanio xmlns="http://www.beanio.org/2012/03" 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.beanio.org/2011/01 http://www.beanio.org/2011/01/mapping.xsd">
+  xsi:schemaLocation="http://www.beanio.org/2012/03 http://www.beanio.org/2012/03/mapping.xsd">
 
   <typeHandler type="java.util.Date" class="org.beanio.types.DateTypeHandler">
     <property name="pattern" value="MMddyy" />
   </typeHandler>
 
-  <stream name="v1" format="csv" ordered="false" resourceBundle="org.beanio.parser.validation.v1_messages">
+  <stream name="v1" format="csv" resourceBundle="org.beanio.parser.validation.v1_messages">
     <record name="regex" class="map">
       <field name="id" rid="true" literal="regex" />
       <field name="field" regex="\d+"/>

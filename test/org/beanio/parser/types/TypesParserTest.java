@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Kevin Seim
+ * Copyright 2010-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -211,7 +211,7 @@ public class TypesParserTest extends ParserTest {
     public void testNullPrimitive() throws Exception {
         BeanReader in = factory.createReader("t6", new StringReader("\n"));
         assertFieldError(in, 1, "record", "intValue", "", 
-            "Type conversion error: Primitive bean property cannot be null");
+            "Type conversion error: Primitive property values cannot be null");
     }
     
     @Test

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<beanio xmlns="http://www.beanio.org/2011/01" 
+<beanio xmlns="http://www.beanio.org/2012/03" 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.beanio.org/2011/01 http://www.beanio.org/2011/01/mapping.xsd">
+  xsi:schemaLocation="http://www.beanio.org/2012/03 http://www.beanio.org/2012/03/mapping.xsd">
 
   <stream name="stream1" format="csv">
     <record name="header" minOccurs="1" maxOccurs="1" />
@@ -48,12 +48,12 @@
     <record name="record" class="map" minLength="2">
       <field name="field1" />
       <field name="field2" />
-      <bean name="skipbean" class="map">
+      <segment name="skipbean" class="map" minOccurs="0">
         <field name="field3" />
-      </bean>
-      <bean name="bean" class="map">
+      </segment>
+      <segment name="bean" class="map">
         <property name="key" value="value" />
-      </bean>
+      </segment>
     </record>
   </stream>
 

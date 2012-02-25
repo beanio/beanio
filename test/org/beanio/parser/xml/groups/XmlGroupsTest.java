@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Kevin Seim
+ * Copyright 2011-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,6 +70,7 @@ public class XmlGroupsTest extends XmlParserTest {
             person = (Person) in.read();
             assertEquals("George1", person.getFirstName());
             out.write(person);
+            
             person = (Person) in.read();
             assertEquals("George2", person.getFirstName());
             out.write(person);

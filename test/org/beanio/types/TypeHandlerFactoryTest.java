@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNull;
 import java.text.DateFormat;
 import java.util.*;
 
+import org.beanio.internal.util.TypeHandlerFactory;
 import org.junit.Test;
 
 /**
@@ -45,7 +46,7 @@ public class TypeHandlerFactoryTest {
         props.setProperty(ConfigurableTypeHandler.FORMAT_SETTING, "yyyy-MM-dd");
         
         TypeHandlerFactory factory = new TypeHandlerFactory();
-        factory.getTypeHandlerFor(Character.class, props);
+        factory.getTypeHandlerFor(Character.class, null, props);
     }
     
     @Test(expected=NullPointerException.class)
@@ -123,7 +124,7 @@ public class TypeHandlerFactoryTest {
         
         Properties props = new Properties();
         props.setProperty(ConfigurableTypeHandler.FORMAT_SETTING, "yyyy-MM-dd");
-        DateTypeHandler th = (DateTypeHandler) factory.getTypeHandlerFor("date", props);
+        DateTypeHandler th = (DateTypeHandler) factory.getTypeHandlerFor("date", null, props);
         assertEquals("yyyy-MM-dd", th.getPattern());
     }
 }

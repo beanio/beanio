@@ -21,7 +21,7 @@ import java.io.*;
 import java.util.*;
 
 import org.beanio.StreamFactory;
-import org.beanio.util.IOUtil;
+import org.beanio.internal.util.IOUtil;
 import org.junit.*;
 import org.springframework.batch.item.*;
 import org.springframework.context.ApplicationContext;

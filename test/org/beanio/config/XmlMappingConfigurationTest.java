@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Kevin Seim
+ * Copyright 2011-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import static org.junit.Assert.*;
 import java.io.*;
 
 import org.beanio.*;
+import org.beanio.internal.util.IOUtil;
 import org.beanio.parser.ParserTest;
-import org.beanio.util.IOUtil;
 import org.junit.Test;
 
 /**
@@ -87,7 +87,7 @@ public class XmlMappingConfigurationTest extends ParserTest {
     
     @Test
     public void testCollectionAttributeField() throws IOException {
-        loadInvalidMappingFile("collectionAttributeField.xml", "Collection type bean/field must have xmlType 'element'");
+        loadInvalidMappingFile("collectionAttributeField.xml", "Repeating fields must have xmlType 'element'");
     }
 
     @Test

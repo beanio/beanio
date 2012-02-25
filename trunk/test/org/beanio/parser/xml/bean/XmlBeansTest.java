@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Kevin Seim
+ * Copyright 2011-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.beanio.parser.xml.bean;
 import static org.junit.Assert.*;
 
 import java.io.*;
+import java.util.Map;
 
 import org.beanio.*;
 import org.beanio.parser.xml.*;
@@ -104,7 +105,7 @@ public class XmlBeansTest extends XmlParserTest {
     }
     
     /**
-     * Test a nillable child bean.
+     * Test a nillable nested bean.
      */
     @Test
     public void testBeanCollection() throws Exception {
@@ -169,6 +170,42 @@ public class XmlBeansTest extends XmlParserTest {
             
             out.close();
             assertEquals(load("b4_in.xml"), s.toString());
+        }
+        finally {
+            in.close();
+        }
+    }
+    
+    /**
+     * Test a nillable segment that is not bound to a bean object.
+     */
+    @Test
+    @SuppressWarnings("rawtypes")
+    public void testUnboundNillableSegment() throws Exception {
+        BeanReader in = factory.createReader("stream5", new InputStreamReader(
+            getClass().getResourceAsStream("b5_in.xml")));
+        
+        StringWriter s = new StringWriter();
+        BeanWriter out = factory.createWriter("stream5", s);
+        try {
+            Map person = (Map) in.read();
+            assertEquals("John", person.get("firstName"));
+            assertEquals("IL", person.get("state"));
+            assertEquals("60610", person.get("zip"));
+            out.write(person);
+            
+            person = (Map) in.read();
+            assertEquals("Mary", person.get("firstName"));
+            assertFalse(person.containsKey("state"));
+            assertNull(person.get("state"));
+            assertNull(person.get("zip"));
+            out.write(person);
+            
+            assertFieldError(in, 13, "person", "zip", null, "Expected minimum 1 occurrences");
+            
+            out.close();
+            
+            assertEquals(load("b5_out.xml"), s.toString());
         }
         finally {
             in.close();

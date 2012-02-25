@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Kevin Seim
+ * Copyright 2010-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package org.beanio.parser.groups;
 
-import java.io.InputStreamReader;
+import java.io.*;
 
 import org.beanio.*;
 import org.beanio.parser.ParserTest;
@@ -48,7 +48,7 @@ public class GroupParserTest extends ParserTest {
 
     @Test(expected = UnexpectedRecordException.class)
     public void testMissingTrailer() {
-        test("g1", "g1_noTrailer.txt", 1);
+        test("g1", "g1_noTrailer.txt", 2);
     }
 
     @Test(expected = UnexpectedRecordException.class)
@@ -157,8 +157,8 @@ public class GroupParserTest extends ParserTest {
         }
         catch (BeanReaderException ex) {
             if (errorLineNumber > 0) {
-                Assert.assertEquals(errorLineNumber,
-                    ex.getContext().getRecordLineNumber());
+                // assert the line number from the exception matches expected
+                Assert.assertEquals(errorLineNumber, ex.getRecordContext().getLineNumber());
             }
             throw ex;
         }

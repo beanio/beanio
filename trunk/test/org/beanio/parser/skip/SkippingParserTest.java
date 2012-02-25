@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Kevin Seim
+ * Copyright 2011-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ package org.beanio.parser.skip;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.InputStreamReader;
+import java.io.*;
 
 import org.beanio.*;
 import org.beanio.parser.ParserTest;

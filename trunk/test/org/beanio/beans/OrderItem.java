@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Kevin Seim
+ * Copyright 2011-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.beanio.parser.bean;
+package org.beanio.beans;
 
-public class Person {
+public class OrderItem {
+
+    private String name;
+    private int quantity;
     
-    private String firstName;
-    private String lastName;
-    
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setName(String name) {
+        this.name = name;
     }
-    public String getLastName() {
-        return lastName;
+    public int getQuantity() {
+        return quantity;
     }
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }

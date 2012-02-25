@@ -122,8 +122,8 @@ public class RecordCollection extends DelegatingParser implements Selector, Prop
     }
     
     /**
-     * 
-     * @return
+     * Returns the collection value being parsed.
+     * @return the {@link Collection}
      */
     @SuppressWarnings("unchecked")
     protected Collection<Object> getCollection() {

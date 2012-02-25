@@ -21,10 +21,10 @@ import java.util.Collection;
 import org.beanio.BeanIOException;
 
 /**
- * A CollectionParser adds iteration support for a child {@link Segment} or {@link Field},
- * and is optionally bound to a {@link Collection} property value.
+ * A <tt>CollectionParser</tt> provides iteration support for a {@link Segment} or {@link Field},
+ * and is optionally bound to a {@link Collection} type property value.
  * 
- * <p>A CollectionParser may only have a single child parser.
+ * <p>A <tt>CollectionParser</tt> must contain exactly one child {@link ParserComponent}.
  *  
  * @author Kevin Seim
  * @since 2.0
@@ -205,8 +205,8 @@ public class CollectionParser extends DelegatingParser implements Property, Iter
     }
     
     /**
-     * 
-     * @return
+     * Returns the collection value being parsed.
+     * @return the {@link Collection}
      */
     @SuppressWarnings("unchecked")
     protected Collection<Object> getCollection() {

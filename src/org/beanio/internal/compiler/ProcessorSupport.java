@@ -214,8 +214,8 @@ public abstract class ProcessorSupport {
     protected void handleField(FieldConfig field) throws BeanIOConfigurationException { }
     
     /**
-     * Processes a property/constant configuration.
-     * @param field the property/constant configuration to process
+     * Processes a constant configuration.
+     * @param constant the constant configuration to process
      */
     protected void handleConstant(ConstantConfig constant) throws BeanIOConfigurationException { }
     

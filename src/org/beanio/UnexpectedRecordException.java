@@ -16,9 +16,10 @@
 package org.beanio;
 
 /**
- * An <tt>UnexpectedRecordException</tt> is thrown when the record type of
- * last record read from the underlying input stream is out of order as
- * defined by the stream configuration.
+ * Exception thrown when the record type of last record read by a {@link BeanReader} 
+ * is out of order based on the expected order defined by the stream's mapping file.
+ * After this exception is thrown, further reads from the stream will likely result in
+ * further exceptions.
  * 
  * @author Kevin Seim
  * @since 1.0

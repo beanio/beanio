@@ -162,7 +162,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
 
     /**
      * Removes the last component added to the property stack.
-     * @param the removed component
+     * @return the removed component
      */
     protected Property popProperty() {
         Property last = (Property) propertyStack.removeLast();
@@ -702,10 +702,10 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     }
     
     /**
-     * 
-     * @param config
-     * @param property
-     * @return
+     * Creates an iteration for a repeating record.
+     * @param config the record configuration
+     * @param property the property component
+     * @return the created {@link RecordCollection}
      * @throws BeanIOConfigurationException
      */
     protected RecordCollection createSelectorIteration(PropertyConfig config, Property property) 

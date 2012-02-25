@@ -18,7 +18,7 @@ package org.beanio;
 import java.io.IOException;
 
 /**
- * A <tt>BeanReaderIOException</tt> is thrown only when a {@link BeanReader}'s underlying
+ * Exception thrown when a {@link BeanReader}'s underlying
  * input stream throws an {@link IOException}.
  * 
  * @author Kevin Seim

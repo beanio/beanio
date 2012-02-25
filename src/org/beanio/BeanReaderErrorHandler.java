@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Kevin Seim
+ * Copyright 2010-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,9 @@
 package org.beanio;
 
 /**
- * Optional bean reader error handler callback.  When set on a <tt>BeanReader</tt>, the
- * bean reader will delegate all exception handling to this class.  When an error handler
- * is not set on a reader, the bean reader will simply throw the exception from its 
- * <tt>read()</tt> method.
+ * A callback interface for handling {@link BeanReader} exceptions.  When set on a <tt>BeanReader</tt>,
+ * the <tt>BeanReader</tt> will delegate all exception handling to this class.  When an error handler
+ * is not set on a reader, the <tt>BeanReader</tt>'s <tt>read()</tt> will simply throw the exception.
  *  
  * @author Kevin Seim
  * @since 1.0

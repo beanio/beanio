@@ -54,8 +54,9 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
     }
     
     /**
-     * 
-     * @return
+     * Creates a DOM made up of all <tt>XmlSelectorWrapper</tt> descendants that wrap
+     * a group or record.
+     * @return the created {@link Document}
      */
     public Document createBaseDocument() {
         Document document = DomUtil.newDocument();

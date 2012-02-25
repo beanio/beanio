@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.beanio.*;
-import org.beanio.internal.compiler.MappingCompiler;
+import org.beanio.internal.compiler.StreamCompiler;
 import org.beanio.internal.parser.Stream;
 
 /**
@@ -33,7 +33,7 @@ import org.beanio.internal.parser.Stream;
  */
 public class DefaultStreamFactory extends StreamFactory {
 
-    private MappingCompiler mappingFactory;
+    private StreamCompiler compiler;
     private Map<String, Stream> contextMap = new ConcurrentHashMap<String, Stream>();
 
     /**
@@ -44,7 +44,7 @@ public class DefaultStreamFactory extends StreamFactory {
     @Override
     protected void init() {
         super.init();
-        this.mappingFactory = new MappingCompiler(getClassLoader());
+        this.compiler = new StreamCompiler(getClassLoader());
     }
 
     /*
@@ -52,7 +52,7 @@ public class DefaultStreamFactory extends StreamFactory {
      * @see org.beanio.StreamManager#configure(java.io.InputStream)
      */
     public void load(InputStream in) throws IOException, BeanIOConfigurationException {
-        Collection<Stream> streams = mappingFactory.loadMapping(in);
+        Collection<Stream> streams = compiler.loadMapping(in);
         for (Stream stream : streams) {
             addStream(stream);
         }
@@ -95,7 +95,7 @@ public class DefaultStreamFactory extends StreamFactory {
     /**
      * Returns the named stream.
      * @param name the name of the stream
-     * @return the stream context
+     * @return the {@link Stream}
      * @throws IllegalArgumentException if there is no stream configured for the given name
      */
     protected Stream getStream(String name) throws IllegalArgumentException {
@@ -107,29 +107,29 @@ public class DefaultStreamFactory extends StreamFactory {
     }
 
     /**
-     * Adds a stream context to this manager.
-     * @param context the stream context to add
+     * Adds a stream to this manager.
+     * @param stream the {@link Stream} to add
      */
-    public void addStream(Stream context) {
-        contextMap.put(context.getName(), context);
+    public void addStream(Stream stream) {
+        contextMap.put(stream.getName(), stream);
     }
 
     /**
      * Removes the named stream from this manager.
      * @param name the name of the stream to remove
-     * @return the removed <tt>StreamDefinition</tt>, or <tt>null</tt> if
-     *   the there was no stream context for the given name
+     * @return the removed {@link Stream}, or <tt>null</tt> if
+     *   the there was no stream for the given name
      */
     public Stream removeStream(String name) {
         return contextMap.remove(name);
     }
 
     /**
-     * Sets the configuration factory to use to load stream definitions.
-     * @param mappingFactory the configuration factory
+     * Sets the mapping compiler to use for compiling streams.
+     * @param compiler the {@link StreamCompiler}
      */
-    public void setMappingFactory(MappingCompiler configurationFactory) {
-        this.mappingFactory = configurationFactory;
+    public void setCompiler(StreamCompiler compiler) {
+        this.compiler = compiler;
     }
 
     @Override

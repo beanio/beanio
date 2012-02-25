@@ -18,9 +18,8 @@ package org.beanio;
 /**
  * Exception thrown by a {@link BeanReader}.
  * 
- * <p>In most cases, a subclass of this exception is thrown when an error occurs
- * while reading from a <tt>BeanReader</tt>.  In a few rare fatal cases, this exception
- * may be thrown directly.
+ * <p>In most cases, a subclass of this exception is thrown.  In a few (but rare) fatal cases, 
+ * this exception may be thrown directly.
  * 
  * @author Kevin Seim
  * @since 1.0
@@ -85,7 +84,7 @@ public class BeanReaderException extends BeanIOException {
     }
 
     /**
-     * Returns the record context for a given record index.
+     * Returns the record context for a given record index.  The first record uses index 0.
      * @param index the record index
      * @return the {@link RecordContext}
      * @throws IndexOutOfBoundsException if there is no record for the given index

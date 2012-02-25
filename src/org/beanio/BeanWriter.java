@@ -18,7 +18,7 @@ package org.beanio;
 import java.io.IOException;
 
 /**
- * Interface for writers capable of writing bean objects to an output stream.
+ * Interface for marshalling bean objects to an output stream.
  * 
  * <p>A <tt>BeanWriter</tt> is created using a {@link StreamFactory} and 
  * a mapping file.</p>
@@ -30,18 +30,18 @@ import java.io.IOException;
 public interface BeanWriter {
 
     /**
-     * Writes a Java bean object to this output stream.
+     * Writes a bean object to this output stream.
      * @param bean the bean object to write
      * @throws BeanWriterException if a record could not be identified for marshalling, 
      *   or in a few other rare (but fatal) cases
      * @throws BeanWriterIOException if the underlying output stream throws an {@link IOException},
      *   or if this writer is closed
      */
-    public void write(Object bean) throws BeanWriterException;
+    public void write(Object bean) throws BeanWriterException, BeanWriterIOException;
 
     /**
-     * Writes a Java bean object to this output stream.
-     * @param recordName the configured record name from the mapping file bound to the bean object 
+     * Writes a bean object to this output stream.
+     * @param recordName the record or group name bound to the bean object from the mapping file 
      * @param bean the bean object to write
      * @throws BeanWriterException if a record could not be identified for marshalling, 
      *   or in a few other rare (but fatal) cases

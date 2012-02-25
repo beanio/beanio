@@ -32,7 +32,7 @@ import org.beanio.types.TypeHandler;
  * @author Kevin Seim
  * @since 2.0
  */
-public class MappingCompiler {
+public class StreamCompiler {
 
     private ClassLoader classLoader;
     private ConfigurationLoader configurationLoader;
@@ -42,7 +42,7 @@ public class MappingCompiler {
      * Constructs a new <tt>MappingFactory</tt>.
      * @param classLoader the {@link ClassLoader} to use for resolving class names
      */
-    public MappingCompiler(ClassLoader classLoader) {
+    public StreamCompiler(ClassLoader classLoader) {
         this.classLoader = classLoader;
         this.defaultConfigurationLoader = new XmlConfigurationLoader(classLoader);
     }

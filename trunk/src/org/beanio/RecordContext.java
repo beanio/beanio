@@ -43,9 +43,9 @@ public interface RecordContext {
     public int getRecordLineNumber();
     
     /**
-     * Returns the raw text of the record being parsed, or <tt>null</tt> if not supported
-     * by the input stream format (such as XML).
-     * @return the raw text of the record
+     * Returns the raw text of the parsed record.  Record text is not supported
+     * by XML stream formats, and <tt>null</tt> is returned instead.
+     * @return the raw text of the parser record
      */
     public String getRecordText();
 
@@ -69,13 +69,13 @@ public interface RecordContext {
     public boolean hasRecordErrors();
 
     /**
-     * Returns the collection of record level error messages.
-     * @return the collection of record level error messages
+     * Returns a collection of record level error messages.
+     * @return the {@link Collection} of record level error messages
      */
     public Collection<String> getRecordErrors();
 
     /**
-     * Returns the unparsed text of a field from the record.  Field text may be null
+     * Returns the raw text of a field found in this record.  Field text may be null
      * under the following circumstances:
      * <ul>
      * <li>A record level exception was thrown before a field was parsed</li>
@@ -97,7 +97,7 @@ public interface RecordContext {
     public int getFieldCount(String fieldName);
     
     /**
-     * Returns the unparsed text of a field from the record.  Field text may be null
+     * Returns the raw text of a field found in this record.  Field text may be null
      * under the following circumstances:
      * <ul>
      * <li>A record level exception was thrown before a field was parsed</li>

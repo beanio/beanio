@@ -119,8 +119,9 @@ public class Field extends ParserComponent implements Property {
         
     /**
      * Tests if the field text in the record matches this field.
-     * @param record the record containing the field to test
-     * @return <tt>true</tt> if the text is a match
+     * @param context the {@link UnmarshallingContext} containing the record to match
+     * @return <tt>true</tt> if the field text is a match or this field is not used
+     *   to identify the record
      */
     public boolean matches(UnmarshallingContext context) {
         if (isIdentifier()) {
@@ -206,10 +207,10 @@ public class Field extends ParserComponent implements Property {
     
     /**
      * Parses and validates a field property value from the given field text.
-     * @param record the record being parsed
+     * @param context the {@link UnmarshallingContext} to report field errors to
      * @param fieldText the field text to parse
-     * @return the parsed field value, or {@link #INVALID} if the field was invalid,
-     *   or {@link #MISSING} if the field was not present in the record
+     * @return the parsed field value, or {@link Value#INVALID} if the field was invalid,
+     *   or {@link Value#MISSING} if the field was not present in the record
      */
     protected Object parseValue(UnmarshallingContext context, String fieldText) {
         boolean valid = true;

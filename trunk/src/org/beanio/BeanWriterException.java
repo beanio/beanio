@@ -18,9 +18,8 @@ package org.beanio;
 /**
  * Exception thrown by a {@link BeanWriter}.
  * 
- * <p>In most cases, a subclass of this exception is thrown when an error occurs
- * while writing to a <tt>BeanWriter</tt>.  In a few rare fatal cases, this exception
- * may be thrown directly.
+ * <p>In most cases, a subclass of this exception is thrown.  In a few (but rare) fatal cases, 
+ * this exception may be thrown directly.
  * 
  * @author Kevin Seim
  * @since 1.0

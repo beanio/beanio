@@ -48,8 +48,9 @@ public class BeanUtil {
 
     /**
      * Instantiates a bean class.
+     * @param classLoader the {@link ClassLoader} to use to resolve <tt>className</tt>
      * @param className the fully qualified name of the bean class to create
-     * @param config the bean properties to set on the instantiated object
+     * @param props the bean properties to set on the instantiated object
      * @return the created bean object
      */
     public static Object createBean(ClassLoader classLoader, String className, Properties props) {

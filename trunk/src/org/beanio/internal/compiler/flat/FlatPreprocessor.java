@@ -274,19 +274,6 @@ public class FlatPreprocessor extends Preprocessor {
     }
     
     /**
-     * This method validates a record identifying field has a literal or regular expression
-     * configured for identifying a record.
-     * @param fieldDefinition the record identifying field definition to validate
-     */
-    protected void validateRecordIdentifyingCriteria(FieldConfig field) {
-        // validate regex or literal is configured for record identifying fields
-        if (field.getLiteral() == null && field.getRegex() == null) {
-            throw new BeanIOConfigurationException("literal or regex pattern required " +
-                "for identifying fields");
-        }
-    }
-    
-    /**
      * Returns the size of a field.
      * @param field the field to size
      * @return the field size

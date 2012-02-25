@@ -18,7 +18,7 @@ package org.beanio;
 import java.io.IOException;
 
 /**
- * A <tt>BeanWriterIOException</tt> is thrown only when a {@link BeanWriter}'s underlying
+ * Exception thrown when a {@link BeanWriter}'s underlying
  * output stream throws an {@link IOException}.
  * 
  * @author Kevin Seim

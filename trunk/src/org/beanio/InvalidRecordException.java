@@ -18,7 +18,8 @@ package org.beanio;
 import java.util.*;
 
 /**
- * Exception thrown when a record or one of its fields does not pass validation. 
+ * Exception thrown when a record or one of its fields does not pass validation
+ * during unmarshalling.
  * 
  * <p>An invalid record does not affect the state of a {@link BeanReader}, and
  * subsequent calls to <tt>read()</tt> are not affected.

@@ -33,8 +33,8 @@ public abstract class FlatFieldFormatSupport implements FlatFieldFormat {
     
     /**
      * Inserts field text into a record.
-     * @param context the marshaling context that contains the record
-     * @param fieldText the field text to insert into the record
+     * @param context the {@link MarshallingContext} holding the record
+     * @param text the field text to insert into the record
      */
     public void insertField(MarshallingContext context, String text) {
         boolean commit = text != null || !isLazy();

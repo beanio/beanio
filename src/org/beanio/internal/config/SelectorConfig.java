@@ -27,7 +27,7 @@ public interface SelectorConfig {
     
     /**
      * Returns the component type of this selector.
-     * @return either {@link #RECORD} or {@link #GROUP}
+     * @return either {@link ComponentConfig#RECORD} or {@link ComponentConfig#GROUP}
      */
     public char getComponentType();
     

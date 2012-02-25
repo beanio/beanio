@@ -286,8 +286,8 @@ public class Preprocessor extends ProcessorSupport {
     }
     
     /**
-     * Processes a property/constant configuration.
-     * @param field the property/constant configuration to process
+     * Processes a constant configuration.
+     * @param constant the constant configuration to process
      */
     protected void handleConstant(ConstantConfig constant) throws BeanIOConfigurationException {
         constant.setBound(true);
@@ -300,7 +300,7 @@ public class Preprocessor extends ProcessorSupport {
     /**
      * This method validates a record identifying field has a literal or regular expression
      * configured for identifying a record.
-     * @param fieldDefinition the record identifying field definition to validate
+     * @param field the record identifying field configuration to validate
      */
     protected void validateRecordIdentifyingCriteria(FieldConfig field) throws BeanIOConfigurationException {
         // validate regex or literal is configured for record identifying fields

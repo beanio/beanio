@@ -166,7 +166,7 @@ public class ErrorContext implements RecordContext, Cloneable {
      * Sets the raw field text for a named field.
      * @param fieldName the name of the field
      * @param text the raw field text
-     * @param whether the field repeats in the stream
+     * @param repeating whether the field repeats in the stream
      */
     public void setFieldText(String fieldName, String text, boolean repeating) {
         if (fieldTextMap == null) {

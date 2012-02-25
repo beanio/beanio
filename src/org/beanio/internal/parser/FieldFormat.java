@@ -29,17 +29,17 @@ public interface FieldFormat {
      * Extracts the field text from a record.  Returns <tt>null</tt> if the
      * field was not present in the record.
      * 
-     * <p>Implementation should remove any field padding before returning the text.
+     * <p>Implementations should also remove any field padding before returning the text.
      * 
-     * @param record
+     * @param context the {@link UnmarshallingContext} holding the record
      * @return the field text
      */
     public String extract(UnmarshallingContext context, boolean reportErrors);
 
     /**
      * Inserts field text into a record.
-     * @param context the marshaling context that contains the record
-     * @param fieldText the field text to insert into the record
+     * @param context the {@link MarshallingContext} holding the record
+     * @param text the field text to insert into the record
      */
     public void insertField(MarshallingContext context, String text);
     

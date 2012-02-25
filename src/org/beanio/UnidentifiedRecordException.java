@@ -16,11 +16,9 @@
 package org.beanio;
 
 /**
- * An <tt>UnidentifiedRecordException</tt> is thrown when the record type
- * of the last record read from the input stream could not be determined.
- * When strict record ordering is enforced by the stream configuration,
- * further reads from the same input stream will likely cause further 
- * exceptions.
+ * Exception thrown when the record type of the last record read from a {@link BeanReader} 
+ * could not be determined.  If the mapping file is used to enforce strict record ordering, 
+ * further reads from the stream will likely cause further exceptions.
  * 
  * @author Kevin Seim
  * @since 1.0

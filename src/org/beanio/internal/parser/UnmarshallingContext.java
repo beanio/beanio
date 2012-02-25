@@ -339,11 +339,12 @@ public abstract class UnmarshallingContext extends ParsingContext {
     }
     
     /**
-     * 
-     * @param recordName
-     * @param rule
-     * @param params
-     * @return
+     * Handles a record level exception and returns a new {@link ErrorContext} for
+     * the exception. 
+     * @param recordName the name of the record that failed
+     * @param rule the record level rule that failed validation
+     * @param params message parameters for formatting the error message
+     * @return the created {@link ErrorContext}
      */
     protected ErrorContext recordException(String recordName, String rule, Object... params) {
         processed = true;

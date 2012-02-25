@@ -88,7 +88,7 @@ public class XmlMarshallingContext extends MarshallingContext {
     /**
      * Adds a group to be marshalled when the next record is written to
      * the output stream.
-     * @param element the group element to add
+     * @param node the group element to add
      */
     public void openGroup(XmlNode node) {
         groupStack[groupStackCount++] = node;
@@ -96,7 +96,7 @@ public class XmlMarshallingContext extends MarshallingContext {
     
     /**
      * Indicates a group element should be closed before marshalling the next record.
-     * @param element the {@link XmlNode} to close
+     * @param node the {@link XmlNode} to close
      */
     public void closeGroup(XmlNode node) {
         ++ungroup;

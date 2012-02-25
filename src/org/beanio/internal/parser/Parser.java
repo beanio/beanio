@@ -18,6 +18,7 @@ package org.beanio.internal.parser;
 import java.io.IOException;
 
 /**
+ * A <tt>Parser</tt> is used marshal and unmarshal record components.
  * 
  * @author Kevin Seim
  * @since 2.0
@@ -99,7 +100,7 @@ public interface Parser {
     
     /**
      * Returns whether this node must exist during unmarshalling.
-     * @return
+     * @return true if this node is optional during unmarshalling, false otherwise
      */
     public boolean isLazy();
 }

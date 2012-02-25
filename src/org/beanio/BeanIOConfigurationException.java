@@ -16,7 +16,7 @@
 package org.beanio;
 
 /**
- * Exception thrown when an invalid BeanIO mapping configuration file is loaded.
+ * Exception thrown when an invalid BeanIO configuration file is loaded.
  * 
  * @author Kevin Seim
  * @since 1.0

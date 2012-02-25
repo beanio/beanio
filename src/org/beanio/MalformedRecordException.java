@@ -16,7 +16,9 @@
 package org.beanio;
 
 /**
- * Exception thrown when a record cannot be parsed.
+ * Exception thrown when a record does not adhere to the expected syntax of
+ * the stream format.  Subsequent calls to {@link BeanReader#read()} are not
+ * likely to be successful.
  * 
  * @author Kevin Seim
  * @since 1.0

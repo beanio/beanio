@@ -21,8 +21,8 @@ import org.beanio.internal.config.*;
 import org.beanio.internal.parser.*;
 import org.beanio.internal.parser.format.FieldPadding;
 import org.beanio.internal.parser.format.xml.*;
-import org.beanio.stream.*;
-import org.beanio.stream.xml.*;
+import org.beanio.stream.RecordParserFactory;
+import org.beanio.stream.xml.XmlRecordParserFactory;
 
 /**
  * A {@link ParserFactory} for the XML stream format.
@@ -170,8 +170,7 @@ public class XmlParserFactory extends ParserFactorySupport {
     public StreamFormat createStreamFormat(StreamConfig config) {
         XmlStreamFormat format = new XmlStreamFormat();
         format.setName(config.getName());
-        format.setReaderFactory(getRecordReaderFactory(config));
-        format.setWriterFactory(getRecordWriterFactory(config));
+        format.setRecordParserFactory(createRecordParserFactory(config));
         return format;
     }
     
@@ -226,12 +225,7 @@ public class XmlParserFactory extends ParserFactorySupport {
     }
 
     @Override
-    protected RecordReaderFactory newRecordReaderFactory() {
-        return new XmlReaderFactory();
-    }
-
-    @Override
-    protected RecordWriterFactory newRecordWriterFactory() {
-        return new XmlWriterFactory();
+    protected RecordParserFactory getDefaultRecordParserFactory() {
+        return new XmlRecordParserFactory();
     }
 }

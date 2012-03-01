@@ -99,7 +99,7 @@ public abstract class StreamFactory {
      * Creates a new <tt>BeanReader</tt> for reading from a stream.
      * @param name the name of the stream in the mapping file
      * @param in the input stream to read from
-     * @param locale the locale used to format error messages, or null to use {@link Locale#getDefault()}
+     * @param locale the {@link Locale} used to format error messages, or null to use {@link Locale#getDefault()}
      * @return the created {@link BeanReader}
      * @throws IllegalArgumentException if there is no stream configured for the given name, or
      *   if the stream mapping mode does not support reading an input stream
@@ -107,6 +107,27 @@ public abstract class StreamFactory {
     public abstract BeanReader createReader(String name, Reader in, Locale locale)
         throws IllegalArgumentException;
 
+    /**
+     * Creates a new {@link Unmarshaller} for unmarshalling records.
+     * @param name the name of the stream in the mapping file
+     * @return the created {@link Unmarshaller}
+     * @throws IllegalArgumentException if there is no stream configured for the given name, or
+     *   if the stream mapping mode does not support unmarshalling
+     */    
+    public Unmarshaller createUnmarshaller(String name) throws IllegalArgumentException {
+        return createUnmarshaller(name, null);
+    }
+    
+    /**
+     * Creates a new {@link Unmarshaller} for unmarshalling records.
+     * @param name the name of the stream in the mapping file
+     * @param locale the {@link Locale} used to format error messages, or null to use {@link Locale#getDefault()}
+     * @return the created {@link Unmarshaller}
+     * @throws IllegalArgumentException if there is no stream configured for the given name, or
+     *   if the stream mapping mode does not support unmarshalling
+     */
+    public abstract Unmarshaller createUnmarshaller(String name, Locale locale);
+    
     /**
      * Creates a new <tt>BeanWriter</tt> for writing to the given file.
      * @param name the name of the stream in the mapping file
@@ -147,6 +168,15 @@ public abstract class StreamFactory {
     public abstract BeanWriter createWriter(String name, Writer out)
         throws IllegalArgumentException;
 
+    /**
+     * Creates a new {@link Marshaller} for marshalling bean objects.
+     * @param name the name of the stream in the mapping file
+     * @return the created {@link Marshaller}
+     * @throws IllegalArgumentException if there is no stream configured for the given name, or
+     *   if the stream mapping mode does not support marshalling
+     */
+    public abstract Marshaller createMarshaller(String name) throws IllegalArgumentException;
+    
     /**
      * Loads a BeanIO mapping file from the application's classpath.
      * @param resource the configuration resource name

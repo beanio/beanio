@@ -15,6 +15,8 @@
  */
 package org.beanio.internal.parser.format.delimited;
 
+import java.util.List;
+
 import org.beanio.internal.parser.UnmarshallingContext;
 
 /**
@@ -63,5 +65,17 @@ public class DelimitedUnmarshallingContext extends UnmarshallingContext {
         else {
             return null;
         }
+    }
+    
+    @Override
+    public Object toRecordValue(String[] array) {
+        return array;
+    }
+    
+    @Override
+    public Object toRecordValue(List<String> list) {
+        String[] array = new String[list.size()];
+        list.toArray(array);
+        return array;
     }
 }

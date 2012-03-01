@@ -27,7 +27,7 @@ import org.beanio.internal.parser.PropertyAccessor;
  * @author Kevin Seim
  * @since 2.0
  */
-public class ReflectionAccessor implements PropertyAccessor {
+public class MethodReflectionAccessor extends PropertyAccessorSupport implements PropertyAccessor {
 
     private PropertyDescriptor descriptor;
     private Method getter;
@@ -36,9 +36,11 @@ public class ReflectionAccessor implements PropertyAccessor {
     /**
      * Constructs a new <tt>ReflectionAccessor</tt>.
      * @param descriptor the PropertyDescriptor describing the bean property
+     * @param constructorArgumentIndex the constructor argument index, or -1 if not a constructor argument
      */
-    public ReflectionAccessor(PropertyDescriptor descriptor) {
+    public MethodReflectionAccessor(PropertyDescriptor descriptor, int constructorArgumentIndex) {
         this.descriptor = descriptor;
+        setConstructorArgumentIndex(constructorArgumentIndex);
         
         if (descriptor != null) {
             getter = descriptor.getReadMethod();

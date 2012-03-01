@@ -4,9 +4,9 @@
   xsi:schemaLocation="http://www.beanio.org/2012/03 http://www.beanio.org/2012/03/mapping.xsd">
 
   <stream name="stream" format="xml" xmlName="stream">
-    <writer class="org.beanio.parser.xml.TestXmlWriterFactory">
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory">
       <property name="namespaces" value="xsi http://www.w3.org/2001/XMLSchema-instance" />
-    </writer>
+    </parser>
     <record name="person" class="org.beanio.parser.xml.Person">
       <field name="firstName" minOccurs="1" nillable="false" />
       <segment name="lastName" minOccurs="1">
@@ -16,9 +16,9 @@
   </stream>
 
   <stream name="stream2" format="xml" xmlName="stream">
-    <writer class="org.beanio.parser.xml.TestXmlWriterFactory">
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory">
       <property name="namespaces" value="xsi http://www.w3.org/2001/XMLSchema-instance" />
-    </writer>
+    </parser>
     <record name="person" class="org.beanio.parser.xml.Person">
       <segment name="address" class="org.beanio.parser.xml.Address" minOccurs="1">
         <field name="state" />

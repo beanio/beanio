@@ -42,10 +42,22 @@ public interface StreamFormat {
     public UnmarshallingContext createUnmarshallingContext();
  
     /**
-     * Creates a new marsahalling context.
+     * Creates a new marshalling context.
      * @return the new {@link MarshallingContext}
      */
     public MarshallingContext createMarshallingContext();
+    
+    /**
+     * Creates a new record marshaller.
+     * @return the new {@link RecordMarshaller}
+     */
+    public RecordMarshaller createRecordMarshaller();
+    
+    /**
+     * Creates a new record unmarshaller.
+     * @return the new {@link RecordUnmarshaller}
+     */
+    public RecordUnmarshaller createRecordUnmarshaller();
     
     /**
      * Creates a new record reader.

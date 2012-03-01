@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,22 +15,24 @@
  */
 package org.beanio.stream;
 
-import java.io.Reader;
-
 /**
- * A <tt>RecordReaderFactory</tt> is used to create and configure a <tt>RecordReader</tt>.
+ * Interface for unmarshalling a single record.
+ * 
+ * <p>The class used to represent a <i>record</i> is specific to the
+ * format of a record.  For example, a delimited record marshaller may use 
+ * <tt>Stringp[]</tt>.
+ * 
  * @author Kevin Seim
- * @since 1.0
+ * @since 2.0
  */
-public interface RecordReaderFactory {
+public interface RecordUnmarshaller {
 
-	/**
-	 * Creates a new <tt>RecordReader</tt> to read from an input stream.
-	 * @param in the input stream to read from
-	 * @return the new <tt>RecordReader</tt>
-	 * @throws IllegalArgumentException if the factory is improperly configured
-	 *   and a <tt>RecordReader</tt> cannot be created
-	 */
-	public RecordReader createReader(Reader in) throws IllegalArgumentException;
-	
+    /**
+     * Unmarshals a single record.
+     * @param text the record text to unmarshal
+     * @return the unmarshalled record object
+     * @throws RecordIOException if the record is malformed and cannot be parsed
+     */
+    public Object unmarshal(String text) throws RecordIOException;
+    
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Kevin Seim
+ * Copyright 2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,21 @@
 package org.beanio.stream.fixedlength;
 
 /**
- * Stores configuration settings for a {@link FixedLengthReader}.
- *  
+ * Stores configuration settings for parsing fixed length formatted streams.
+ * 
  * @author Kevin Seim
- * @since 1.2
- * @see FixedLengthReader
+ * @since 2.0
  */
-public class FixedLengthReaderConfiguration {
+public class FixedLengthParserConfiguration {
 
     private Character lineContinuationCharacter = null;
-    private Character recordTerminator = null;
+    private String recordTerminator = null;
     private String[] comments;
     
     /**
-     * Constructs a new <tt>FixedLengthReaderConfiguration</tt>.
+     * Constructs a new <tt>FixedLengthParserConfiguration</tt>.
      */
-    public FixedLengthReaderConfiguration() { }
+    public FixedLengthParserConfiguration() { }
 
     /**
      * Returns the line continuation character.  By default, line continuation
@@ -66,7 +65,7 @@ public class FixedLengthReaderConfiguration {
      * signify the end of the record.
      * @return the record termination character
      */
-    public Character getRecordTerminator() {
+    public String getRecordTerminator() {
         return recordTerminator;
     }
 
@@ -75,7 +74,7 @@ public class FixedLengthReaderConfiguration {
      * a carriage return (CR), line feed (LF), or CRLF sequence is used.
      * @param recordTerminator the record termination character
      */
-    public void setRecordTerminator(Character recordTerminator) {
+    public void setRecordTerminator(String recordTerminator) {
         this.recordTerminator = recordTerminator;
     }
     
@@ -105,4 +104,26 @@ public class FixedLengthReaderConfiguration {
     public boolean isCommentEnabled() {
         return comments != null && comments.length > 0;
     }
+    
+    /**
+     * Returns the text used to terminate a record.  By default, the line
+     * separator is set to the value of the  <tt>line.separator</tt> system property.
+     * @return the line separation text
+     * @deprecated
+     */
+    public String getLineSeparator() {
+        return recordTerminator;
+    }
+
+    /**
+     * Sets the text used to terminate a record.  If set to <tt>null</tt>, the 
+     * the value of the <tt>line.separator</tt> system property is used to terminate
+     * records.
+     * @param lineSeparator the line separation text
+     * @deprecated
+     */
+    public void setLineSeparator(String lineSeparator) {
+        this.recordTerminator = lineSeparator;
+    }
+    
 }

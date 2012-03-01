@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Kevin Seim
+ * Copyright 2011-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import org.beanio.*;
 import org.beanio.internal.util.Replicator;
+import org.beanio.stream.*;
 
 /**
  * 
@@ -36,7 +37,6 @@ public class Stream {
     public static final int WRITE_ONLY_MODE = 2;
     
     private int mode;
-    private String name;
     private StreamFormat format;
     private Selector layout;
     private Replicator replicator;
@@ -44,7 +44,7 @@ public class Stream {
 
     /**
      * Constructs a new <tt>Stream</tt>.
-     * @param format
+     * @param format the {@link StreamFormat}
      */
     public Stream(StreamFormat format) {
         if (format == null) {
@@ -53,56 +53,89 @@ public class Stream {
         this.format = format;
     }
     
-    public void setName(String name) {
-        this.name = name;
-    }
-    
+    /**
+     * Returns the name of this stream.
+     * @return the stream name
+     */
     public String getName() {
-        return name;
+        return format.getName();
     }
     
     /**
-     * Creates a new <tt>BeanReader</tt> for reading from the given input stream.
+     * Creates a new {@link BeanReader} for reading from the given input stream.
      * @param in the input stream to read from
      * @param locale the locale to use for rendering error messages
-     * @return a new <tt>BeanReader</tt>.
+     * @return the new {@link BeanReader}
      */
     public BeanReader createBeanReader(Reader in, Locale locale) {
         if (in == null) {
             throw new NullPointerException("null reader");
         }
         
-        Selector selector = replicator.replicate(layout);
+        Selector root = replicator.replicate(layout);
         
         UnmarshallingContext context = format.createUnmarshallingContext();
         context.setMessageFactory(messageFactory);
         context.setLocale(locale);
         context.setRecordReader(format.createRecordReader(in));
         
-        BeanReaderImpl reader = new BeanReaderImpl(context, selector);
+        BeanReaderImpl reader = new BeanReaderImpl(context, root);
         return reader;
     }
-
     
     /**
-     * Creates a new <tt>BeanWriter</tt> for writing to the given output stream.
+     * Creates a new {@link Unmarshaller}.
+     * @param locale the {@link Locale} to use for rendering error messages
+     * @return the new {@link Unmarshaller}
+     */
+    public Unmarshaller createUnmarshaller(Locale locale) {
+        
+        RecordUnmarshaller recordUnmarshaller = format.createRecordUnmarshaller(); 
+        if (recordUnmarshaller == null) {
+            throw new IllegalArgumentException("Unmarshaller not supported for stream format");
+        }
+        
+        UnmarshallingContext context = format.createUnmarshallingContext();
+        context.setMessageFactory(messageFactory);
+        context.setLocale(locale);
+        
+        return new UnmarshallerImpl(context, 
+            replicator.replicate(layout), recordUnmarshaller);
+    }
+
+    /**
+     * Creates a new {@link BeanWriter} for writing to the given output stream.
      * @param out the output stream to write to
-     * @return a new <tt>BeanWriter</tt>
+     * @return the new {@link BeanWriter}
      */
     public BeanWriter createBeanWriter(Writer out) {
         if (out == null) {
             throw new NullPointerException("null writer");
         }
         
-        Selector mapper = replicator.replicate(layout);
+        Selector root = replicator.replicate(layout);
         
         MarshallingContext context = format.createMarshallingContext();
         context.setRecordWriter(format.createRecordWriter(out));
         
-        BeanWriterImpl writer = new BeanWriterImpl(context, mapper);
+        BeanWriterImpl writer = new BeanWriterImpl(context, root);
         return writer;
     }
-
+    
+    /**
+     * Creates a new {@link Marshaller}.
+     * @return the new {@link Marshaller}
+     */
+    public Marshaller createMarshaller() {
+        RecordMarshaller recordMarshaller = format.createRecordMarshaller(); 
+        if (recordMarshaller == null) {
+            throw new IllegalArgumentException("Marshaller not supported for stream format");
+        }
+        
+        return new MarshallerImpl(format.createMarshallingContext(), 
+            replicator.replicate(layout), recordMarshaller);
+    }
+    
     /**
      * Returns the allowed mode of operation for this stream configuration. 
      * @return {@link #READ_WRITE_MODE} if reading and writing from a stream is allowed,<br />

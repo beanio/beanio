@@ -75,8 +75,8 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
     
     /* The XML stream writer to write to */
     private XMLStreamWriter out;
-    /* XML writer configuration */
-    private XmlWriterConfiguration config;
+    /* XML parser configuration */
+    private XmlParserConfiguration config;
     /* String used to indent new lines of XML */
     private String indentation = "";
     
@@ -107,7 +107,7 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
      * @param writer the output stream to write to
      * @param config the XML writer configuration
      */
-    public XmlWriter(Writer writer, XmlWriterConfiguration config) {
+    public XmlWriter(Writer writer, XmlParserConfiguration config) {
         if (writer == null) {
             throw new IllegalArgumentException("writer is null");
         }
@@ -135,7 +135,7 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
         
         if (config == null) {
             // create a default configuration
-            this.config = new XmlWriterConfiguration();
+            this.config = new XmlParserConfiguration();
         }
         else {
             // the configuration is cloned to prevent changes during execution

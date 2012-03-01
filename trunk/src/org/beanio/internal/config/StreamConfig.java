@@ -43,8 +43,7 @@ public class StreamConfig extends GroupConfig {
     private boolean strict = false;
 
     private List<TypeHandlerConfig> handlerList = new ArrayList<TypeHandlerConfig>();
-    private BeanConfig readerFactory;
-    private BeanConfig writerFactory;
+    private BeanConfig parserFactory;
 
     /**
      * Constructs a new <tt>StreamConfig</tt>.
@@ -134,41 +133,37 @@ public class StreamConfig extends GroupConfig {
     }
 
     /**
-     * Returns the record reader factory configuration bean.
-     * @return the record reader factory configuration bean.
+     * Returns the record parser factory configuration bean.
+     * @return the record parser factory configuration bean.
      */
-    public BeanConfig getReaderFactory() {
-        return readerFactory;
+    public BeanConfig getParserFactory() {
+        return parserFactory;
     }
 
     /**
-     * Sets the record reader factory configuration bean.
-     * @param readerFactory the record reader factory configuration bean
+     * Sets the record parser factory configuration bean.
+     * @param parserFactory the record parser factory configuration bean
      */
-    public void setReaderFactory(BeanConfig readerFactory) {
-        this.readerFactory = readerFactory;
+    public void setParserFactory(BeanConfig parserFactory) {
+        this.parserFactory = parserFactory;
     }
 
     /**
-     * Returns the record writer factory configuration bean.
-     * @return the record writer factory configuration bean.
+     * Returns whether BeanIO should calculate and enforce strict record ordering 
+     * (based on the order records are declared in the mapping file) and record length
+     * (based on configured field occurrences).
+     * @return true if strict, false otherwise
      */
-    public BeanConfig getWriterFactory() {
-        return writerFactory;
-    }
-
-    /**
-     * Sets the record writer factory configuration bean.
-     * @param writerFactory the record writer factory configuration bean
-     */
-    public void setWriterFactory(BeanConfig writerFactory) {
-        this.writerFactory = writerFactory;
-    }
-
     public boolean isStrict() {
         return strict;
     }
 
+    /**
+     * Sets whether BeanIO should calculate and enforce strict record ordering 
+     * (based on the order records are declared in the mapping file) and record length
+     * (based on configured field occurrences).
+     * @param strict true if strict, false otherwise
+     */
     public void setStrict(boolean strict) {
         this.strict = strict;
     }

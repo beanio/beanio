@@ -15,11 +15,9 @@
  */
 package org.beanio.internal.parser.format.xml;
 
-import java.io.*;
-
 import org.beanio.internal.parser.*;
 import org.beanio.internal.util.DomUtil;
-import org.beanio.stream.*;
+import org.beanio.stream.RecordParserFactory;
 import org.beanio.stream.xml.*;
 import org.w3c.dom.Document;
 
@@ -60,27 +58,17 @@ public class XmlStreamFormat extends StreamFormatSupport {
     public MarshallingContext createMarshallingContext() {
         return new XmlMarshallingContext(groupDepth);
     }
-
+    
     @Override
-    public void setReaderFactory(RecordReaderFactory readerFactory) {
-        if (readerFactory != null && readerFactory instanceof XmlStreamConfigurationAware) {
-            ((XmlStreamConfigurationAware)readerFactory).setConfiguration(new XmlStreamConfiguration() {
+    public void setRecordParserFactory(RecordParserFactory recordParserFactory) {
+        if (recordParserFactory != null && recordParserFactory instanceof XmlStreamConfigurationAware) {
+            ((XmlStreamConfigurationAware)recordParserFactory).setConfiguration(new XmlStreamConfiguration() {
                 public Document getDocument() {
                     return createBaseDocument(layout);
                 }
             });
         }
-        super.setReaderFactory(readerFactory);
-    }
-    
-    @Override
-    protected RecordReader createDefaultReader(Reader in) {
-        return new XmlReader(in, createBaseDocument(layout));
-    }
-
-    @Override
-    public RecordWriter createDefaultWriter(Writer out) {
-        return new XmlWriter(out);
+        super.setRecordParserFactory(recordParserFactory);
     }
 
     /**

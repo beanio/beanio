@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Kevin Seim
+ * Copyright 2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,29 @@
 package org.beanio.stream.delimited;
 
 /**
- * Stores configuration settings for a {@link DelimitedReader}.
+ * Stores configuration settings for parsing delimited formatted streams.
  * 
  * @author Kevin Seim
- * @since 1.2
- * @see DelimitedReader
+ * @since 2.0
  */
-public class DelimitedReaderConfiguration {
+public class DelimitedParserConfiguration {
 
     private char delimiter = '\t';
     private Character escape = null;
     private Character lineContinuationCharacter = null;
-    private Character recordTerminator = null;
+    private String recordTerminator = null;
     private String[] comments;
     
     /**
-     * Constructs a new <tt>DelimitedReaderConfiguration</tt>.
+     * Constructs a new <tt>DelimitedParserConfiguration</tt>.
      */
-    public DelimitedReaderConfiguration() { }
+    public DelimitedParserConfiguration() { }
 
     /**
      * Constructs a new <tt>DelimitedReaderConfiguration</tt>.
      * @param delimiter the field delimiting character
      */
-    public DelimitedReaderConfiguration(char delimiter) { 
+    public DelimitedParserConfiguration(char delimiter) { 
         this.delimiter = delimiter;
     }
     
@@ -117,7 +116,7 @@ public class DelimitedReaderConfiguration {
      * signify the end of the record.
      * @return the record termination character
      */
-    public Character getRecordTerminator() {
+    public String getRecordTerminator() {
         return recordTerminator;
     }
 
@@ -126,7 +125,7 @@ public class DelimitedReaderConfiguration {
      * a carriage return (CR), line feed (LF), or CRLF sequence is used.
      * @param recordTerminator the record termination character
      */
-    public void setRecordTerminator(Character recordTerminator) {
+    public void setRecordTerminator(String recordTerminator) {
         this.recordTerminator = recordTerminator;
     }
 

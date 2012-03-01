@@ -93,4 +93,14 @@ public class DelimitedMarshallingContext extends MarshallingContext {
             return array;
         }
     }
+    
+    @Override
+    public String[] toArray(Object record) {
+        return (String[])record;
+    }
+    
+    @Override
+    public List<String> toList(Object record) {
+        return Arrays.asList((String[])record);
+    }
 }

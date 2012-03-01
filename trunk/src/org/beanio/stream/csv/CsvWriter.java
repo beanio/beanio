@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Kevin Seim
+ * Copyright 2010-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,51 +50,36 @@ public class CsvWriter implements RecordWriter {
     private transient int lineNumber;
     
     /**
-     * Constructs a new <tt>CsvWriter</tt> using default settings 
+     * Constructs a new <tt>CsvWriter</tt> using default settings.
      * according the RFC 4180 specification.
      * @param out the output stream to write to
      */
     public CsvWriter(Writer out) {
-        this(out, false, '"');
+        this(out, null);
     }
-    
-   /**
-    * Constructs a new <tt>CsvWriter</tt>.
-    * @param out the output stream to write to
-    * @param alwaysQuote set to <tt>true</tt> if all fields are always quoted, otherwise
-    *   a field is only quoted if it contains a quotation mark, delimiter, new line
-    *   or carriage return
-    * @param escapeCharacter the character used to escape quotation marks and itself
-    *   in the output
-    */
-   public CsvWriter(Writer out, boolean alwaysQuote, char escapeCharacter) {
-       this(out, ',', '"', alwaysQuote, escapeCharacter, null);
-   }
-    
+        
     /**
      * Constructs a new <tt>CsvWriter</tt>.
      * @param out the output stream to write to
-     * @param delimiter the field delimiter
-     * @param quote the quotation mark
-     * @param alwaysQuote set to <tt>true</tt> if all fields are always quoted, otherwise
-     *   a field is only quoted if it contains a quotation mark, delimiter, line feed
-     *   or carriage return
-     * @param escapeCharacter the character used to escape quotation marks and itself
-     *   in the output
-     * @param lineSeparator the line termination character
+     * @param config the {@link CsvParserConfiguration}
      */
-    public CsvWriter(Writer out, char delimiter, char quote, boolean alwaysQuote,
-    	char escapeCharacter, String lineSeparator) {
-    	this.out = out;
-    	this.delim = delimiter;
-    	this.quote = quote;
-    	this.endQuote = quote;
-    	this.alwaysQuote = alwaysQuote;
-    	this.escapeChar = escapeCharacter;
-    	if (lineSeparator == null) {
-    		lineSeparator = System.getProperty("line.separator");
-    	}
-    	this.lineSeparator = lineSeparator;
+    public CsvWriter(Writer out, CsvParserConfiguration config) {
+        if (config == null) {
+            config = new CsvParserConfiguration();
+        }
+        
+        this.out = out;
+        this.delim = config.getDelimiter();
+        this.quote = config.getQuote();
+        this.endQuote = config.getQuote();
+        this.alwaysQuote = config.isAlwaysQuote();
+        this.escapeChar = config.getEscape();
+        if (config.getRecordTerminator() == null) {
+            this.lineSeparator = System.getProperty("line.separator");
+        }
+        else {
+            this.lineSeparator = config.getRecordTerminator();
+        }
     }
     
     /**

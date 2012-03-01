@@ -6,7 +6,7 @@
   elementFormDefault="qualified" 
   targetNamespace="http://www.beanio.org/2012/03"
   xml:lang="en"
-  version="2.0">
+  version="2.0.0">
 
   <annotation>
     <documentation>
@@ -31,7 +31,7 @@
   <element name="beanio">
     <annotation>
       <documentation>
-        Root element for BeanIO stream mappings.
+        Root element for a BeanIO mapping file.
       </documentation>
     </annotation>
     <complexType>
@@ -53,8 +53,7 @@
         <element name="template" minOccurs="0" maxOccurs="unbounded" type="tns:Template">
           <annotation>
             <documentation>
-              Declares a reusable template that may include child beans, fields,
-              and properties.
+              Declares a reusable template that may include child segments, fields, and properties.
             </documentation>
           </annotation>
         </element>
@@ -73,8 +72,8 @@
     <attribute name="resource" type="xsd:string" use="required">
       <annotation>
         <documentation>
-          The name of the mapping file to load.  Prefix with 'classpath:' to load from the classpath
-          or with 'file:' to load from the file system.
+          The name of the mapping file to import.  Prefix the file name with 'classpath:' to load 
+          file from the classpath, or with 'file:' to load the file from the file system.
         </documentation>
       </annotation>
     </attribute>
@@ -82,17 +81,10 @@
   
   <complexType name="Stream">
     <sequence>
-      <element name="reader" minOccurs="0" maxOccurs="1" type="tns:Factory">
+      <element name="parser" minOccurs="0" maxOccurs="1" type="tns:Factory">
         <annotation>
           <documentation>
-            Declares a custom record reader factory or customizes the default one.
-          </documentation>
-        </annotation>
-      </element>
-      <element name="writer" minOccurs="0" maxOccurs="1" type="tns:Factory">
-        <annotation>
-          <documentation>
-            Declares a custom record writer factory or customizes the default one.
+            Declares format specific parser settings, or overrides the default RecordParserFactory.
           </documentation>
         </annotation>
       </element>
@@ -108,14 +100,14 @@
         <element name="record" type="tns:Record">
           <annotation>
             <documentation>
-              A record is used to map a portion of the stream to a bean object.
+              A record is used to map a single record in the stream to a bean object.
             </documentation>
           </annotation>
         </element>
         <element name="group" type="tns:Group">
           <annotation>
             <documentation>
-              A group is used to group records together.
+              A group is used to group records together, or bind bean objects that span multiple records.
             </documentation>
           </annotation>
         </element>
@@ -124,7 +116,7 @@
     <attribute name="name" type="xsd:string" use="required">
       <annotation>
         <documentation>
-          The name of the stream configuration to invoke using a StreamFactory.
+          The name of the stream.
         </documentation>
       </annotation>  
     </attribute>
@@ -147,7 +139,8 @@
     <attribute name="strict" type="xsd:boolean" use="optional">
       <annotation>
         <documentation>
-          TODO
+          Set to true to have BeanIO calculate and enforce record ordering (based on the order
+          records are declared) and record length (based on assigned field occurrence values).
         </documentation>
       </annotation>
     </attribute>
@@ -178,14 +171,14 @@
       <annotation>
         <documentation>
           The XML node type.  Defaults to 'element'.  Set to 'none' if a record
-          definition defines the root element.
+          is bound to the root element.
         </documentation>
       </annotation>
     </attribute>
     <attribute name="xmlName" type="xsd:string" use="optional">
       <annotation>
         <documentation>
-          The XML root element name.  Defaults to the stream name.
+          The XML element name.  Defaults to the stream name.
         </documentation>
       </annotation>
     </attribute>
@@ -227,7 +220,7 @@
       <element name="property" minOccurs="0" maxOccurs="unbounded" type="tns:Property">
         <annotation>
           <documentation>
-            Sets a property on its parent bean object.
+            Sets a property of the type handler.
           </documentation>
         </annotation>
       </element>
@@ -268,7 +261,7 @@
     <attribute name="class" type="xsd:string" use="optional">
       <annotation>
         <documentation>
-          The class name of the record reader/writer factory implementation.  If
+          The class name of the RecordParserFactory implementation.  If
           not specified, a default implementation is used based on the stream format.
         </documentation>
       </annotation>
@@ -279,14 +272,14 @@
     <attribute name="name" type="xsd:string" use="required">
       <annotation>
         <documentation>
-          The property name to set on the parent bean object.
+          The property name to set.
         </documentation>
       </annotation>
     </attribute>
     <attribute name="value" type="xsd:string" use="required">
       <annotation>
         <documentation>
-          The property value to set on the parent bean object.
+          The property value to set.
         </documentation>
       </annotation>
     </attribute>
@@ -296,14 +289,14 @@
     <attribute name="name" type="xsd:string" use="required">
       <annotation>
         <documentation>
-          The property name to set on the parent bean object.
+          The property name to set on its parent bean object.
         </documentation>
       </annotation>
     </attribute>
     <attribute name="value" type="xsd:string" use="required">
       <annotation>
         <documentation>
-          The property value to set on the parent bean object.
+          The property value to set on its parent bean object.
         </documentation>
       </annotation>
     </attribute>
@@ -347,7 +340,7 @@
     <attribute name="rid" type="xsd:boolean" use="optional">
       <annotation>
         <xsd:documentation>
-          Set to 'true' to indicate this property is used to identify the record.
+          Set to true to indicate this property is used to identify the record.
         </xsd:documentation>
       </annotation>
     </attribute>
@@ -373,8 +366,7 @@
       <element name="segment" minOccurs="0" maxOccurs="unbounded" type="tns:Segment">
         <annotation>
           <documentation>
-            A bean is used to group fields into a child bean object, which is in
-            turn a bean property.
+            A segment is used to group fields into a nested bean object.
           </documentation>
         </annotation>
       </element>
@@ -389,7 +381,7 @@
     <attribute name="name" type="xsd:string" use="required">
       <annotation>
         <documentation>
-          The name of this template.
+          The template name.
         </documentation>
       </annotation>
     </attribute>
@@ -417,7 +409,7 @@
     <attribute name="minOccurs" type="xsd:nonNegativeInteger" use="optional" default="1">
       <annotation>
         <documentation>
-          The minimum number of occurrences of this group or record.  Defaults to 1.
+          The minimum number of occurrences of this group or record.  Defaults to 0.
         </documentation>
       </annotation>
     </attribute>
@@ -469,8 +461,8 @@
       <element name="field" minOccurs="0" maxOccurs="unbounded" type="tns:Field">
         <annotation>
           <documentation>
-            A field is used to map a portion of its parent record to a property 
-            of the record bean object.
+            A field is used to validate and bind a property value found in the stream 
+            to its parent bean object.
           </documentation>
         </annotation>
       </element>
@@ -485,8 +477,7 @@
       <element name="segment" minOccurs="0" maxOccurs="unbounded" type="tns:Segment">
         <annotation>
           <documentation>
-            A bean is used to group fields into a child bean object, which is in
-            turn a property of its parent record bean object.
+            A segment is used to group fields into a nested bean object.
           </documentation>
         </annotation>
       </element>
@@ -527,7 +518,7 @@
     <attribute name="class" type="xsd:string" use="optional">
       <annotation>
         <documentation>
-          The class name or type alias of the bean object mapped to this record.
+          The class name or type alias of the bean object bound to this record.
         </documentation>
       </annotation>
     </attribute>
@@ -535,7 +526,7 @@
       <annotation>
         <documentation>
           The type of collection for repeating records.  May be set to any
-          collection class name or one of the following: 'array', 'list',
+          collection class name or one of the following aliases: 'array', 'list',
           or 'set'.
         </documentation>
       </annotation>
@@ -569,14 +560,15 @@
       <element name="record" type="tns:Record">
         <annotation>
           <documentation>
-            A record is used to map a portion of the stream to a bean object.
+            A record is used to map a record in a stream to a bean object.
           </documentation>
         </annotation>
       </element>
       <element name="group" type="tns:Group">
         <annotation>
           <documentation>
-            A group is used to group records together.
+            A group is used to enforce record grouping or bind bean objects
+            that span multiple records.
           </documentation>
         </annotation>
       </element>
@@ -598,7 +590,7 @@
     <attribute name="class" type="xsd:string" use="optional">
       <annotation>
         <documentation>
-          The class name or type alias of the bean object mapped to this record.
+          The class name or type alias of the bean object bound to this group.
         </documentation>
       </annotation>
     </attribute>
@@ -617,21 +609,21 @@
     <attribute name="setter" type="xsd:string" use="optional">
       <annotation>
         <documentation>
-          The name of the setter method to set the field property value on the bean class.
+          The name of the setter method to set the field's property value on its parent bean object.
         </documentation>
       </annotation>
     </attribute>
     <attribute name="getter" type="xsd:string" use="optional">
       <annotation>
         <documentation>
-          The name of the getter method to get the field property value from the bean class.
+          The name of the getter method to get the field's property value from its parent bean object.
         </documentation>
       </annotation>
     </attribute>
     <attribute name="rid" type="xsd:boolean" use="optional">
       <annotation>
         <xsd:documentation>
-          Set to 'true' to indicate this field is used to identify the record.
+          Set to 'true' to indicate this field is used to identify a record.
           Must be used in conjunction with either 'literal' or 'regex'.
         </xsd:documentation>
       </annotation>
@@ -742,7 +734,8 @@
     <attribute name="justify" type="tns:justification" use="optional">
       <annotation>
         <documentation>
-          The justification of the field text when padded.
+          The justification of the field text when padded- 'left' or 'right'.
+          Defaults to 'left'.
         </documentation>
       </annotation>
     </attribute>
@@ -758,9 +751,8 @@
     <attribute name="minOccurs" type="xsd:nonNegativeInteger" use="optional">
       <annotation>
         <documentation>
-          The minimum number of times this field repeats in its parent record.
-          Defaults to 1.  XML formatted streams may set minOccurs to 0 to indicate
-          the element or attribute is optional when marshalling null field values.
+          The minimum number of times this field is found in its parent record.
+          Defaults to 0 for XML attributes, or 1 for all other field types.
         </documentation>
       </annotation>
     </attribute>
@@ -818,7 +810,7 @@
       <element name="field" minOccurs="0" maxOccurs="unbounded" type="tns:Field">
         <annotation>
           <documentation>
-            A field is used to map a portion of a record to a property 
+            A field is used to bind a field in a record to a property 
             of its parent bean object.
           </documentation>
         </annotation>
@@ -834,8 +826,7 @@
       <element name="segment" minOccurs="0" maxOccurs="unbounded" type="tns:Segment">
         <annotation>
           <documentation>
-            A bean is used to group fields into a child bean object, which is in
-            turn a property of its parent bean object.
+            A segment is used to group fields into a nested bean objects.
           </documentation>
         </annotation>
       </element>
@@ -850,7 +841,7 @@
     <attribute name="name" type="xsd:string" use="required">
       <annotation>
         <documentation>
-          The bean name, and by default, the name of the property to set
+          The segment name, and by default, the name of the property to set
           on its parent bean object.
         </documentation>
       </annotation>
@@ -879,16 +870,16 @@
     <attribute name="collection" type="xsd:string" use="optional">
       <annotation>
         <documentation>
-          The type of collection for repeating beans.  May be set to any
-          collection class name or one of the following: 'array', 'list',
-          or 'set'.
+          The type of collection for repeating segments bound to a bean object.  
+          May be set to any collection class name or one of the following aliases: 
+          'array', 'list', or 'set'.
         </documentation>
       </annotation>
     </attribute>
     <attribute name="minOccurs" type="xsd:nonNegativeInteger" use="optional">
       <annotation>
         <documentation>
-          The minimum number of times this bean repeats in its parent bean or record.
+          The minimum number of times this segment repeats in its parent bean or record.
           Defaults to 1.
         </documentation>
       </annotation>
@@ -896,7 +887,7 @@
     <attribute name="maxOccurs" type="tns:limit" use="optional">
       <annotation>
         <documentation>
-          The maximum number of times this bean repeats in its parent bean or record.
+          The maximum number of times this segment repeats in its parent bean or record.
           Defaults to 'minOccurs' or 1, whichever is greater.
         </documentation>
       </annotation>
@@ -904,7 +895,7 @@
     <attribute name="template" type="xsd:string" use="optional">
       <annotation>
         <documentation>
-          The name of the template this bean extends.
+          The name of the template this segment extends.
         </documentation>
       </annotation>    
     </attribute>
@@ -918,7 +909,7 @@
     <attribute name="xmlName" type="xsd:string" use="optional">
       <annotation>
         <documentation>
-          The XML element name.  By default, the bean name is used.
+          The XML element name.  By default, the segment name is used.
         </documentation>
       </annotation>
     </attribute>

@@ -47,10 +47,7 @@ public class DefaultStreamFactory extends StreamFactory {
         this.compiler = new StreamCompiler(getClassLoader());
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.StreamManager#configure(java.io.InputStream)
-     */
+    @Override
     public void load(InputStream in) throws IOException, BeanIOConfigurationException {
         Collection<Stream> streams = compiler.loadMapping(in);
         for (Stream stream : streams) {
@@ -58,10 +55,7 @@ public class DefaultStreamFactory extends StreamFactory {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.StreamManager#createBeanReader(java.lang.String, java.io.Reader, java.util.Locale)
-     */
+    @Override
     public BeanReader createReader(String name, Reader in, Locale locale) {
         if (locale == null) {
             locale = Locale.getDefault();
@@ -76,17 +70,42 @@ public class DefaultStreamFactory extends StreamFactory {
                 throw new IllegalArgumentException("Read mode not supported for stream mapping '" + name + "'");
         }
     }
+    
+    @Override
+    public Unmarshaller createUnmarshaller(String name, Locale locale) {
+        if (locale == null) {
+            locale = Locale.getDefault();
+        }
+        
+        Stream stream = getStream(name);
+        switch (stream.getMode()) {
+            case Stream.READ_WRITE_MODE:
+            case Stream.READ_ONLY_MODE:
+                return stream.createUnmarshaller(locale);
+            default:
+                throw new IllegalArgumentException("Read mode not supported for stream mapping '" + name + "'");
+        }
+    }
 
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.StreamManager#createBeanWriter(java.lang.String, java.io.Writer)
-     */
+    @Override
     public BeanWriter createWriter(String name, Writer out) {
         Stream stream = getStream(name);
         switch (stream.getMode()) {
             case Stream.READ_WRITE_MODE:
             case Stream.WRITE_ONLY_MODE:
                 return stream.createBeanWriter(out);
+            default:
+                throw new IllegalArgumentException("Write mode not supported for stream mapping '" + name + "'");
+        }
+    }
+    
+    @Override
+    public Marshaller createMarshaller(String name) {
+        Stream stream = getStream(name);
+        switch (stream.getMode()) {
+            case Stream.READ_WRITE_MODE:
+            case Stream.WRITE_ONLY_MODE:
+                return stream.createMarshaller();
             default:
                 throw new IllegalArgumentException("Write mode not supported for stream mapping '" + name + "'");
         }

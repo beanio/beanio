@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://www.beanio.org/2012/03 http://www.beanio.org/2012/03/mapping.xsd">
 
   <stream name="stream" format="xml" xmlName="stream">
-    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <record name="person" class="org.beanio.parser.xml.Person">
       <field name="gender" xmlType="attribute" />
       <field name="firstName" nillable="true" />
@@ -13,7 +13,7 @@
   </stream>
 
   <stream name="stream2" format="xml" xmlName="stream">
-    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <record name="person" class="org.beanio.parser.xml.Person">
       <field name="gender" xmlType="attribute" xmlNamespace="fieldNS" xmlPrefix="ns" />
       <field name="firstName" xmlName="first" xmlType="attribute" xmlNamespace="fieldNS" xmlPrefix="ns" />
@@ -22,7 +22,7 @@
   </stream>
 
   <stream name="stream3" format="xml" xmlName="stream">
-    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <record name="person" class="org.beanio.parser.xml.Person">
       <field name="gender" xmlType="attribute" />
       <field name="firstName" xmlType="text" />
@@ -30,7 +30,7 @@
   </stream>
 
   <stream name="stream4" format="xml" xmlName="stream">
-    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <record name="male" xmlName="person" class="org.beanio.parser.xml.Male">
       <field name="gender" rid="true" xmlType="attribute" literal="M" />
       <field name="firstName" xmlType="text" />
@@ -42,7 +42,7 @@
   </stream>
 
   <stream name="stream5" format="xml" xmlName="stream">
-    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <record name="male" xmlName="person" class="org.beanio.parser.xml.Male">
       <field name="gender" rid="true" xmlType="text" literal="M" />
       <field name="firstName" xmlType="attribute" />
@@ -54,7 +54,7 @@
   </stream>
 
   <stream name="stream6" format="xml" xmlName="stream">
-    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <record name="male" xmlName="person" class="org.beanio.parser.xml.Male">
       <field name="gender" rid="true" literal="M" />
       <field name="firstName" />
@@ -66,7 +66,7 @@
   </stream>
 
   <stream name="stream7" format="xml" xmlName="stream">
-    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <typeHandler type="string" class="org.beanio.parser.xml.types.NillableStringTypeHandler" />
     <record name="record" xmlName="person" class="org.beanio.parser.xml.Person">
       <field name="firstName" minOccurs="0" nillable="false" />

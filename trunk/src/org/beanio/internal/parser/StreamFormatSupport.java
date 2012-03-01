@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Kevin Seim
+ * Copyright 2011-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,65 +19,87 @@ import java.io.*;
 
 import org.beanio.stream.*;
 
+/**
+ * Base class for {@link StreamFormat} implementations.
+ * 
+ * @author Kevin Seim
+ * @since 2.0
+ */
 public abstract class StreamFormatSupport implements StreamFormat {
 
     private String name;
-    private RecordReaderFactory readerFactory;
-    private RecordWriterFactory writerFactory;
+    private RecordParserFactory recordParserFactory;
     
+    /**
+     * Constructs a new <tt>StreamFormatSupport</tt>.
+     */
+    public StreamFormatSupport() { }
+    
+    /**
+     * Sets the name of this stream.
+     * @param name the stream name
+     */
     public void setName(String name) {
         this.name = name;
     }
     
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.internal.parser.StreamFormat#getName()
+     */
     public String getName() {
         return name;
     }
 
     /**
      * Creates a new <tt>RecordReader</tt> to read from the given input stream.
-     * This method delegates to the configured reader factory, or if null, 
-     * it calls {@link #createDefaultReader(Reader)}.
+     * This method delegates to the configured record parser factory.
      * @param in the input stream to read from
      * @return a new <tt>RecordReader</tt>
      */
     public RecordReader createRecordReader(Reader in) {
-        if (readerFactory == null)
-            return createDefaultReader(in);
-        else
-            return readerFactory.createReader(in);
+        return recordParserFactory.createReader(in);
     }
 
     /**
      * Creates a new <tt>RecordWriter</tt> for writing to the given output stream.
-     * This method delegates to the configured record writer factory, or if null, 
-     * it calls {@link #createDefaultWriter(Writer)}.
+     * This method delegates to the configured record parser factory.
      * @param out the output stream to write to
      * @return a new <tt>RecordWriter</tt>
      */
     public RecordWriter createRecordWriter(Writer out) {
-        if (writerFactory == null)
-            return createDefaultWriter(out);
-        else
-            return writerFactory.createWriter(out);
+        return recordParserFactory.createWriter(out);
     }
     
-    protected abstract RecordReader createDefaultReader(Reader in);
-
-    protected abstract RecordWriter createDefaultWriter(Writer out);
-
-    public RecordReaderFactory getReaderFactory() {
-        return readerFactory;
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.internal.parser.StreamFormat#createRecordMarshaller()
+     */
+    public RecordMarshaller createRecordMarshaller() {
+        return recordParserFactory.createMarshaller();
     }
 
-    public void setReaderFactory(RecordReaderFactory readerFactory) {
-        this.readerFactory = readerFactory;
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.internal.parser.StreamFormat#createRecordUnmarshaller()
+     */
+    public RecordUnmarshaller createRecordUnmarshaller() {
+        return recordParserFactory.createUnmarshaller();
     }
 
-    public RecordWriterFactory getWriterFactory() {
-        return writerFactory;
+    /**
+     * Sets the {@link RecordParserFactory} for creating record parsers.
+     * @param recordParserFactory the {@link RecordParserFactory}
+     */
+    public void setRecordParserFactory(RecordParserFactory recordParserFactory) {
+        this.recordParserFactory = recordParserFactory;
     }
-
-    public void setWriterFactory(RecordWriterFactory writerFactory) {
-        this.writerFactory = writerFactory;
+    
+    /**
+     * Returns the {@link RecordParserFactory} used by this stream.
+     * @return the {@link RecordParserFactory}
+     */
+    protected RecordParserFactory getRecordParserFactory() {
+        return recordParserFactory;
     }
 }

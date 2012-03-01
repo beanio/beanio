@@ -4,9 +4,9 @@
   xsi:schemaLocation="http://www.beanio.org/2012/03 http://www.beanio.org/2012/03/mapping.xsd">
 
   <stream name="ml1" format="csv">
-    <writer>
+    <parser>
       <property name="lineSeparator" value="\n" />
-    </writer>
+    </parser>
     <group name="orderGroup" class="org.beanio.beans.Order">
       <record name="order" minOccurs="1" maxOccurs="1" order="1">
         <field name="type" rid="true" literal="order" ignore="true" />

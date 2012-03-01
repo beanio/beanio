@@ -41,8 +41,7 @@ public class DelimitedParserFactory extends FlatParserFactory {
     public StreamFormat createStreamFormat(StreamConfig config) {
         DelimitedStreamFormat format = new DelimitedStreamFormat();
         format.setName(config.getName());
-        format.setReaderFactory(getRecordReaderFactory(config));
-        format.setWriterFactory(getRecordWriterFactory(config));
+        format.setRecordParserFactory(createRecordParserFactory(config));
         return format;
     }
 
@@ -84,12 +83,7 @@ public class DelimitedParserFactory extends FlatParserFactory {
     }
     
     @Override
-    protected RecordReaderFactory newRecordReaderFactory() {
-        return new DelimitedReaderFactory();
-    }
-
-    @Override
-    protected RecordWriterFactory newRecordWriterFactory() {
-        return new DelimitedWriterFactory();
+    protected RecordParserFactory getDefaultRecordParserFactory() {
+        return new DelimitedRecordParserFactory();
     }
 }

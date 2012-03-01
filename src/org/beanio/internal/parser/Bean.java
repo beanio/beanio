@@ -15,13 +15,16 @@
  */
 package org.beanio.internal.parser;
 
+import java.lang.reflect.Constructor;
 import java.util.Map;
 
 import org.beanio.*;
 
 /**
+ * A component used to aggregate {@link Property}'s into a bean object, which
+ * may also be a property of a parent bean object itself. 
  * 
- * <p>A bean may only hold children that implement {@link Property}.
+ * <p>A bean may only have children that implement {@link Property}.</p>
  * 
  * @author Kevin Seim
  * @since 2.0
@@ -38,6 +41,10 @@ public class Bean extends Component implements Property {
     private boolean identifier;
     // the accessor for setting this bean on its parent, may be null
     private PropertyAccessor accessor;
+    // the constructor for creating this bean object (if null, the no-arg constructor is used)
+    private Constructor<?> constructor;
+    // used to temporarily hold constructor argument values when a constructor is specified
+    private Object[] constructorArgs;
     
     /**
      * Constructs a new <tt>Bean</tt>.
@@ -97,11 +104,49 @@ public class Bean extends Component implements Property {
     public Object createValue() {
         bean = null;
         
+        // populate constructor arguments first
+        if (constructor != null) {
+            // lazily create...
+            boolean create = false;
+            
+            for (Component child : getChildren()) {
+                Property property = (Property) child;
+                
+                PropertyAccessor accessor = property.getAccessor();
+                if (accessor == null) {
+                    throw new IllegalStateException("Accessor not set for property value '" + child.getName() + "'");
+                }
+                if (!accessor.isConstructorArgument()) {
+                    continue;
+                }
+                
+                Object value = property.createValue();
+                if (value == Value.INVALID) {
+                    return Value.INVALID;
+                }
+                else if (value == Value.MISSING) {
+                    value = null;
+                }
+                else {
+                    create = true;
+                }
+                
+                constructorArgs[accessor.getConstructorArgumentIndex()] = value;
+            }
+            
+            if (create) {
+                bean = newInstance();
+            }
+        }
+        
+        
         for (Component child : getChildren()) {
             Property property = (Property) child;
+            if (property.getAccessor().isConstructorArgument()) {
+                continue;
+            }
             
             Object value = property.createValue();
-
             if (value == Value.INVALID) {
                 return Value.INVALID;
             }
@@ -112,12 +157,7 @@ public class Bean extends Component implements Property {
                 }
 
                 try {
-                    PropertyAccessor accessor = property.getAccessor();
-                    if (accessor == null) {
-                        throw new IllegalStateException("Accessor not set for property value '" + child.getName() + "'");
-                    }
-                    
-                    accessor.setValue(bean, value);
+                    property.getAccessor().setValue(bean, value);
                 }
                 catch (Exception ex) {
                     throw new BeanIOException("Failed to set property '" + property.getName() + 
@@ -125,7 +165,7 @@ public class Bean extends Component implements Property {
                 }
             }
         }
-    
+
         if (bean == null) {
             bean = required ? newInstance() : Value.MISSING;
         }
@@ -167,6 +207,10 @@ public class Bean extends Component implements Property {
         }
     }
     
+    /**
+     * Creates a new instance of this bean object.
+     * @return the new bean <tt>Object</tt>
+     */
     protected Object newInstance() {
         // if the bean class is null, the record will be ignored and null is returned here
         Class<?> beanClass = type;
@@ -175,7 +219,12 @@ public class Bean extends Component implements Property {
         }
         
         try {
-            return beanClass.newInstance();
+            if (constructor == null) {
+                return beanClass.newInstance();
+            }
+            else {
+                return constructor.newInstance(constructorArgs);
+            }
         }
         catch (Exception e) {
             throw new BeanReaderException("Failed to instantiate class '" + beanClass.getName() + "'", e);
@@ -191,6 +240,10 @@ public class Bean extends Component implements Property {
         return accessor;
     }
     
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.internal.parser.Property#setAccessor(org.beanio.internal.parser.PropertyAccessor)
+     */
     public void setAccessor(PropertyAccessor accessor) {
         this.accessor = accessor;
     }
@@ -217,6 +270,10 @@ public class Bean extends Component implements Property {
         this.bean = required ? null : Value.MISSING;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.internal.parser.Property#isIdentifier()
+     */
     public boolean isIdentifier() {
         return identifier;
     }
@@ -225,11 +282,12 @@ public class Bean extends Component implements Property {
         this.identifier = identifier;
     }
     
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.internal.parser.Property#type()
+     */
     public int type() {
-        if (isMap())
-            return Property.MAP;
-        else
-            return Property.COMPLEX;
+        return (isMap()) ? Property.MAP : Property.COMPLEX;
     }
     
     /**
@@ -240,7 +298,33 @@ public class Bean extends Component implements Property {
         return Map.class.isAssignableFrom(type);
     }
     
+    /**
+     * Returns the {@link Constructor} used to instantiate this bean object, or null
+     * if the default no-arg constructor is used.
+     * @return the {@link Constructor}
+     */
+    public Constructor<?> getConstructor() {
+        return constructor;
+    }
 
+    /**
+     * Sets the {@link Constructor} used to instantiate this bean object.
+     * @param constructor the {@link Constructor}
+     */
+    public void setConstructor(Constructor<?> constructor) {
+        this.constructorArgs = constructor == null ? null : new Object[constructor.getParameterTypes().length];
+        this.constructor = constructor;
+    }
+    
+    @Override
+    public Bean clone() {
+        Bean clone = (Bean) super.clone();
+        if (clone.constructorArgs != null) {
+            clone.constructorArgs = (Object[]) constructorArgs.clone();
+        }
+        return clone;
+    }
+    
     @Override
     protected void toParamString(StringBuilder s) {
         super.toParamString(s);

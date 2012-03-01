@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Kevin Seim
+ * Copyright 2010-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,45 +64,35 @@ public class DelimitedWriter implements RecordWriter {
      * @param delimiter the field delimiting character
      */
     public DelimitedWriter(Writer out, char delimiter) {
-        this(out, delimiter, null);
+        this(out, new DelimitedParserConfiguration(delimiter));
     }
 
     /**
      * Constructs a new <tt>DelimitedWriter</tt>.
      * @param out the output stream to write to
-     * @param delimiter the field delimiting character
-     * @param escape the escape character, or <tt>null</tt> to disable escaping
+     * @param config the delimited parser configuration
      */
-    public DelimitedWriter(Writer out, char delimiter, Character escape) {
-        this(out, delimiter, escape, null);
-    }
-
-    /**
-     * Constructs a new <tt>DelimitedWriter</tt>.
-     * @param out the output stream to write to
-     * @param delimiter the field delimiting character
-     * @param escape the escape character, or <tt>null</tt> to disable escaping
-     * @param recordTerminator the termination sequence to use at the end of each record
-     */
-    public DelimitedWriter(Writer out, char delimiter, Character escape, String recordTerminator) {
-
+    public DelimitedWriter(Writer out, DelimitedParserConfiguration config) {
+        
         this.out = out;
-        this.delim = delimiter;
-        if (escape == null) {
-            this.escapeEnabled = false;
+        delim = config.getDelimiter();
+        
+        if (config.getEscape() == null) {
+            escapeEnabled = false;
         }
         else {
-            this.escapeEnabled = true;
-            this.escapeChar = escape;
+            escapeEnabled = true;
+            escapeChar = config.getEscape();
 
-            if (delimiter == escape) {
+            if (delim == escapeChar) {
                 throw new IllegalArgumentException("Delimiter cannot match the escape character");
             }
         }
+        
+        recordTerminator = config.getRecordTerminator();
         if (recordTerminator == null) {
             recordTerminator = System.getProperty("line.separator");
         }
-        this.recordTerminator = recordTerminator;
     }
 
     /* 

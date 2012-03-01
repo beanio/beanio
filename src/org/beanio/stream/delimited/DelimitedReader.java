@@ -87,69 +87,7 @@ public class DelimitedReader implements RecordReader {
      * @param delimiter the field delimiting character
      */
     public DelimitedReader(Reader in, char delimiter) {
-        this(in, new DelimitedReaderConfiguration(delimiter));
-    }
-
-    /**
-     * Constructs a new <tt>DelimitedReader</tt>.
-     * @param in the input stream to read from
-     * @param delimiter the field delimiting character
-     * @param escapeChar the escape character, or null to disable escaping
-     * @param lineContinuationCharacter the line continuation character,
-     *   or <tt>null</tt> to disable line continuations
-     * @throws IllegalArgumentException if the delimiter matches the escape character or
-     *   or the line continuation character
-     * @deprecated use {@link DelimitedReader#DelimitedReader(Reader, DelimitedReaderConfiguration)} instead
-     */
-    public DelimitedReader(Reader in, char delimiter, Character escapeChar,
-        Character lineContinuationCharacter) {
-        this(in, delimiter, escapeChar, lineContinuationCharacter, null);
-    }
-    
-    /**
-     * Constructs a new <tt>DelimitedReader</tt>.
-     * @param in the input stream to read from
-     * @param delimiter the field delimiting character
-     * @param escapeChar the escape character, or null to disable escaping
-     * @param lineContinuationCharacter the line continuation character,
-     *   or <tt>null</tt> to disable line continuations
-     * @param recordTerminator the character used to signify the end of the record, or 
-     *   <tt>null</tt> to allow any of LF, CR, or CRLF
-     * @throws IllegalArgumentException if the delimiter matches the escape character or
-     *   or the line continuation character
-     * @deprecated use {@link DelimitedReader#DelimitedReader(Reader, DelimitedReaderConfiguration)} instead
-     */
-    public DelimitedReader(Reader in, char delimiter, Character escapeChar,
-        Character lineContinuationCharacter, Character recordTerminator) {
-
-        this.in = in;
-        this.delim = delimiter;
-        
-        if (escapeChar != null) {
-            if (delimiter == escapeChar) {
-                throw new IllegalArgumentException("The field delimiter canot match the escape character");
-            }            
-            this.escapeEnabled = true;
-            this.escapeChar = escapeChar;
-        }
-        
-        if (lineContinuationCharacter != null) {
-            if (delimiter == lineContinuationCharacter) {
-                throw new IllegalArgumentException("The field delimiter cannot match the line continuation character");
-            }
-            this.multilineEnabled = true;
-            this.lineContinuationChar = lineContinuationCharacter;
-        }
-        
-        if (recordTerminator != null) {
-            if (recordTerminator == delimiter) {
-                throw new IllegalArgumentException("The record delimiter and record terminator characters cannot match");
-            }
-            if (lineContinuationCharacter != null && recordTerminator == lineContinuationCharacter) {
-                throw new IllegalArgumentException("The line continuation character and record terminator cannot match");
-            }            
-            this.recordTerminator = recordTerminator;
-        }
+        this(in, new DelimitedParserConfiguration(delimiter));
     }
     
     /**
@@ -160,9 +98,9 @@ public class DelimitedReader implements RecordReader {
      *   or the line continuation character
      * @since 1.2
      */
-    public DelimitedReader(Reader in, DelimitedReaderConfiguration config) {
+    public DelimitedReader(Reader in, DelimitedParserConfiguration config) {
         if (config == null) {
-            config = new DelimitedReaderConfiguration();
+            config = new DelimitedParserConfiguration();
         }
         
         this.in = in;
@@ -187,7 +125,17 @@ public class DelimitedReader implements RecordReader {
         }
         
         if (config.getRecordTerminator() != null) {
-            this.recordTerminator = config.getRecordTerminator();
+            String s = config.getRecordTerminator();
+            
+            if ("\n\r".equals(s)) {
+                // use default
+            }
+            else if (s.length() == 1) {
+                this.recordTerminator = s.charAt(0);
+            }
+            else if (s.length() > 1) {
+                throw new IllegalArgumentException("Record terminator must be a single character");
+            }
             
             if (recordTerminator == delim) {
                 throw new IllegalArgumentException("The record delimiter and record terminator characters cannot match");
@@ -198,7 +146,7 @@ public class DelimitedReader implements RecordReader {
         }
         
         if (config.isCommentEnabled()) {
-            commentReader = new CommentReader(in, config.getComments(), config.getRecordTerminator());
+            commentReader = new CommentReader(in, config.getComments(), this.recordTerminator);
         }
     }
 

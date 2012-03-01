@@ -39,4 +39,16 @@ public interface PropertyAccessor {
      */
     public void setValue(Object bean, Object value);
     
+    /**
+     * Returns whether this property is a constructor argument.
+     * @return true if this property is a constructor argument, false otherwise
+     */
+    public boolean isConstructorArgument();
+    
+    /**
+     * Returns the constructor argument index, or -1 if this property is
+     * not a constructor argument.
+     * @return the constructor argument index
+     */
+    public int getConstructorArgumentIndex();
 }

@@ -4,9 +4,9 @@
   xsi:schemaLocation="http://www.beanio.org/2012/03 http://www.beanio.org/2012/03/mapping.xsd">
 
   <stream name="d1" format="delimited" resourceBundle="org.beanio.parser.delimited.d1_messages">
-    <reader>
+    <parser>
       <property name="delimiter" value="," />
-    </reader>
+    </parser>
     <record name="record1" class="map" minLength="2" maxLength="4">
       <field name="field1" />
       <field name="field2" />
@@ -16,9 +16,9 @@
   </stream>
 
   <stream name="d2" format="delimited" resourceBundle="org.beanio.parser.delimited.d1_messages">
-    <reader>
+    <parser>
       <property name="delimiter" value="," />
-    </reader>
+    </parser>
     <record name="record1" class="map" minLength="2" maxLength="4">
       <field name="field1" />
       <field name="field2" />
@@ -28,14 +28,10 @@
   </stream>
 
   <stream name="d3" format="delimited" resourceBundle="org.beanio.parser.delimited.d1_messages">
-    <reader>
+    <parser>
       <property name="delimiter" value="\t" />
       <property name="recordTerminator" value="~" />
-    </reader>
-    <writer>
-      <property name="delimiter" value="\t" />
-      <property name="recordTerminator" value="~" />
-    </writer>
+    </parser>
     <record name="record1" class="map">
       <field name="field1" collection="array" minOccurs="0" maxOccurs="unbounded" length="3" padding="x" justify="right" />
     </record>

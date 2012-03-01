@@ -54,4 +54,20 @@ public class MapAccessor implements PropertyAccessor {
     public void setValue(Object bean, Object value) {
         ((Map)bean).put(key, value);
     }
+
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.internal.parser.PropertyAccessor#isConstructorArgument()
+     */
+    public boolean isConstructorArgument() {
+        return false;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.internal.parser.PropertyAccessor#getConstructorArgumentIndex()
+     */
+    public int getConstructorArgumentIndex() {
+        return -1;
+    }
 }

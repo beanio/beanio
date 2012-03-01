@@ -55,7 +55,7 @@ public class FixedLengthReader implements RecordReader {
      * @param in the input stream to read from
      */
     public FixedLengthReader(Reader in) {
-        this(in, (FixedLengthReaderConfiguration) null);
+        this(in, (FixedLengthParserConfiguration) null);
     }
 
     /**
@@ -103,15 +103,24 @@ public class FixedLengthReader implements RecordReader {
      * @throws IllegalArgumentException if a configuration setting is invalid
      * @since 1.2
      */
-    public FixedLengthReader(Reader in, FixedLengthReaderConfiguration config) throws IllegalArgumentException {
+    public FixedLengthReader(Reader in, FixedLengthParserConfiguration config) throws IllegalArgumentException {
         if (config == null) {
-            config = new FixedLengthReaderConfiguration();
+            config = new FixedLengthParserConfiguration();
         }
         
         this.in = in;
         
         if (config.getRecordTerminator() != null) {
-            this.recordTerminator = config.getRecordTerminator();
+            String s = config.getRecordTerminator();
+            if ("\n\r".equals(s)) {
+                // use default
+            }
+            else if (s.length() == 1) {
+                this.recordTerminator = s.charAt(0);
+            }
+            else if (s.length() > 1) {
+                throw new IllegalArgumentException("Record terminator must be a single character");
+            }
         }
         
         if (config.getLineContinuationCharacter() == null) {
@@ -122,12 +131,12 @@ public class FixedLengthReader implements RecordReader {
             this.lineContinuationChar = config.getLineContinuationCharacter();
             
             if (recordTerminator != 0 && lineContinuationChar == recordTerminator) {
-                throw new IllegalArgumentException("The line continuation character and recrod terminator cannot match.");
+                throw new IllegalArgumentException("The line continuation character and record terminator cannot match.");
             }
         }
         
         if (config.isCommentEnabled()) {
-            commentReader = new CommentReader(in, config.getComments(), config.getRecordTerminator());
+            commentReader = new CommentReader(in, config.getComments(), this.recordTerminator);
         }
     }
 

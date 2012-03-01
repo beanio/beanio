@@ -138,4 +138,9 @@ public class XmlMarshallingContext extends MarshallingContext {
     public void setParent(Node parent) {
         this.parent = parent;
     }
+    
+    @Override
+    public Document toDocument(Object record) {
+        return (Document)record;
+    }
 }

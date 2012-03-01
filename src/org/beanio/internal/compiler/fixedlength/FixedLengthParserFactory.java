@@ -46,8 +46,7 @@ public class FixedLengthParserFactory extends FlatParserFactory {
     public StreamFormat createStreamFormat(StreamConfig config) {
         FixedLengthStreamFormat format = new FixedLengthStreamFormat();
         format.setName(config.getName());
-        format.setReaderFactory(getRecordReaderFactory(config));
-        format.setWriterFactory(getRecordWriterFactory(config));
+        format.setRecordParserFactory(createRecordParserFactory(config));
         return format;
     }
 
@@ -83,12 +82,7 @@ public class FixedLengthParserFactory extends FlatParserFactory {
     }
 
     @Override
-    protected RecordReaderFactory newRecordReaderFactory() {
-        return new FixedLengthReaderFactory();
-    }
-
-    @Override
-    protected RecordWriterFactory newRecordWriterFactory() {
-        return new FixedLengthWriterFactory();
+    protected RecordParserFactory getDefaultRecordParserFactory() {
+        return new FixedLengthRecordParserFactory();
     }
 }

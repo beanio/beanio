@@ -4,9 +4,9 @@
   xsi:schemaLocation="http://www.beanio.org/2012/03 http://www.beanio.org/2012/03/mapping.xsd">
 
   <stream name="c1" format="csv">
-    <reader>
+    <parser>
       <property name="comments" value="$,#,//,\\\," />
-    </reader>
+    </parser>
     <record name="Detail" class="map">
       <field name="name" />
       <field name="age" />

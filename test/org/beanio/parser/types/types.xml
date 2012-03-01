@@ -89,9 +89,9 @@
   </stream>
 
   <stream name="t8" format="delimited">
-    <reader>
+    <parser>
       <property name="delimiter" value="," />
-    </reader>
+    </parser>
     <record name="record" class="org.beanio.parser.types.ObjectRecord">
       <field name="dateValue" />
     </record>

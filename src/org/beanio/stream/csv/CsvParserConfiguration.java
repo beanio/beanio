@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Kevin Seim
+ * Copyright 2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,12 @@
 package org.beanio.stream.csv;
 
 /**
- * Stores configuration settings for a {@link CsvReader}.
+ * Stores configuration settings for parsing CSV formatted streams.
  * 
  * @author Kevin Seim
- * @since 1.2
- * @see CsvReader
+ * @since 2.0
  */
-public class CsvReaderConfiguration {
+public class CsvParserConfiguration {
 
     private char delimiter = ',';
     private char quote = '"';
@@ -32,10 +31,13 @@ public class CsvReaderConfiguration {
     private boolean unquotedQuotesAllowed = false;
     private String[] comments;
     
+    private String recordTerminator = null;
+    private boolean alwaysQuote = false;
+    
     /**
-     * Constructs a new <tt>CsvReaderConfiguration</tt>.
+     * Constructs a new <tt>CsvParserConfiguration</tt>.
      */
-    public CsvReaderConfiguration() { } 
+    public CsvParserConfiguration() { } 
     
     /**
      * Sets the field delimiter. By default, the delimiter is a comma.
@@ -157,7 +159,7 @@ public class CsvReaderConfiguration {
     }
 
     /**
-     * Sets wheter quotes are allowed to appear in an unquoted field.
+     * Sets whether quotes are allowed to appear in an unquoted field.
      * @param unquotedQuotesAllowed set to <tt>true</tt> if quotes may appear in
      *   an unquoted field
      */
@@ -190,5 +192,65 @@ public class CsvReaderConfiguration {
      */
     public boolean isCommentEnabled() {
         return comments != null && comments.length > 0;
+    }
+    
+    /**
+     * Returns <tt>true</tt> if fields should always be quoted when marshalled.  
+     * Defaults to <tt>false</tt> which will only quote fields containing a quotation mark,
+     * delimiter, line feeds or carriage return.
+     * @return <tt>true</tt> if all fields will be quoted
+     */
+    public boolean isAlwaysQuote() {
+        return alwaysQuote;
+    }
+
+    /**
+     * Set to <tt>true</tt> to quote every field when marshalled.  If <tt>false</tt>, a field
+     * will only be quoted if it contains a quotation mark, delimiter, line feed
+     * or carriage return.
+     * @param alwaysQuote set to <tt>true</tt> to quote every field regardless
+     *   of content
+     */
+    public void setAlwaysQuote(boolean alwaysQuote) {
+        this.alwaysQuote = alwaysQuote;
+    }
+
+    /**
+     * Returns the text used to terminate a record.  By default, the record
+     * terminator is set to the value of the <tt>line.separator</tt> system property.
+     * @return the record termination text
+     */
+    public String getRecordTerminator() {
+        return recordTerminator;
+    }
+
+    /**
+     * Sets the text used to terminate a record.  If set to <tt>null</tt>, the 
+     * the value of the <tt>line.separator</tt> system property is used to terminate
+     * records.
+     * @param recordTerminator the record termination text
+     */
+    public void setRecordTerminator(String recordTerminator) {
+        this.recordTerminator = recordTerminator;
+    }
+    
+    /**
+     * Returns the text used to terminate a record.  By default, the
+     * line separator is set using the 'line.separator' system property.
+     * @return the line separation text
+     * @deprecated
+     */
+    public String getLineSeparator() {
+        return recordTerminator;
+    }
+
+    /**
+     * Sets the text used to terminate a record.  If set to <tt>null</tt>, the default
+     * line separator is used based on the 'line.separator' system property.
+     * @param lineSeparator the line separation text
+     * @deprecated
+     */
+    public void setLineSeparator(String lineSeparator) {
+        this.recordTerminator = lineSeparator;
     }
 }

@@ -16,17 +16,18 @@
 package org.beanio.internal.compiler;
 
 import java.beans.*;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.regex.PatternSyntaxException;
 
 import org.beanio.BeanIOConfigurationException;
 import org.beanio.internal.config.*;
 import org.beanio.internal.parser.*;
+import org.beanio.internal.parser.Field;
 import org.beanio.internal.parser.accessor.*;
 import org.beanio.internal.parser.message.ResourceBundleMessageFactory;
 import org.beanio.internal.util.*;
-import org.beanio.stream.*;
+import org.beanio.stream.RecordParserFactory;
 import org.beanio.types.*;
 
 /**
@@ -45,6 +46,8 @@ import org.beanio.types.*;
  */
 public abstract class ParserFactorySupport extends ProcessorSupport implements ParserFactory {
 
+    private static final String CONSTRUCTOR_PREFIX = "#";
+    
     private Stream stream;
     private String streamFormat;
     private boolean readEnabled = true;
@@ -175,7 +178,82 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
                 ((Property)propertyStack.getLast()).setIdentifier(true);
             }
         }
+        
+        // check for constructor arguments
+        if (last.type() == Property.COMPLEX) {
+            updateConstructor((Bean)last);
+        }
+        
         return last;
+    }
+    
+    /**
+     * Updates a {@link Bean}'s constructor if one or more of its properties are 
+     * constructor arguments.
+     * @param bean the {@link Bean} to check
+     */
+    protected void updateConstructor(Bean bean) {
+        ArrayList<Property> args = null;
+        
+        for (Component child : bean.getChildren()) {
+            Property property = (Property) child;
+            
+            if (property.getAccessor().isConstructorArgument()) {
+                if (args == null) {
+                    args = new ArrayList<Property>();
+                }
+                args.add(property);
+            }
+        }
+        
+        // return if no constructor arguments were found
+        if (args == null) {
+            return;
+        }
+        
+        // sort arguments by constructor index
+        Collections.sort(args, new Comparator<Property>() {
+            public int compare(Property o1, Property o2) {
+                return o1.getAccessor().getConstructorArgumentIndex() -
+                    o2.getAccessor().getConstructorArgumentIndex();
+            }
+        });
+        
+        int count = args.size();
+        
+        // verify the number of constructor arguments matches the provided constructor index
+        if (count != (args.get(count - 1).getAccessor().getConstructorArgumentIndex() + 1)) {
+            throw new BeanIOConfigurationException("Missing constructor argument for bean class '" + 
+                bean.getType().getName() + "'");
+        }
+        
+        // find a suitable constructor
+        Constructor<?> constructor = null;
+        CONSTRUCTOR_LOOP: for (Constructor<?> c : bean.getType().getConstructors()) {
+            if (c.getParameterTypes().length != count) {
+                continue;
+            }
+            
+            int i = 0;
+            for (Class<?> type : c.getParameterTypes()) {
+                Property arg = args.get(i);
+                if (!TypeUtil.isAssignable(type, arg.getType())) {
+                    continue CONSTRUCTOR_LOOP;
+                }
+                ++i;
+            }
+            
+            constructor = c;
+            break CONSTRUCTOR_LOOP; 
+        }
+        
+        // verify a constructor was found
+        if (constructor == null) {
+            throw new BeanIOConfigurationException("No suitable constructor found for bean class '" + 
+                bean.getType().getName() + "'");
+        }
+        
+        bean.setConstructor(constructor);
     }
     
     /**
@@ -194,7 +272,6 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         StreamFormat format = createStreamFormat(config);
         
         stream = new Stream(format);
-        stream.setName(config.getName());
         
         // set the stream mode, defaults to read/write, the stream mode may be used
         // to enforce or relax validation rules specific to marshalling or unmarshalling
@@ -632,7 +709,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     }
     
     /**
-     * Creates an iteration for a repeating property.
+     * Creates an iteration for a repeating segment or field.
      * @param config the property configuration
      * @param property the property component, may be null if the iteration is not
      *   a property of its parent bean
@@ -670,24 +747,20 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         
         // if collection was set, then this is a property of its parent
         if (collectionType != null) {
-            PropertyDescriptor descriptor = reflectCollectionType(iteration, property, 
+            Class<?> reflectedType = reflectCollectionType(iteration, property, 
                 config.getGetter(), config.getSetter());
             
             // descriptor may be null if the parent was Map or Collection
             if (collectionType == TypeUtil.ARRAY_TYPE) {
                 Class<? extends Object> arrayType = property.getType();
-                if (descriptor != null) {
-                    
-                    // use the reflected array type
-                    Class<? extends Object> reflectedType = descriptor.getPropertyType().getComponentType();  
-                    if (arrayType != null && !TypeUtil.isAssignable(reflectedType, arrayType)) {
-                        throw new BeanIOConfigurationException("Type '" + arrayType + 
-                            "' is not assignable to array type '" + reflectedType + "'");
-                    }
-                    arrayType = reflectedType;
+                
+                // reflectedType may be null if our parent is a Map
+                if (reflectedType != null) {
+                    // use the reflected component type for an array
+                    arrayType = reflectedType.getComponentType();
                     
                     // override target type if we were able to reflect its value
-                    property.setType(reflectedType);
+                    property.setType(arrayType);
                 }
                 else if (arrayType == null) {
                     // default to String
@@ -737,21 +810,17 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         
         // if collection was set, then this is a property of its parent
         if (collectionType != null) {
-            PropertyDescriptor descriptor = reflectCollectionType(iteration, property, 
+            Class<?> reflectedType = reflectCollectionType(iteration, property, 
                 config.getGetter(), config.getSetter());
             
             // descriptor may be null if the parent was Map or Collection
             if (collectionType == TypeUtil.ARRAY_TYPE) {
                 Class<? extends Object> arrayType = property.getType();
-                if (descriptor != null) {
-                    
-                    // use the reflected array type
-                    Class<? extends Object> reflectedType = descriptor.getPropertyType().getComponentType();   
-                    if (arrayType != null && !TypeUtil.isAssignable(reflectedType, arrayType)) {
-                        throw new BeanIOConfigurationException("Type '" + arrayType + 
-                            "' is not assignable to array type '" + reflectedType + "'");
-                    }
-                    arrayType = reflectedType;
+                
+                // reflected type may be null if the parent bean is a Map
+                if (reflectedType != null) {    
+                    // use the reflected component type for an array
+                    arrayType = reflectedType.getComponentType();   
                     
                     // override target type if we were able to reflect its value
                     property.setType(arrayType);
@@ -774,9 +843,10 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      * @param property
      * @param getter
      * @param setter
+     * @return the reflected property type
      * @throws BeanIOConfigurationException
      */
-    protected PropertyDescriptor reflectCollectionType(Property iteration, Property property, 
+    protected Class<?> reflectCollectionType(Property iteration, Property property, 
         String getter, String setter) throws BeanIOConfigurationException {
         if (propertyStack.isEmpty()) {
             return null;
@@ -793,18 +863,56 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
                 return null;
         }
         
-        // set the property descriptor on the field
-        PropertyDescriptor descriptor =  getPropertyDescriptor(property.getName(), getter, setter);
+        // parse the constructor argument index from the 'setter'
+        int construtorArgumentIndex = -1;
+        if (setter != null && setter.startsWith(CONSTRUCTOR_PREFIX)) {
+            try {
+                construtorArgumentIndex = Integer.parseInt(setter.substring(1));
+                if (construtorArgumentIndex <= 0) {
+                    throw new BeanIOConfigurationException("Invalid setter method");
+                }
+                construtorArgumentIndex--;
+            }
+            catch (NumberFormatException ex) { 
+                throw new BeanIOConfigurationException("Invalid setter method");
+            }
+            setter = null;
+        }
         
+        Class<?> reflectedType;
+        try {
+            // set the property descriptor on the field
+            PropertyDescriptor descriptor = getPropertyDescriptor(property.getName(),
+                getter, setter, construtorArgumentIndex >= 0);
+            reflectedType = descriptor.getPropertyType();
+            
+            iteration.setAccessor(new MethodReflectionAccessor(descriptor, construtorArgumentIndex));
+        }
+        catch (BeanIOConfigurationException ex) {
+            // if a method accessor is not found, attempt to find a public field
+            java.lang.reflect.Field field = getField(property.getName());
+            if (field == null) {
+                // give up and rethrow the exception
+                throw ex;    
+            }
+            reflectedType = field.getType();
+            
+            iteration.setAccessor(new FieldReflectionAccessor(field, construtorArgumentIndex));
+        }
+
+        // reflectedType may be null for read-only streams using a constructor argument
+        if (reflectedType == null) {
+            return null;
+        }
+            
         Class<?> type = property.getType();
-        
         if (iteration.getType() == TypeUtil.ARRAY_TYPE) {
-            if (!descriptor.getPropertyType().isArray()) {
+            if (!reflectedType.isArray()) {
                 throw new BeanIOConfigurationException("Collection type 'array' does not " +
-                    "match bean property type '" + descriptor.getPropertyType().getName() + "'");
+                    "match bean property type '" + reflectedType.getName() + "'");
             }
             
-            Class<?> arrayType = descriptor.getPropertyType().getComponentType();
+            Class<?> arrayType = reflectedType.getComponentType();
             if (type == null) {
                 property.setType(arrayType);
             }
@@ -812,18 +920,16 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
                 throw new BeanIOConfigurationException("Configured field array of type '" + 
                     type + "' is not assignable to bean property " +
                     "array of type '" + arrayType.getName() + "'");
-                
             }
         }
         else {
-            if (!descriptor.getPropertyType().isAssignableFrom(iteration.getType())) {
-                Class<?> beanPropertyType = descriptor.getPropertyType();
+            if (!reflectedType.isAssignableFrom(iteration.getType())) {
                 String beanPropertyTypeName;
-                if (beanPropertyType.isArray()) {
-                    beanPropertyTypeName = beanPropertyType.getComponentType().getName() + "[]";
+                if (reflectedType.isArray()) {
+                    beanPropertyTypeName = reflectedType.getComponentType().getName() + "[]";
                 }
                 else {
-                    beanPropertyTypeName = beanPropertyType.getName();                
+                    beanPropertyTypeName = reflectedType.getName();                
                 }
                 
                 throw new BeanIOConfigurationException("Configured collection type '" +
@@ -831,9 +937,8 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
                     "type '" + beanPropertyTypeName + "'");
             }
         }
-        
-        iteration.setAccessor(new ReflectionAccessor(descriptor));
-        return descriptor;
+            
+        return reflectedType;
     }
     
     /**
@@ -859,35 +964,74 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
                 return;
         }
         
-        // set the property descriptor on the field
-        PropertyDescriptor descriptor =  getPropertyDescriptor(property.getName(), 
-            config.getGetter(), config.getSetter());
-
-        Class<?> type = property.getType();
-        if (type == null) {
-            property.setType(descriptor.getPropertyType());
-        }
-        else if (!TypeUtil.isAssignable(descriptor.getPropertyType(), type)) {
-            throw new BeanIOConfigurationException("Property type '" + 
-                config.getType() + "' is not assignable to bean property " +
-                "type '" + descriptor.getPropertyType().getName() + "'");
+        String setter = config.getSetter();
+        String getter = config.getGetter();
+        
+        // parse the constructor argument index from the 'setter'
+        
+        int construtorArgumentIndex = -1;
+        if (setter != null && setter.startsWith(CONSTRUCTOR_PREFIX)) {
+            try {
+                construtorArgumentIndex = Integer.parseInt(setter.substring(1));
+                if (construtorArgumentIndex <= 0) {
+                    throw new BeanIOConfigurationException("Invalid setter method");
+                }
+                construtorArgumentIndex--;
+            }
+            catch (NumberFormatException ex) { 
+                throw new BeanIOConfigurationException("Invalid setter method");
+            }
+            setter = null;
         }
         
-        property.setAccessor(new ReflectionAccessor(descriptor));
+        Class<?> reflectedType;
+        try {
+            // set the property descriptor on the field
+            PropertyDescriptor descriptor = getPropertyDescriptor(property.getName(), 
+                getter, setter, construtorArgumentIndex >= 0);
+            reflectedType = descriptor.getPropertyType();
+            
+            property.setAccessor(new MethodReflectionAccessor(descriptor, construtorArgumentIndex));
+        }
+        catch (BeanIOConfigurationException ex) {
+            // if a method accessor is not found, attempt to find a public field
+            java.lang.reflect.Field field = getField(property.getName());
+            if (field == null) {
+                // give up and rethrow the exception
+                throw ex;    
+            }
+            
+            property.setAccessor(new FieldReflectionAccessor(field, construtorArgumentIndex));
+            
+            reflectedType = field.getType();
+        }
+        
+        // validate the reflected type
+        Class<?> type = property.getType();
+        if (type == null) {
+            property.setType(reflectedType);
+        }
+        // reflectedType may be null if for read-only streams using a constructor argument
+        else if (reflectedType != null && !TypeUtil.isAssignable(reflectedType, type)) {
+            throw new BeanIOConfigurationException("Property type '" + 
+                config.getType() + "' is not assignable to bean property " +
+                "type '" + reflectedType.getName() + "'");
+        }
     }
-    
+        
     /**
      * Returns the {@link PropertyDescriptor} for getting and setting a property value from
      * current bean class on the property stack.
      * @param property the property name
      * @param getter the getter method name, or null to use the default
      * @param setter the setter method name, or null to use the default
+     * @param isConstructorArgument
      * @return the <tt>PropertyDescriptor</tt>
      * @throws BeanIOConfigurationException if the property is not found on the bean class, or
      *   no read or write method is discovered
      */
-    private PropertyDescriptor getPropertyDescriptor(String property, String getter, String setter) 
-        throws BeanIOConfigurationException {
+    private PropertyDescriptor getPropertyDescriptor(String property, String getter, String setter, 
+        boolean isConstructorArgument) throws BeanIOConfigurationException {
         
         Class<?> beanClass = ((Property)propertyStack.getLast()).getType();
         
@@ -910,7 +1054,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
                 }
                 
                 if (descriptor == null) {
-                    if (setter == null && getter == null) {
+                    if (setter == null && getter == null && !isConstructorArgument) {
                         throw new BeanIOConfigurationException("No such property '" + property +
                             "' in class '" + beanClass.getName() + "'");
                     }
@@ -933,7 +1077,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             }
             
             // validate a read method is found for mapping configurations that write streams
-            if (isReadEnabled() && descriptor.getWriteMethod() == null) {
+            if (!isConstructorArgument && isReadEnabled() && descriptor.getWriteMethod() == null) {
                 throw new BeanIOConfigurationException("No writeable method for property '" + property + 
                     "' in class '" + beanClass.getName() + "'");
             }
@@ -948,6 +1092,29 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         catch (IntrospectionException e) {
             throw new BeanIOConfigurationException("Bean introspection failed: " + e.getMessage(), e);
         }
+    }
+    
+    /**
+     * Returns the public non-final {@link java.lang.reflect.Field} for a given property
+     * name from the current bean class on the property stack.
+     * @param property the propety name
+     * @return the property {@link java.lang.reflect.Field} or null if not found
+     */
+    protected java.lang.reflect.Field getField(String property) {
+        Class<?> beanClass = ((Property)propertyStack.getLast()).getType();
+        
+        try {
+            java.lang.reflect.Field field = beanClass.getField(property);
+            
+            // verify the field is public and not final
+            int mod = field.getModifiers();
+            if (Modifier.isPublic(mod) && !Modifier.isFinal(mod)) {
+                return field;
+            }
+        }
+        catch (Exception e) { }
+        
+        return null;
     }
     
     /**
@@ -1101,17 +1268,11 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     }
     
     /**
-     * Creates a default record reader factory.
-     * @return the new <tt>RecordReaderFactory</tt>
+     * Returns the default {@link RecordParserFactory}.
+     * @return the {@link RecordParserFactory}
      */
-    protected abstract RecordReaderFactory newRecordReaderFactory();
-
-    /**
-     * Creates a default record writer factory
-     * @return the new <tt>RecordWriterFactory</tt>
-     */
-    protected abstract RecordWriterFactory newRecordWriterFactory();
-
+    protected abstract RecordParserFactory getDefaultRecordParserFactory();
+    
     /**
      * Sets the type handler factory to use to create the stream definition.
      * @param typeHandlerFactory the <tt>TypeHandlerFactory</tt> to use to
@@ -1126,7 +1287,6 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      * an input stream.
      * @return <tt>true</tt> if the stream definition must support reading
      *   an input stream
-     * @since 1.2
      */
     public boolean isReadEnabled() {
         return readEnabled;
@@ -1137,66 +1297,47 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      * output stream.
      * @return <tt>true</tt> if the stream definition must support writing
      *   to an output stream
-     * @since 1.2
      */
     public boolean isWriteEnabled() {
         return writeEnabled;
     }
     
     /**
-     * Loads the {@link RecordReaderFactory} for a stream configuration.
+     * Creates the {@link RecordParserFactory} for a stream configuration.
      * @param config the stream configuration
-     * @return the new {@link RecordReaderFactory}
+     * @return the created {@link RecordParserFactory}
      */
-    protected RecordReaderFactory getRecordReaderFactory(StreamConfig config) {
-        // configure the record reader factory
-        org.beanio.internal.config.BeanConfig readerFactoryBean = config.getReaderFactory();
-        if (readerFactoryBean == null) {
-            return null;
-        }
+    protected RecordParserFactory createRecordParserFactory(StreamConfig config) {
+        RecordParserFactory factory;
         
-        RecordReaderFactory factory;
-        if (readerFactoryBean.getClassName() == null) {
-            factory = newRecordReaderFactory();
-        }
-        else {
-            Object object = BeanUtil.createBean(classLoader, readerFactoryBean.getClassName());
-            if (!RecordReaderFactory.class.isAssignableFrom(object.getClass())) {
-                throw new BeanIOConfigurationException("Configured reader factory class '" +
-                    readerFactoryBean.getClassName() + "' does not implement RecordReaderFactory");
-            }
-            factory = (RecordReaderFactory) object;
-        }
-        BeanUtil.configure(factory, readerFactoryBean.getProperties());
-        return factory;
-    }
-    
-    /**
-     * Loads the {@link RecordWriterFactory} for a stream configuration.
-     * @param config the stream configuration
-     * @return the new {@link RecordWriterFactory}
-     */
-    protected RecordWriterFactory getRecordWriterFactory(StreamConfig config) {
         // configure the record writer factory
-        org.beanio.internal.config.BeanConfig writerFactoryBean = config.getWriterFactory();
-        if (writerFactoryBean == null) {
-            return null;
-        }
-        
-        RecordWriterFactory factory;
-        if (writerFactoryBean.getClassName() == null) {
-            factory = newRecordWriterFactory();
+        BeanConfig parserFactoryBean = config.getParserFactory();
+        if (parserFactoryBean == null) {
+            factory = getDefaultRecordParserFactory();
         }
         else {
-            Object object = BeanUtil.createBean(classLoader, writerFactoryBean.getClassName());
-            if (!RecordWriterFactory.class.isAssignableFrom(object.getClass())) {
-                throw new BeanIOConfigurationException("Configured writer factory class '" +
-                    writerFactoryBean.getClassName() + "' does not implement RecordWriterFactory");
+            if (parserFactoryBean.getClassName() == null) {
+                factory = getDefaultRecordParserFactory();
             }
-            factory = (RecordWriterFactory) object;
+            else {
+                Object object = BeanUtil.createBean(classLoader, parserFactoryBean.getClassName());
+                if (!RecordParserFactory.class.isAssignableFrom(object.getClass())) {
+                    throw new BeanIOConfigurationException("Configured writer factory class '" +
+                        parserFactoryBean.getClassName() + "' does not implement RecordWriterFactory");
+                }
+                factory = (RecordParserFactory) object;
+            }
+            
+            BeanUtil.configure(factory, parserFactoryBean.getProperties());
         }
-        BeanUtil.configure(factory, writerFactoryBean.getProperties());
-        return factory;
+        
+        try {
+            factory.init();
+            return factory;
+        }
+        catch (IllegalArgumentException ex) {
+            throw new BeanIOConfigurationException("Invalid parser setting(s): " + ex.getMessage(), ex);
+        }
     }
 
     /*

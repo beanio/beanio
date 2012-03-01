@@ -100,4 +100,7 @@ public interface Property {
     
     public Class<?> getType();
     public void setType(Class<?> type);
+    
+    
+    //public int getConstructorArgumentIndex();
 }

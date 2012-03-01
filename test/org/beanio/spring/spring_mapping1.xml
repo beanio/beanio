@@ -11,9 +11,9 @@
   </stream>
 
   <stream name="xmlstream" format="xml" xmlName="people" mode="write" xmlNamespace="http://test">
-    <writer class="org.beanio.parser.xml.TestXmlWriterFactory">
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory">
       <property name="namespaces" value="f http://field" />
-    </writer>
+    </parser>
     <group name="friends" order="1">
       <record name="friend" class="org.beanio.spring.Human" minOccurs="0" maxOccurs="unbounded" xmlNamespace="http://field" xmlPrefix="f">
         <property name="type" rid="true" value="F" />

@@ -16,8 +16,10 @@
 package org.beanio.internal.parser;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.beanio.stream.RecordWriter;
+import org.w3c.dom.Document;
 
 /**
  * Stores context information needed to marshal a bean object.
@@ -68,6 +70,33 @@ public abstract class MarshallingContext extends ParsingContext {
      * @return the record object
      */
     protected abstract Object getRecordObject();
+    
+    /**
+     * Converts a record object to a <tt>String[]</tt>.
+     * @param record the record object to convert
+     * @return the <tt>String</tt> array result, or null if not supported
+     */
+    public String[] toArray(Object record) {
+        return null;
+    }
+
+    /**
+     * Converts a record object to a {@link List}.
+     * @param record the record object to convert
+     * @return the {@link List} result, or null if not supported
+     */
+    public List<String> toList(Object record) {
+        return null;
+    }
+    
+    /**
+     * Converts a record object to a {@link Document}.
+     * @param record the record object to convert
+     * @return the {@link Document} result, or null if not supported
+     */
+    public Document toDocument(Object record) {
+        return null;
+    }
     
     /**
      * Returns the component name of the record or group to marshal.  May

@@ -29,24 +29,25 @@ that each copy contains this Copyright Notice, whether distributed in print or e
 <div class="toc">
   <a href="#BeanReader">3.1. BeanReader</a><br />
   <a href="#BeanWriter">3.2. BeanWriter</a><br />
-  <a href="#MappingFiles">3.3. Mapping Files</a><br />
-  <a href="#StreamFactory">3.4. StreamFactory</a><br />
-  <a href="#ExceptionHandling">3.5. Exception Handling</a><br />
+  <a href="#Unmarshaller">3.3. Unmarshaller</a><br />
+  <a href="#Marshaller">3.4. Marshaller</a><br />
+  <a href="#MappingFiles">3.5. Mapping Files</a><br />
+  <a href="#StreamFactory">3.6. StreamFactory</a><br />
+  <a href="#ExceptionHandling">3.7. Exception Handling</a><br />
   <div class="toc">
-  	<a href="#BeanReaderErrorHandler">3.5.1. BeanReaderErrorHandler</a><br />
+  	<a href="#BeanReaderErrorHandler">3.7.1. BeanReaderErrorHandler</a><br />
   </div>
 </div>
 <a href="#TheMappingFile">4.0. The Mapping File</a>
 <div class="toc">
-  <a href="#StreamDefinition">4.1. Streams</a><br />
+  <a href="#Streams">4.1. Streams</a><br />
   <div class="toc">
-  	<a href="#RecordReaderWriter">4.1.1. Record Reader and Writer</a><br />
-  	<a href="#CSVStreamFormat">4.1.2. CSV Streams</a><br />
-  	<a href="#DelimitedStreamFormat">4.1.3. Delimited Streams</a><br />
-  	<a href="#FixedLengthStreamFormat">4.1.4. Fixed Length Streams</a><br />
-    <a href="#XmlStreamFormat">4.1.5. XML Streams</a><br />
+  	<a href="#CSVStreamFormat">4.1.1. CSV Streams</a><br />
+  	<a href="#DelimitedStreamFormat">4.1.2. Delimited Streams</a><br />
+  	<a href="#FixedLengthStreamFormat">4.1.3. Fixed Length Streams</a><br />
+    <a href="#XmlStreamFormat">4.1.4. XML Streams</a><br />
   </div>
-  <a href="#RecordDefinition">4.2. Records</a><br />
+  <a href="#Records">4.2. Records</a><br />
   <div class="toc">
 	<a href="#RecordIdentification">4.2.1. Record Identification</a><br />
 	<a href="#RecordOrdering">4.2.2. Record Ordering</a><br />
@@ -117,14 +118,14 @@ that each copy contains this Copyright Notice, whether distributed in print or e
   <a href="#template">A.5. <tt>template</tt></a><br />
   <a href="#include">A.6. <tt>include</tt></a><br />
   <a href="#stream">A.7. <tt>stream</tt></a><br />
-  <a href="#reader">A.8. <tt>reader</tt></a><br />
-  <a href="#writer">A.9. <tt>writer</tt></a><br />
-  <a href="#group">A.10. <tt>group</tt></a><br />
-  <a href="#record">A.11. <tt>record</tt></a><br />
-  <a href="#segment">A.12. <tt>segment</tt></a><br />
-  <a href="#field">A.13. <tt>field</tt></a><br />
+  <a href="#parser">A.8. <tt>parser</tt></a><br />
+  <a href="#group">A.9. <tt>group</tt></a><br />
+  <a href="#record">A.10. <tt>record</tt></a><br />
+  <a href="#segment">A.11. <tt>segment</tt></a><br />
+  <a href="#field">A.12. <tt>field</tt></a><br />
 </div>
 <a href="#B">Appendix B: Error Message Parameters</a><br />
+<a href="#C">Appendix C: Upgrading a 1.x Mapping File Example</a><br />
 </div>
 
 <h1><a name="Introduction">1.0. Introduction</a></h1>
@@ -136,12 +137,14 @@ currently supports XML, CSV, delimited and fixed length file formats. BeanIO is 
 <h2><a name="WhatsNew">1.1. What's new in 2.0?</a></h2>
 <p>BeanIO Release 2.0 includes the following enhancements:</p>
 <ul>
-  <li>Added support for bean objects that span multiple records.</li>
-  <li><tt>bean</tt> configuration elements and <tt>xmlWrapper</tt> attributes replaced by the more versatile <tt>segment</tt> element</li>
-  <li>A BeanWriter is now stateful for all stream formats (based on group/record occurrences)</li>
+  <li>Support for mapping bean objects that span multiple records</li>
+  <li>New <tt>Marshaller</tt> and <tt>Unmarshaller</tt> interfaces for marshalling and unmarshalling single records</li>
+  <li>Support for constructor arguments and direct access to public attributes of a bean object</li>
+  <li>The <tt>BeanWriter</tt> is now stateful for all stream formats (based on configured <tt>group</tt> and <tt>record</tt> occurrences)</li>
+  <li>A more versatile <tt>segment</tt> mapping file element replaces the <tt>bean</tt> element and <tt>xmlWrapper</tt> attribute</li>
+  <li>OSGi support, including a user specified <tt>ClassLoader</tt> per <tt>StreamFactory</tt>.</li>
   <li>More lenient/sensible defaults.</li>
-  <li>Added support for user provided <tt>ClassLoader</tt>'s.</li>
-  <li>OSGi support.</li>
+  <li>Consolidated <tt>reader</tt> and <tt>writer</tt> elements (see <a href="#parser"><tt>parser</tt></a>).</li>
 </ul>
 
 <p>Best of all, release 2.0 includes an entirely new parsing engine that will 
@@ -152,8 +155,9 @@ enable many more features to come...</p>
 steps you'll need to follow to update your code and mapping files.</p>
 
 <h3>1.2.1. Java Changes</h3>
-<p>The <tt>org.beanio.BeanReaderContext</tt> class was renamed <tt>org.beanio.RecordContext</tt> in order
-to support bean objects bound to multiple records.  This is likely the only necessary Java change.</p>
+<p>The <tt>org.beanio.BeanReaderContext</tt> class was renamed 
+<a href="../api/org/beanio/RecordContext.html"><tt>org.beanio.RecordContext</tt></a> in order
+to support bean objects bound to multiple records.</p>
 
 <p>The exception classes <tt>org.beanio.BeanReaderException</tt> and <tt>org.beanio.BeanWriterException</tt>
 are no longer abstract and may be thrown in a few rare (but fatal) scenarios.  The exception classes 
@@ -161,12 +165,18 @@ are no longer abstract and may be thrown in a few rare (but fatal) scenarios.  T
 when the underlying input stream throws a <tt>java.io.IOException</tt>, or when a BeanReader/Writer method
 is invoked on a closed stream.</p>
 
-<p>All record readers, record writers, type handlers and Spring related classes are unchanged or backwards compatible.
+<p>The <tt>org.beanio.stream.RecordReaderFactory</tt> and <tt>org.beanio.stream.RecordWriterFactory</tt> interfaces
+have been consolidated into the <a href="../api/org/beanio/stream/RecordParserFactory.html"><tt>RecordParserFactory</tt></a>
+interface, which is also used to create <a href="../api/org/beanio/stream/RecordMarshaller.html"><tt>RecordMarshaller</tt></a>
+and <a href="../api/org/beanio/stream/RecordUnmarshaller.html"><tt>RecordUnmarshaller</tt></a> implementations
+for parsing individual records.</p>
+
+<p>All type handlers and Spring related classes are unchanged or backwards compatible.
 Internal implementation classes have been moved to the <tt>org.beanio.internal</tt> package and their API
 may change in any release without further regard to backwards compatibility.</p>
 
 <h3>1.2.2. Mapping File Changes</h3>
-<p>The namespace of all elements has changed to <tt>http://www.beanio.org/2012/03</tt>.</p>
+<p>The mapping file namespace has changed to <tt>http://www.beanio.org/2012/03</tt> for all elements.</p>
 
 <p>Release 2.0 includes more lenient defaults for some mapping components.  A new <tt>stream</tt> attribute 
 called <tt>strict</tt> has been added to support some legacy behavior.  If <tt>strict</tt> is set 
@@ -185,20 +195,26 @@ If you want to continue validating record order, you can set <tt>order</tt>
 attributes on ordered groups and records, or set <tt>strict</tt> to true as described above to have BeanIO calculate
 a default order.</p>
 
+<p>The <tt>reader</tt> and <tt>writer</tt> elements have been combined into a single <tt>parser</tt> element.
+Format specific property names have not changed.  If you have overridden the default <tt>RecordReaderFactory</tt> or
+<tt>RecordWriterFactory</tt>, you will need to modify your class to implement 
+<a href="../api/org/beanio/stream/RecordParserFactory.html"><tt>RecordParserFactory</tt></a> instead.
+See section <b>TODO</b>.</p>
+
 <p>The <tt>minOccurs</tt> attribute for a <tt>record</tt> now defaults to 0, instead of 1.</p>
 
 <p>All <tt>bean</tt> elements should be renamed <tt>segment</tt>.  A <tt>segment</tt> element supports
-all the functionality of a <tt>bean</tt> element.</p>
+all the functionality of a <tt>bean</tt> element (and more).</p>
 
 <p>For XML formatted streams, the <tt>minOccurs</tt> attribute for a <tt>bean/segment</tt>, or a <tt>field</tt>
 bound to an XML element, will always default to 1.  Prior to release 2.0, <tt>minOccurs</tt> 
 defaulted to 0 if not nillable.  (This is now consistent with XML Schema and hopefully simpler to remember.)  The
 default <tt>minOccurs</tt> attribute for a <tt>field</tt> bound to an XML attribute remains 0.</p>
 
-<p>All <tt>xmlWrapper</tt> attributes have been removed.  XML wrappers can be replaced by <tt>segment</tt> components.
-This is illustrated in the example below.</p>
+<p>The <tt>xmlWrapper</tt> attribute has been removed.  XML wrappers can be replaced by <tt>segment</tt> components.</p>
 
-<b>TODO show example</b>
+<p>Mapping file changes are illustrated using an example in <a href="#C">Appendix C</a>.</p>
+
 
 <h1><a name="GettingStarted">2.0. Getting Started</a></h1>
 <p>To get started with BeanIO, download the latest stable version from 
@@ -368,9 +384,10 @@ Jennifer,Jones,Marketing,60000,01012011</pre>
 <h1><a name="CoreConcepts">3.0. Core Concepts</a></h1>
 
 <h2><a name="BeanReader">3.1. BeanReader</a></h2>
-<p>The <tt>org.beanio.BeanReader</tt> interface, shown below, is used to read bean objects from
-an input stream.  The method <tt>read()</tt> returns the unmarsahlled bean object for the next record
-or group of records read from the input stream.  If the end of the stream is reached, <tt>null</tt> 
+<p>The <a href="../api/org/beanio/BeanReader.html"><tt>org.beanio.BeanReader</tt></a> interface, shown below, 
+is used to read bean objects from
+an input stream.  The <tt>read()</tt> method returns an unmarshalled bean object for the next record
+or group of records read from the input stream.  When the end of the stream is reached, <tt>null</tt> 
 is returned.</p>
 
 <p>The method <tt>setErrorHandler(...)</tt> can be used to register a custom error
@@ -408,11 +425,11 @@ public interface BeanReader {
 }</pre>
 
 <h2><a name="BeanWriter">3.2. BeanWriter</a></h2>
-<p>The <tt>org.beanio.BeanWriter</tt> interface, shown below, is used to write bean objects to
-an output stream.  Calling the <tt>write(Object)</tt> method marshalls a bean object to the 
-output stream.  In some cases where multiple record types are not discernible by class type 
+<p>The <a href="../api/org/beanio/BeanWriter.html"><tt>org.beanio.BeanWriter</tt></a> interface, shown below, 
+is used to write bean objects to an output stream.  Calling the <tt>write(Object)</tt> method marshals a bean 
+object to the output stream.  In some cases where multiple record types are not discernible by class type 
 or record identifying fields, the <tt>write(String,Object)</tt> method can be used to 
-explicitly name the record type to marshall. </p>
+explicitly name the record type to marshal. </p>
 <p>Before discarding a <tt>BeanWriter</tt>, <tt>close()</tt> should be invoked to close the underlying
 output stream.</p>  
 <pre class="file">
@@ -429,14 +446,65 @@ public interface BeanWriter {
     public void close() throws BeanWriterIOException;
 }</pre>
 
-<h2><a name="MappingFiles">3.3. Mapping Files</a></h2>
+<h2><a name="Unmarshaller">3.3. Unmarshaller</a></h2>
+<p>The <a href="../api/org/beanio/Unmarshaller.html"><tt>org.beanio.Unmarshaller</tt></a> interface, shown below, 
+is used to unmarshal a bean object from a <tt>String</tt> record.</p>
+<pre class="file">
+package org.beanio;
+
+public interface Unmarshaller {
+
+    <span class="comment">// For all stream formats</span>
+    public Object unmarshal(String record) throws BeanReaderException;
+    
+    <span class="comment">// For CSV and delimited formatted streams</span>
+    public Object unmarshal(List&lt;String&gt; fields) throws BeanReaderException;
+    public Object unmarshal(String[] fields) throws BeanReaderException;
+
+    <span class="comment">// For XML formatted streams</span>
+    public Object unmarshal(Node node) throws BeanReaderException;
+    
+    public String getRecordName();
+    
+    public RecordContext getRecordContext();
+}</pre>
+
+<h2><a name="Marshaller">3.4. Marshaller</a></h2>
+<p>The <a href="../api/org/beanio/Marshaller.html"><tt>org.beanio.Marshaller</tt></a> interface, shown below, 
+is used to marshal a bean object into a <tt>String</tt> record.</p>
+<pre class="file">
+package org.beanio;
+
+public interface Marshaller {
+
+    public Marshaller marshal(Object bean) throws BeanWriterException;
+    
+    public Marshaller marshal(String recordName, Object bean) throws BeanWriterException;
+    
+    <span class="comment">// For all stream formats</span>
+    public String toString();
+    
+    <span class="comment">// For CSV and delimited formatted streams</span>
+    public String[] toArray() throws BeanWriterException;
+    public List&lt;String&gt; toList() throws BeanWriterException;
+    
+    <span class="comment">// For XML formatted streams</span>
+    public Document toDocument() throws BeanWriterException;
+}</pre>
+
+<p>Marshalling a single bean object to record text is now as simple as:</p>
+<pre class="file">
+String recordText = marshaller.marshal(object).toString();
+</pre>
+
+<h2><a name="MappingFiles">3.5. Mapping Files</a></h2>
 <p>BeanIO uses XML configuration files, called mapping files,
-to bind a stream layout to Java objects.  Multiple layouts
+to bind a stream layout to bean objects.  Multiple layouts
 can be configured in a single mapping file using <tt>stream</tt> elements.  Each 
 stream is assigned a unique name for referencing the layout.  In addition to
 its name, every stream must declare its format using the <tt>format</tt> attribute.  
 Supported stream formats include <tt>csv</tt>, <tt>delimited</tt>, <tt>fixedlength</tt>,
-and <tt>xml</tt>.  Mapping files are further explored in the next section 
+and <tt>xml</tt>.  Mapping files are fully explained in the next section 
 (<a href="#TheMappingFile">4.0. The Mapping File</a>).</p>
 <pre class="file">
 &lt;beanio xmlns="http://www.beanio.org/2012/03" 
@@ -453,11 +521,12 @@ and <tt>xml</tt>.  Mapping files are further explored in the next section
     
 &lt;/beanio&gt;</pre>
 
-<h2><a name="StreamFactory">3.4. StreamFactory</a></h2>
-<p>An <tt>org.beanio.StreamFactory</tt> is used to load mapping files and 
-create <tt>BeanReader</tt> and <tt>BeanWriter</tt> instances.  The following
+<h2><a name="StreamFactory">3.6. StreamFactory</a></h2>
+<p>The <a href="../api/org/beanio/StreamFactory.html"><tt>org.beanio.StreamFactory</tt></a> class 
+is used to load mapping files and create <tt>BeanReader</tt>, <tt>BeanWriter</tt>, <tt>Marshaller</tt> 
+and <tt>Unmarshaller</tt> instances.  The following
 code snippet shows how to instantiate a <tt>StreamFactory</tt>, load a mapping
-file and create a <tt>BeanReader</tt> and <tt>BeanWriter</tt>.  The <tt>load(...)</tt>
+file and create the various BeanIO parsers.  The <tt>load(...)</tt>
 method loads mapping files from the file system (relative to the current working 
 directory), while the method <tt>loadResource(...)</tt> loads mapping files from
 the classpath.</p>
@@ -476,10 +545,16 @@ BeanReader beanReader = factory.createBeanReader("streamName", in);
 
 <span class="comment">// create a BeanWriter to write to 'out.txt'</span>
 Writer out = new BufferedWriter(new FileWriter("out.txt"));
-BeanWriter beanWriter = factory.createBeanReader("streamName", out);    
+BeanWriter beanWriter = factory.createBeanReader("streamName", out);
+
+<span class="comment">// create an Unmarshaller to unmarshal bean objects from record text</span>
+Unmarshaller unmarshaller = factory.createUnmarshaller("streamName");
+
+<span class="comment">// create a Marshaller to marshal bean objects to record text</span>
+Marshaller marshaller = factory.createMarshaller("streamName");
 </pre>
 
-<h2><a name="ExceptionHandling">3.5. Exception Handling</a></h2>
+<h2><a name="ExceptionHandling">3.7. Exception Handling</a></h2>
 <p>All BeanIO exceptions extend from <tt>BeanIOException</tt>, which
 extends from <tt>RuntimeException</tt> so that exceptions do not need
 to be explicitly caught unless desired.  <tt>BeanReaderException</tt>
@@ -569,7 +644,7 @@ public interface RecordContext {
 }</pre>
 
 
-<h3><a name="BeanReaderErrorHandler">3.5.1. BeanReaderErrorHandler</a></h3>
+<h3><a name="BeanReaderErrorHandler">3.7.1. BeanReaderErrorHandler</a></h3>
 <p>If you need to handle an exception and continue processing, it may be simpler to register
 a <tt>BeanReaderErrorHandler</tt> using the <tt>beanReader.setErrorHandler()</tt> method.  The
 <tt>BeanReaderErrorHandler</tt> interface is shown below.  Any exception thrown by the error
@@ -614,13 +689,15 @@ will bubble up to the calling method.</p>
 </pre>
 
 
+
 <h1><a name="TheMappingFile">4.0. The Mapping File</a></h1>
 <p>An XML mapping file is used to configure a stream layout.</p>
-<h2><a name="StreamDefinition">4.1. Stream Definitions</a></h2>
-<p>A typical mapping file contains one or more stream definitions.  A stream
-definition must have a <tt>name</tt> and <tt>format</tt> attribute configured. The name of the 
-stream is used to reference the layout when creating a <tt>BeanReader</tt> or 
-<tt>BeanWriter</tt> instance using a <tt>StreamFactory</tt>.  And the format instructs
+
+<h2><a name="Streams">4.1. Streams</a></h2>
+<p>A typical mapping file contains one or more stream layouts.  A <tt>stream</tt>
+must have a <tt>name</tt> and <tt>format</tt> attribute configured. The name of the 
+stream is used to reference the layout when creating a parser using a <tt>StreamFactory</tt>.  
+And the format instructs
 BeanIO how to interpret the stream.  Supported formats include <tt>xml</tt>, <tt>csv</tt>, 
 <tt>delimited</tt> and <tt>fixedlength</tt>.  
 </p> 
@@ -639,6 +716,30 @@ BeanIO how to interpret the stream.  Supported formats include <tt>xml</tt>, <tt
     
 &lt;/beanio&gt;</pre>
 
+<p>BeanIO parses (and formats) a record from a stream or text using a record parser generated by
+a <tt>RecordParserFactory</tt>.  BeanIO allows you to create and customize your own <tt>RecordParserFactory</tt>,
+but in most cases you can simply configure BeanIO's default record parser factory using a stream's
+<tt>parser</tt> element.  The <tt>parser</tt> element allows you to set format specific properties on a
+<tt>RecordParserFactory</tt>.  For example, the following stream layout changes the delimiter to a pipe
+for the delimited stream 's1':</p>
+
+<pre class="file">
+&lt;beanio xmlns="http://www.beanio.org/2012/03" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.beanio.org/2012/03 http://www.beanio.org/2012/03/mapping.xsd"&gt;
+
+  &lt;stream name="s1" format="delmiited"&gt;
+    <span class="highlight">&lt;parser&gt;
+      &lt;property name="delimiter" value="|" /&gt;
+    &lt;/parser&gt;</span>
+    &lt;!-- record layout... --&gt;
+  &lt;/stream&gt;
+  
+&lt;/beanio&gt;</pre>
+
+<p>The next few sections list available parser properties for each stream format.</p>
+
+<!--
 <h3><a name="RecordReaderWriter">4.1.1. RecordReader and RecordWriter</a></h3>
 <p>Internally, BeanIO uses a <tt>RecordReader</tt> to read records from an input stream,
 and a <tt>RecordWriter</tt> to write records to an output stream.</p>
@@ -721,45 +822,40 @@ while the record writer implementation is completely replaced using the factory 
   &lt;/stream&gt;
   
 &lt;/beanio&gt;</pre>
+ -->
 
-
-<h3><a name="CSVStreamFormat">4.1.2. CSV Streams</a></h3>
-<p>The default record reader and writer for CSV formatted streams is based on 
+<h3><a name="CSVStreamFormat">4.1.1. CSV Streams</a></h3>
+<p>CSV formatted streams are parsed according to 
 <a href="http://www.ietf.org/rfc/rfc4180.txt">RFC 4180</a> with one exception:
 multi-line records are disabled (but this can be overridden).</p>
 
-<p>The following properties can be used to customize the default CSV record reader
-and record writer:</p>
+<p>The following properties can be used to customize default CSV parsers:</p>
 <table class="indent">
 <tr>
-  <th>Property</th>
+  <th>Property Name</th>
   <th>Type</th>
   <th>Description</th>
-  <th>Reader?</th>
-  <th>Writer?</th>
+  <th>Affects</th>
 </tr>
 <tr>
   <td><tt>delimiter</tt></td>
   <td>char</td>
   <td>The field delimiter.  Defaults to a comma.</td>
-  <td>Yes</td>
-  <td>Yes</td>
+  <td>*</td>
 </tr>
 <tr>
   <td><tt>quote</tt></td>
   <td>char</td>
   <td>The quotation mark character used to wrap fields containing a delimiter character, a
     quotation mark, or new lines.  Defaults to the double quotation mark, ".</td>
-  <td>Yes</td>
-  <td>Yes</td>
+  <td>*</td>
 </tr>
 <tr>
   <td><tt>escape</tt></td>
   <td>Character</td>
   <td>The character used to escape a quotation mark in a quoted field.  Defaults to the
     double quotation mark, ".</td>
-  <td>Yes</td>
-  <td>Yes</td>
+  <td>*</td>
 </tr>
 <tr>
   <td><tt>comments</tt></td>
@@ -769,15 +865,13 @@ and record writer:</p>
     be used to escape a comma and itself.  All whitespace is preserved.
     <p>Enabling comments require the input reader passed to <tt>StreamFactory</tt> to support marking.
     Among others, Java's <tt>BufferedReader</tt> and <tt>StringReader</tt> support marking.</p></td>
-  <td>Yes</td>
-  <td>No</td>
+  <td><tt>BeanReader</tt></td>
 </tr>
 <tr>
   <td><tt>multilineEnabled</tt></td>
   <td>boolean</td>
   <td>If set to <tt>true</tt>, quoted fields may contain new line characters.  Defaults to <tt>false</tt>.</td>
-  <td>Yes</td>
-  <td>No</td>
+  <td><tt>BeanReader</tt></td>
 </tr>
 <tr>
   <td><tt>whitespaceAllowed</tt></td>
@@ -788,8 +882,7 @@ and record writer:</p>
     Jennifer, "Jones" ,24</pre>
   Defaults to <tt>false</tt>.
   </td>
-  <td>Yes</td>
-  <td>No</td>
+  <td><tt>BeanReader, Unmarshaller</tt></td>
 </tr>
 <tr>
   <td><tt>unquotedQuotesAllowed</tt></td>
@@ -801,8 +894,7 @@ and record writer:</p>
     Jennifer,She said "OK"</pre>
     Defaults to <tt>false</tt>.
   </td>  
-  <td>Yes</td>
-  <td>No</td>
+  <td><tt>BeanReader, Unmarshaller</tt></td>
 </tr>
 <tr>
   <td><tt>recordTerminator</tt></td>
@@ -811,8 +903,7 @@ and record writer:</p>
     (line feed (LF), carriage return (CR), or CRLF combination) is accepted when reading
     an input stream, and <tt>System.getProperty("line.separator")</tt> is used when writing
     to a stream.</td>
-  <td>No</td>
-  <td>Yes</td>
+  <td><tt>BeanWriter</tt></td>
 </tr>
 <tr>
   <td><tt>alwaysQuote</tt></td>
@@ -820,36 +911,31 @@ and record writer:</p>
   <td>If set to <tt>true</tt>, field text is always quoted.  By default, a field is only quoted
   if it contains a delimeter, a quotation mark or new line characters.
   </td>
-  <td>No</td>
-  <td>Yes</td>
+  <td><tt>BeanWriter, Marshaller</tt></td>
 </tr>
 </table>
 
-
-<h3><a name="DelimitedStreamFormat">4.1.3.  Delimited Streams</a></h3>
-<p>The default delimited record reader and writer can be customized using the following properties:</p>
+<h3><a name="DelimitedStreamFormat">4.1.2.  Delimited Streams</a></h3>
+<p>The default delimited parsers can be customized using the following properties:</p>
 <table class="indent">
 <tr>
-  <th>Property</th>
+  <th>Property Name</th>
   <th>Type</th>
   <th>Description</th>
-  <th>Reader?</th>
-  <th>Writer?</th>
+  <th>Affects</th>
 </tr>
 <tr>
   <td><tt>delimiter</tt></td>
   <td>char</td>
   <td>The field delimiter.  Defaults to the tab character.</td>
-  <td>Yes</td>
-  <td>Yes</td>
+  <td>*</td>
 </tr>
 <tr>
   <td><tt>escape</tt></td>
   <td>Character</td>
   <td>The escape character allowed to escape a delimiter or itself.  By default, escaping
     is disabled.</td>
-  <td>Yes</td>
-  <td>Yes</td>
+  <td>*</td>
 </tr>
 <tr>
   <td><tt>lineContinuationCharacter</tt></td>
@@ -857,8 +943,7 @@ and record writer:</p>
   <td>If this character is the last character before a new line or carriage return is read,
     the record will continue reading from the next line.  By default, line continuation
     is disabled.</td>
-  <td>Yes</td>
-  <td>No</td>
+  <td><tt>BeanReader</tt></td>
 </tr>
 <tr>
   <td><tt>recordTerminator</tt></td>
@@ -867,8 +952,7 @@ and record writer:</p>
     (line feed (LF), carriage return (CR), or CRLF combination) is accepted when reading
     an input stream, and <tt>System.getProperty("line.separator")</tt> is used when writing
     to a stream.</td>
-  <td>Yes</td>
-  <td>Yes</td>
+  <td><tt>BeanReader, BeanWriter</tt></td>
 </tr>
 <tr>
   <td><tt>comments</tt></td>
@@ -878,21 +962,19 @@ and record writer:</p>
     be used to escape a comma and itself.  All whitespace is preserved.
     <p>Enabling comments require the input reader passed to <tt>StreamFactory</tt> to support marking.
     Among others, Java's <tt>BufferedReader</tt> and <tt>StringReader</tt> support marking.</p></td>
-  <td>Yes</td>
-  <td>No</td>
+  <td><tt>BeanReader</tt></td>
 </tr>
 </table>
 
 
-<h3><a name="FixedLengthStreamFormat">4.1.4. Fixed Length Streams</a></h3>
-<p>The default fixed length reader and writer can be customized using the following properties:</p>
+<h3><a name="FixedLengthStreamFormat">4.1.3. Fixed Length Streams</a></h3>
+<p>The default fixed length parsers can be customized using the following properties:</p>
 <table class="indent">
 <tr>
-  <th>Property</th>
+  <th>Property Name</th>
   <th>Type</th>
   <th>Description</th>
-  <th>Reader?</th>
-  <th>Writer?</th>
+  <th>Affects</th>
 </tr>
 <tr>
   <td><tt>lineContinuationCharacter</tt></td>
@@ -900,8 +982,7 @@ and record writer:</p>
   <td>If this character is the last character before a new line or carriage return is read,
     the record will continue reading from the next line.  By default, line continuation
     is disabled.</td>
-  <td>Yes</td>
-  <td>No</td>
+  <td><tt>BeanReader</tt></td>
 </tr>
 <tr>
   <td><tt>recordTerminator</tt></td>
@@ -910,8 +991,7 @@ and record writer:</p>
     (line feed (LF), carriage return (CR), or CRLF combination) is accepted when reading
     an input stream, and <tt>System.getProperty("line.separator")</tt> is used when writing
     to a stream.</td>
-  <td>Yes</td>
-  <td>Yes</td>
+  <td><tt>BeanReader, BeanWriter</tt></td>
 </tr>
 <tr>
   <td><tt>comments</tt></td>
@@ -921,35 +1001,31 @@ and record writer:</p>
     be used to escape a comma and itself.  All whitespace is preserved.
     <p>Enabling comments require the input reader passed to <tt>StreamFactory</tt> to support marking.
     Among others, Java's <tt>BufferedReader</tt> and <tt>StringReader</tt> support marking.</p></td>
-  <td>Yes</td>
-  <td>No</td>
+  <td><tt>BeanReader</tt></td>
 </tr>
 </table>
 
-<h3><a name="XmlStreamFormat">4.1.5. XML Streams</a></h3>
-<p>The XML writer can be customized using the following properties:</p>
+<h3><a name="XmlStreamFormat">4.1.4. XML Streams</a></h3>
+<p>The default XML parsers can be customized using the following properties:</p>
 <table class="indent">
 <tr>
-  <th>Property</th>
+  <th>Property Name</th>
   <th>Type</th>
   <th>Description</th>
-  <th>Reader?</th>
-  <th>Writer?</th>
+  <th>Affects</th>
 </tr>
 <tr>
   <td><tt>suppressHeader</tt></td>
   <td>boolean</td>
   <td>If set to <tt>true</tt>, the XML header is suppressed in the marshalled
   document.  Defaults to <tt>false</tt>.</td>
-  <td>No</td>
-  <td>Yes</td>
+  <td><tt>BeanWriter, Marshaller</tt></td>
 </tr>
 <tr>
   <td><tt>version</tt></td>
   <td>String</td>
   <td>The XML header version.  Defaults to <tt>1.0</tt>.</td>
-  <td>No</td>
-  <td>Yes</td>
+  <td><tt>BeanWriter, Marshaller</tt></td>
 </tr>
 <tr>
   <td><tt>encoding</tt></td>
@@ -958,8 +1034,7 @@ and record writer:</p>
     <tt>utf-8</tt>.  Note that this setting has no bearing on the actual
     encoding of the output stream.  If set to "", an encoding attribute
     is not included in the header.</td>
-  <td>No</td>
-  <td>Yes</td>
+  <td><tt>BeanWriter, Marshaller</tt></td>
 </tr>
 <tr>
   <td><tt>namespaces</tt></td>
@@ -968,29 +1043,26 @@ and record writer:</p>
     on the root element of a marshalled document.  The property value
     should be formatted as
     <pre class="indent">prefix1 namespace1 prefix2 namespace2...</pre></td>
-  <td>No</td>
-  <td>Yes</td>
+  <td><tt>BeanWriter, Marshaller</tt></td>
 </tr>
 <tr>
   <td><tt>indentation</tt></td>
   <td>Integer</td>
   <td>The number of spaces to indent each level of XML.  By default, indentation
     is disabled using a value of -1.</td>
-  <td>No</td>
-  <td>Yes</td>
+  <td><tt>BeanWriter, Marshaller</tt></td>
 </tr>
 <tr>
   <td><tt>lineSeparator</tt></td>
   <td>String</td>
   <td>The character(s) used to separate lines when indentation is enabled. 
     By default, <tt>System.getProperty("line.separator")</tt> is used.</td>
-  <td>No</td>
-  <td>Yes</td>
+  <td><tt>BeanWriter, Marshaller</tt></td>
 </tr>
 </table>
 
 
-<h2><a name="RecordDefinition">4.2. Record Definitions</a></h2>
+<h2><a name="Records">4.2. Records</a></h2>
 <p>Each record type read from an input stream or written to an output stream must be mapped 
 using a <tt>record</tt> element.  A stream mapping must include at least one record.  
 A record mapping is used to validate the record and bind field values to a bean object.  
@@ -1234,8 +1306,9 @@ A record is made up of one or more fields, which are validated and bound to bean
 using the <tt>field</tt> element.  All fields must specify a <tt>name</tt> attribute, which  
 by default, is used to get and set the field value from the bean object.
 
-<p>Default getter and setter methods can be overridden using
-<tt>getter</tt> and <tt>setter</tt> attributes as shown below.</p>
+<p>Default getter and setter methods can be overridden using <tt>getter</tt> and <tt>setter</tt> 
+attributes as shown below.  If a field is a constructor argument, <tt>setter</tt> can be set 
+to '#N' where N is the position of the argument in the constructor starting at 1 (not shown).</p>
 <pre class="file">
 &lt;beanio&gt;
 
@@ -1649,7 +1722,7 @@ produce a field value of 0.</p>
 <p>As hinted to above, padding settings can be applied to any field for any stream type.</p>
 
 
-<h2><a name="PropertyDefinitions">4.4. Constants</a></h2>
+<h2><a name="Constants">4.4. Constants</a></h2>
 <p>If a bean property does not map to a field in the stream, a constant property
 value can still be set using a <tt>property</tt> element.  Like a field, all properties must 
 specify a <tt>name</tt> attribute, which by default, is used to get and set the property value 
@@ -2561,7 +2634,7 @@ mapping configuration.</p>
 &lt;/beanio&gt;</pre>
 
 <h2><a name="XmlFields">5.7. Fields</a></h2>
-<p>A field is mapped to XML using the field definition's <tt>xmlType</tt> attribute, which defaults to <tt>element</tt>.
+<p>A field is mapped to XML using the field's <tt>xmlType</tt> attribute, which defaults to <tt>element</tt>.
 The field XML type can be set to <tt>element</tt>, <tt>attribute</tt>, <tt>text</tt>, or <tt>none</tt>.  The following
 table illustrates possible configurations, except for <tt>none</tt> which is not covered here.</p>
 
@@ -2644,20 +2717,14 @@ Instance attribute <tt>nil</tt> is set to <tt>true</tt>.</p>
 <p>This behavior is illustrated in the following table.</p>
 <table class="indent">
 <tr>
+  <th>Field Type</th>
   <th>Record Definition</th>
   <th>Marshalled Record<br/>(Field Value is Null)</th>
 </tr>
 <tr>
+  <td rowspan="3"><pre>element</pre></td>
   <td><pre>&lt;record name="person" class="map"&gt;
-  &lt;field name="name" xmlType="element" /&gt;
-&lt;/person&gt;</pre>
-  </td>
-  <td><pre>&lt;person/&gt;</pre>
-</td>
-</tr>
-<tr>
-  <td><pre>&lt;record name="person" class="map"&gt;
-  &lt;field name="name" xmlType="element" minOccurs="1" /&gt;
+  &lt;field name="name" /&gt;
 &lt;/person&gt;</pre>
   </td>
   <td><pre>&lt;person&gt;
@@ -2667,7 +2734,15 @@ Instance attribute <tt>nil</tt> is set to <tt>true</tt>.</p>
 </tr>
 <tr>
   <td><pre>&lt;record name="person" class="map"&gt;
-  &lt;field name="name" xmlType="element" minOccurs="1" nillable="true"/&gt;
+  &lt;field name="name" <span class="highlight">minOccurs="0"</span> /&gt;
+&lt;/person&gt;</pre>
+  </td>
+  <td><pre>&lt;person/&gt;</pre>
+</td>
+</tr>
+<tr>
+  <td><pre>&lt;record name="person" class="map"&gt;
+  &lt;field name="name" <span class="highlight">nillable="true"</span>/&gt;
 &lt;/person&gt;</pre>
   </td>
   <td><pre>&lt;person&gt;
@@ -2676,8 +2751,9 @@ Instance attribute <tt>nil</tt> is set to <tt>true</tt>.</p>
 </td>
 </tr>
 <tr>
+  <td rowspan="2"><pre>attribute</pre></td>
   <td><pre>&lt;record name="person" class="map"&gt;
-  &lt;field name="name" xmlType="attribute"/&gt;
+  &lt;field name="name" <span class="highlight">xmlType="attribute"</span>/&gt;
 &lt;/person&gt;</pre>
   </td>
   <td><pre>&lt;person/&gt;</pre>
@@ -2685,15 +2761,16 @@ Instance attribute <tt>nil</tt> is set to <tt>true</tt>.</p>
 </tr>
 <tr>
   <td><pre>&lt;record name="person" class="map"&gt;
-  &lt;field name="name" xmlType="attribute" minOccurs="1"/&gt;
+  &lt;field name="name" <span class="highlight">xmlType="attribute" minOccurs="1"</span>/&gt;
 &lt;/person&gt;</pre>
   </td>
   <td><pre>&lt;person name=""/&gt;</pre>
 </td>  
 </tr>
 <tr>
+  <td><pre>text</pre></td>
   <td><pre>&lt;record name="person" class="map"&gt;
-  &lt;field name="name" xmlType="text"/&gt;
+  &lt;field name="name" <span class="highlight">xmlType="text"</span>/&gt;
 &lt;/person&gt;</pre>
   </td>
   <td><pre>&lt;person/&gt;</pre>
@@ -2734,7 +2811,7 @@ public class Employee {
     <span class="comment">// getters and setters not shown...</span>
 }</pre>
 
-<p>By default, a bean definition's <tt>xmlType</tt> is set to <tt>element</tt>, so
+<p>By default, a segment's <tt>xmlType</tt> is set to <tt>element</tt>, so
 it is not necessary to declare it in the mapping file below.</p>
 <pre class="file">
 &lt;beanio&gt;
@@ -2758,7 +2835,7 @@ it is not necessary to declare it in the mapping file below.</p>
 &lt;/beanio&gt;</pre>
 
 <p>This mapping configuration can be used to process the sample XML document below.  When
-a bean is mapped to an XML element, <tt>nillable</tt> and <tt>minOccurs</tt> will control
+a segment is mapped to an XML element, <tt>nillable</tt> and <tt>minOccurs</tt> will control
 the marshalling behavior of null bean objects in the same fashion as a field (see <a href="#NullFields">Section 5.7.2</a>).
 </p>
 <pre class="file">
@@ -2783,7 +2860,7 @@ the marshalling behavior of null bean objects in the same fashion as a field (se
 &lt;/employeeFile&gt;
 </pre>
 
-<p>Alternatively, if the bean definition's <tt>xmlType</tt> is set to <tt>none</tt>,
+<p>Alternatively, if the segment's <tt>xmlType</tt> is set to <tt>none</tt>,
 the following XML document can be processed.</p>
 <pre class="file">
 &lt;?xml version=&quot;1.0&quot;?&gt;
@@ -2807,7 +2884,7 @@ the following XML document can be processed.</p>
 
 <h3><a name="XmlWrappedSegments">5.8.2. Wrapped Segments</a></h3>
 <p>In some cases, an XML document may contain extraneous elements that do not map directly
-to a bean object or field.  In these cases, a <tt>segment</tt> (without a <tt>class</tt> attribute)
+to a bean object or property value.  In these cases, a <tt>segment</tt> (without a <tt>class</tt> attribute)
 can be used to wrap a field or group of fields.</p> 
 
 <p>Extending the previous example, let's suppose the <tt>Employee</tt> bean object is modified
@@ -2877,31 +2954,47 @@ public class Employee {
   
 &lt;/beanio&gt;</pre>
 
-<p>The following table illustrates different <tt>xmlWrapper</tt> effects based on the <tt>xmlType</tt>
+<p>The following table illustrates various effects using a segment based on the <tt>xmlType</tt>
 of a field, and the effect of <tt>minOccurs</tt> and <tt>nillable</tt> when marshalling null field values.</p>
 
-<b>TODO - check this table for updates...</b>
 <table class="indent">
 <tr>
-  <th>Record Definition</th>
+  <th>Field Mapping</th>
   <th>Non-Null Field Value</th>
   <th>Null Field Value</th>
 </tr>
 <tr>
-  <td><pre>&lt;segment name="wrapper" minOccurs="0"&gt;
-  &lt;field name="field" xmlType="element" minOccurs="1" /&gt;
+  <td><pre>&lt;segment name="wrapper"&gt;
+  &lt;field name="field" /&gt;
 &lt;/segment&gt;</pre>
   </td>
-  <td rowspan="3"><pre>&lt;wrapper&gt;
+  <td rowspan="5"><pre>&lt;wrapper&gt;
   &lt;field&gt;value&lt;/field&gt;
 &lt;/wrapper&gt;</pre>
 </td>
-  <td>-</td>
+  <td><pre>&lt;wrapper&gt;
+  &lt;field/&gt;
+&lt;/wrapper&gt;</pre>
+</td>
+</tr>
+<tr>
+  <td><pre>&lt;segment name="wrapper" <span class="highlight">minOccurs="0"</span>&gt;
+  &lt;field name="field" /&gt;
+&lt;/segment&gt;</pre>
+  </td>
+  <td><pre>-</pre></td>
+</tr>
+<tr>
+  <td><pre>&lt;segment name="wrapper" <span class="highlight">nillable="true"</span>&gt;
+  &lt;field name="field" /&gt;
+&lt;/segment&gt;</pre>
+  </td>
+  <td><pre>&lt;wrapper xsi:nil="true"/&gt;</pre>
+</td>
 </tr>
 <tr>
   <td><pre>&lt;segment name="wrapper"&gt;
-  &lt;field name="field" xmlType="element" minOccurs="1" 
-    nillable="true" /&gt;
+  &lt;field name="field" <span class="highlight">nillable="true"</span> /&gt;
 &lt;/segment&gt;</pre>
   </td>
   <td><pre>&lt;wrapper&gt;
@@ -2911,40 +3004,35 @@ of a field, and the effect of <tt>minOccurs</tt> and <tt>nillable</tt> when mars
 </tr>
 <tr>
   <td><pre>&lt;segment name="wrapper"&gt;
-  &lt;field name="field" xmlType="element" minOccurs="1" /&gt;
+  &lt;field name="field" <span class="highlight">minOccurs="0"</span>/&gt;
 &lt;/segment&gt;</pre>
   </td>
-  <td><pre>&lt;wrapper&gt;
-  &lt;field/&gt;
-&lt;/wrapper&gt;</pre>
+  <td><pre>&lt;wrapper/&gt;</pre>
 </td>
 </tr>
 
-
 <tr>
-  <td><pre>&lt;segment name="wrapper" minOccurs="0"&gt;
-  &lt;field name="field" xmlType="attribute" minOccurs="1" /&gt;
+  <td><pre>&lt;segment name="wrapper"&gt;
+  &lt;field name="field" xmlType="attribute" /&gt;
 &lt;/segment&gt;</pre>
   </td>
-  <td rowspan="3"><pre>&lt;wrapper field="value"/&gt;</pre>
-</td>
-  <td>-</td>
+  <td rowspan="3"><pre>&lt;wrapper field="value"/&gt;</pre></td>
+  <td><pre>&lt;wrapper/&gt;</pre></td>
 </tr>
 <tr>
   <td><pre>&lt;segment name="wrapper"&gt;
-  &lt;field name="field" xmlType="attribute" minOccurs="1" /&gt;
+  &lt;field name="field" xmlType="attribute" <span class="highlight">minOccurs="1"</span> /&gt;
 &lt;/segment&gt;</pre>
   </td>
   <td><pre>&lt;wrapper field=""/&gt;</pre></td>
 </tr>
 <tr>
-  <td><pre>&lt;segment name="wrapper"&gt;
-  &lt;field name="field" xmlType="attribute" minOccurs="0" /&gt;
+  <td><pre>&lt;segment name="wrapper" <span class="highlight">minOccurs="0"</span>&gt;
+  &lt;field name="field" xmlType="attribute" minOccurs="1" /&gt;
 &lt;/segment&gt;</pre>
   </td>
-  <td><pre>&lt;wrapper/&gt;</pre></td>
+  <td><pre>-</pre></td>
 </tr>
-
 
 <tr>
   <td><pre>&lt;segment name="wrapper"&gt;
@@ -2957,7 +3045,7 @@ of a field, and the effect of <tt>minOccurs</tt> and <tt>nillable</tt> when mars
 </td>
 </tr>
 <tr>
-  <td><pre>&lt;segment name="wrapper" nillable="true"&gt;
+  <td><pre>&lt;segment name="wrapper" <span class="highlight">nillable="true"</span>&gt;
   &lt;field name="field" xmlType="text" /&gt;
 &lt;/segment&gt;</pre>
   </td>
@@ -2965,65 +3053,62 @@ of a field, and the effect of <tt>minOccurs</tt> and <tt>nillable</tt> when mars
 </td>
 </tr>
 <tr>
-  <td><pre>&lt;segment name="wrapper" minOccurs="0"&gt;
+  <td><pre>&lt;segment name="wrapper" <span class="highlight">minOccurs="0"</span>&gt;
   &lt;field name="field" xmlType="text"/&gt;
 &lt;/segment&gt;</pre>
   </td>
-  <td>-</td>
+  <td><pre>-</pre></td>
 </tr>
 </table>
-<p>Wrapped collection fields (and beans) behave a little differently depending on whether the collection
-is null or empty.</p>
+
+
+<p>Similarly, a <tt>segment</tt> can be used to wrap a repeating field as illustrated below.</p>
 <table class="indent">
 <tr>
-  <th>Record Definition</th>
+  <th>Field Mapping</th>
   <th>Collection</th>
-  <th>Null Collection</th>
-  <th>Empty Collection</th>
+  <th>Null or Empty Collection</th>
 </tr>
 <tr>
-  <td><pre>&lt;field name="field" 
-  collection="list"
-  minOccurs="0"
-  xmlType="element" 
-  xmlWrapper="wrapper" /&gt;</pre>
+  <td><pre>&lt;segment name="wrapper"&gt;
+  &lt;field name="field" collection="list" 
+    <span class="highlight">minOccurs="0"</span> maxOccurs="10" /&gt;
+&lt;/segment name="wrapper"&gt;</pre>
   </td>
-  <td rowspan="3"><pre>&lt;wrapper&gt;
+  <td rowspan="4"><pre>&lt;wrapper&gt;
   &lt;field&gt;value1&lt;/field&gt;
   &lt;field&gt;value2&lt;/field&gt;  
 &lt;/wrapper&gt;</pre>
 </td>
-  <td><pre>-</pre></td>
   <td><pre>&lt;wrapper /&gt;</pre>
 </td>
 </tr>
 <tr>
-  <td><pre>&lt;field name="field" 
-  collection="list"
-  minOccurs="0"
-  xmlType="element" 
-  xmlWrapper="wrapper" 
-  nillable="true" /&gt;</pre>
+  <td><pre>&lt;segment name="wrapper"&gt;
+  &lt;field name="field" collection="list" 
+    <span class="highlight">minOccurs="1"</span> maxOccurs="10" /&gt;
+&lt;/wrapper&gt;</pre>
   </td>
-  <td><pre>-</pre></td>
-  <td><pre>&lt;wrapper xsi:nil="true"/&gt;</pre>
+  <td><pre>&lt;wrapper&gt;
+  &lt;field/&gt;
+&lt;/wrapper&gt;</pre>
 </td>
 </tr>
 <tr>
-  <td><pre>&lt;field name="field" 
-  collection="list"
-  minOccurs="1"
-  xmlType="element" 
-  xmlWrapper="wrapper" 
-  nillable="false" /&gt;</pre>
+  <td><pre>&lt;segment name="wrapper" <span class="highlight">minOccurs="0"</span>&gt;
+  &lt;field name="field" collection="list" 
+    minOccurs="1" maxOccurs="10" /&gt;
+&lt;/wrapper&gt;</pre>
   </td>
-  <td><pre>&lt;wrapper&gt;
-  &lt;field/&gt;
+  <td><pre>-</pre></td>
+</tr>
+<tr>
+  <td><pre>&lt;segment name="wrapper" <span class="highlight">nillable="true"</span>&gt;
+  &lt;field name="field" collection="list" 
+    minOccurs="1" maxOccurs="10" /&gt;
 &lt;/wrapper&gt;</pre>
-</td>
-  <td><pre>&lt;wrapper&gt;
-  &lt;field/&gt;
-&lt;/wrapper&gt;</pre>
+  </td>
+  <td><pre>&lt;wrapper xsi:nil="true"/&gt;</pre>
 </td>
 </tr>
 </table>
@@ -3194,8 +3279,8 @@ allowed number of child elements:
 </p>
 
 <h2><a name="import">A.2. <tt>import</tt></a></h2>
-<p>The <tt>import</tt> element is used to import type handlers, templates and stream definitions
-from an external mapping file.  Stream definitions declared in a mapping file being imported are 
+<p>The <tt>import</tt> element is used to import type handlers, templates and streams
+from an external mapping file.  Streams declared in a mapping file being imported are 
 not affected by global type handlers or templates declared in the file that imported it.</p> 
 <p>Attributes:</p>
 <table>
@@ -3265,8 +3350,7 @@ combination, or explicitly named.</p>
 
 <h2><a name="property">A.4. <tt>property</tt></a></h2>
 <p>A <tt>property</tt> element is used to customize other elements, such
-as a <a href="#typeHandler"><tt>typeHandler</tt></a>, <a href="#reader"><tt>reader</tt></a>,
-or <a href="#writer"><tt>writer</tt></a>.</p>
+as a <a href="#typeHandler"><tt>typeHandler</tt></a> or <a href="#parser"><tt>parser</tt></a>.</p>
 <table>
 <tr>
   <th>Attribute</th>
@@ -3281,11 +3365,11 @@ or <a href="#writer"><tt>writer</tt></a>.</p>
 <tr>
   <td><tt>value</tt></td>
   <td>The property value.
-    <p>When used to customize a <a href="#typeHandler"><tt>typeHandler</tt></a>, <a href="#reader"><tt>reader</tt></a>,
-      or <a href="#writer"><tt>writer</tt></a>, default type handlers only are used to convert
+    <p>When used to customize a <a href="#typeHandler"><tt>typeHandler</tt></a>
+      or <a href="#parser"><tt>parser</tt></a>, default type handlers only are used to convert
       property text to an object value.  String and Character type property values can use the following escape
       sequences: <tt>\\</tt> (Backslash), <tt>\n</tt> (Line Feed), <tt>\r</tt> (Carriage Return), <tt>\t</tt> (Tab),
-      and <tt>\f</tt> (Form Feed).  A backslash precending any other character is ignored.</p>
+      and <tt>\f</tt> (Form Feed).  A backslash preceding any other character is ignored.</p>
   </td>
   <td>Yes</td>
 </tr>
@@ -3500,16 +3584,15 @@ The following additional attributes are accepted in this scenario:</p>
 </table>
 
 <p>Children: 
-<a href="#reader"><tt>reader</tt></a>?,
-<a href="#writer"><tt>writer</tt></a>?,
+<a href="#parser"><tt>parser</tt></a>?,
 <a href="#typeHandler"><tt>typeHandler</tt></a>*,
 ( <a href="#record"><tt>record</tt></a> |
 <a href="#group"><tt>group</tt></a> )+
 </p>
 
-<h2><a name="reader">A.8. <tt>reader</tt></a></h2>
-<p>A <tt>reader</tt> element is used to customize or replace the default record reader factory
-for the stream..</p> 
+<h2><a name="parser">A.8. <tt>parser</tt></a></h2>
+<p>A <tt>parser</tt> element is used to customize or replace the default record parser factory
+for a stream.</p> 
 <p>Attributes:</p>
 <table>
 <tr>
@@ -3519,15 +3602,15 @@ for the stream..</p>
 </tr>
 <tr>
   <td><tt>class</tt></td>
-  <td>The fully qualified class name of the <a href="../api/org/beanio/stream/RecordReaderFactory.html">
-    <tt>org.beanio.stream.RecordReaderFactory</tt></a> implementation
+  <td>The fully qualified class name of the <a href="../api/org/beanio/stream/RecordParserFactory.html">
+    <tt>org.beanio.stream.RecordParserFactory</tt></a> implementation
     to use for this stream.  If not specified, one of the following default factories is 
     used based on the stream format:<br />
-    <br />csv - <a href="../api/org/beanio/stream/csv/CsvReaderFactory.html"><tt>org.beanio.stream.csv.CsvReaderFactory</tt></a>
-    <br />delimited - <a href="../api/org/beanio/stream/delimited/DelimitedReaderFactory.html"><tt>org.beanio.stream.delimited.DelimitedReaderFactory</tt></a>
-    <br />fixedlength - <a href="../api/org/beanio/stream/fixedlength/FixedLengthReaderFactory.html"><tt>org.beanio.stream.fixedlength.FixedLengthReaderFactory</tt></a>
-    <br />xml - <a href="../api/org/beanio/stream/xml/XmlReaderFactory.html"><tt>org.beanio.stream.xml.XmlReaderFactory</tt></a>
-    <p>Overriding the record reader factory for XML is not supported.</p>
+    <br />csv - <a href="../api/org/beanio/stream/csv/CsvRecordParserFactory.html"><tt>org.beanio.stream.csv.CsvRecordParserFactory</tt></a>
+    <br />delimited - <a href="../api/org/beanio/stream/delimited/DelimitedRecordParserFactory.html"><tt>org.beanio.stream.delimited.DelimitedRecordParserFactory</tt></a>
+    <br />fixedlength - <a href="../api/org/beanio/stream/fixedlength/FixedLengthRecordParserFactory.html"><tt>org.beanio.stream.fixedlength.FixedLengthRecordParserFactory</tt></a>
+    <br />xml - <a href="../api/org/beanio/stream/xml/XmlRecordParserFactory.html"><tt>org.beanio.stream.xml.XmlRecordParserFactory</tt></a>
+    <p>Overriding the record parser factory for XML is not supported (but also not prevented).</p>
   </td>
   <td>No</td>
 </tr>
@@ -3537,37 +3620,8 @@ for the stream..</p>
 <a href="#property"><tt>property</tt></a>*
 </p>
 
-<h2><a name="writer">A.9. <tt>writer</tt></a></h2>
-<p>A <tt>writer</tt> element is used to customize or replace the default record writer factory
-for the stream..</p> 
-<p>Attributes:</p>
-<table>
-<tr>
-  <th>Attribute</th>
-  <th>Description</th>
-  <th>Required</th>
-</tr>
-<tr>
-  <td><tt>class</tt></td>
-  <td>The fully qualified class name of the <a href="../api/org/beanio/stream/RecordWriterFactory.html">
-    <tt>org.beanio.stream.RecordWriterFactory</tt></a> implementation
-    to use for this stream.  If not specified, one of the following default factories is 
-    used based on the stream format:<br />
-    <br />csv - <a href="../api/org/beanio/stream/csv/CsvWriterFactory.html"><tt>org.beanio.stream.csv.CsvWriterFactory</tt></a>
-    <br />delimited - <a href="../api/org/beanio/stream/delimited/DelimitedWriterFactory.html"><tt>org.beanio.stream.delimited.DelimitedWriterFactory</tt></a>
-    <br />fixedlength - <a href="../api/org/beanio/stream/fixedlength/FixedLengthWriterFactory.html"><tt>org.beanio.stream.fixedlength.FixedLengthWriterFactory</tt></a>
-    <br />xml - <a href="../api/org/beanio/stream/xml/XmlWriterFactory.html"><tt>org.beanio.stream.xml.XmlWriterFactory</tt></a>
-    <p>Overriding the record writer factory for XML is not supported.</p>
-  </td>
-  <td>No</td>
-</tr>
-</table>
 
-<p>Children: 
-<a href="#property"><tt>property</tt></a>*
-</p>
-
-<h2><a name="group">A.10. <tt>group</tt></a></h2>
+<h2><a name="group">A.9. <tt>group</tt></a></h2>
 <p>A <tt>group</tt> element is used to group records together for validating occurrences of
 the group as a whole.</p> 
 <p>Attributes:</p>
@@ -3656,7 +3710,7 @@ the group as a whole.</p>
 <a href="#record"><tt>record</tt></a>*
 </p>
 
-<h2><a name="record">A.11. <tt>record</tt></a></h2>
+<h2><a name="record">A.10. <tt>record</tt></a></h2>
 <p>A <tt>record</tt> is used to define a record mapping within a stream.</p> 
 <p>Attributes:</p>
 <table>
@@ -3801,7 +3855,7 @@ the group as a whole.</p>
 </p>
 
 
-<h2><a name="segment">A.12. <tt>segment</tt></a></h2>
+<h2><a name="segment">A.11. <tt>segment</tt></a></h2>
 <p>A <tt>segment</tt> is used to bind groups of fields to a nested bean object, or to validate
 repeating groups of fields, or in an XML formatted stream, to wrap one or more fields in an element.</p>
 <p>Attributes:</p>
@@ -3948,7 +4002,7 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
 </p>
 
 
-<h2><a name="field">A.13. <tt>field</tt></a></h2>
+<h2><a name="field">A.12. <tt>field</tt></a></h2>
 <p>A <tt>field</tt> element is used to bind a field belonging to a record or segment to a bean property.</p> 
 <p>Attributes:</p>
 <table>
@@ -3977,7 +4031,10 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
   <td><tt>setter</tt></td>
   <td>The setter method used to set the property value of this field on its parent bean class.  
     By default, the setter method is determined through intropection using
-    the field name.</td>
+    the field name.
+    <p>If the field is a constructor argument, <tt>setter</tt> may be set to '#N', where
+      N is the position of the argumnet in the constructor beginning at 1.</p>
+    </td>
   <td>No</td>
   <td>*</td>
 </tr>
@@ -4226,7 +4283,7 @@ a fixed length field, <tt>length</tt> will default to the length of the literal 
 <p>The following table shows the message parameters used to format an error
 message for each configurable validation rule.</p>
 
-<table style="vertical-align: top">
+<table style="vertical-align: top;">
 <tr>
   <th>Type</th>
   <th>Rule Name</th>
@@ -4508,9 +4565,125 @@ message for each configurable validation rule.</p>
 </tr>
 </table>
 
-<br />
-<br />
-<br />
 
+<h1><a name="C">Appendix C: Upgrading a 1.x Mapping File Example</a></h1>
+
+<p>This appendix illustrates typical changes required to update an 1.x
+mapping file to 2.x.</p> 
+
+<p>Given the following 1.x mapping file:</p>
+
+<pre class="file">
+&lt;beanio xmlns="http://www.beanio.org/2011/01" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.beanio.org/2011/01 http://www.beanio.org/2011/01/mapping.xsd"&gt;
+
+  &lt;stream name="employees" format="delimited"&gt;
+    &lt;reader&gt;
+      &lt;property name="delimiter" value="," /&gt;
+    &lt;/reader&gt;
+    &lt;writer&gt;
+      &lt;property name="delimiter" value="," /&gt;
+    &lt;/writer&gt;
+    &lt;record name="header" class="example.Header" maxOccurs="1"&gt;
+      &lt;field name="recordType" rid="true" literal="H" /&gt;
+      &lt;field name="fileDate" format="yyyy-MM-dd" /&gt;
+    &lt;/record&gt;
+    &lt;record name="employee" class="example.Employee" minOccurs="0" minLength="6" maxLength="7"&gt;
+      &lt;field name="recordType" rid="true" literal="D" /&gt;
+      &lt;field name="firstName" /&gt;
+      &lt;field name="lastName" /&gt;
+      &lt;bean name="address" class="example.Address" &gt;
+        &lt;field name="city" /&gt;
+        &lt;field name="state" /&gt;
+        &lt;field name="zip" /&gt;
+      &lt;/bean&gt;
+      &lt;field name="phoneNumber" /&gt;
+    &lt;/record&gt;
+    &lt;record name="trailer" class="example.Trailer" maxOccurs="1"&gt;
+      &lt;field name="recordType" rid="true" literal="T" /&gt;
+      &lt;field name="recordCount" /&gt;
+    &lt;/record&gt;
+  &lt;/stream&gt;
+
+  &lt;stream name="contacts" format="xml" ordered="false"&gt;
+    &lt;record name="person" class="example.Person" minOccurs="0"&gt;
+      &lt;field name="firstName" /&gt;
+      &lt;field name="lastName" minOccurs="1" /&gt;
+      &lt;field name="phone" collection="list" minOccurs="0" maxOccurs="5" xmlWrapper="phoneList" /&gt;
+    &lt;/record&gt;
+    &lt;record name="company" class="example.Person" minOccurs="0"&gt;
+      &lt;field name="companyName" minOccurs="1" /&gt;
+      &lt;field name="phone" /&gt;
+    &lt;/record&gt;
+  &lt;/stream&gt;
+
+&lt;/beanio&gt;</pre>
+
+<p>The following 2.x mapping file can be created:</p>
+<pre class="file">
+<span class="comment">&lt;!-- Namespace updated --&gt;</span>
+&lt;beanio xmlns="<span class="highlight">http://www.beanio.org/2012/03</span>" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="<span class="highlight">http://www.beanio.org/2012/03 http://www.beanio.org/2012/03/mapping.xsd</span>"&gt;
+
+  <span class="comment">&lt;!-- Use 'strict' to have BeanIO calculate and enforce default record lengths and ordering --&gt;</span>
+  &lt;stream name="employees" format="delimited" <span class="highlight">strict="true"</span>&gt;
+    <span class="comment">&lt;!-- Combine 'reader' and 'writer' elements into 'parser' --&gt;</span>
+    <span class="highlight">&lt;parser&gt;</span>
+      &lt;property name="delimiter" value="," /&gt;
+    <span class="highlight">&lt;/parser&gt;</span>
+    <span class="comment">&lt;!-- 'minOccurs' defaults to 0 if not specified --&gt;</span>
+    &lt;record name="header" class="example.Header" <span class="highlight">minOccurs="1"</span> maxOccurs="1"&gt;
+      &lt;field name="recordType" rid="true" literal="H" /&gt;
+      &lt;field name="fileDate" format="yyyy-MM-dd" /&gt;
+    &lt;/record&gt;
+    <span class="comment">&lt;!-- 'minLength/maxLength' not needed, see 'phoneNumber' field below for explanation --&gt;</span>
+    &lt;record name="employee" class="example.Employee" minOccurs="0" <del>minLength="6" maxLength="7"</del>&gt;
+      &lt;field name="recordType" rid="true" literal="D" /&gt;
+      &lt;field name="firstName" /&gt;
+      &lt;field name="lastName" /&gt;
+      <span class="comment">&lt;!-- Change 'bean' elements to 'segment' elements --&gt;</span>
+      &lt;<span class="highlight">segment</span> name="address" class="example.Address" &gt;
+        &lt;field name="city" /&gt;
+        &lt;field name="state" /&gt;
+        &lt;field name="zip" /&gt;
+      &lt;/<span class="highlight">segment</span>&gt;
+      <span class="comment">&lt;!-- Use 'minOccurs' to denote optional fields at the end of a record.  When used with
+        -- 'strict', there is no need to set 'minLength' and 'maxLength' on the record, unless 
+        -- you are not mapping every field --&gt;</span>
+      &lt;field name="phoneNumber" <span class="highlight">minOccurs="0"</span> /&gt;
+    &lt;/record&gt;
+    &lt;record name="trailer" class="example.Trailer" <span class="highlight">minOccurs="1"</span> maxOccurs="1"&gt;
+      &lt;field name="recordType" rid="true" literal="T" /&gt;
+      &lt;field name="recordCount" /&gt;
+    &lt;/record&gt;
+  &lt;/stream&gt;
+
+  <span class="comment">&lt;!-- Records are not ordered by default.  --&gt;</span>
+  &lt;stream name="contacts" format="xml" <del>ordered="false"</del>&gt;
+    <span class="comment">&lt;!-- minOccurs defaults to 0 --&gt;</span>
+    &lt;record name="person" class="example.Person" <del>minOccurs="0"</del>&gt;
+      <span class="comment">&lt;!-- Optional XML elements must set minOccurs to 0 --&gt;</span>
+      &lt;field name="firstName" <span class="highlight">minOccurs="0"</span>/&gt;
+      &lt;field name="lastName" minOccurs="1" /&gt;
+      <span class="comment">&lt;!-- Use a 'segment' instead of an 'xmlWrapper' --&gt;</span>
+      <span class="highlight">&lt;segment name="phoneList" minOccurs="0"&gt;</span>
+        &lt;field name="phone" collection="list" minOccurs="0" maxOccurs="5" <del>xmlWrapper="phoneList"</del> /&gt;
+      <span class="highlight">&lt;/segment&gt;</span>
+    &lt;/record&gt;
+    &lt;record name="company" class="example.Person" minOccurs="0"&gt;
+      &lt;field name="companyName" <del>minOccurs="1"</del> /&gt;
+      <span class="comment">&lt;!-- Optional XML elements must set minOccurs to 0 --&gt;</span>
+      &lt;field name="phone" <span class="highlight">minOccurs="0"</span>/&gt;
+    &lt;/record&gt;
+  &lt;/stream&gt;
+
+&lt;/beanio&gt;</pre>
+
+
+<br />
+<br />
+<br />
 </body>
 </html>

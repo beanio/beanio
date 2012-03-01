@@ -388,11 +388,8 @@ public class XmlMappingParser {
             if ("typeHandler".equals(name)) {
                 config.addHandler(createHandlerConfig(child));
             }
-            else if ("reader".equals(name)) {
-                config.setReaderFactory(createBeanFactory(child));
-            }
-            else if ("writer".equals(name)) {
-                config.setWriterFactory(createBeanFactory(child));
+            else if ("parser".equals(name)) {
+                config.setParserFactory(createBeanFactory(child));
             }
             else if ("record".equals(name)) {
                 config.add(createRecordConfig(child));

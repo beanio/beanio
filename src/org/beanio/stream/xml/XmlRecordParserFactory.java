@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Kevin Seim
+ * Copyright 2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,26 +15,35 @@
  */
 package org.beanio.stream.xml;
 
-import java.io.Reader;
+import java.io.*;
 
+import org.beanio.BeanIOConfigurationException;
 import org.beanio.stream.*;
 import org.w3c.dom.Document;
 
 /**
- * This record reader factory is used to create and configure a <tt>XmlReader</tt>.
+ * Default {@link RecordParserFactory} for the XML stream format.
  * 
  * @author Kevin Seim
- * @since 1.1
- * @see XmlReader
+ * @since 2.0
  */
-public class XmlReaderFactory implements RecordReaderFactory, XmlStreamConfigurationAware {
+public class XmlRecordParserFactory extends XmlParserConfiguration 
+    implements RecordParserFactory, XmlStreamConfigurationAware {
 
     private XmlStreamConfiguration source;
-
+    
     /**
-     * Constructs a new <tt>XmlReaderFactory</tt>.
+     * Constructs a new <tt>XmlRecordParserFactory</tt>.
      */
-    public XmlReaderFactory() { }
+    public XmlRecordParserFactory() { }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.stream.RecordParserFactory#init()
+     */
+    public void init() throws BeanIOConfigurationException {
+        
+    }
     
     /*
      * (non-Javadoc)
@@ -47,6 +56,30 @@ public class XmlReaderFactory implements RecordReaderFactory, XmlStreamConfigura
         }
         
         return new XmlReader(in, base);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.stream.RecordWriterFactory#createWriter(java.io.Writer)
+     */
+    public RecordWriter createWriter(Writer out) throws IllegalArgumentException {
+        return new XmlWriter(out, this);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.stream.RecordParserFactory#createMarshaller()
+     */
+    public RecordMarshaller createMarshaller() throws IllegalArgumentException {
+        return new XmlRecordMarshaller(this);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.stream.RecordParserFactory#createUnmarshaller()
+     */
+    public RecordUnmarshaller createUnmarshaller() throws IllegalArgumentException {
+        return new XmlRecordUnmarshaller();
     }
 
     /*

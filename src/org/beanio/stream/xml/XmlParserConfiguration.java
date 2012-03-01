@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Kevin Seim
+ * Copyright 2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,14 @@ package org.beanio.stream.xml;
 import java.util.*;
 
 /**
- * Stores XML writer configuration settings.
- * <p>
- * By default, indentation is disabled and no XML header will be written to an output stream.
+ * Stores configuration settings for parsing XML formatted streams.
+ *
+ * <p>By default, indentation is disabled and an XML header will be written to an output stream.</p>
  * 
  * @author Kevin Seim
- * @since 1.1
- * @see XmlWriter
+ * @since 2.0
  */
-public class XmlWriterConfiguration implements Cloneable {
+public class XmlParserConfiguration implements Cloneable {
 
     private int indentation = -1;
     private String lineSeparator = null;
@@ -39,9 +38,9 @@ public class XmlWriterConfiguration implements Cloneable {
     private Map<String,String> namespaceMap = new HashMap<String,String>();
     
     /**
-     * Constructs a new <tt>XmlWriterConfiguration</tt>.
+     * Constructs a new <tt>XmlConfiguration</tt>.
      */
-    public XmlWriterConfiguration() { }
+    public XmlParserConfiguration() { }
 
     /**
      * Returns the number of spaces to indent each level of XML, or <tt>-1</tt>
@@ -195,10 +194,9 @@ public class XmlWriterConfiguration implements Cloneable {
     }
     
     @Override
-    protected XmlWriterConfiguration clone() {
+    protected XmlParserConfiguration clone() {
         try {
-            XmlWriterConfiguration config = (XmlWriterConfiguration) super.clone();
-            return config;
+            return (XmlParserConfiguration) super.clone();
         }
         catch (CloneNotSupportedException ex) {
             throw new IllegalStateException();

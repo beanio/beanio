@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Kevin Seim
+ * Copyright 2010-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.beanio.stream.fixedlength.*;
 import org.junit.Test;
 
 /**
- * JUnit test cases for testing the <tt>FixedLengthWriter</tt> and <tt>FixedLengthWriterFactory</tt>.
+ * JUnit test cases for testing the <tt>FixedLengthWriter</tt> and <tt>FixedLengthRecordParserFactory</tt>.
  * 
  * @author Kevin Seim
  * @since 1.0
@@ -42,7 +42,7 @@ public class FixedLengthWriterTest {
     
     @Test
     public void testDefaultFactoryConfiguration() throws IOException {
-        FixedLengthWriterFactory factory = new FixedLengthWriterFactory();
+        FixedLengthRecordParserFactory factory = new FixedLengthRecordParserFactory();
         StringWriter text = new StringWriter();
         RecordWriter out = factory.createWriter(text);
         out.write("value1  value2");
@@ -51,7 +51,7 @@ public class FixedLengthWriterTest {
 
     @Test
     public void testCustomFactoryConfiguration() throws IOException {
-        FixedLengthWriterFactory factory = new FixedLengthWriterFactory();
+        FixedLengthRecordParserFactory factory = new FixedLengthRecordParserFactory();
         factory.setRecordTerminator("");
         StringWriter text = new StringWriter();
         RecordWriter out = factory.createWriter(text);
@@ -61,7 +61,7 @@ public class FixedLengthWriterTest {
 
     @Test
     public void testFlushAndClose() throws IOException {
-        FixedLengthWriterFactory factory = new FixedLengthWriterFactory();
+        FixedLengthRecordParserFactory factory = new FixedLengthRecordParserFactory();
         factory.setRecordTerminator("");
         StringWriter text = new StringWriter();
         RecordWriter out = factory.createWriter(new BufferedWriter(text));

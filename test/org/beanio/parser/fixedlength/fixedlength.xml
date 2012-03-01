@@ -8,9 +8,9 @@
   </typeHandler>
 
   <stream name="f1" format="fixedlength" strict="true">
-    <writer>
+    <parser>
       <property name="recordTerminator" value="" />
-    </writer>
+    </parser>
     <record name="record" class="map">
       <field name="default" position="0" length="10" trim="false" />
       <field name="number" position="10" type="int" length="10" justify="right" padding="0" />
@@ -20,9 +20,9 @@
   </stream>
 
   <stream name="f2" format="fixedlength" resourceBundle="org.beanio.parser.fixedlength.f2_messages">
-    <writer>
+    <parser>
       <property name="recordTerminator" value="\n\r" />
-    </writer>
+    </parser>
     <record name="record" class="map" minLength="10" maxLength="20">
       <field name="field1" length="5" />
       <field name="field2" length="5" />
@@ -46,9 +46,9 @@
   </stream>
 
   <stream name="f4" format="fixedlength">
-    <writer>
+    <parser>
       <property name="recordTerminator" value="" />
-    </writer>
+    </parser>
     <record name="record" class="map">
       <field name="type" rid="true" literal="INT" />
       <field name="number" type="int" collection="list" length="5" justify="right" padding="0" maxOccurs="unbounded" />
@@ -68,9 +68,9 @@
   </stream>
 
   <stream name="f5" format="fixedlength">
-    <writer>
+    <parser>
       <property name="recordTerminator" value="" />
-    </writer>
+    </parser>
     <record name="record" class="map">
       <field name="firstName" length="10" ignore="true" padding="A" default="" />
       <field name="lastName" length="10"/>

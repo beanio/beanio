@@ -15,11 +15,7 @@
  */
 package org.beanio.internal.parser.format.delimited;
 
-import java.io.*;
-
 import org.beanio.internal.parser.*;
-import org.beanio.stream.*;
-import org.beanio.stream.delimited.*;
 
 /**
  * A {@link StreamFormatSupport} implementation for the delimited stream format.
@@ -43,15 +39,5 @@ public class DelimitedStreamFormat extends StreamFormatSupport {
      */
     public MarshallingContext createMarshallingContext() {
         return new DelimitedMarshallingContext();
-    }
-
-    @Override
-    public RecordReader createDefaultReader(Reader in) {
-        return new DelimitedReader(in);
-    }
-
-    @Override
-    public RecordWriter createDefaultWriter(Writer out) {
-        return new DelimitedWriter(out);
     }
 }

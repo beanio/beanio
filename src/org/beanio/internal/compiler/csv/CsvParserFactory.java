@@ -40,19 +40,12 @@ public class CsvParserFactory extends DelimitedParserFactory {
     public StreamFormat createStreamFormat(StreamConfig config) {
         CsvStreamFormat format = new CsvStreamFormat();
         format.setName(config.getName());
-        format.setReaderFactory(getRecordReaderFactory(config));
-        format.setWriterFactory(getRecordWriterFactory(config));
+        format.setRecordParserFactory(createRecordParserFactory(config));
         return format;
     }
 
     @Override
-    protected RecordReaderFactory newRecordReaderFactory() {
-        return new CsvReaderFactory();
+    protected RecordParserFactory getDefaultRecordParserFactory() {
+        return new CsvRecordParserFactory();
     }
-
-    @Override
-    protected RecordWriterFactory newRecordWriterFactory() {
-        return new CsvWriterFactory();
-    }
-    
 }

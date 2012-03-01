@@ -49,8 +49,19 @@ public class XmlUnmarshallingContext extends UnmarshallingContext {
     
     @Override
     public void setRecordValue(Object value) {
-        this.document = (Document) value;
-        this.position = null;
+        Node node = (Node) value;
+        if (node.getNodeType() == Node.DOCUMENT_NODE) {
+            this.document = (Document) value;
+            this.position = null;
+        }
+        else if (node.getNodeType() == Node.ELEMENT_NODE) {
+            this.document = node.getOwnerDocument();
+            this.position = (Element)node;
+        }
+        else {
+            this.document = node.getOwnerDocument();
+            this.position = null;          
+        }
     }
     
     @Override
@@ -208,5 +219,10 @@ public class XmlUnmarshallingContext extends UnmarshallingContext {
             }
         }
         return element;
+    }
+    
+    @Override
+    public Object toRecordValue(Node node) {
+        return node;
     }
 }

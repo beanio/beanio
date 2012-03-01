@@ -21,6 +21,7 @@ import java.util.*;
 
 import org.beanio.*;
 import org.beanio.stream.*;
+import org.w3c.dom.Node;
 
 /**
  * Stores context information needed to unmarshal a bean object.
@@ -74,6 +75,33 @@ public abstract class UnmarshallingContext extends ParsingContext {
      * @see RecordReader
      */
     public abstract void setRecordValue(Object value);
+    
+    /**
+     * Converts a <tt>String[]</tt> to a record value.
+     * @param array the <tt>String[]</tt> to convert
+     * @return the record value, or null if not supported
+     */
+    public Object toRecordValue(String[] array) {
+        return null;
+    }
+    
+    /**
+     * Converts a {@link List} to a record value.
+     * @param list the <tt>List</tt> to convert
+     * @return the record value, or null if not supported
+     */
+    public Object toRecordValue(List<String> list) {
+        return null;
+    }
+
+    /**
+     * Converts a {@link Node} to a record value.
+     * @param node the <tt>Node</tt> to convert
+     * @return the record value, or null if not supported
+     */
+    public Object toRecordValue(Node node) {
+        return null;
+    }
     
     /**
      * Prepares this context for unmarshalling a record (or group of records that
@@ -164,8 +192,14 @@ public abstract class UnmarshallingContext extends ParsingContext {
         else {
             if (recordContext.hasErrors()) {
                 dirty = true;
-                throw new InvalidRecordException(recordContext, "Invalid '" + componentName + 
-                                "' record at line " + lineNumber);
+                if (lineNumber > 0) {
+                    throw new InvalidRecordException(recordContext, "Invalid '" + componentName + 
+                         "' record at line " + lineNumber);
+                }
+                else {
+                    throw new InvalidRecordException(recordContext, 
+                        "Invalid '" + componentName + "' record");
+                }
             }
         }
     }

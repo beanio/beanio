@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://www.beanio.org/2012/03 http://www.beanio.org/2012/03/mapping.xsd">
 
   <stream name="stream" format="xml" xmlName="stream">
-    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <record name="person" class="org.beanio.parser.xml.Person">
       <field name="firstName" />
       <segment name="address" xmlName="homeAddress" class="org.beanio.parser.xml.Address" nillable="true">
@@ -15,7 +15,7 @@
   </stream>
 
   <stream name="stream2" format="xml" xmlName="stream">
-    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <record name="person" class="org.beanio.parser.xml.Person">
       <field name="firstName" />
       <segment name="address" xmlName="homeAddress" class="org.beanio.parser.xml.Address" minOccurs="0" xmlNamespace="address">
@@ -26,7 +26,7 @@
   </stream>
 
   <stream name="stream3" format="xml" xmlName="stream">
-    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <record name="person" class="org.beanio.parser.xml.Person">
       <segment name="addressList" xmlName="address" class="org.beanio.parser.xml.Address" minOccurs="0" maxOccurs="unbounded" collection="list">
         <field name="state" xmlType="text" />
@@ -36,7 +36,7 @@
   </stream>
 
   <stream name="stream4" format="xml" xmlName="stream">
-    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <record name="person" class="org.beanio.parser.xml.Person">
       <field name="firstName" />
       <segment name="address" xmlType="none" class="org.beanio.parser.xml.Address">
@@ -47,7 +47,7 @@
   </stream>
 
   <stream name="stream5" format="xml" xmlName="stream">
-    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <record name="person" class="map">
       <field name="firstName" />
       <segment name="address" nillable="true">

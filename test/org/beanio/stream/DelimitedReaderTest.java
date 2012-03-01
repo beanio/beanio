@@ -23,7 +23,7 @@ import org.beanio.stream.delimited.*;
 import org.junit.Test;
 
 /**
- * JUnit test cases for <tt>DelimitedReader</tt> and <tt>DelimitedReaderFactory</tt>.
+ * JUnit test cases for <tt>DelimitedReader</tt> and <tt>DelimitedRecordParserFactory</tt>.
  * 
  * @author Kevin Seim
  */
@@ -31,7 +31,7 @@ public class DelimitedReaderTest {
 
     @Test
     public void testBasic() throws IOException {
-        DelimitedReaderFactory factory = new DelimitedReaderFactory();
+        DelimitedRecordParserFactory factory = new DelimitedRecordParserFactory();
         String[] expected = new String[] { "1", "2", "33", "444", "" };
         DelimitedReader in = createReader(factory, "1\t2\t33\t444\t\n");
         assertArrayEquals(expected, in.read());
@@ -40,7 +40,7 @@ public class DelimitedReaderTest {
 
     @Test
     public void testEscapeDisabled() throws IOException {
-        DelimitedReaderFactory factory = new DelimitedReaderFactory();
+        DelimitedRecordParserFactory factory = new DelimitedRecordParserFactory();
         factory.setEscape(null);
         DelimitedReader in = createReader(factory, "1\\\\\t2");
         assertArrayEquals(new String[] { "1\\\\", "2" }, in.read());
@@ -49,7 +49,7 @@ public class DelimitedReaderTest {
 
     @Test
     public void testEscapeEscape() throws IOException {
-        DelimitedReaderFactory factory = new DelimitedReaderFactory();
+        DelimitedRecordParserFactory factory = new DelimitedRecordParserFactory();
         factory.setEscape('\\');
         DelimitedReader in = createReader(factory, "1\\\\\t2");
         assertArrayEquals(new String[] { "1\\", "2" }, in.read());
@@ -58,7 +58,7 @@ public class DelimitedReaderTest {
 
     @Test
     public void testEscapeDelimiter() throws IOException {
-        DelimitedReaderFactory factory = new DelimitedReaderFactory();
+        DelimitedRecordParserFactory factory = new DelimitedRecordParserFactory();
         factory.setEscape('\\');
         DelimitedReader in = createReader(factory, "1\\\t\t2\\");
         assertArrayEquals(new String[] { "1\t", "2\\" }, in.read());
@@ -67,7 +67,7 @@ public class DelimitedReaderTest {
 
     @Test
     public void testEscapeOther() throws IOException {
-        DelimitedReaderFactory factory = new DelimitedReaderFactory();
+        DelimitedRecordParserFactory factory = new DelimitedRecordParserFactory();
         factory.setEscape('\\');
         DelimitedReader in = createReader(factory, "1\t2\\2");
         assertArrayEquals(new String[] { "1", "2\\2" }, in.read());
@@ -83,7 +83,7 @@ public class DelimitedReaderTest {
 
     @Test
     public void testLineContinuation() throws IOException {
-        DelimitedReaderFactory factory = new DelimitedReaderFactory();
+        DelimitedRecordParserFactory factory = new DelimitedRecordParserFactory();
         factory.setDelimiter(',');
         factory.setLineContinuationCharacter('\\');
         DelimitedReader in = createReader(factory, "1,2,\\\n3,4");
@@ -94,7 +94,7 @@ public class DelimitedReaderTest {
 
     @Test
     public void testLineContinuationCRLF() throws IOException {
-        DelimitedReaderFactory factory = new DelimitedReaderFactory();
+        DelimitedRecordParserFactory factory = new DelimitedRecordParserFactory();
         factory.setDelimiter(',');
         factory.setLineContinuationCharacter('\\');
         DelimitedReader in = createReader(factory, "1,2,\\\r\n3,4");
@@ -105,7 +105,7 @@ public class DelimitedReaderTest {
 
     @Test
     public void testLineContinuationIgnored() throws IOException {
-        DelimitedReaderFactory factory = new DelimitedReaderFactory();
+        DelimitedRecordParserFactory factory = new DelimitedRecordParserFactory();
         factory.setDelimiter(',');
         factory.setLineContinuationCharacter('\\');
         DelimitedReader in = createReader(factory, "1,2,\\3,4");
@@ -116,7 +116,7 @@ public class DelimitedReaderTest {
 
     @Test
     public void testLineContinuationAndEscape() throws IOException {
-        DelimitedReaderFactory factory = new DelimitedReaderFactory();
+        DelimitedRecordParserFactory factory = new DelimitedRecordParserFactory();
         factory.setDelimiter(',');
         factory.setLineContinuationCharacter('\\');
         factory.setEscape('\\');
@@ -128,7 +128,7 @@ public class DelimitedReaderTest {
 
     @Test
     public void testLineNumber() throws IOException {
-        DelimitedReaderFactory factory = new DelimitedReaderFactory();
+        DelimitedRecordParserFactory factory = new DelimitedRecordParserFactory();
         factory.setDelimiter(',');
         factory.setLineContinuationCharacter('\\');
         DelimitedReader in = createReader(factory, "1,2,\\\n3,4\n5,6");
@@ -142,7 +142,7 @@ public class DelimitedReaderTest {
 
     @Test(expected = RecordIOException.class)
     public void testLineContinuationError() throws IOException {
-        DelimitedReaderFactory factory = new DelimitedReaderFactory();
+        DelimitedRecordParserFactory factory = new DelimitedRecordParserFactory();
         factory.setDelimiter(',');
         factory.setLineContinuationCharacter('\\');
         DelimitedReader in = createReader(factory, "1,2,\\");
@@ -151,7 +151,7 @@ public class DelimitedReaderTest {
 
     @Test
     public void testCustomLineContinuation() throws IOException {
-        DelimitedReaderFactory factory = new DelimitedReaderFactory();
+        DelimitedRecordParserFactory factory = new DelimitedRecordParserFactory();
         factory.setDelimiter(',');
         factory.setLineContinuationCharacter('#');
         DelimitedReader in = createReader(factory, "1,2,#\n3,4");
@@ -161,7 +161,7 @@ public class DelimitedReaderTest {
 
     @Test
     public void testLF() throws IOException {
-        DelimitedReaderFactory factory = new DelimitedReaderFactory();
+        DelimitedRecordParserFactory factory = new DelimitedRecordParserFactory();
         DelimitedReader in = createReader(factory, "1\t2\n3\t4");
         assertArrayEquals(in.read(), new String[] { "1", "2" });
         assertArrayEquals(in.read(), new String[] { "3", "4" });
@@ -170,7 +170,7 @@ public class DelimitedReaderTest {
 
     @Test
     public void testCRLF() throws IOException {
-        DelimitedReaderFactory factory = new DelimitedReaderFactory();
+        DelimitedRecordParserFactory factory = new DelimitedRecordParserFactory();
         DelimitedReader in = createReader(factory, "1\t2\r\n3\t4");
         assertArrayEquals(in.read(), new String[] { "1", "2" });
         assertArrayEquals(in.read(), new String[] { "3", "4" });
@@ -179,7 +179,7 @@ public class DelimitedReaderTest {
 
     @Test
     public void testCR() throws IOException {
-        DelimitedReaderFactory factory = new DelimitedReaderFactory();
+        DelimitedRecordParserFactory factory = new DelimitedRecordParserFactory();
         DelimitedReader in = createReader(factory, "1\t2\r3\t4");
         assertArrayEquals(in.read(), new String[] { "1", "2" });
         assertArrayEquals(in.read(), new String[] { "3", "4" });
@@ -188,10 +188,10 @@ public class DelimitedReaderTest {
 
     @Test
     public void testRecordTerminator() throws IOException {
-        DelimitedReaderFactory factory = new DelimitedReaderFactory();
+        DelimitedRecordParserFactory factory = new DelimitedRecordParserFactory();
         factory.setDelimiter(',');
         factory.setLineContinuationCharacter('\\');
-        factory.setRecordTerminator('*');
+        factory.setRecordTerminator("*");
         DelimitedReader in = createReader(factory, "1,2,*,4\n5,6,\\*7*");
         assertArrayEquals(new String[] { "1", "2", "", }, in.read());
         assertEquals("1,2,", in.getRecordText());
@@ -210,7 +210,7 @@ public class DelimitedReaderTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testDelimiterCannotMatchContinuation() {
-        DelimitedReaderConfiguration config = new DelimitedReaderConfiguration(',');
+        DelimitedParserConfiguration config = new DelimitedParserConfiguration(',');
         config.setLineContinuationCharacter(',');
         
         new DelimitedReader(new StringReader(""), config);
@@ -218,7 +218,7 @@ public class DelimitedReaderTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testDelimiterCannotMatchEscape() {
-        DelimitedReaderConfiguration config = new DelimitedReaderConfiguration(',');
+        DelimitedParserConfiguration config = new DelimitedParserConfiguration(',');
         config.setEscape(',');
         
         new DelimitedReader(new StringReader(""), config);
@@ -231,7 +231,7 @@ public class DelimitedReaderTest {
         }
     }
 
-    private DelimitedReader createReader(DelimitedReaderFactory factory, String input) {
+    private DelimitedReader createReader(DelimitedRecordParserFactory factory, String input) {
         return (DelimitedReader) factory.createReader(createInput(input));
     }
 

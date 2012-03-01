@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://www.beanio.org/2012/03 http://www.beanio.org/2012/03/mapping.xsd">
 
   <stream name="ml1" format="xml" xmlName="orders">
-    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <group name="orderGroup" class="org.beanio.beans.Order" xmlType="none">
       <record name="order" minOccurs="1" maxOccurs="1" order="1">
         <field name="id" />

@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://www.beanio.org/2012/03 http://www.beanio.org/2012/03/mapping.xsd">
 
   <stream name="stream" format="xml" xmlName="stream">
-    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <group name="contact" order="1" minOccurs="1" maxOccurs="unbounded">
       <record name="contactRecord" order="1" xmlName="person" class="org.beanio.parser.xml.Person" minOccurs="1" maxOccurs="1">
         <property name="type" rid="true" value="C" />
@@ -29,7 +29,7 @@
   </stream>
 
   <stream name="stream2" xmlName="stream" format="xml">
-    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <group name="contacts" order="1" minOccurs="1" maxOccurs="unbounded" xmlType="none">
       <record name="person" class="org.beanio.parser.xml.Person" minOccurs="1" maxOccurs="1">
         <field name="type" rid="true" xmlType="attribute" literal="C" />
@@ -48,7 +48,7 @@
   </stream>
 
   <stream name="stream3" format="xml" xmlType="none">
-    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <group name="contact" order="1" minOccurs="1" maxOccurs="unbounded">
       <record name="person" class="org.beanio.parser.xml.Person" minOccurs="1" maxOccurs="1">
         <field name="firstName" xmlType="text" />

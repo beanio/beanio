@@ -40,8 +40,6 @@ import org.w3c.dom.*;
  * but a <tt>Marshaller</tt> is not thread safe and should not be used to concurrently
  * marshal multiple bean objects.</p>
  * 
- * m.marshal(Object).toString();
- * 
  * @author Kevin Seim
  * @since 2.0
  */
@@ -70,8 +68,9 @@ public interface Marshaller {
      * Returns the most recent marshalled bean object as a <tt>String</tt>.  This method
      * is supported by all stream formats.
      * @return the record text
+     * @throws BeanWriterException if a fatal error occurs
      */
-    public String toString();
+    public String toString() throws BeanWriterException;
     
     /**
      * Returns the most recent marshalled bean object as a <tt>String[]</tt> for <tt>csv</tt>
@@ -90,8 +89,8 @@ public interface Marshaller {
     public List<String> toList() throws BeanWriterException;
     
     /**
-     * Returns the most recent marshalled bean object as a {@link Document} for an <tt>xml</tt>
-     * formatted stream.
+     * Returns the most recent marshalled bean object as a {@link Document} for <tt>xml</tt>
+     * formatted streams.
      * @return the {@link Document}
      * @throws BeanWriterException if {@link Document} is not supported by the stream format
      */

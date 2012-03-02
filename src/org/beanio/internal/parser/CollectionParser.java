@@ -62,7 +62,18 @@ public class CollectionParser extends DelegatingParser implements Property, Iter
      * @see org.beanio.parser2.Property#defines(java.lang.Object)
      */
     public boolean defines(Object value) {
-        // collections cannot be used to identify bean objects
+        // TODO implement for arrays....
+        
+        if (value == null || type == null) {
+            return false;
+        }
+        
+        if (Collection.class.isAssignableFrom(value.getClass())) {
+            // children of collections cannot be used to identify bean objects
+            // so we can immediately return true here
+            return true;
+        }
+        
         return false;
     }
     

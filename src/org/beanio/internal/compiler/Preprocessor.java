@@ -155,6 +155,11 @@ public class Preprocessor extends ProcessorSupport {
      * @param record the record configuration to process
      */
     protected void initializeRecord(RecordConfig record) throws BeanIOConfigurationException {
+        // validate both 'class' and 'target' aren't set
+        if (record.getType() != null && record.getTarget() != null) {
+            throw new BeanIOConfigurationException("Cannot set both 'class' and 'target'");
+        }
+        
         // assign default min and max occurs
         if (record.getMinOccurs() == null) {
             record.setMinOccurs(0);
@@ -168,6 +173,11 @@ public class Preprocessor extends ProcessorSupport {
         }
         
         initializeSegment(record);
+        
+        // bound is not set until initializeSegment is called
+        if (record.isBound() && record.getTarget() != null) {
+            throw new BeanIOConfigurationException("Record target not supported for bound record groups");
+        }
     }
     
     /**

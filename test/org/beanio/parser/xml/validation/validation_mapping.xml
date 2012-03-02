@@ -9,8 +9,8 @@
     </parser>
     <record name="person" class="org.beanio.parser.xml.Person">
       <field name="firstName" minOccurs="1" nillable="false" />
-      <segment name="lastName" minOccurs="1">
-        <field name="lastName" minOccurs="1" xmlType="text" nillable="false"/>
+      <segment name="lastName" minOccurs="1" nillable="false">
+        <field name="lastName" minOccurs="1" xmlType="text" />
       </segment>
     </record>
   </stream>

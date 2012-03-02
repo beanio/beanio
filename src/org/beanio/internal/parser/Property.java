@@ -83,8 +83,6 @@ public interface Property {
      */
     public void setValue(Object value);
     
-    
-
     public boolean defines(Object value);
     
     /**
@@ -100,7 +98,4 @@ public interface Property {
     
     public Class<?> getType();
     public void setType(Class<?> type);
-    
-    
-    //public int getConstructorArgumentIndex();
 }

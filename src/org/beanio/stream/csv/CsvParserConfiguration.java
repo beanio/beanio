@@ -122,7 +122,7 @@ public class CsvParserConfiguration {
 
     /**
      * Returns whether to ignore unquoted whitespace. Returns <tt>false</tt> by
-     * default which causes the following record cause an exception:
+     * default which causes the following record to raise an exception:
      * 
      * <pre>
      * "Field1", "Field2"

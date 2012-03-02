@@ -23,7 +23,9 @@ import org.beanio.stream.util.CommentReader;
 
 /**
  * A <tt>CsvReader</tt> is used to parse CSV formatted flat files into records
- * of <tt>String</tt> arrays.  The CSV format supported is defined by specification 
+ * of <tt>String</tt> arrays.  
+ * 
+ * <p>The CSV format supported is defined by specification 
  * RFC 4180.  By default, there is one exception: lines that span multiple records will 
  * throw an exception.  To allow quoted multi-line fields, simply set 
  * <tt>multilineEnabled</tt> to <tt>true</tt> when constructing the reader.
@@ -32,7 +34,7 @@ import org.beanio.stream.util.CommentReader;
  * <ul>
  * <li>The default quotation mark character, '"', can be overridden.</li>
  * <li>The default escape character, '"', can be overridden or disabled altogether.</li>
- * <li>Whitespace can be allowed outside of quoted values.<li>
+ * <li>Whitespace can be allowed outside of quoted values.</li>
  * <li>Quotation marks can be allowed in unquoted fields (as long as the quotation
  *   mark is not the first character in the field</li>
  * </ul>

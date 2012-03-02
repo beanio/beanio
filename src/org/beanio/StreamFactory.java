@@ -22,15 +22,17 @@ import org.beanio.internal.util.*;
 
 /**
  * A <tt>StreamFactory</tt> is used to load BeanIO mapping files and create 
- * {@link BeanReader} and {@link BeanWriter} instances.
+ * {@link BeanReader}, {@link BeanWriter}, {@link Unmarshaller} and {@link Marshaller} instances.
  * <p>
- * The default BeanIO <tt>StreamFactory</tt> implementation can be safely shared 
+ * The default <tt>StreamFactory</tt> implementation can be safely shared 
  * across multiple threads.
  * 
  * @author Kevin Seim
  * @since 1.0
  * @see BeanReader
  * @see BeanWriter
+ * @see Unmarshaller
+ * @see Marshaller
  */
 public abstract class StreamFactory {
 

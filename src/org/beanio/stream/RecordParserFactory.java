@@ -18,39 +18,64 @@ package org.beanio.stream;
 import java.io.*;
 
 import org.beanio.*;
+import org.w3c.dom.Document;
 
 /**
  * Factory interface for creating record parsers.
  * 
- * <p>The following table shows the required parser based on the requested BeanIO interface.</p>
- * 
- * <table border="1">
+ * <p>The Java object bound to a <i>record</i> depends on the stream format.
+ * The following table shows the object used for each format:</p>
+ * <table>
  * <tr>
- *   <th>Requests For</th>
- *   <th>Requires Parser</th>
+ *   <th>Format</th>
+ *   <th>Record Type</th>
+ * </tr>
+ *  <tr>
+ *   <td>Fixed Length</td>
+ *   <td><tt>String</tt></td>
  * </tr>
  * <tr>
- *   <td>{@link BeanReader}</td>
- *   <td>{@link RecordReader}</td>
+ *   <td>CSV, Delimited</td>
+ *   <td><tt>String[]</td>
  * </tr>
  * <tr>
- *   <td>{@link BeanWriter}</td>
- *   <td>{@link RecordWriter}</td>
- * </tr>
- * <tr>
- *   <td>{@link Unmarshaller}</td>
- *   <td>{@link RecordUnmarshaller}</td>
- * </tr>
- * <tr>
- *   <td>{@link Marshaller}</td>
- *   <td>{@link RecordMarshaller}</td>
+ *   <td>XML</td>
+ *   <td>{@link Document}</td>
  * </tr>
  * </table>
  * 
- * <p>Once configured, implementations must be thread safe.</p>
+ * <p>The following table shows the method invoked for a requested BeanIO interface.</p>
+ * <table>
+ * <tr>
+ *   <th>Requests For</th>
+ *   <th>Invokes</th>
+ * </tr>
+ * <tr>
+ *   <td>{@link BeanReader}</td>
+ *   <td>{@link #createReader(Reader)}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@link BeanWriter}</td>
+ *   <td>{@link #createWriter(Writer)}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@link Unmarshaller}</td>
+ *   <td>{@link #createUnmarshaller()}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@link Marshaller}</td>
+ *   <td>{@link #createMarshaller()}</td>
+ * </tr>
+ * </table>
+ * 
+ * <p>A <tt>RecordParserFactory</tt> implementation must be thread safe (after all of its properties have been set).</p>
  * 
  * @author Kevin Seim
  * @since 2.0
+ * @see RecordReader
+ * @see RecordWriter
+ * @see RecordMarshaller
+ * @see RecordUnmarshaller
  */
 public interface RecordParserFactory {
 

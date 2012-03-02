@@ -16,7 +16,7 @@
 package org.beanio;
 
 /**
- * Exception thrown by a {@link BeanWriter}.
+ * Exception thrown by a {@link BeanWriter} or {@link Marshaller}.
  * 
  * <p>In most cases, a subclass of this exception is thrown.  In a few (but rare) fatal cases, 
  * this exception may be thrown directly.

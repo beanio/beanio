@@ -447,6 +447,7 @@ public class XmlMappingParser {
         RecordConfig segment = new RecordConfig();
         populatePropertyConfig(segment, element);
         segment.setType(getAttribute(element, "class"));
+        segment.setTarget(getAttribute(element, "target"));
         segment.setOrder(getIntegerAttribute(element, "order"));
         segment.setMinLength(getIntegerAttribute(element, "minLength"));
         segment.setMaxLength(getUnboundedIntegerAttribute(element, "maxLength", Integer.MAX_VALUE));

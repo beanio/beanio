@@ -19,12 +19,8 @@ package org.beanio.stream;
  * Interface for marshalling a single record object.
  * 
  * <p>The class used to represent a <i>record</i> is specific to the
- * format of a record.  For example, delimited record marshaller may use 
+ * format of a record.  For example, a delimited record marshaller may use 
  * <tt>Stringp[]</tt>.</p>
- * 
- * <p>A <tt>RecordMarshaller</tt> should minimally support marshalling to
- * a <tt>String</tt> (i.e. {@link #marshal(Object)}).  Other <tt>toXXX()</tt>
- * methods may return null if not supported by the stream format.</p>
  * 
  * @author Kevin Seim
  * @since 2.0

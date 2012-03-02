@@ -20,7 +20,7 @@ import java.lang.reflect.*;
 import java.util.*;
 import java.util.regex.PatternSyntaxException;
 
-import org.beanio.BeanIOConfigurationException;
+import org.beanio.*;
 import org.beanio.internal.config.*;
 import org.beanio.internal.parser.*;
 import org.beanio.internal.parser.Field;
@@ -468,7 +468,41 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      * @param config the record configuration
      * @param record the {@link Record} being finalized
      */
-    protected void finalizeRecord(RecordConfig config, Record record) { }
+    protected void finalizeRecord(RecordConfig config, Record record) { 
+        String target = config.getTarget();
+        if (target != null) {
+            Component c = findTarget(record, target);
+            if (c == null) {
+                throw new BeanIOConfigurationException("Record target '" + target + "' not found");
+            }
+            
+            Property property = null;
+            if (c instanceof Property) {
+                property = (Property) c;
+            }
+            if (property == null || property.getType() == null) {
+                throw new BeanIOConfigurationException("No class defined for record target '" + target + "'");
+            }
+            record.setProperty(property);
+        }
+    }
+    
+    private Component findTarget(Component c, String name) {
+        if (name.equals(c.getName())) {
+            return c;
+        }
+        for (Component child : c.getChildren()) {
+            Component match = findTarget(child, name);
+            if (match != null) {
+                if (c instanceof Iteration) {
+                    throw new BeanIOConfigurationException("A record target cannot repeat");
+                }
+                return match;
+            }
+        }
+        return null;
+    }
+    
 
     /*
      * (non-Javadoc)

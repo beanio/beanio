@@ -28,7 +28,7 @@ import org.w3c.dom.Node;
  * 
  * <p>An <tt>Unmarshaller</tt> instance is stateful.  If a BeanIO mapping file declares
  * record ordering and expected occurrences, a {@link BeanWriterException} may be thrown for
- * records read out of sequence or that have exceeded a their maximum occurrences.</p>
+ * records read out of sequence or that have exceeded their maximum occurrences.</p>
  * 
  * <p>There is some performance benefit for reusing the same <tt>Unmarshaller</tt> instance,
  * but an <tt>Unmarshaller</tt> is not thread safe and should not be used to unmarshal multiple 
@@ -56,7 +56,7 @@ public interface Unmarshaller {
         UnidentifiedRecordException, UnexpectedRecordException, InvalidRecordException;
     
     /**
-     * Unmarshals a bean object from the given {@link List}.  This method is supported by
+     * Unmarshals a bean object from the given {@link List} of fields.  This method is supported by
      * CSV and delimited formatted streams only.
      * @param fields the {@link List} of fields to unmarshal
      * @return the unmarshalled bean object
@@ -70,7 +70,7 @@ public interface Unmarshaller {
         UnidentifiedRecordException, UnexpectedRecordException, InvalidRecordException;
 
     /**
-     * Unmarshals a bean object from the given <tt>String[]</tt>.  This method is supported by
+     * Unmarshals a bean object from the given <tt>String[]</tt> of fields.  This method is supported by
      * CSV and delimited formatted streams only.
      * @param fields the <tt>String[]</tt> of fields to unmarshal
      * @return the unmarshalled bean object
@@ -86,7 +86,7 @@ public interface Unmarshaller {
     /**
      * Unmarshals a bean object from the given {@link Node}.  This method is supported by
      * XML formatted streams only.
-     * @param list the {@link Node} to unmarshal
+     * @param node the {@link Node} to unmarshal
      * @return the unmarshalled bean object
      * @throws BeanReaderException if a {@link Node} is not supported by the stream format,
      *   or if the bean is bound to a record group, or if some other rare (but fatal) error occurs

@@ -17,7 +17,6 @@ package org.beanio.stream.xml;
 
 import java.io.*;
 
-import org.beanio.BeanIOConfigurationException;
 import org.beanio.stream.*;
 import org.w3c.dom.Document;
 
@@ -41,7 +40,7 @@ public class XmlRecordParserFactory extends XmlParserConfiguration
      * (non-Javadoc)
      * @see org.beanio.stream.RecordParserFactory#init()
      */
-    public void init() throws BeanIOConfigurationException {
+    public void init() throws IllegalArgumentException {
         
     }
     

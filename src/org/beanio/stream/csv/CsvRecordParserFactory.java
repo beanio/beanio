@@ -17,7 +17,6 @@ package org.beanio.stream.csv;
 
 import java.io.*;
 
-import org.beanio.BeanIOConfigurationException;
 import org.beanio.stream.*;
 
 /**
@@ -37,8 +36,17 @@ public class CsvRecordParserFactory extends CsvParserConfiguration implements Re
      * (non-Javadoc)
      * @see org.beanio.stream.RecordParserFactory#init()
      */
-    public void init() throws BeanIOConfigurationException {
+    public void init() throws IllegalArgumentException {
         
+        if (getQuote() == getDelimiter()) {
+            throw new IllegalArgumentException("The CSV field delimiter cannot " +
+                "match the character used for the quotation mark.");
+        }
+        
+        if (getEscape() != null && getEscape() == getDelimiter()) {
+            throw new IllegalArgumentException(
+                "The CSV field delimiter cannot match the escape character.");
+        }
     }
     
     /*

@@ -16,7 +16,7 @@
 package org.beanio;
 
 /**
- * A callback interface for handling {@link BeanReader} exceptions.  When set on a <tt>BeanReader</tt>,
+ * A callback interface for handling exceptions thrown by a {@link BeanReader}.  When set on a <tt>BeanReader</tt>,
  * the <tt>BeanReader</tt> will delegate all exception handling to this class.  When an error handler
  * is not set on a reader, the <tt>BeanReader</tt>'s <tt>read()</tt> will simply throw the exception.
  *  

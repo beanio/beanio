@@ -131,6 +131,7 @@ public class XmlParserFactory extends ParserFactorySupport {
     protected void initializeSegmentMain(SegmentConfig config, Bean bean) {
         if (isWrappingRequired(config)) {
             XmlWrapper wrapper = new XmlWrapper();
+            wrapper.setName(config.getName());
             wrapper.setLocalName(config.getXmlName());
             wrapper.setNamespace(config.getXmlNamespace());
             wrapper.setNamespaceAware(config.isXmlNamespaceAware());

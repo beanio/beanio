@@ -522,6 +522,13 @@
         </documentation>
       </annotation>
     </attribute>
+    <attribute name="target" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The name of a segment or field descendant to marshal or unmarshal in lieu of an assigned class.
+        </documentation>
+      </annotation>
+    </attribute>
     <attribute name="collection" type="xsd:string" use="optional">
       <annotation>
         <documentation>

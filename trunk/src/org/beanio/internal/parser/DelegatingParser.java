@@ -31,9 +31,11 @@ public abstract class DelegatingParser extends ParserComponent {
         super(1);
     }
     
+    /*
     public String getName() {
         return getParser().getName();
     }
+    */
     
     public boolean matches(UnmarshallingContext context) {
         return getParser().matches(context);

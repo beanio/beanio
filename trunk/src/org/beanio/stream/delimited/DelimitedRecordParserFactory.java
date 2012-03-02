@@ -17,7 +17,6 @@ package org.beanio.stream.delimited;
 
 import java.io.*;
 
-import org.beanio.BeanIOConfigurationException;
 import org.beanio.stream.*;
 
 /**
@@ -37,7 +36,15 @@ public class DelimitedRecordParserFactory  extends DelimitedParserConfiguration 
      * (non-Javadoc)
      * @see org.beanio.stream.RecordParserFactory#init()
      */
-    public void init() throws BeanIOConfigurationException {
+    public void init() throws IllegalArgumentException {
+        
+        if (getEscape() != null && getEscape() == getDelimiter()) {
+            throw new IllegalArgumentException("The field delimiter canot match the escape character");
+        }
+        
+        if (getLineContinuationCharacter() != null && getLineContinuationCharacter() == getDelimiter()) {
+            throw new IllegalArgumentException("The field delimiter cannot match the line continuation character");
+        }
         
     }
     

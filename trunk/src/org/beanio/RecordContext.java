@@ -18,9 +18,10 @@ package org.beanio;
 import java.util.*;
 
 /**
- * Provides information about a record read from a stream using a {@link BeanReader}.  
- * Depending on the current state of the <tt>BeanReader</tt>, some information may not
- * be available.
+ * Provides information about a record parsed by a {@link BeanReader} or {@link Unmarshaller}.  
+ * 
+ * <p>Depending on the current state of the <tt>BeanReader</tt> or <tt>Unmarshaller</tt>, some 
+ * information may not be available.</p>
  * 
  * @author Kevin Seim
  * @since 2.0
@@ -75,6 +76,13 @@ public interface RecordContext {
     public Collection<String> getRecordErrors();
 
     /**
+     * Returns the number of times the given field was present in the stream.
+     * @param fieldName the name of the field
+     * @return the number of times the field was present in the stream
+     */
+    public int getFieldCount(String fieldName);
+    
+    /**
      * Returns the raw text of a field found in this record.  Field text may be null
      * under the following circumstances:
      * <ul>
@@ -89,13 +97,6 @@ public interface RecordContext {
      */
     public String getFieldText(String fieldName);
 
-    /**
-     * Returns the number of times the given field was present in the stream.
-     * @param fieldName the name of the field
-     * @return the number of times the field was present in the stream
-     */
-    public int getFieldCount(String fieldName);
-    
     /**
      * Returns the raw text of a field found in this record.  Field text may be null
      * under the following circumstances:

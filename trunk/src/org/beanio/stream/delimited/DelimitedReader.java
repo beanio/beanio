@@ -44,7 +44,7 @@ import org.beanio.stream.util.CommentReader;
  * <pre>
  * Field1,Field2\
  * Field3
- * <pre>
+ * </pre>
  * The 2 lines would be parsed as a single record with values "Field1", "Field2", "Field3".
  * <p>
  * The same character can be used for line continuation and escaping, but neither

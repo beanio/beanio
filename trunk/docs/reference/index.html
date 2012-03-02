@@ -4,13 +4,13 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<title>BeanIO 2.0 Reference Documentation</title>
+<title>BeanIO 2.0 Reference Guide</title>
 <link rel="stylesheet" type="text/css" href="style.css" />
 <link rel="shortcut icon" href="http://www.beanio.org/favicon.ico" />
 </head>
 <body>
 
-<div class="title">BeanIO 2.0 - Reference Documentation</div>
+<div class="title">BeanIO 2.0 Reference Guide</div>
 <p><i>Revision 1</i>, &copy; 2010-2012 Kevin Seim</p>
 <p style="font-size: 90%"><i>Copies of this document may be made for your own use and for
 distribution to others, provided that you do not charge any fee for such copies and further provided
@@ -135,20 +135,18 @@ currently supports XML, CSV, delimited and fixed length file formats. BeanIO is 
   href="http://www.apache.org/licenses/LICENSE-2.0">Apache 2.0 License</a>.</p>
 
 <h2><a name="WhatsNew">1.1. What's new in 2.0?</a></h2>
-<p>BeanIO Release 2.0 includes the following enhancements:</p>
+<p>BeanIO 2.0 includes an entirely new parsing engine that supports the following enhancements:</p>
 <ul>
   <li>Support for mapping bean objects that span multiple records</li>
   <li>New <tt>Marshaller</tt> and <tt>Unmarshaller</tt> interfaces for marshalling and unmarshalling single records</li>
   <li>Support for constructor arguments and direct access to public attributes of a bean object</li>
   <li>The <tt>BeanWriter</tt> is now stateful for all stream formats (based on configured <tt>group</tt> and <tt>record</tt> occurrences)</li>
-  <li>A more versatile <tt>segment</tt> mapping file element replaces the <tt>bean</tt> element and <tt>xmlWrapper</tt> attribute</li>
+  <li>A more versatile <tt>segment</tt> mapping element replaces the <tt>bean</tt> element and <tt>xmlWrapper</tt> attribute</li>
   <li>OSGi support, including a user specified <tt>ClassLoader</tt> per <tt>StreamFactory</tt>.</li>
   <li>More lenient/sensible defaults.</li>
   <li>Consolidated <tt>reader</tt> and <tt>writer</tt> elements (see <a href="#parser"><tt>parser</tt></a>).</li>
+  <li>Support for unmarshalling a subset of a record using a record <tt>target</tt> attribute</li>
 </ul>
-
-<p>Best of all, release 2.0 includes an entirely new parsing engine that will 
-enable many more features to come...</p>
 
 <h2><a name="Migration">1.2. Migrating from 1.2.x</a></h2>
 <p>Release 2.0 is not backwards compatible with prior releases.  Sorry.  This section contains the
@@ -2458,9 +2456,9 @@ as they appear above, the following mapping file can be used.</p>
 &lt;beanio&gt;
 
   &lt;stream name="employeeFile" format="xml" <span class="highlight">xmlNamespace="http://example.com/employeeFile"</span>&gt;
-    &lt;writer&gt;
+    &lt;parser&gt;
       <span class="highlight">&lt;property name="namespaces" value="n http://example.com/name"/&gt;</span>
-    &lt;/writer&gt;
+    &lt;/parser&gt;
     &lt;record name="employee" class="example.Employee" <span class="highlight">xmlNamespace="http://example.com/employee"</span> <span class="highlight">xmlPrefix="e"</span>&gt;
       &lt;field name="firstName" <span class="highlight">xmlNamespace="http://example.com/name"</span> /&gt;
       &lt;field name="lastName" <span class="highlight">xmlNamespace="http://example.com/name"</span> /&gt;
@@ -3728,11 +3726,26 @@ the group as a whole.</p>
 </tr>
 <tr>
   <td><tt>class</tt></td>
-  <td>The fully qualified class name of the bean object mapped to this record.  If not set,
-    a <tt>BeanReader</tt> will fully validate the record, but no bean object will be returned
-    and the reader will continue reading the next record.  If set to <tt>map</tt> or 
+  <td>The fully qualified class name of the bean object mapped to this record.
+    <p>If set to <tt>map</tt> or 
     any <tt>java.util.Map</tt> implementation, a Map object will be used with field names
-    for keys and field values for values.
+    for keys and field values for values.</p>
+    <p>If neither <tt>class</tt> or <tt>target</tt> is set, a <tt>BeanReader</tt> will fully 
+    validate the record, but no bean object will be returned and the reader will continue reading 
+    the next record.</p>
+  </td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>target</tt></td>
+  <td>The name of a segment or field descendant to return in lieu of an assigned class.
+    <p>There can be only one iteration of a named target.  For example, if a repeating segment
+    bound to a collection contains a repeating field (also bound to a collection), the segment 
+    can be targeted, but the field cannot.</p>
+    <p>If neither <tt>class</tt> or <tt>target</tt> is set, a <tt>BeanReader</tt> will fully 
+    validate the record, but no bean object will be returned and the reader will continue reading 
+    the next record.</p>
   </td>
   <td>No</td>
   <td>*</td>

@@ -40,7 +40,7 @@ public class MarshallerImpl implements Marshaller {
      * Constructs a new <tt>UnmarshallerImpl</tt>
      * @param context the {@link UnmarshallingContext}
      * @param layout the stream layout
-     * @param recordMarshaller the {@link RecordParser} for converting record text to record values
+     * @param recordMarshaller the {@link RecordMarshaller} for converting record text to record values
      */
     public MarshallerImpl(MarshallingContext context, Selector layout, final RecordMarshaller recordMarshaller) {
         this.context = context;

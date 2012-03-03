@@ -55,8 +55,10 @@ public class XmlStreamFormat extends StreamFormatSupport {
      * (non-Javadoc)
      * @see org.beanio.parser2.StreamFormat#createMarshallingContext()
      */
-    public MarshallingContext createMarshallingContext() {
-        return new XmlMarshallingContext(groupDepth);
+    public MarshallingContext createMarshallingContext(boolean streaming) {
+        XmlMarshallingContext ctx = new XmlMarshallingContext(groupDepth);
+        ctx.setStreaming(streaming);
+        return ctx;
     }
     
     @Override

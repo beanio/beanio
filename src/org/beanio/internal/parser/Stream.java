@@ -115,7 +115,7 @@ public class Stream {
         
         Selector root = replicator.replicate(layout);
         
-        MarshallingContext context = format.createMarshallingContext();
+        MarshallingContext context = format.createMarshallingContext(true);
         context.setRecordWriter(format.createRecordWriter(out));
         
         BeanWriterImpl writer = new BeanWriterImpl(context, root);
@@ -132,7 +132,7 @@ public class Stream {
             throw new IllegalArgumentException("Marshaller not supported for stream format");
         }
         
-        return new MarshallerImpl(format.createMarshallingContext(), 
+        return new MarshallerImpl(format.createMarshallingContext(false), 
             replicator.replicate(layout), recordMarshaller);
     }
     

@@ -29,18 +29,10 @@ import org.beanio.*;
  * @author Kevin Seim
  * @since 2.0
  */
-public class Bean extends Component implements Property {
+public class Bean extends PropertyComponent implements Property {
 
     // the bean object
     private Object bean;
-    // the class type of the bean object
-    private Class<?> type;
-    // indicates whether the bean is always instantiated
-    private boolean required;
-    // whether any of this bean's children are used to identify an object for marshalling
-    private boolean identifier;
-    // the accessor for setting this bean on its parent, may be null
-    private PropertyAccessor accessor;
     // the constructor for creating this bean object (if null, the no-arg constructor is used)
     private Constructor<?> constructor;
     // used to temporarily hold constructor argument values when a constructor is specified
@@ -59,7 +51,7 @@ public class Bean extends Component implements Property {
         for (Component child : getChildren()) {
             ((Property) child).clearValue();
         }
-        bean = required ? null : Value.MISSING;
+        bean = isRequired() ? null : Value.MISSING;
     }
     
     /*
@@ -67,15 +59,15 @@ public class Bean extends Component implements Property {
      * @see org.beanio.parser2.Property#defines(java.lang.Object)
      */
     public boolean defines(Object bean) {    
-        if (bean == null || type == null) {
+        if (bean == null || getType() == null) {
             return false;
         }
         
-        if (!type.isAssignableFrom(bean.getClass())) {
+        if (!getType().isAssignableFrom(bean.getClass())) {
             return false;
         }
         
-        if (!identifier) {
+        if (!isIdentifier()) {
             return true;
         }
         
@@ -167,7 +159,7 @@ public class Bean extends Component implements Property {
         }
 
         if (bean == null) {
-            bean = required ? newInstance() : Value.MISSING;
+            bean = isRequired() ? newInstance() : Value.MISSING;
         }
         
         return bean;
@@ -213,7 +205,7 @@ public class Bean extends Component implements Property {
      */
     protected Object newInstance() {
         // if the bean class is null, the record will be ignored and null is returned here
-        Class<?> beanClass = type;
+        Class<?> beanClass = getType();
         if (beanClass == null) {
             return null;
         }
@@ -231,57 +223,17 @@ public class Bean extends Component implements Property {
         }
     }
 
-
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.parser2.Property#getAccessor()
-     */
-    public PropertyAccessor getAccessor() {
-        return accessor;
-    }
-    
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Property#setAccessor(org.beanio.internal.parser.PropertyAccessor)
-     */
-    public void setAccessor(PropertyAccessor accessor) {
-        this.accessor = accessor;
-    }
-    
     @Override
     protected boolean isSupportedChild(Component child) {
         return child instanceof Property;
     }
 
-    public Class<?> getType() {
-        return type;
-    }
-
-    public void setType(Class<?> type) {
-        this.type = type;
-    }
-
-    public boolean isRequired() {
-        return required;
-    }
-
+    @Override
     public void setRequired(boolean required) {
-        this.required = required;
+        super.setRequired(required);
         this.bean = required ? null : Value.MISSING;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Property#isIdentifier()
-     */
-    public boolean isIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(boolean identifier) {
-        this.identifier = identifier;
-    }
-    
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Property#type()
@@ -295,7 +247,7 @@ public class Bean extends Component implements Property {
      * @return true if the bean object implements {@link Map}, false otherwise
      */
     protected boolean isMap() {
-        return Map.class.isAssignableFrom(type);
+        return Map.class.isAssignableFrom(getType());
     }
     
     /**
@@ -323,12 +275,5 @@ public class Bean extends Component implements Property {
             clone.constructorArgs = (Object[]) constructorArgs.clone();
         }
         return clone;
-    }
-    
-    @Override
-    protected void toParamString(StringBuilder s) {
-        super.toParamString(s);
-        s.append(", required=").append(required);
-        s.append(", type=").append(type);
     }
 }

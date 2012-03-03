@@ -297,7 +297,7 @@ public class RecordCollection extends DelegatingParser implements Selector, Prop
      * @see org.beanio.internal.parser.Property#type()
      */
     public int type() {
-        return Property.COLLECTION;
+        return Property.AGGREGATION_COLLECTION;
     }
 
     /*

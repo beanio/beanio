@@ -360,9 +360,12 @@ public class XmlRecordMarshaller implements RecordMarshaller {
     
     private void push(ElementStack e) {
         elementStack = e;
+        ++level;
     }
     
     private ElementStack pop() {
+        --level;
+        
         ElementStack e = elementStack;
         elementStack = elementStack.getParent();
         return e;

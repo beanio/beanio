@@ -40,7 +40,7 @@ public class RecordArray extends RecordCollection {
     
     @Override
     public int type() {
-        return Property.ARRAY;
+        return Property.AGGREGATION_ARRAY;
     }
 
     @Override

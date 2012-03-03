@@ -82,7 +82,7 @@ public class XmlParserFactory extends ParserFactorySupport {
     }
 
     @Override
-    protected void initializeRecordMain(RecordConfig config, Bean bean) {
+    protected void initializeRecordMain(RecordConfig config, Property bean) {
         // a record is always mapped to an XML element
         
         XmlSelectorWrapper wrapper = new XmlSelectorWrapper();
@@ -128,7 +128,7 @@ public class XmlParserFactory extends ParserFactorySupport {
     }
     
     @Override
-    protected void initializeSegmentMain(SegmentConfig config, Bean bean) {
+    protected void initializeSegmentMain(SegmentConfig config, Property property) {
         if (isWrappingRequired(config)) {
             XmlWrapper wrapper = new XmlWrapper();
             wrapper.setName(config.getName());
@@ -141,7 +141,7 @@ public class XmlParserFactory extends ParserFactorySupport {
             wrapper.setLazy(config.getMinOccurs() == 0);
             pushParser(wrapper);
         }
-        super.initializeSegmentMain(config, bean);
+        super.initializeSegmentMain(config, property);
     }
     
     @Override

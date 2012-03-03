@@ -406,7 +406,7 @@
   </complexType>
 
   <attributeGroup name="NodeAttributes">
-    <attribute name="minOccurs" type="xsd:nonNegativeInteger" use="optional" default="1">
+    <attribute name="minOccurs" type="xsd:nonNegativeInteger" use="optional">
       <annotation>
         <documentation>
           The minimum number of occurrences of this group or record.  Defaults to 0.

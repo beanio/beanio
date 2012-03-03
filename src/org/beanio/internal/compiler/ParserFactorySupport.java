@@ -149,6 +149,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             switch (((Property)parent).type()) {
                 case Property.SIMPLE:
                     throw new IllegalStateException();
+                case Property.COLLECTION:
                 case Property.COMPLEX:
                 case Property.MAP:
                     parent.add(component);
@@ -342,18 +343,14 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         group.setMaxOccurs(config.getMaxOccurs());
         group.setPosition(config.getOrder());
         
+        boolean isResult = propertyStack.isEmpty();
+
         // determine and validate the bean class
-        Class<?> beanClass = getBeanClass(config);
-        if (beanClass != null) {
-            boolean isResult = propertyStack.isEmpty();
-            
-            Bean bean = new Bean();
-            bean.setName(config.getName());
-            bean.setType(beanClass);
-            bean.setRequired(isResult);
+        Property bean = createProperty(config, isResult);
+        if (bean != null) {
             reflectPropertyType(config, bean);
             
-            pushProperty(bean);
+            pushProperty((Component)bean);
             
             group.setProperty(bean);
             group.setResult(isResult);
@@ -372,19 +369,12 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             popProperty();
         }
     }
-
+    
     @Override
     protected void initializeRecord(RecordConfig config) throws BeanIOConfigurationException {
         // determine and validate the bean class
-        Bean bean = null;
-        Class<?> beanClass = getBeanClass(config);
-        if (beanClass != null) {
-            bean = new Bean();
-            bean.setName(config.getName());
-            bean.setType(beanClass);
-            bean.setRequired(propertyStack.isEmpty());
-        }
-        
+        Property bean = createProperty(config, propertyStack.isEmpty());
+
         // handle records bound to a parent bean object assigned to a group
         if (config.isBound()) {
             // handle repeating records mapped to a collection
@@ -401,17 +391,17 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         initializeRecordMain(config, bean);
     }
     
-    protected void initializeRecordIteration(RecordConfig config, Bean bean) {
+    protected void initializeRecordIteration(RecordConfig config, Property property) {
         // wrap the segment in an iteration
-        Component collection = createSelectorIteration(config, bean);
+        Component collection = createSelectorIteration(config, property);
 
         pushParser(collection);
-        if (bean != null) {
+        if (property != null) {
             pushProperty(collection);
         }
     }
     
-    protected void initializeRecordMain(RecordConfig config, Bean bean) {
+    protected void initializeRecordMain(RecordConfig config, Property property) {
         Record record = new Record();
         record.setName(config.getName());
         record.setMinOccurs(config.getMinOccurs());
@@ -422,11 +412,11 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         record.setFormat(createRecordFormat(config));
         record.setOrder(config.getOrder());
         record.setIdentifier(config.isIdentifier());
-        record.setProperty(bean);
+        record.setProperty(property);
         
         pushParser(record);
-        if (bean != null) {
-            pushProperty(bean);
+        if (property != null) {
+            pushProperty((Component)property);
         }
     }
 
@@ -510,17 +500,9 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      */
     @Override
     protected final void initializeSegment(SegmentConfig config) throws BeanIOConfigurationException {
-        Bean bean = null;
-        
-        // determine and validate the bean class
-        Class<?> beanClass = getBeanClass(config);
-        if (beanClass != null) {
-            bean = new Bean();
-            bean.setName(config.getName());
-            bean.setType(beanClass);
-            bean.setRequired(config.getMinOccurs() > 0 && !config.isNillable());
-        }
 
+        Property bean = createProperty(config, config.getMinOccurs() > 0 && !config.isNillable());
+        
         if (config.isRepeating()) {
             initializeSegmentIteration(config, bean);
         }
@@ -530,14 +512,14 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     /**
      * Called by {@link #initializeSegment(SegmentConfig)} to initialize segment iteration.
      * @param config the segment configuration
-     * @param bean the bean bound to the segment, or null if no bean was bound
+     * @param property the {@link Property} bound to the segment, or null if no bean was bound
      */
-    protected void initializeSegmentIteration(SegmentConfig config, Bean bean) {
+    protected void initializeSegmentIteration(SegmentConfig config, Property property) {
         // wrap the segment in an iteration
-        CollectionParser collection = createParserIteration(config, bean);
+        CollectionParser collection = createParserIteration(config, property);
         
         pushParser(collection);
-        if (bean != null) {
+        if (property != null) {
             pushProperty(collection);
         }
     }
@@ -545,9 +527,9 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     /**
      * Called by {@link #initializeSegment(SegmentConfig)} to initialize the segment.
      * @param config the segment configuration
-     * @param bean the bean bound to the segment, or null if no bean was bound
+     * @param property the property bound to the segment, or null if no property was bound
      */
-    protected void initializeSegmentMain(SegmentConfig config, Bean bean) {
+    protected void initializeSegmentMain(SegmentConfig config, Property property) {
         String name = config.getName();
         if (name == null) {
             throw new BeanIOConfigurationException("Segment name not set");
@@ -560,15 +542,15 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         segment.setLazy(config.getMinOccurs() < config.getMaxOccurs());
         segment.setRepeating(config.isRepeating());
         //segment.setLazyMarshalling(bean != null && config.isLazy() /*&& !config.isRepeating()*/);
-        segment.setProperty(bean);
+        segment.setProperty(property);
         segment.setExistencePredetermined(config.getDefaultExistence());
         
-        if (!config.isRepeating() && bean != null) {
-            reflectPropertyType(config, bean);
+        if (!config.isRepeating() && property != null) {
+            reflectPropertyType(config, property);
         }
     
-        if (bean != null) {
-            pushProperty(bean);
+        if (property != null) {
+            pushProperty((Component)property);
         }
         if (isSegmentRequired(config)) {
             pushParser(segment);
@@ -891,6 +873,8 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             case Property.SIMPLE:
                 throw new BeanIOConfigurationException("Cannot add property to attribute");
             case Property.COLLECTION:
+            case Property.AGGREGATION_ARRAY:
+            case Property.AGGREGATION_COLLECTION:
                 return null;
             case Property.MAP:
                 iteration.setAccessor(new MapAccessor(property.getName()));
@@ -990,8 +974,10 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         Property parent = (Property) propertyStack.getLast();
         switch (parent.type()) {
             case Property.SIMPLE:
-                throw new BeanIOConfigurationException("Cannot add property to attribute");
+                throw new BeanIOConfigurationException("Cannot add a property to a simple property");
             case Property.COLLECTION:
+            case Property.AGGREGATION_ARRAY:
+            case Property.AGGREGATION_COLLECTION:
                 return;
             case Property.MAP:
                 property.setAccessor(new MapAccessor(property.getName()));
@@ -1219,6 +1205,38 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     }
     
     /**
+     * Creates a property for holding other properties.
+     * @param config the {@link PropertyConfig}
+     * @param required whether the property is required and should always be instantiated
+     * @return the created {@link Property} or null if the {@link PropertyConfig} was not 
+     *   bound to a bean class 
+     */
+    protected Property createProperty(PropertyConfig config, boolean required) {
+        Class<?> beanClass = getBeanClass(config);
+        if (beanClass == null) {
+            return null;
+        }
+        
+        Property property = null;
+        if (Collection.class.isAssignableFrom(beanClass)) {
+            CollectionBean collection = new CollectionBean();
+            collection.setName(config.getName());
+            collection.setType(beanClass);
+            collection.setRequired(required);
+            property = collection;
+        }
+        else {
+            Bean bean = new Bean();
+            bean.setName(config.getName());
+            bean.setType(beanClass);
+            bean.setRequired(propertyStack.isEmpty());
+            property = bean;
+        }
+        
+        return property;
+    }
+    
+    /**
      * Returns the bean class for a segment configuration.
      * @param config the property configuration
      * @return the bean class
@@ -1230,6 +1248,12 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         if (config.getType() != null) {
             if ("map".equals(config.getType())) {
                 beanClass = HashMap.class;
+            }
+            else if ("list".equals(config.getType()) || "collection".equals(config.getType())) {
+                beanClass = ArrayList.class;
+            }
+            else if ("set".equals(config.getType())) {
+                beanClass = HashSet.class;
             }
             else {
                 try {

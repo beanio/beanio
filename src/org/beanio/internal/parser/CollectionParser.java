@@ -308,7 +308,7 @@ public class CollectionParser extends DelegatingParser implements Property, Iter
      * @see org.beanio.parser2.Property#type()
      */
     public int type() {
-        return Property.COLLECTION;
+        return Property.AGGREGATION_COLLECTION;
     }
 
     /*

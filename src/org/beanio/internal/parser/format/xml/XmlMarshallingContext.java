@@ -30,6 +30,8 @@ import org.w3c.dom.*;
  */
 public class XmlMarshallingContext extends MarshallingContext {
 
+    private boolean streaming = false;
+    
     protected Document document;
     protected Node parent;
     
@@ -142,5 +144,21 @@ public class XmlMarshallingContext extends MarshallingContext {
     @Override
     public Document toDocument(Object record) {
         return (Document)record;
+    }
+    
+    /**
+     * Sets whether a stream is being marshalled, versus a single document.
+     * @param streaming true if marshalling a stream, false if marshalling single documents
+     */
+    public void setStreaming(boolean streaming) {
+        this.streaming = streaming;
+    }
+
+    /**
+     * Returns whether a stream is being marshalled, versus a single document.
+     * @return true if marshalling a stream, false if marshalling single documents
+     */
+    public boolean isStreaming() {
+        return streaming;
     }
 }

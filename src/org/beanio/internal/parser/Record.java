@@ -240,5 +240,7 @@ public class Record extends Segment implements Selector {
     protected void toParamString(StringBuilder s) {
         super.toParamString(s);
         s.append(", order=").append(order);
+        s.append(", minOccurs=").append(minOccurs);
+        s.append(", maxOccurs=").append(maxOccurs);
     }
 }

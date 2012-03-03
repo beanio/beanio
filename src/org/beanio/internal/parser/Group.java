@@ -296,7 +296,10 @@ public class Group extends ParserComponent implements Selector {
             // if the min occurs has not been met for the next node, set the unsatisfied flag so we
             // can throw an exception before incrementing the position again
             if (node.getCount() < node.getMinOccurs()) {
-                unsatisfied = node;
+                // when marshalling, allow records to be skipped that aren't bound to a property
+                if (context.getMode() != ParsingContext.MARSHALLING || node.getProperty() != null) {
+                    unsatisfied = node;    
+                }
             }
             
             // search the child node for a match
@@ -359,7 +362,10 @@ public class Group extends ParserComponent implements Selector {
                 }
 
                 if (node.getMinOccurs() > 0) {
-                    unsatisfied = node;
+                    // when marshalling, allow records to be skipped that aren't bound to a property
+                    if (context.getMode() != ParsingContext.MARSHALLING || node.getProperty() != null) {
+                        unsatisfied = node;    
+                    }
                 }
 
                 match = matchNext(context, node);

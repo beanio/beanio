@@ -37,7 +37,7 @@ public class DelimitedStreamFormat extends StreamFormatSupport {
      * (non-Javadoc)
      * @see org.beanio.internal.parser.StreamFormat#createMarshallingContext()
      */
-    public MarshallingContext createMarshallingContext() {
+    public MarshallingContext createMarshallingContext(boolean streaming) {
         return new DelimitedMarshallingContext();
     }
 }

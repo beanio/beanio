@@ -43,9 +43,10 @@ public interface StreamFormat {
  
     /**
      * Creates a new marshalling context.
+     * @param streaming true if marshalling to a stream
      * @return the new {@link MarshallingContext}
      */
-    public MarshallingContext createMarshallingContext();
+    public MarshallingContext createMarshallingContext(boolean streaming);
     
     /**
      * Creates a new record marshaller.

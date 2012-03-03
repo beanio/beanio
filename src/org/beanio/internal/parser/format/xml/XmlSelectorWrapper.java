@@ -95,20 +95,19 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
         Node node = parent.appendChild(
             ctx.getDocument().createElementNS(getNamespace(), getLocalName()));
         node.setPrefix(getPrefix());
-        if (group) {
+        if (group && ctx.isStreaming()) {
             node.setUserData(XmlWriter.IS_GROUP_ELEMENT, Boolean.TRUE, null);
-            written = true;
         }
         if (!isNamespaceAware()) {
             node.setUserData(XmlWriter.IS_NAMESPACE_IGNORED, Boolean.TRUE, null);
         }
+        
         ctx.setParent(node);
         
         boolean b = getDelegate().marshal(context);
         
-        if (group) {
+        if (group && ctx.isStreaming()) {
             ((XmlMarshallingContext)context).closeGroup(this);
-            written = false;
         }
         ctx.setParent(null);
         
@@ -136,27 +135,38 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
      * @see org.beanio.internal.parser.Selector#matchNextBean(org.beanio.internal.parser.MarshallingContext, java.lang.Object)
      */
     public Selector matchNext(MarshallingContext context) {
+        XmlMarshallingContext ctx = (XmlMarshallingContext) context;
+        
+        // stores the initial count before calling matchNext()...
         int initialCount = getCount();
         
         Selector match = getDelegate().matchNext(context);
         if (match == null) {
             if (written) {
                 written = false;
-                ((XmlMarshallingContext)context).closeGroup(this);
+                ctx.closeGroup(this);
             }
             return null;
         }
         
         if (group) {
-            // if the group count increased, we need to close the current group
-            // element (by calling remove) and adding a new one
-            if (written && getCount() > initialCount) {
-                ((XmlMarshallingContext)context).closeGroup(this);
-                written = false;
+
+            // if not marshalling to a stream, a group is always appended to the document by calling openGroup()
+            if (ctx.isStreaming()) {
+                // if the group count increased, we need to close the current group
+                // element (by calling remove) and adding a new one
+                
+                if (written && getCount() > initialCount) {
+                    ctx.closeGroup(this);
+                    written = false;
+                }
+                if (!written) {
+                    ctx.openGroup(this);
+                    written = true;
+                }
             }
-            if (!written) {
-                ((XmlMarshallingContext)context).openGroup(this);
-                written = true;
+            else {
+                ctx.openGroup(this);
             }
             return match;
         }

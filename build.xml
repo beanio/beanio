@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!-- 
-    Copyright 2010-2011 Kevin Seim
+    Copyright 2010-2012 Kevin Seim
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -54,6 +54,18 @@
 
   <!-- Create the beanio jar -->
   <target name="jar" depends="compile" description="Creates beanio.jar">
+    
+    <!-- Format the OSGi Export-Package manifiest header -->
+    <dirset id="osgi.dirs" dir="src/org/beanio">
+      <exclude name="xsd"/>
+      <exclude name="xsd/2012"/>
+      <exclude name="xsd/2011"/>
+    </dirset>
+    <pathconvert refid="osgi.dirs" property="osgi.packages" dirsep="." pathsep=';version="${version}",'>
+      <map from="${basedir}/src/" to=""/>
+    </pathconvert>
+    <property name="osgi.export-package" value='${osgi.packages};version="${version}"' />
+    
     <jar destfile="${target}/beanio.jar">
       <manifest>
         <attribute name="Implementation-Title" value="BeanIO ${version}" />
@@ -67,7 +79,7 @@
         <attribute name="Bundle-Version" value="${version}"/>
         <attribute name="Bundle-License" value="http://www.apache.org/licenses/LICENSE-2.0"/>
         <attribute name="Bundle-DocURL" value="http://beanio.org"/>
-        <attribute name="Export-Package" value='org.beanio;version="${version}",org.beanio.types;version="${version}",org.beanio.types.xml;version="${version}",org.beanio.stream;version="${version}",org.beanio.spring;version="${version}"'/>
+        <attribute name="Export-Package" value="${osgi.export-package}"/>
       </manifest>
       <metainf dir="${basedir}">
         <include name="LICENSE.txt" />
@@ -88,9 +100,9 @@
   </target>
   <!-- Create API documentation -->
   <target name="docs-api" depends="docs-init">
-    <javadoc sourcepath="src" destdir="${target}/docs/api" windowtitle="BeanIO ${version} API" access="protected"
+    <javadoc sourcepath="src" destdir="${target}/docs/api" windowtitle="BeanIO 2.0 API" access="protected"
       header="BeanIO ${version}" classpathref="classpath.main">
-      <doctitle><![CDATA[<h2>BeanIO ${version} API</h2>]]></doctitle>
+      <doctitle><![CDATA[<h2>BeanIO 2.0 API</h2>]]></doctitle>
       <bottom><![CDATA[<i>Copyright &copy; 2010-2012 Kevin Seim</i>]]></bottom>
       <link href="http://download.oracle.com/javase/6/docs/api/" />
       <link href="http://static.springsource.org/spring-batch/apidocs/" />
@@ -122,17 +134,17 @@
   <!-- Create website tar -->
   <target name="site" depends="init,docs" description="Create site tar">
     <tar destfile="${target}/beanio-site.tar.gz" compression="gzip">
-      <tarfileset dir="${basedir}">
+      <tarfileset prefix="2.0/" dir="${basedir}">
         <include name="docs/**" />
       </tarfileset>
+      <tarfileset prefix="2.0/" dir="${target}">
+        <include name="docs/**" />
+      </tarfileset>    
       <tarfileset dir="${basedir}/site">
         <include name="**/*" />
-      </tarfileset>    
-      <tarfileset dir="${target}">
-        <include name="docs/**" />
-      </tarfileset>         
+      </tarfileset>
       <tarfileset dir="${basedir}/src/org/beanio/xsd">
-        <include name="**/*" />
+        <include name="2012/**" />
       </tarfileset>
     </tar>
   </target>

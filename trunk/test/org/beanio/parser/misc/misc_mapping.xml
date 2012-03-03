@@ -3,7 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.beanio.org/2012/03 http://www.beanio.org/2012/03/mapping.xsd">
 
-  <stream name="stream1" format="csv">
+  <stream name="stream1" format="csv" strict="true">
     <record name="header" minOccurs="1" maxOccurs="1" />
     <record name="record" class="map">
       <field name="field1" />
@@ -11,7 +11,7 @@
     </record>
   </stream>
 
-  <stream name="stream2" format="csv">
+  <stream name="stream2" format="csv" strict="true">
     <record name="header" class="map" minOccurs="1" maxOccurs="1" />
     <record name="record" class="map">
       <field name="field1" />
@@ -19,7 +19,7 @@
     </record>
   </stream>
 
-  <stream name="stream3" format="csv">
+  <stream name="stream3" format="csv" strict="true">
     <record name="header" class="map" minOccurs="1" maxOccurs="1">
       <property name="key" value="value" />
     </record>
@@ -29,7 +29,7 @@
     </record>
   </stream>
 
-  <stream name="stream4" format="csv">
+  <stream name="stream4" format="csv" strict="true">
     <record name="header" minOccurs="1" maxOccurs="1">
       <property name="key" value="value" />
       <field name="field1" type="date" />
@@ -41,7 +41,7 @@
     </record>
   </stream>
 
-  <stream name="stream5" format="csv">
+  <stream name="stream5" format="csv" strict="true">
     <record name="header" minOccurs="1" maxOccurs="1">
       <property name="key" value="value" />
     </record>

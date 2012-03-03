@@ -34,7 +34,7 @@ public class ArrayParser extends CollectionParser {
     
     @Override
     public int type() {
-        return Property.ARRAY;
+        return Property.AGGREGATION_ARRAY;
     }
 
     @Override

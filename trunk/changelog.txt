@@ -1,7 +1,31 @@
 Project BeanIO Change Log
 =========================
 
-Changes in version 1.2.3 (TBD)
+Changes in version 2.0.0.M1 (2012-03-03)
+----------------------------------------
+* New parser engine, internal classes moved to org.beanio.internal
+* BeanReaderContext renamed RecordContext
+* Added Marshaller and Unmarshaller interfaces
+* Added support for constructor arguments using setter="#N" notation, where N is the argument number starting at 1
+* Added support for direct access to public bean attributes
+* Consolidated RecordReaderFactory and RecordWriterFactory into RecordParserFactory
+* Added RecordMarshaller and RecordUnmarshaller interfaces and implementations for supported stream formats
+* Added support for binding records to a Collection
+* Modified OSGi Export-Package manifest entry to include all BeanIO packages (gc0026)
+* Added support for instantiating a StreamFactory with a user provided ClassLoader (gc0021)
+* Mapping file changes:
+  - Renamed 'bean' to 'segment'
+  - Added record 'target' support
+  - Removed support for 'xmlWrapper' attributes (use 'segment' instead)
+  - Consolidated 'reader' and 'writer' elements into a single 'parser' element
+  - Removed the 'ordered' attribute from the 'stream' element 
+  - Changed 'minOccurs' to default to 0 for 'record' elements
+  - Changed 'minOccurs' to default to 1 for non-nillable XML elements
+  - Added a 'strict' attribute to the 'stream' element to calculate and enforce record ordering and lengths
+  - Modified 'minLength' and 'maxLength' to default to '0' and 'unbounded' respectively for 'record' elements, unless 'strict'
+  - The 'order' attribute must be declared for all components with the same parent, or for none of them which defaults to unordered (unless 'strict')
+
+Changes in version 1.2.3 (2012-02-12)
 -------------------------------------
 * Modified DefaultStreamFactory to use default locale if 'locale' is null (gc0022)
 * Updated build.xml to include OSGi JAR manifest entries (gc0026)
@@ -14,7 +38,7 @@ Changes in version 1.2.2 (2011-12-18)
 * Configured field defaults are marshalled for null property values and ignored fields (gc0020)
   May be disabled by setting 'org.beanio.marshalDefaultEnabled' to 'false'.
 * Fixed class loading so that Thread.getContextClassLoader() is observed throughout.
-  
+
 Changes in version 1.2.1 (2011-09-21)
 -------------------------------------
 * Added support for templates

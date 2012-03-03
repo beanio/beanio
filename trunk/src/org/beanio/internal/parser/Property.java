@@ -28,16 +28,19 @@ public interface Property {
     public static final int SIMPLE = 0;
     /** The bean object property type with simple properties and other bean objects for attributes */
     public static final int COMPLEX = 1;
-    /** The array property type */
-    public static final int ARRAY = 4;
-    /** The collection property type */
+    /** The collection property type used to create a collection of other properties */
     public static final int COLLECTION = 2;
     /** The map property type */
     public static final int MAP = 3;
+    /** The array property type */
+    public static final int AGGREGATION_ARRAY = 4;
+    /** The collection property type used to aggregate multiple occurrences of a single property */
+    public static final int AGGREGATION_COLLECTION = 5;
     
     /**
      * Returns the property type.
-     * @return {@link #SIMPLE}, {@link #COMPLEX}, {@link #ARRAY}, {@link #COLLECTION} or {@link #MAP}
+     * @return {@link #SIMPLE}, {@link #COMPLEX}, {@link #AGGREGATION_ARRAY}, {@link #COLLECTION}, 
+     *   {@link #AGGREGATION_COLLECTION}, or {@link #MAP}
      */
     public int type();
     

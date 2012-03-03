@@ -154,7 +154,7 @@ steps you'll need to follow to update your code and mapping files.</p>
 
 <h3>1.2.1. Java Changes</h3>
 <p>The <tt>org.beanio.BeanReaderContext</tt> class was renamed 
-<a href="../api/org/beanio/RecordContext.html"><tt>org.beanio.RecordContext</tt></a> in order
+<a href="../api/org/beanio/RecordContext.html"><tt>RecordContext</tt></a> in order
 to support bean objects bound to multiple records.</p>
 
 <p>The exception classes <tt>org.beanio.BeanReaderException</tt> and <tt>org.beanio.BeanWriterException</tt>
@@ -3730,6 +3730,9 @@ the group as a whole.</p>
     <p>If set to <tt>map</tt> or 
     any <tt>java.util.Map</tt> implementation, a Map object will be used with field names
     for keys and field values for values.</p>
+    <p>If set to <tt>list</tt>, <tt>set</tt>, <tt>collection</tt>, or any <tt>java.util.Collection</tt>
+    implementation, child fields are added to the declared collection, including null values for 
+    missing or null fields.</p>
     <p>If neither <tt>class</tt> or <tt>target</tt> is set, a <tt>BeanReader</tt> will fully 
     validate the record, but no bean object will be returned and the reader will continue reading 
     the next record.</p>
@@ -4056,7 +4059,7 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
   <td>Record identifier indicator.  Set to <tt>true</tt> if this field is used to identify a record.  
     More than one field can be used to identify a record.  Defaults to <tt>false</tt>.
     <p>Record identifying fields must have <tt>regex</tt> or <tt>literal</tt> configured
-    to match a record.</p>
+    to match a record, unless the field is a named XML element or attribute.</p>
     </td>
   <td>No</td>
   <td>*</td>
@@ -4114,8 +4117,8 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
 </tr>
 <tr>
   <td><tt>literal</tt></td>
-  <td>Sets the <i>literal</i> or constant value of this field.  When reading an input stream,
-    a <tt>BeanReader</tt> will throw an <tt>InvalidRecordException</tt> if the field text does not 
+  <td>Sets the <i>literal</i> or constant value of this field.  When unmarshalled,
+    an <tt>InvalidRecordException</tt> is thrown if the field text does not 
     exactly match the literal value.</td>
   <td>No</td>
   <td>*</td>

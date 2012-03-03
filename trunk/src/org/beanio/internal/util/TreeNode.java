@@ -78,10 +78,9 @@ public class TreeNode<T extends TreeNode> implements Replicateable, Iterable<T> 
     
     /**
      * Recursively finds the first descendant with the given name.  All descendants
-     * of a child are checked first before moving to the next child. 
-     * TODO javadoc
-     * @param name
-     * @return
+     * of a child are checked first before moving to the next child.
+     * @param name the name of the node to find
+     * @return the matched node, or null if not found
      */
     @SuppressWarnings("unchecked")
     public T find(String name) {
@@ -146,6 +145,14 @@ public class TreeNode<T extends TreeNode> implements Replicateable, Iterable<T> 
         else {
             throw new IllegalArgumentException("Child type not supported: " + child.getClass());
         }
+    }
+    
+    /**
+     * Returns the number of children this node has.
+     * @return the number of children
+     */
+    public int size() {
+        return children == null ? 0 : children.size();
     }
     
     /**

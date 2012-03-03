@@ -440,10 +440,6 @@ public class Group extends ParserComponent implements Selector {
         return null;
     }
 
-    public boolean isUnmarshaller() {
-        return false;
-    }
-
     /*
      * (non-Javadoc)
      * @see org.beanio.parser2.Unmarshaller#matches(org.beanio.parser2.UnmarshallingContext)

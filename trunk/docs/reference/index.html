@@ -196,8 +196,7 @@ a default order.</p>
 <p>The <tt>reader</tt> and <tt>writer</tt> elements have been combined into a single <tt>parser</tt> element.
 Format specific property names have not changed.  If you have overridden the default <tt>RecordReaderFactory</tt> or
 <tt>RecordWriterFactory</tt>, you will need to modify your class to implement 
-<a href="../api/org/beanio/stream/RecordParserFactory.html"><tt>RecordParserFactory</tt></a> instead.
-See section <b>TODO</b>.</p>
+<a href="../api/org/beanio/stream/RecordParserFactory.html"><tt>RecordParserFactory</tt></a> instead.</p>
 
 <p>The <tt>minOccurs</tt> attribute for a <tt>record</tt> now defaults to 0, instead of 1.</p>
 
@@ -2777,7 +2776,8 @@ Instance attribute <tt>nil</tt> is set to <tt>true</tt>.</p>
 </table>
 
 <h2><a name="XmlSegments">5.8. Segments</a></h2>
-<p>A segment can be used to bind a group of fields to a nested bean object... TODO</p>
+<p>A segment can be used to bind a group of fields to a nested bean object, or to
+wrap a field or group of fields under an XML element.</p>
 
 <h3><a name="XmlNestedBeans">5.8.1. Nested Beans</a></h3>
 <p>Segments can be used to bind a group of fields to a bean object.  The <tt>xmlType</tt> assigned to 
@@ -3529,9 +3529,13 @@ The following additional attributes are accepted in this scenario:</p>
 </tr>
 <tr>
   <td><tt>strict</tt></td>
-  <td><b>TODO - what does this do??</b>  When set to <tt>false</tt>, records may appear in any order, and specifying 
-    a record <tt>order</tt> will cause a configuration error to be thrown.  
-    Defaults to <tt>true</tt>.</td>
+  <td>When set to <tt>true</tt>, BeanIO will calculate and enforce record ordering
+    based on the order records are declared.  The record <tt>order</tt> attribute can
+    still be used to override a particular section of the stream.
+    <p>When set to <tt>true</tt>, BeanIO will also calculate and enforce record
+    lengths based on configured fields and their occurrences.  The record <tt>minLength</tt>
+    and <tt>maxLength</tt> attributes can still be used to override BeanIO defaults.</p>
+    <p>Defaults to <tt>fales</tt>.</p></td>
   <td>No</td>
   <td>*</td>
 </tr>

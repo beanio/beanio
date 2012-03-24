@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ public class CollectionFieldParserTest extends ParserTest {
             getClass().getResourceAsStream("dc2_nullPrimitive.txt")));
         
         try {
-            assertFieldError(in, 1, "record1", "array", 1, "", "Type conversion error: Primitive property values cannot be null");
+            assertFieldError(in, 1, "record1", "array", 1, "", "Type conversion error: Primitive array value cannot be null");
             
             StringWriter text = new StringWriter();
             factory.createWriter("dc2", text).write(new CollectionBean());

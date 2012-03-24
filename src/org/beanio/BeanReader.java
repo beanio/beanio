@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,11 @@
  */
 package org.beanio;
 
-import java.io.IOException;
-
 /**
- * Interface for unmarshalling bean objects from an input stream.
+ * Interface for readers capable of reading bean objects from an input stream.
  * 
- * <p>A <tt>BeanReader</tt> is created using a {@link StreamFactory} and a mapping file.</p>
+ * <p>A <tt>BeanReader</tt> is created using a <tt>StreamFactory</tt> and 
+ * a mapping file.</p>
  * 
  * @author Kevin Seim
  * @since 1.0
@@ -32,8 +31,7 @@ public interface BeanReader {
 	 * Reads a single bean from the input stream.  If the end of the stream is
 	 * reached, null is returned.
 	 * @return the Java bean read, or null if the end of the stream was reached
-	 * @throws BeanReaderIOException if the underlying input stream throws an
-	 *   {@link IOException} or this reader was closed
+	 * @throws BeanReaderIOException if an IOException or other fatal error is caught
 	 * @throws MalformedRecordException if the underlying input stream is malformed
 	 *   and the record could not be accurately read
 	 * @throws UnidentifiedRecordException if the record type could not be identified
@@ -46,15 +44,14 @@ public interface BeanReader {
 	
 	/**
 	 * Skips ahead in the input stream.  Record validation errors are ignored, but
-	 * a malformed record, unidentified record, or record out of sequence,
+	 * a malformed input stream, unidentified record, or record out of sequence,
 	 * will cause an exception that halts stream reading.  Exceptions thrown by this
 	 * method are not passed to the error handler.
 	 * @param count the number of bean objects to skip over that would have been returned
 	 *   by calling {@link #read()}
 	 * @return the number of skipped bean objects, which may be less than <tt>count</tt>
 	 *   if the end of the stream was reached
-     * @throws BeanReaderIOException if the underlying input stream throws an
-     *   {@link IOException} or this reader was closed
+     * @throws BeanReaderIOException if an IOException or other fatal error is caught
      * @throws MalformedRecordException if the underlying input stream is malformed
      *   and a record could not be accurately skipped
      * @throws UnidentifiedRecordException if a record could not be identified
@@ -65,52 +62,26 @@ public interface BeanReader {
         UnidentifiedRecordException, UnexpectedRecordException;
 	
 	/**
-	 * Returns the record or group name of the most recent bean object
-	 * read from this reader, or null if the end of the stream was reached.
-	 * @return the record or group name
+	 * Returns the name of the last record read.
+	 * @return the name of the last record read
 	 */
 	public String getRecordName();
 	
 	/**
-	 * Returns the starting line number of the first record for the most recent bean
-	 * object read from this reader, or -1 when the end of the stream is reached.  
-	 * The line number may be zero if new lines are not used to separate characters.  
+	 * The beginning line number of the last record read.
 	 * @return the line number
 	 */
 	public int getLineNumber();
 	
 	/**
-	 * Returns the number of records read from the underlying input stream for the
-	 * most recent bean object read from this reader.  This typically returns 1
-	 * unless a bean object was mapped to a record group which may span
-	 * multiple records.
-	 * @return the record count
-	 * @since 2.0
-	 */
-	public int getRecordCount();
-	
-	/**
-	 * Returns record information for the most recent bean object read from this reader.
-	 * If a bean object can span multiple records, {@link #getRecordCount()} can be used
-	 * to determine how many records were read from the stream.
-	 * @param index the index of the record, starting at 0
-	 * @return the {@link RecordContext}
-	 * @throws IndexOutOfBoundsException if there is no record for the given index
-	 * @see #getRecordCount()
-	 * @since 2.0
-	 */
-	public RecordContext getRecordContext(int index) throws IndexOutOfBoundsException;
-	
-	/**
 	 * Closes the underlying input stream.
-	 * @throws BeanReaderIOException if the underlying input stream throws an
-     *   {@link IOException} or this reader was already closed
+	 * @throws BeanReaderIOException if an IOException is thrown when closing the stream
 	 */
     public void close() throws BeanReaderIOException;
 
     /**
-     * Sets the error handler to handle exceptions thrown by {@link #read()}.
-     * @param errorHandler the {@link BeanReaderErrorHandler}
+     * Sets the error handler to delegate bean reader exceptions to.
+     * @param errorHandler the error handler to delegate exceptions to
      */
     public void setErrorHandler(BeanReaderErrorHandler errorHandler);
 }

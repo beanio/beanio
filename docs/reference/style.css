@@ -1,3 +1,4 @@
+
 body {
   width: 900px;
   margin: 0 auto 0 auto;
@@ -5,18 +6,27 @@ body {
   font-size: 85%;
 }
 
-tt { font-size: 10pt;	}
-pre { font-size: 9pt; }
-.toc { margin-left: 3%; }
-.indent { margin-left: 5%;}
-.red { color: red; }
+tt {
+   font-size: 120%;	
+}
 
+.toc {
+	margin-left: 3%;
+}
+.indent {
+	margin-left: 5%;	
+}
+pre {
+    font-size: 110%; 
+}
+.red {
+	 color: red;
+}
 .title {
   font-size: 180%;
   font-weight: bold;
   margin-top: 20px;
 }
-
 h1 {
   font-size: 155%;
   margin-top: 1em;

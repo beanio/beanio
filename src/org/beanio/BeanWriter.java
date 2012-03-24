@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,10 @@
  */
 package org.beanio;
 
-import java.io.IOException;
-
 /**
- * Interface for marshalling bean objects to an output stream.
+ * Interface for writers capable of writing bean objects to an output stream.
  * 
- * <p>A <tt>BeanWriter</tt> is created using a {@link StreamFactory} and 
+ * <p>A <tt>BeanWriter</tt> is created using a <tt>StreamFactory</tt> and 
  * a mapping file.</p>
  * 
  * @author Kevin Seim
@@ -30,37 +28,31 @@ import java.io.IOException;
 public interface BeanWriter {
 
     /**
-     * Writes a bean object to this output stream.
+     * Writes a Java bean object to this output stream.
      * @param bean the bean object to write
-     * @throws BeanWriterException if a record could not be identified for marshalling, 
-     *   or in a few other rare (but fatal) cases
-     * @throws BeanWriterIOException if the underlying output stream throws an {@link IOException},
-     *   or if this writer is closed
+     * @throws BeanWriterException if an I/O error or other fatal error is caught
      */
-    public void write(Object bean) throws BeanWriterException, BeanWriterIOException;
+    public void write(Object bean) throws BeanWriterException;
 
     /**
-     * Writes a bean object to this output stream.
-     * @param recordName the record or group name bound to the bean object from the mapping file 
+     * Writes a Java bean object to this output stream.
+     * @param recordName the name of the record definition for formatting the bean object
      * @param bean the bean object to write
-     * @throws BeanWriterException if a record could not be identified for marshalling, 
-     *   or in a few other rare (but fatal) cases
-     * @throws BeanWriterIOException if the underlying output stream throws an {@link IOException},
-     *   or if this writer is closed
+     * @throws BeanWriterException if an I/O error or other fatal error is caught
      */
     public void write(String recordName, Object bean) throws BeanWriterException;
 
     /**
      * Flushes this output stream.
-     * @throws BeanWriterIOException if the underlying output stream throws an {@link IOException},
-     *   or if this writer is closed
+     * @throws BeanIOException if the IOException is thrown when the output
+     *   stream is flushed
      */
     public void flush() throws BeanWriterIOException;
 
     /**
      * Closes this output stream.
-     * @throws BeanWriterIOException if the underlying output stream throws an {@link IOException},
-     *   or if this writer is already closed
+     * @throws BeanIOException if the IOException is thrown when the output
+     *   stream is closed
      */
     public void close() throws BeanWriterIOException;
 

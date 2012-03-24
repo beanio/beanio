@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 package org.beanio;
 
 /**
- * A callback interface for handling exceptions thrown by a {@link BeanReader}.  When set on a <tt>BeanReader</tt>,
- * the <tt>BeanReader</tt> will delegate all exception handling to this class.  When an error handler
- * is not set on a reader, the <tt>BeanReader</tt>'s <tt>read()</tt> will simply throw the exception.
+ * Optional bean reader error handler callback.  When set on a <tt>BeanReader</tt>, the
+ * bean reader will delegate all exception handling to this class.  When an error handler
+ * is not set on a reader, the bean reader will simply throw the exception from its 
+ * <tt>read()</tt> method.
  *  
  * @author Kevin Seim
  * @since 1.0
@@ -27,10 +28,10 @@ package org.beanio;
 public interface BeanReaderErrorHandler {
 
     /**
-     * Callback method for handling a {@link BeanReaderException} when using
-     * a {@link BeanReader}.
-     * @param ex the {@link BeanReaderException} to handle
-     * @throws Exception if the <tt>BeanReaderException</tt> is rethrown or the error
+     * Callback method for handling <tt>BeanReaderExceptions</tt> when using
+     * a bean reader.
+     * @param ex the <tt>BeanReaderException</tt> to handle
+     * @throws Exception if the BeanReaderException is rethrown or the error
      *   handler throws a new Exception
      */
     public void handleError(BeanReaderException ex) throws Exception;

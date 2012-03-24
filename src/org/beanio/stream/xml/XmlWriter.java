@@ -21,8 +21,8 @@ import java.util.*;
 import javax.xml.XMLConstants;
 import javax.xml.stream.*;
 
-import org.beanio.internal.util.*;
 import org.beanio.stream.RecordWriter;
+import org.beanio.util.*;
 import org.w3c.dom.*;
 
 /**
@@ -75,8 +75,8 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
     
     /* The XML stream writer to write to */
     private XMLStreamWriter out;
-    /* XML parser configuration */
-    private XmlParserConfiguration config;
+    /* XML writer configuration */
+    private XmlWriterConfiguration config;
     /* String used to indent new lines of XML */
     private String indentation = "";
     
@@ -107,7 +107,7 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
      * @param writer the output stream to write to
      * @param config the XML writer configuration
      */
-    public XmlWriter(Writer writer, XmlParserConfiguration config) {
+    public XmlWriter(Writer writer, XmlWriterConfiguration config) {
         if (writer == null) {
             throw new IllegalArgumentException("writer is null");
         }
@@ -135,7 +135,7 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
         
         if (config == null) {
             // create a default configuration
-            this.config = new XmlParserConfiguration();
+            this.config = new XmlWriterConfiguration();
         }
         else {
             // the configuration is cloned to prevent changes during execution

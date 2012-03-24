@@ -12,7 +12,7 @@ body {
 	background-color: white;
     position: relative;
     margin: 0px auto 0% auto;
-    width: 920px;
+    width: 900px;
 }
 .header { padding-top: 10px; border-bottom: 1px solid #8a6a6b; }
 .title { text-align: right; font-size: 350%; padding: 6px 20px 3px 10px;  font-weight: normal;}
@@ -25,28 +25,18 @@ body {
 
 .menu {
 	float: left;
-	width: 150px;
+	width: 140px;
 	margin: 30px 0px 10px 10px;
 	border: 0px solid #a27f6e;
-}
-.menu h1 {
-	text-align: left;
-	font-style: italic;
-	font-weight: normal;
-	font-size: 110%;
-	margin-bottom: 10px;
-}
-
-.submenu {
-	border-right: 1px solid gray;
 	padding: 5px 20px 5px 0px;	
+	border-right: 1px solid gray;
 }
 
 .menu .item {
 	margin-bottom: 6px;	
 	text-align: right;	
 }
-.menu a { text-decoration: none; border: none; font-size: 110%; font-weight: 200;}
+.menu a { text-decoration: none; border: none; font-size: 120%; font-weight: 200;}
 .menu a:link, .menu a:visited { color: black; }
 .menu a:hover { color: #8a0007;  }
 .menu a.active { color: #8a0007; }

@@ -80,6 +80,7 @@
         <attribute name="Bundle-License" value="http://www.apache.org/licenses/LICENSE-2.0"/>
         <attribute name="Bundle-DocURL" value="http://beanio.org"/>
         <attribute name="Export-Package" value="${osgi.export-package}"/>
+        <attribute name="DynamicImport-Package" value="*"/>
       </manifest>
       <metainf dir="${basedir}">
         <include name="LICENSE.txt" />
@@ -100,9 +101,9 @@
   </target>
   <!-- Create API documentation -->
   <target name="docs-api" depends="docs-init">
-    <javadoc sourcepath="src" destdir="${target}/docs/api" windowtitle="BeanIO 2.0 API" access="protected"
+    <javadoc sourcepath="src" destdir="${target}/docs/api" windowtitle="BeanIO ${version} API" access="protected"
       header="BeanIO ${version}" classpathref="classpath.main">
-      <doctitle><![CDATA[<h2>BeanIO 2.0 API</h2>]]></doctitle>
+      <doctitle><![CDATA[<h2>BeanIO ${version} API</h2>]]></doctitle>
       <bottom><![CDATA[<i>Copyright &copy; 2010-2012 Kevin Seim</i>]]></bottom>
       <link href="http://download.oracle.com/javase/6/docs/api/" />
       <link href="http://static.springsource.org/spring-batch/apidocs/" />
@@ -134,17 +135,17 @@
   <!-- Create website tar -->
   <target name="site" depends="init,docs" description="Create site tar">
     <tar destfile="${target}/beanio-site.tar.gz" compression="gzip">
-      <tarfileset prefix="2.0/" dir="${basedir}">
+      <tarfileset dir="${basedir}">
         <include name="docs/**" />
       </tarfileset>
-      <tarfileset prefix="2.0/" dir="${target}">
-        <include name="docs/**" />
-      </tarfileset>    
       <tarfileset dir="${basedir}/site">
         <include name="**/*" />
-      </tarfileset>
+      </tarfileset>    
+      <tarfileset dir="${target}">
+        <include name="docs/**" />
+      </tarfileset>         
       <tarfileset dir="${basedir}/src/org/beanio/xsd">
-        <include name="2012/**" />
+        <include name="**/*" />
       </tarfileset>
     </tar>
   </target>

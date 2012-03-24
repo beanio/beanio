@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,6 +72,9 @@ public class XmlWrapperTest extends XmlParserTest {
             person.setLastName(null);
             out.write(person);
             
+            person.setColor(null);
+            out.write(person);
+            
             out.close();
             assertEquals(load("w1_in.xml"), s.toString());
         }
@@ -101,6 +104,9 @@ public class XmlWrapperTest extends XmlParserTest {
             person = (Person) in.read();
             assertNotNull(person.getColor());
             assertEquals(0, person.getColor().size());
+            out.write(person);
+
+            person.setColor(null);
             out.write(person);
 
             out.close();

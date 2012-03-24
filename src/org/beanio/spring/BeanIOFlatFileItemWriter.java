@@ -21,7 +21,7 @@ import java.nio.charset.*;
 import java.util.*;
 
 import org.beanio.*;
-import org.beanio.internal.util.*;
+import org.beanio.util.*;
 import org.springframework.batch.item.*;
 import org.springframework.batch.item.file.*;
 import org.springframework.batch.item.util.*;

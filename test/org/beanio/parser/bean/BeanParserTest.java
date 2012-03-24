@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,13 +105,13 @@ public class BeanParserTest extends ParserTest {
             assertEquals(3, w.getPart(1).getId());
             assertEquals(4, w.getPart(2).getId());
             assertEquals("name4", w.getPart(2).getName());
-            assertEquals("", w.getPart(2).getModel());          
+            assertNull(w.getPart(2).getModel());          
             
             text = new StringWriter();
             factory.createWriter("w3", text).write(w);
-            assertEquals(" 1name1mode1 2name2mode2 3           4name4     " + lineSeparator, text.toString());
+            assertEquals(" 1name1mode1 2name2mode2 3           4name4" + lineSeparator, text.toString());
             
-            assertFieldError(in, 3, "record1", "id", 1, "  ", "Type conversion error: Primitive property values cannot be null");
+            assertFieldError(in, 3, "record1", "id", 1, "  ", "Type conversion error: Primitive bean property cannot be null");
         }
         finally {
             in.close();
@@ -204,7 +204,7 @@ public class BeanParserTest extends ParserTest {
         
         text = new StringWriter();
         factory.createWriter("w6", text).write(w);
-        assertEquals("1,part1,," + lineSeparator, text.toString());
+        assertEquals("1,part1" + lineSeparator, text.toString());
         
         Widget part2 = new Widget();
         part2.setId(2);
@@ -259,7 +259,7 @@ public class BeanParserTest extends ParserTest {
             factory.createWriter("w8", text).write(map);
             fail("Expected no record mapping found");
         }
-        catch (BeanWriterException ex) { }
+        catch (BeanWriterIOException ex) { }
     }
     
     @Test

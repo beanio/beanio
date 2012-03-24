@@ -21,7 +21,6 @@ import static org.junit.Assert.assertNull;
 import java.math.*;
 import java.util.*;
 
-import org.beanio.internal.util.TypeUtil;
 import org.junit.Test;
 
 /**
@@ -32,35 +31,33 @@ import org.junit.Test;
  */
 public class TypeUtilTest {
 
-    private ClassLoader cl = TypeUtilTest.class.getClassLoader();
-    
     @Test
     public void testToType() {
-        assertEquals(String.class, TypeUtil.toType(cl, "string"));
-        assertEquals(Boolean.class, TypeUtil.toType(cl, "boolean"));
-        assertEquals(Byte.class, TypeUtil.toType(cl, "byte"));
-        assertEquals(Character.class, TypeUtil.toType(cl, "char"));
-        assertEquals(Character.class, TypeUtil.toType(cl, "character"));
-        assertEquals(Short.class, TypeUtil.toType(cl, "short"));
-        assertEquals(Integer.class, TypeUtil.toType(cl, "int"));
-        assertEquals(Integer.class, TypeUtil.toType(cl, "integer"));
-        assertEquals(Long.class, TypeUtil.toType(cl, "long"));
-        assertEquals(Float.class, TypeUtil.toType(cl, "float"));
-        assertEquals(Double.class, TypeUtil.toType(cl, "double"));
-        assertEquals(BigDecimal.class, TypeUtil.toType(cl, "BigDecimal"));
-        assertEquals(BigDecimal.class, TypeUtil.toType(cl, "decimal"));
-        assertEquals(BigInteger.class, TypeUtil.toType(cl, "BigInteger"));
-        assertEquals(Date.class, TypeUtil.toType(cl, "date"));
-        assertEquals(Date.class, TypeUtil.toType(cl, "time"));
-        assertEquals(Date.class, TypeUtil.toType(cl, "datetime"));
-        assertEquals(getClass(), TypeUtil.toType(cl, "org.beanio.util.TypeUtilTest"));
-        assertEquals(List.class, TypeUtil.toType(cl, "java.util.List"));
-        assertEquals(AbstractList.class, TypeUtil.toType(cl, "java.util.AbstractList"));
+        assertEquals(String.class, TypeUtil.toType("string"));
+        assertEquals(Boolean.class, TypeUtil.toType("boolean"));
+        assertEquals(Byte.class, TypeUtil.toType("byte"));
+        assertEquals(Character.class, TypeUtil.toType("char"));
+        assertEquals(Character.class, TypeUtil.toType("character"));
+        assertEquals(Short.class, TypeUtil.toType("short"));
+        assertEquals(Integer.class, TypeUtil.toType("int"));
+        assertEquals(Integer.class, TypeUtil.toType("integer"));
+        assertEquals(Long.class, TypeUtil.toType("long"));
+        assertEquals(Float.class, TypeUtil.toType("float"));
+        assertEquals(Double.class, TypeUtil.toType("double"));
+        assertEquals(BigDecimal.class, TypeUtil.toType("BigDecimal"));
+        assertEquals(BigDecimal.class, TypeUtil.toType("decimal"));
+        assertEquals(BigInteger.class, TypeUtil.toType("BigInteger"));
+        assertEquals(Date.class, TypeUtil.toType("date"));
+        assertEquals(Date.class, TypeUtil.toType("time"));
+        assertEquals(Date.class, TypeUtil.toType("datetime"));
+        assertEquals(getClass(), TypeUtil.toType("org.beanio.util.TypeUtilTest"));
+        assertEquals(List.class, TypeUtil.toType("java.util.List"));
+        assertEquals(AbstractList.class, TypeUtil.toType("java.util.AbstractList"));
     }
     
     @Test
     public void testToTypeClassNotFound() {
-        assertNull(TypeUtil.toType(cl, "org.beanio.types.NoClass"));
+        assertNull(TypeUtil.toType("org.beanio.types.NoClass"));
     }
     
     @Test

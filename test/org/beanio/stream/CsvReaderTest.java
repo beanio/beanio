@@ -29,11 +29,11 @@ import org.junit.*;
  */
 public class CsvReaderTest {
 
-    private CsvRecordParserFactory factory;
+    private CsvReaderFactory factory;
 
     @Before
     public void setUp() throws Exception {
-        factory = new CsvRecordParserFactory();
+        factory = new CsvReaderFactory();
     }
 
     @After
@@ -155,6 +155,7 @@ public class CsvReaderTest {
 
     @Test
     public void testCustomDelimiter() throws IOException {
+        CsvReaderFactory factory = new CsvReaderFactory();
         factory.setDelimiter('|');
         String[] expected = new String[] { "1", "2", "3" };
         CsvReader in = createReader(factory, "\"1\"|2|3");
@@ -164,6 +165,7 @@ public class CsvReaderTest {
 
     @Test
     public void testCustomQuote() throws IOException {
+        CsvReaderFactory factory = new CsvReaderFactory();
         factory.setQuote('\'');
         String[] expected = new String[] { "1", " 234 ", "5" };
         CsvReader in = createReader(factory, "'1',' 234 ',5\n");
@@ -173,6 +175,7 @@ public class CsvReaderTest {
 
     @Test
     public void testCustomEscape() throws IOException {
+        CsvReaderFactory factory = new CsvReaderFactory();
         factory.setQuote('\'');
         factory.setEscape('\\');
         String[] expected = new String[] { "1", " '23\\4' ", "5\\\\" };
@@ -183,6 +186,7 @@ public class CsvReaderTest {
 
     @Test
     public void testMultiline() throws IOException {
+        CsvReaderFactory factory = new CsvReaderFactory();
         factory.setQuote('\'');
         factory.setMultilineEnabled(true);
         String[] expected = new String[] { "12\n3", "4\r\n5" };
@@ -196,6 +200,7 @@ public class CsvReaderTest {
 
     @Test
     public void testWhitespaceeAllowed() throws IOException {
+        CsvReaderFactory factory = new CsvReaderFactory();
         factory.setQuote('\'');
         factory.setWhitespaceAllowed(true);
         String[] expected = new String[] { "1", "2" };
@@ -206,6 +211,7 @@ public class CsvReaderTest {
 
     @Test
     public void testEscapeDisabled() throws IOException {
+        CsvReaderFactory factory = new CsvReaderFactory();
         factory.setEscape(null);
         factory.setQuote('\'');
         String[] expected = new String[] { "1\"", "2" };
@@ -216,6 +222,7 @@ public class CsvReaderTest {
 
     @Test
     public void testUnquotedQuoteAllowed() throws IOException {
+        CsvReaderFactory factory = new CsvReaderFactory();
         factory.setQuote('\'');
         factory.setUnquotedQuotesAllowed(true);
         String[] expected = new String[] { "1\"1", "2" };
@@ -228,7 +235,7 @@ public class CsvReaderTest {
     public void testMissingQuoteEOF() throws IOException {
         StringReader text = new StringReader("field1,\"field2");
         
-        CsvParserConfiguration config = new CsvParserConfiguration();
+        CsvReaderConfiguration config = new CsvReaderConfiguration();
         config.setDelimiter(',');
         config.setEscape(null);
         config.setMultilineEnabled(false);
@@ -240,7 +247,7 @@ public class CsvReaderTest {
     public void testMissingQuoteEOL() throws IOException {
         StringReader text = new StringReader("field1,\"field2\nfield1");
         
-        CsvParserConfiguration config = new CsvParserConfiguration();
+        CsvReaderConfiguration config = new CsvReaderConfiguration();
         config.setDelimiter(',');
         config.setEscape(null);
         config.setMultilineEnabled(false);
@@ -260,7 +267,7 @@ public class CsvReaderTest {
         StringReader text = new StringReader(
                 "field1,\"field2\" ,field3\r\nfield1");
         
-        CsvParserConfiguration config = new CsvParserConfiguration();
+        CsvReaderConfiguration config = new CsvReaderConfiguration();
         config.setDelimiter(',');
         config.setEscape(null);
         config.setMultilineEnabled(false);
@@ -275,7 +282,7 @@ public class CsvReaderTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testQuoteIsDelimiter() {
-        CsvParserConfiguration config = new CsvParserConfiguration();
+        CsvReaderConfiguration config = new CsvReaderConfiguration();
         config.setDelimiter(',');
         config.setQuote(',');
         
@@ -284,7 +291,7 @@ public class CsvReaderTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testQuoteIsEscape() {
-        CsvParserConfiguration config = new CsvParserConfiguration();
+        CsvReaderConfiguration config = new CsvReaderConfiguration();
         config.setDelimiter(',');
         config.setEscape(',');
         
@@ -293,6 +300,7 @@ public class CsvReaderTest {
 
     @Test
     public void testCreateWhitespace() throws IOException {
+        CsvReaderFactory factory = new CsvReaderFactory();
         factory.setWhitespaceAllowed(true);
         factory.setQuote('\'');
         String[] expected = new String[] { "   1", "2", "  3  " };
@@ -306,7 +314,7 @@ public class CsvReaderTest {
     public void testComments() throws IOException {
         String[] comments = new String[] { "#", "$$", "--" };
         
-        CsvParserConfiguration config = new CsvParserConfiguration();
+        CsvReaderConfiguration config = new CsvReaderConfiguration();
         config.setComments(comments);
         
         StringReader input = new StringReader(
@@ -334,7 +342,7 @@ public class CsvReaderTest {
         }
     }
 
-    private CsvReader createReader(CsvRecordParserFactory factory, String input) {
+    private CsvReader createReader(CsvReaderFactory factory, String input) {
         return (CsvReader) factory.createReader(createInput(input));
     }
 

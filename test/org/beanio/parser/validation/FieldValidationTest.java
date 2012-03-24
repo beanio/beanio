@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Kevin Seim
+ * Copyright 2010 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,9 +86,9 @@ public class FieldValidationTest extends ParserTest {
 			assertEquals(recordName, in.getRecordName());
 			assertEquals(lineNumber, in.getLineNumber());
 
-			RecordContext ctx = ex.getRecordContext();
+			BeanReaderContext ctx = ex.getContext();
 			assertEquals(recordName, ctx.getRecordName());
-			assertEquals(lineNumber, ctx.getLineNumber());
+			assertEquals(lineNumber, ctx.getRecordLineNumber());
 			assertEquals(fieldText, ctx.getFieldText("field"));
 			for (String s : ctx.getFieldErrors("field")) {
 				assertEquals(message, s);

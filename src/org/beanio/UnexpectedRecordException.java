@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Kevin Seim
+ * Copyright 2010 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,23 @@
 package org.beanio;
 
 /**
- * Exception thrown when the record type of last record read by a {@link BeanReader} 
- * is out of order based on the expected order defined by the stream's mapping file.
- * After this exception is thrown, further reads from the stream will likely result in
- * further exceptions.
+ * An <tt>UnexpectedRecordException</tt> is thrown when the record type of
+ * last record read from the underlying input stream is out of order as
+ * defined by the stream configuration.
  * 
  * @author Kevin Seim
  * @since 1.0
  */
 public class UnexpectedRecordException extends BeanReaderException {
 
-	private static final long serialVersionUID = 2L;
-
+	private static final long serialVersionUID = 1L;
+	
 	/**
 	 * Constructs a new <tt>UnexpectedRecordException</tt>.
 	 * @param context the current context of the bean reader
 	 * @param message the error message
 	 */
-	public UnexpectedRecordException(RecordContext context, String message) {
-		super(message);
-		setRecordContext(context);
+	public UnexpectedRecordException(BeanReaderContext context, String message) {
+		super(context, message);
 	}
 }

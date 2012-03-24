@@ -18,31 +18,20 @@
   </div>
   
   <div class="menu">
-    <div class="submenu">
-	  <div class="item"><a class="active" href="#">about</a></div>
-	  <div class="item"><a href="http://www.apache.org/licenses/LICENSE-2.0">license</a></div>
-	  <div class="item"><a href="http://code.google.com/p/beanio/downloads/list">download</a></div>
-	  <div class="item"><a href="http://code.google.com/p/beanio/issues/list">issue tracking</a></div>
-	  <div class="item"><a href="http://groups.google.com/group/beanio">mailing list</a></div>
-    </div>
-    <br />
-    <h1>2.0 Documentation</h1>
-    <div style="font-size: 90%;" class="submenu">
-	  <div class="item"><a href="2.0/docs/api/index.html">javadocs</a></div>
-	  <div class="item"><a href="2.0/docs/reference/index.html">reference guide</a></div>
-    </div>
-    <br />
-    <h1>1.2 Documentation</h1>
-    <div style="font-size: 90%;" class="submenu">
-	  <div class="item"><a href="docs/api/index.html">javadocs</a></div>
-	  <div class="item"><a href="docs/reference/index.html">reference guide</a></div>
-    </div>
+    <div class="item"><a class="active" href="#">about</a></div>
+    <div class="item"><a href="http://www.apache.org/licenses/LICENSE-2.0">license</a></div>
+    <div class="item"><a href="http://code.google.com/p/beanio/downloads/list">download</a></div>
+    <div class="item"><a href="docs/api/index.html">javadocs</a></div>
+    <div class="item"><a href="docs/reference/index.html">reference guide</a></div>
+    <div class="item"><a href="http://code.google.com/p/beanio/issues/list">issue tracking</a></div>
+    <div class="item"><a href="http://groups.google.com/group/beanio">mailing list</a></div>
   </div>
 
   <div class="content">
     <p><b>BeanIO</b> is an open source Java framework for marshalling and unmarshalling Java beans, or plain old java objects 
-    (POJO's), from a large flat file, stream, or simple <tt>String</tt> object.  BeanIO is configured using an XML
-    mapping file, and currently supports XML, CSV, delimited, and fixed length file formats. 
+    (POJO's), from large flat files or streams.  Using an XML mapping file, BeanIO can be easily configured to 
+    read objects from an input stream and write objects to an output stream.  BeanIO is particularly well suited 
+    for batch processing, and currently supports XML, CSV, delimited, and fixed length file formats. 
     </p>
     
     <div class="features"><b>Features:</b>
@@ -50,7 +39,6 @@
 	    <li>Support for XML, CSV, delimited and fixed length stream formats</li>
 	    <li>Common field validation rules with customizable error messages</li>
 	    <li>Configurable record ordering and grouping rules</li>
-	    <li>Field based record identification</li>
 	    <li>XML based field mapping</li>
 	    <li>Extensible type handling</li>
 	    <li>Integration with <a href="http://static.springsource.org/spring-batch/">Spring Batch</a></li>
@@ -60,15 +48,6 @@
     <p>The BeanIO project is hosted at <a href="http://code.google.com/p/beanio/">Google Code</a></p>
     
     <div class="news">
-      <h2>BeanIO 2.0.0.M1 Released <span class="date">March 3, 2012</span></h2>
-      <p>The first milestone release for BeanIO 2.0 is now available for 
-        <a href="http://code.google.com/p/beanio/downloads/list">download</a>.  
-        Release 2.0.0.M1 adds several new features including support for constructors,
-        direct access to public variables, <tt>Marshaller</tt> and <tt>Unmarshaller</tt>
-        interfaces, and mapping bean objects that span multiple records, 
-        The release is not backwards compatible with prior releases.  Please refer to the 
-        <a href="2.0/docs/reference/index.html">reference guide</a> for more information.</p>
-
       <h2>BeanIO 1.2.3 Released <span class="date">February 12, 2012</span></h2>
       <p>Release 1.2.3 contains a few minor bug fixes and is fully backwards compatible with
         prior 1.2.x releases.  The release can be downloaded 
@@ -81,7 +60,7 @@
         This behavior can be disabled for backwards compatibility by setting
         <tt>org.beanio.marshalDefaultEnabled</tt> to <tt>false</tt>.  The release can be downloaded 
         <a href="http://code.google.com/p/beanio/downloads/list">here</a>.</p>
-
+        
       <h2>BeanIO 1.2.1 Released <span class="date">September 21, 2011</span></h2>
       <p>Release 1.2.1 introduces templates, and fixes the mapping file import logic and
         other minor defects.  The <tt>ConfigurationLoader</tt> interface and its implementation

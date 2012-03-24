@@ -1,16 +1,31 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<beanio xmlns="http://www.beanio.org/2012/03" 
+<!-- 
+    Copyright 2010-2011 Kevin Seim
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+       http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<beanio xmlns="http://www.beanio.org/2011/01" 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.beanio.org/2012/03 http://www.beanio.org/2012/03/mapping.xsd">
+  xsi:schemaLocation="http://www.beanio.org/2011/01 http://www.beanio.org/2011/01/mapping.xsd">
 
   <typeHandler type="java.util.Date" class="org.beanio.types.DateTypeHandler">
     <property name="pattern" value="MMddyy" />
   </typeHandler>
 
-  <stream name="f1" format="fixedlength" strict="true">
-    <parser>
+  <stream name="f1" format="fixedlength">
+    <writer>
       <property name="recordTerminator" value="" />
-    </parser>
+    </writer>
     <record name="record" class="map">
       <field name="default" position="0" length="10" trim="false" />
       <field name="number" position="10" type="int" length="10" justify="right" padding="0" />
@@ -20,17 +35,17 @@
   </stream>
 
   <stream name="f2" format="fixedlength" resourceBundle="org.beanio.parser.fixedlength.f2_messages">
-    <parser>
+    <writer>
       <property name="recordTerminator" value="\n\r" />
-    </parser>
+    </writer>
     <record name="record" class="map" minLength="10" maxLength="20">
       <field name="field1" length="5" />
       <field name="field2" length="5" />
-      <field name="field3" length="5" minOccurs="0" />
+      <field name="field3" length="5" />
     </record>
   </stream>
 
-  <stream name="f3" format="fixedlength">
+  <stream name="f3" format="fixedlength" ordered="false">
     <record name="record0" class="map">
       <field name="field1" rid="true" literal="1000" />
     </record>
@@ -45,10 +60,10 @@
     </record>
   </stream>
 
-  <stream name="f4" format="fixedlength">
-    <parser>
+  <stream name="f4" format="fixedlength" ordered="false">
+    <writer>
       <property name="recordTerminator" value="" />
-    </parser>
+    </writer>
     <record name="record" class="map">
       <field name="type" rid="true" literal="INT" />
       <field name="number" type="int" collection="list" length="5" justify="right" padding="0" maxOccurs="unbounded" />
@@ -68,9 +83,9 @@
   </stream>
 
   <stream name="f5" format="fixedlength">
-    <parser>
+    <writer>
       <property name="recordTerminator" value="" />
-    </parser>
+    </writer>
     <record name="record" class="map">
       <field name="firstName" length="10" ignore="true" padding="A" default="" />
       <field name="lastName" length="10"/>

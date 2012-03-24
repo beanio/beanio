@@ -21,7 +21,7 @@ import static org.junit.Assert.fail;
 import java.io.*;
 
 import org.beanio.*;
-import org.beanio.internal.util.IOUtil;
+import org.beanio.util.IOUtil;
 
 /**
  * Base class for JUnit test classes that test the parsing framework.
@@ -59,9 +59,9 @@ public class ParserTest {
             assertEquals(recordName, in.getRecordName());
             assertEquals(lineNumber, in.getLineNumber());
 
-            RecordContext ctx = ex.getRecordContext();
+            BeanReaderContext ctx = ex.getContext();
             assertEquals(recordName, ctx.getRecordName());
-            assertEquals(lineNumber, ctx.getLineNumber());
+            assertEquals(lineNumber, ctx.getRecordLineNumber());
             for (String s : ctx.getRecordErrors()) {
                 assertEquals(message, s);
             }
@@ -83,9 +83,9 @@ public class ParserTest {
             assertEquals(recordName, in.getRecordName());
             assertEquals(lineNumber, in.getLineNumber());
 
-            RecordContext ctx = ex.getRecordContext();
+            BeanReaderContext ctx = ex.getContext();
             assertEquals(recordName, ctx.getRecordName());
-            assertEquals(lineNumber, ctx.getLineNumber());
+            assertEquals(lineNumber, ctx.getRecordLineNumber());
             assertEquals(fieldText, ctx.getFieldText(fieldName, fieldIndex));
             for (String s : ctx.getFieldErrors(fieldName)) {
                 assertEquals(message, s);

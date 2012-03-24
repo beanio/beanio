@@ -23,7 +23,7 @@ import org.beanio.stream.fixedlength.*;
 import org.junit.Test;
 
 /**
- * JUntil test cases for the <tt>FixedLengthReader</tt> and <tt>FixedLengthRecordParserFactory</tt>.
+ * JUntil test cases for the <tt>FixedLengthReader</tt> and <tt>FixedLengthReaderFactory</tt>.
  * 
  * @author Kevin Seim
  * @since 1.0
@@ -32,7 +32,7 @@ public class FixedLengthReaderTest {
 
     @Test
     public void testBasic() throws IOException {
-        FixedLengthRecordParserFactory factory = new FixedLengthRecordParserFactory();
+        FixedLengthReaderFactory factory = new FixedLengthReaderFactory();
         FixedLengthReader in = createReader(factory, "1111\n2222");
         assertEquals(in.read(), "1111");
         assertEquals(in.read(), "2222");
@@ -41,7 +41,7 @@ public class FixedLengthReaderTest {
 
     @Test
     public void testLineContinuation() throws IOException {
-        FixedLengthRecordParserFactory factory = new FixedLengthRecordParserFactory();
+        FixedLengthReaderFactory factory = new FixedLengthReaderFactory();
         factory.setLineContinuationCharacter('\\');
         FixedLengthReader in = createReader(factory, "11\\\n22\n33\\\r\n\\44");
         assertEquals("1122", in.read());
@@ -53,7 +53,7 @@ public class FixedLengthReaderTest {
 
     @Test
     public void testCustomLineContinuationChar() throws IOException {
-        FixedLengthRecordParserFactory factory = new FixedLengthRecordParserFactory();
+        FixedLengthReaderFactory factory = new FixedLengthReaderFactory();
         factory.setLineContinuationCharacter('#');
         FixedLengthReader in = createReader(factory, "11#\n22\n33");
         assertEquals(in.read(), "1122");
@@ -65,7 +65,7 @@ public class FixedLengthReaderTest {
 
     @Test(expected = RecordIOException.class)
     public void testLineContinuationError() throws IOException {
-        FixedLengthRecordParserFactory factory = new FixedLengthRecordParserFactory();
+        FixedLengthReaderFactory factory = new FixedLengthReaderFactory();
         factory.setLineContinuationCharacter('\\');
         FixedLengthReader in = createReader(factory, "11\\");
         assertEquals(in.read(), "1122");
@@ -77,7 +77,7 @@ public class FixedLengthReaderTest {
 
     @Test
     public void testCR() throws IOException {
-        FixedLengthRecordParserFactory factory = new FixedLengthRecordParserFactory();
+        FixedLengthReaderFactory factory = new FixedLengthReaderFactory();
         FixedLengthReader in = createReader(factory, "1111\r2222");
         assertEquals(in.read(), "1111");
         assertEquals(1, in.getRecordLineNumber());
@@ -88,7 +88,7 @@ public class FixedLengthReaderTest {
 
     @Test
     public void testLF() throws IOException {
-        FixedLengthRecordParserFactory factory = new FixedLengthRecordParserFactory();
+        FixedLengthReaderFactory factory = new FixedLengthReaderFactory();
         FixedLengthReader in = createReader(factory, "1111\n2222");
         assertEquals(in.read(), "1111");
         assertEquals(1, in.getRecordLineNumber());
@@ -99,7 +99,7 @@ public class FixedLengthReaderTest {
 
     @Test
     public void testCRLF() throws IOException {
-        FixedLengthRecordParserFactory factory = new FixedLengthRecordParserFactory();
+        FixedLengthReaderFactory factory = new FixedLengthReaderFactory();
         FixedLengthReader in = createReader(factory, "1111\r\n2222");
         assertEquals(in.read(), "1111");
         assertEquals(1, in.getRecordLineNumber());
@@ -110,9 +110,9 @@ public class FixedLengthReaderTest {
     
     @Test
     public void testRecordTerminator() throws IOException {
-        FixedLengthRecordParserFactory factory = new FixedLengthRecordParserFactory();
+        FixedLengthReaderFactory factory = new FixedLengthReaderFactory();
         factory.setLineContinuationCharacter('\\');
-        factory.setRecordTerminator("*");
+        factory.setRecordTerminator('*');
         FixedLengthReader in = createReader(factory, "11\\*22*33\\44*");
         assertEquals("1122", in.read());
         assertEquals(0, in.getRecordLineNumber());
@@ -129,9 +129,9 @@ public class FixedLengthReaderTest {
     
     @Test
     public void testComments() throws IOException {
-        FixedLengthParserConfiguration config = new FixedLengthParserConfiguration();
+        FixedLengthReaderConfiguration config = new FixedLengthReaderConfiguration();
         config.setComments(new String[] { "#", "//" });
-        config.setRecordTerminator("+");
+        config.setRecordTerminator('+');
         
         StringReader input = new StringReader(
             "# comment+" +
@@ -148,7 +148,7 @@ public class FixedLengthReaderTest {
         assertNull(in.read());
     }
 
-    private FixedLengthReader createReader(FixedLengthRecordParserFactory factory, String input) {
+    private FixedLengthReader createReader(FixedLengthReaderFactory factory, String input) {
         return (FixedLengthReader) factory.createReader(createInput(input));
     }
 

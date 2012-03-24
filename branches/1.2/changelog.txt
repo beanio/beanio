@@ -1,6 +1,11 @@
 Project BeanIO Change Log
 =========================
 
+Changes in version 1.2.4 (2012-03-24)
+-------------------------------------
+* Updated OSGi manifest entries in build.xml (gc0026)
+* Fixed HTML comments in reference guide example
+
 Changes in version 1.2.3 (2012-02-12)
 -------------------------------------
 * Modified DefaultStreamFactory to use default locale if 'locale' is null (gc0022)

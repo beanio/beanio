@@ -80,6 +80,7 @@
         <attribute name="Bundle-License" value="http://www.apache.org/licenses/LICENSE-2.0"/>
         <attribute name="Bundle-DocURL" value="http://beanio.org"/>
         <attribute name="Export-Package" value="${osgi.export-package}"/>
+        <attribute name="DynamicImport-Package" value="*"/>
       </manifest>
       <metainf dir="${basedir}">
         <include name="LICENSE.txt" />

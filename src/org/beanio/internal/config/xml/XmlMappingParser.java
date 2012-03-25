@@ -409,10 +409,12 @@ public class XmlMappingParser {
      */
     protected GroupConfig createGroupConfig(Element element) {
         GroupConfig config = new GroupConfig();
-        config.setName(getAttribute(element, "name"));
+        populatePropertyConfig(config, element);
+        // TODO add getter/setter attributes to group
+        //config.setName(getAttribute(element, "name"));
         config.setOrder(getIntegerAttribute(element, "order"));
-        config.setMinOccurs(getIntegerAttribute(element, "minOccurs"));
-        config.setMaxOccurs(getUnboundedIntegerAttribute(element, "maxOccurs", Integer.MAX_VALUE));
+        //config.setMinOccurs(getIntegerAttribute(element, "minOccurs"));
+        //config.setMaxOccurs(getUnboundedIntegerAttribute(element, "maxOccurs", Integer.MAX_VALUE));
         config.setXmlName(getAttribute(element, "xmlName"));
         config.setXmlNamespace(getOptionalAttribute(element, "xmlNamespace"));
         config.setXmlPrefix(getOptionalAttribute(element, "xmlPrefix"));

@@ -587,12 +587,19 @@
         </documentation>
       </annotation>
     </attribute>
-    <attribute name="xmlType" type="xsd:string" use="optional">
+    <attribute name="setter" type="xsd:string" use="optional">
       <annotation>
         <documentation>
-          The XML node type.  May be set to 'element' (default) or 'none'.
+          The name of the setter method to set this bean object on its parent bean class.
         </documentation>
-      </annotation>    
+      </annotation>
+    </attribute>
+    <attribute name="getter" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The name of the getter method to get this bean object from its parent bean class.
+        </documentation>
+      </annotation>
     </attribute>
     <attribute name="class" type="xsd:string" use="optional">
       <annotation>
@@ -600,6 +607,22 @@
           The class name or type alias of the bean object bound to this group.
         </documentation>
       </annotation>
+    </attribute>
+    <attribute name="collection" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The type of collection for a repeating group.  May be set to any
+          collection class name or one of the following aliases: 'array', 'list',
+          or 'set'.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="xmlType" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The XML node type.  May be set to 'element' (default) or 'none'.
+        </documentation>
+      </annotation>    
     </attribute>
     <attributeGroup ref="tns:NodeAttributes" />
   </complexType>

@@ -35,7 +35,7 @@ public class Group extends ParserComponent implements Selector {
     
     private int minOccurs = 0;
     private int maxOccurs = Integer.MAX_VALUE;
-    private int position = 1;
+    private int order = 1;
     private boolean result = false;
     private Property property = null;
     // the current group count
@@ -561,10 +561,10 @@ public class Group extends ParserComponent implements Selector {
         this.maxOccurs = maxOccurs;
     }
     public int getOrder() {
-        return position;
+        return order;
     }
-    public void setPosition(int position) {
-        this.position = position;
+    public void setOrder(int order) {
+        this.order = order;
     }
     public boolean isResult() {
         return result;
@@ -665,7 +665,7 @@ public class Group extends ParserComponent implements Selector {
     @Override
     protected void toParamString(StringBuilder s) {
         super.toParamString(s);
-        s.append(", order=").append(position);
+        s.append(", order=").append(order);
         s.append(", minOccurs=").append(minOccurs);
         s.append(", maxOccurs=").append(maxOccurs);
         s.append(", property=").append(property);

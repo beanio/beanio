@@ -3651,6 +3651,34 @@ the group as a whole.</p>
   <td>*</td>
 </tr>
 <tr>
+  <td><tt>collection</tt></td>
+  <td>The collection type for repeating groups bound to a parent bean object (configured on
+    a <a href="#group"><tt>group</tt></a>).  The value may be set to any fully qualified class name 
+    assignable to <tt>java.util.Collection</tt>,
+    or to one of the collection type aliases: <tt>list</tt>, <tt>set</tt> or <tt>array</tt>.
+    A collection type can only be set if <tt>class</tt> is also set.
+    <p>BeanIO will not derrive the collection type from it's parent bean object.</p>
+  </td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>getter</tt></td>
+  <td>The getter method used to get the bean object bound to this group from 
+    it's parent.  By default, the getter method is determined through intropection using
+    the group name.  Ignored if <tt>class</tt> is not set.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>setter</tt></td>
+  <td>The setter method used to set the bean object bound to this group on the bean object of
+    it's parent.  By default, the setter method is determined through intropection using
+    the group name.  Ignored if <tt>class</tt> is not set.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
   <td><tt>order</tt></td>
   <td>The order this group must appear within its parent group or stream.  
     <p>If <tt>strict</tt> is set to true at the stream level, <tt>order</tt> will default

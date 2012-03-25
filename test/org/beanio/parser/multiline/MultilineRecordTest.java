@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 
 import java.io.*;
 import java.text.*;
+import java.util.List;
 
 import org.beanio.*;
 import org.beanio.beans.*;
@@ -40,7 +41,7 @@ public class MultilineRecordTest extends ParserTest {
         factory = newStreamFactory("multiline_mapping.xml");
     }
 
-    @Test
+    //@Test
     public void testRecordGroup() throws ParseException {
         BeanReader in = factory.createReader("ml1", new InputStreamReader(
             getClass().getResourceAsStream("ml1.txt")));
@@ -116,6 +117,46 @@ public class MultilineRecordTest extends ParserTest {
             assertEquals("orderGroup", in.getRecordName());
             assertEquals("103", order.getId());
             assertNull(order.getCustomer());
+        }
+        finally {
+            in.close();
+        }
+    }
+    
+    @Test
+    public void testNestedRecorGroup() throws ParseException {
+        BeanReader in = factory.createReader("ml2", new InputStreamReader(
+            getClass().getResourceAsStream("ml2.txt")));
+        
+        try {
+            // read batch #1
+            OrderBatch batch = (OrderBatch) in.read();
+            assertEquals(2, batch.getBatchCount());
+            
+            List<Order> orderList = batch.getOrders();
+            assertEquals(2, orderList.size());
+            
+            Order order = orderList.get(0);
+            assertEquals("100", order.getId());
+            Person customer = order.getCustomer();
+            assertEquals("George", customer.getFirstName());
+            assertEquals("Smith", customer.getLastName());
+            
+            order = orderList.get(1);
+            assertEquals("101", order.getId());
+            customer = order.getCustomer();
+            assertEquals("Joe", customer.getFirstName());
+            assertEquals("Johnson", customer.getLastName());
+            
+            // read batch #2
+            batch = (OrderBatch) in.read();
+            assertEquals(1, batch.getBatchCount());
+            
+            orderList = batch.getOrders();
+            assertEquals(1, orderList.size());
+            
+            order = orderList.get(0);
+            assertEquals("103", order.getId());
         }
         finally {
             in.close();

@@ -55,7 +55,7 @@ public class XmlParserFactory extends ParserFactorySupport {
     }
     
     @Override
-    protected void initializeGroup(GroupConfig config) {
+    protected void initializeGroupMain(GroupConfig config, Property bean) {
         if (!XmlTypeConstants.XML_TYPE_NONE.equals(config.getXmlType())) {
             XmlSelectorWrapper wrapper = new XmlSelectorWrapper();
             wrapper.setName(config.getName());
@@ -69,12 +69,12 @@ public class XmlParserFactory extends ParserFactorySupport {
             
             maxGroupDepth = Math.max(groupDepth, maxGroupDepth);
         }
-        super.initializeGroup(config);
+        super.initializeGroupMain(config, bean);
     }
     
     @Override
-    protected void finalizeGroup(GroupConfig config) throws BeanIOConfigurationException {
-        super.finalizeGroup(config);
+    protected void finalizeGroupMain(GroupConfig config) throws BeanIOConfigurationException {
+        super.finalizeGroupMain(config);
         if (!XmlTypeConstants.XML_TYPE_NONE.equals(config.getXmlType())) {
             popParser();
             --groupDepth;

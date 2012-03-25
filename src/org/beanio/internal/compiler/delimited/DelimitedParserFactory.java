@@ -62,9 +62,10 @@ public class DelimitedParserFactory extends FlatParserFactory {
         DelimitedFieldFormat format = new DelimitedFieldFormat();
         format.setName(config.getName());
         
-        if (config.isBound()) {
+        // TODO why was isBound checked here?
+        //if (config.isBound()) {
             format.setPosition(config.getPosition());
-        }
+        //}
         
         if (config.getLength() != null) {
             FieldPadding padding = new FieldPadding();

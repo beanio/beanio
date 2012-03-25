@@ -22,9 +22,9 @@ import org.beanio.*;
 
 /**
  * A {@link Parser} tree component for parsing a collection of bean objects, where
- * a bean object is mapped to a {@link Record}.
+ * a bean object is mapped to a {@link Record} or {@link Group}.
  * 
- * <p>A <tt>RecordCollection</tt> supports a single {@link Record} child.
+ * <p>A <tt>RecordCollection</tt> supports a single {@link Record} or {@link Group} child.
  * 
  * @author Kevin Seim
  * @since 2.0

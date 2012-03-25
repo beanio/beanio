@@ -337,37 +337,76 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             throw new BeanIOConfigurationException("At least one record or group is required.");
         }
         
+        // determine and validate the bean class
+        Property bean = createProperty(config, propertyStack.isEmpty());
+        
+        // handle groups bound to a parent bean object assigned to a group
+        if (config.isBound()) {
+            // handle repeating groups mapped to a collection
+            if (config.isRepeating()) {
+                initializeGroupIteration(config, bean);
+                reflectPropertyType(config, bean);
+            }
+            // or a group mapped to a property of its parent
+            else if (bean != null) {
+                reflectPropertyType(config, bean);
+            }
+        }
+        
+        initializeGroupMain(config, bean);
+    }
+    
+    protected void initializeGroupIteration(GroupConfig config, Property property) {
+        // wrap the segment in an iteration
+        Component collection = createSelectorIteration(config, property);
+
+        pushParser(collection);
+        if (property != null) {
+            pushProperty(collection);
+        }
+    }
+    
+    protected void initializeGroupMain(GroupConfig config, Property property) {
         Group group = new Group();
         group.setName(config.getName());
         group.setMinOccurs(config.getMinOccurs());
         group.setMaxOccurs(config.getMaxOccurs());
-        group.setPosition(config.getOrder());
-        
-        boolean isResult = propertyStack.isEmpty();
-
-        // determine and validate the bean class
-        Property bean = createProperty(config, isResult);
-        if (bean != null) {
-            reflectPropertyType(config, bean);
-            
-            pushProperty((Component)bean);
-            
-            group.setProperty(bean);
-            group.setResult(isResult);
-        }
+        group.setOrder(config.getOrder());
+        group.setProperty(property);
+        group.setResult(property != null && propertyStack.isEmpty());
         
         pushParser(group);
+        if (property != null) {
+            pushProperty((Component)property);
+        }
     }
 
     @Override
-    protected void finalizeGroup(GroupConfig group) throws BeanIOConfigurationException {
-        // pop the Group parser
-        popParser();
+    protected void finalizeGroup(GroupConfig config) throws BeanIOConfigurationException {
+        finalizeGroupMain(config);
         
-        // pop a property if the group was mapped to a bean object
-        if (group.getType() != null) {
+        if (config.isBound() && config.isRepeating()) {
+            finalizeGroupIteration(config);
+        }
+    }
+    
+    protected void finalizeGroupMain(GroupConfig config) {
+        // pop the group bean from the property stack
+        if (config.getType() != null) {
             popProperty();
         }
+        
+        popParser();
+    }
+    
+    protected void finalizeGroupIteration(GroupConfig config) {
+        // pop the collection from the property stack
+        if (config.getType() != null) {
+            popProperty();
+        }
+        
+        // pop the iteration from the parser stack
+        popParser();
     }
     
     @Override

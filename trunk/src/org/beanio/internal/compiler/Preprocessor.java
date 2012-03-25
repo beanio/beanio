@@ -30,6 +30,7 @@ public class Preprocessor extends ProcessorSupport {
 
     protected StreamConfig stream;
     protected PropertyConfig propertyRoot;
+    private boolean recordIgnored;
     
     /**
      * Constructs a new <tt>Preprocessor</tt>.
@@ -160,6 +161,15 @@ public class Preprocessor extends ProcessorSupport {
             throw new BeanIOConfigurationException("Cannot set both 'class' and 'target'");
         }
         
+        // a record is ignored if a 'class' was not set and the property root is null
+        // or the record repeats
+        recordIgnored = false;
+        if (record.getType() == null && record.getTarget() == null) {
+            if (propertyRoot == null || record.isRepeating()) {
+                recordIgnored = true;
+            }
+        }
+        
         // assign default min and max occurs
         if (record.getMinOccurs() == null) {
             record.setMinOccurs(0);
@@ -167,7 +177,7 @@ public class Preprocessor extends ProcessorSupport {
         if (record.getMaxOccurs() == null) {
             record.setMaxOccurs(Integer.MAX_VALUE);
         }
-     
+        
         if (propertyRoot == null) {
             propertyRoot = record;
         }
@@ -224,6 +234,12 @@ public class Preprocessor extends ProcessorSupport {
                 segment.getCollection() == null) {
                 throw new BeanIOConfigurationException("Collection required when maxOccurs is greater 1 and class is set");
             }
+
+            if (segment.getComponentType() == ComponentConfig.RECORD &&
+                segment.isRepeating() &&
+                segment.getType() == null) {
+                segment.setBound(false);
+            }
         }
         else {
             if (segment.getCollection() != null) {
@@ -250,6 +266,10 @@ public class Preprocessor extends ProcessorSupport {
      * @param field the field configuration to process
      */
     protected void handleField(FieldConfig field) throws BeanIOConfigurationException {
+        // ignore fields that belong to ignored records
+        if (recordIgnored) {
+            field.setBound(false);
+        }
         
         // set and validate occurrences
         if (field.getMinOccurs() == null) {

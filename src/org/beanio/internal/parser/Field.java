@@ -170,6 +170,15 @@ public class Field extends ParserComponent implements Property {
                 value = defaultValue;
             }
             
+            if (value == Value.MISSING) {
+                value = null;
+            }
+            
+            // allow the format to bypass type conversion
+            if (format.insertValue(context, value)) {
+                return true;
+            }
+            
             text = formatValue(value);
         }
         
@@ -192,6 +201,7 @@ public class Field extends ParserComponent implements Property {
     public boolean unmarshal(UnmarshallingContext context) {
         String text = format.extract(context, true);
         if (text == null) {
+            // minOccurs is validated at the segment level
             value = Value.MISSING;
             return false;
         }
@@ -316,14 +326,10 @@ public class Field extends ParserComponent implements Property {
     
     /**
      * Formats a field/property value.
-     * @param value the property value to format, or {@link Value#MISSING} if null
+     * @param value the property value to format
      * @return the formatted field text
      */
     protected String formatValue(Object value) {
-        if (value == Value.MISSING) {
-            value = null;
-        }
-        
         String text = null;
         if (handler != null) {
             try {

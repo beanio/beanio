@@ -410,11 +410,7 @@ public class XmlMappingParser {
     protected GroupConfig createGroupConfig(Element element) {
         GroupConfig config = new GroupConfig();
         populatePropertyConfig(config, element);
-        // TODO add getter/setter attributes to group
-        //config.setName(getAttribute(element, "name"));
         config.setOrder(getIntegerAttribute(element, "order"));
-        //config.setMinOccurs(getIntegerAttribute(element, "minOccurs"));
-        //config.setMaxOccurs(getUnboundedIntegerAttribute(element, "maxOccurs", Integer.MAX_VALUE));
         config.setXmlName(getAttribute(element, "xmlName"));
         config.setXmlNamespace(getOptionalAttribute(element, "xmlNamespace"));
         config.setXmlPrefix(getOptionalAttribute(element, "xmlPrefix"));
@@ -456,6 +452,8 @@ public class XmlMappingParser {
         segment.setXmlName(getAttribute(element, "xmlName"));
         segment.setXmlNamespace(getOptionalAttribute(element, "xmlNamespace"));
         segment.setXmlPrefix(getOptionalAttribute(element, "xmlPrefix"));
+        segment.setJsonName(getAttribute(element, "jsonName"));
+        segment.setJsonType(getAttribute(element, "jsonType"));
         
         String template = getOptionalAttribute(element, "template");
         if (template != null) {
@@ -561,6 +559,8 @@ public class XmlMappingParser {
         config.setXmlPrefix(getOptionalAttribute(element, "xmlPrefix"));
         config.setXmlType(getOptionalAttribute(element, "xmlType"));
         config.setNillable(getBooleanAttribute(element, "nillable", config.isNillable()));
+        config.setJsonName(getAttribute(element, "jsonName"));
+        config.setJsonType(getAttribute(element, "jsonType"));
         String template = getOptionalAttribute(element, "template");
         if (template != null) {
             includeTemplate(config, template, 0);
@@ -606,6 +606,8 @@ public class XmlMappingParser {
         config.setXmlNamespace(getOptionalAttribute(element, "xmlNamespace"));
         config.setXmlPrefix(getOptionalAttribute(element, "xmlPrefix"));
         config.setNillable(getBooleanAttribute(element, "nillable", config.isNillable()));
+        config.setJsonName(getAttribute(element, "jsonName"));
+        config.setJsonType(getAttribute(element, "jsonType"));
         return config;
     }
 

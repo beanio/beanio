@@ -30,7 +30,14 @@ package org.beanio.internal.config;
  * @since 2.0
  */
 public abstract class PropertyConfig extends ComponentConfig {
-        
+    
+    public static final String JSON_TYPE_NONE = "none";
+    public static final String JSON_TYPE_ARRAY = "array";
+    public static final String JSON_TYPE_OBJECT = "object";
+    public static final String JSON_TYPE_BOOLEAN = "boolean";
+    public static final String JSON_TYPE_NUMBER = "number";
+    public static final String JSON_TYPE_STRING = "string";
+    
     private String type;
     private String getter;
     private String setter;
@@ -45,6 +52,12 @@ public abstract class PropertyConfig extends ComponentConfig {
     /* attributes specific to xml */
     private String xmlType;
     private boolean nillable;
+    
+    /* attributes specific to JSON */
+    private String jsonName;
+    private String jsonType;
+    private boolean jsonArray = false; // derived
+    private int jsonArrayIndex = -1; // derived
     
     /* derived attributes */
     private int minSize;
@@ -246,6 +259,73 @@ public abstract class PropertyConfig extends ComponentConfig {
         this.nillable = nillable;
     }
     
+    /**
+     * Returns the JSON field name if different that the property name.
+     * Ignored if its parent is a JSON array.
+     * @return the JSON field name
+     */
+    public String getJsonName() {
+        return jsonName;
+    }
+
+    /**
+     * Sets the JSON field name.
+     * @param jsonName the JSON field name
+     */
+    public void setJsonName(String jsonName) {
+        this.jsonName = jsonName;
+    }
+
+    /**
+     * Returns the JSON type.
+     * @return the JSON type
+     */
+    public String getJsonType() {
+        return jsonType;
+    }
+
+    /**
+     * Sets the JSON type.
+     * @param jsonType the JSON type
+     */
+    public void setJsonType(String jsonType) {
+        this.jsonType = jsonType;
+    }
+    
+    /**
+     * Returns whether the property is mapped to a JSON array.  Set internally
+     * by BeanIO.
+     * @return true if this property is mapped to a JSON array, false otherwise
+     */
+    public boolean isJsonArray() {
+        return jsonArray;
+    }
+
+    /**
+     * Sets whether this property is mapped to a JSON array.  Set internally by
+     * BeanIO.
+     * @param jsonArray true if this property is mapped to a JSON array, false otherwise
+     */
+    public void setJsonArray(boolean jsonArray) {
+        this.jsonArray = jsonArray;
+    }
+
+    /**
+     * Returns the index of this property in its parent JSON array.
+     * @return the array index, or -1 if not applicable
+     */
+    public int getJsonArrayIndex() {
+        return jsonArrayIndex;
+    }
+
+    /**
+     * Sets the index of this property in its parent JSON array.
+     * @param jsonArrayIndex the array index, or -1 if not applicable
+     */
+    public void setJsonArrayIndex(int jsonArrayIndex) {
+        this.jsonArrayIndex = jsonArrayIndex;
+    }
+
     /**
      * Returns whether this component is used to identify a record during
      * unmarshalling or a bean during marshalling.  If this component is

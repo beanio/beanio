@@ -833,6 +833,22 @@
         </documentation>
       </annotation>
     </attribute>
+    <attribute name="jsonName" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The JSON field name.  Defaults to the field name.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="jsonType" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The JSON field type.  Set to 'string', 'number' or 'boolean'.  Use a
+          '[]' suffix to indicate an array.  Defaults to 'string', or 'string[]'
+          if maxOccurs is greater than 1.
+        </documentation>
+      </annotation>
+    </attribute>
   </complexType>  
 
   <complexType name="Segment">
@@ -965,6 +981,22 @@
         <documentation>
           Set to true if this element is nillable.  If 'true', null bean values
           are marshalled as nil.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="jsonName" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The JSON field name.  Defaults to the segment name.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="jsonType" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The JSON type.  Set to 'object', 'array' or 'none'.  Use a
+          '[]' suffix to indicate an array.  Defaults to 'object', or 'object[]'
+          if maxOccurs is greater than 1.
         </documentation>
       </annotation>
     </attribute>

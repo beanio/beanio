@@ -31,6 +31,14 @@ public abstract class FlatFieldFormatSupport implements FlatFieldFormat {
     private boolean lazy = false;
     private FieldPadding padding = null;
     
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.internal.parser.FieldFormat#insertValue(org.beanio.internal.parser.MarshallingContext, java.lang.Object)
+     */
+    public boolean insertValue(MarshallingContext context, Object value) {
+        return false;
+    }
+
     /**
      * Inserts field text into a record.
      * @param context the {@link MarshallingContext} holding the record

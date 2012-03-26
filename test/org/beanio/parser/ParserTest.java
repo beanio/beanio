@@ -33,6 +33,31 @@ public class ParserTest {
     protected static String lineSeparator = System.getProperty("line.separator");
     
     /**
+     * Loads the contents of a file into a String.
+     * @param filename the name of the file to load
+     * @return the file contents
+     * @throws IOException if an I/O error occurs
+     */
+    public String load(String filename) {
+        Reader in = new InputStreamReader(getClass().getResourceAsStream(filename));
+        StringBuilder s = new StringBuilder();
+        try {
+            int n = -1;
+            char [] c = new char[1024];
+            while ((n = in.read(c)) != -1) {
+                s.append(c, 0, n);
+            }
+            return s.toString();
+        }
+        catch (IOException ex) {
+            throw new IllegalStateException("IOException caught", ex);
+        }
+        finally {
+            IOUtil.closeQuietly(in);
+        }
+    }
+    
+    /**
      * 
      * @param config
      * @return

@@ -37,6 +37,14 @@ public abstract class XmlFieldFormat implements FieldFormat, XmlNode {
 
     /*
      * (non-Javadoc)
+     * @see org.beanio.internal.parser.FieldFormat#insertValue(org.beanio.internal.parser.MarshallingContext, java.lang.Object)
+     */
+    public boolean insertValue(MarshallingContext context, Object value) {
+        return false;
+    }
+
+    /*
+     * (non-Javadoc)
      * @see org.beanio.internal.parser.FieldFormat#insertField(org.beanio.internal.parser.MarshallingContext, java.lang.String)
      */
     public void insertField(MarshallingContext context, String fieldText) {

@@ -29,13 +29,29 @@ public interface FieldFormat {
      * Extracts the field text from a record.  Returns <tt>null</tt> if the
      * field was not present in the record.
      * 
-     * <p>Implementations should also remove any field padding before returning the text.
+     * <p>May return {@link Value#INVALID} if the field is invalid, or {@link Value#NIL}
+     * if the field is explicitly set to nil or null such as in an XML or JSON formatted
+     * stream.</p>
+     * 
+     * <p>Implementations should also remove any field padding before returning the text.</p>
      * 
      * @param context the {@link UnmarshallingContext} holding the record
      * @return the field text
      */
     public String extract(UnmarshallingContext context, boolean reportErrors);
 
+    /**
+     * Inserts a value into a record.  This method is called before type conversion.
+     * If the method returns false, type conversion is invoked and {@link #insertField(MarshallingContext, String)}
+     * is called.  If the method returns true, {@link #insertField(MarshallingContext, String)}
+     * is not invoked.
+     * @param context the {@link MarshallingContext}
+     * @param value the value to insert into the record
+     * @return true if type conversion is required and {@link #insertField(MarshallingContext, String)}
+     *   must be invoked, false otherwise
+     */
+    public boolean insertValue(MarshallingContext context, Object value);
+    
     /**
      * Inserts field text into a record.
      * @param context the {@link MarshallingContext} holding the record

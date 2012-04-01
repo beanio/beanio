@@ -30,4 +30,11 @@ public class OrderBatch {
     public void setOrderArray(Order[] orderArray) {
         orders = Arrays.asList(orderArray);
     }
+    
+    public String toString() {
+        return "OrderBatch" +
+            "[count=" + batchCount +
+            ", orders=" + orders +
+            "]";
+    }
 }

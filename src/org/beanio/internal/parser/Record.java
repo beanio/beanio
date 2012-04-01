@@ -46,11 +46,17 @@ public class Record extends Segment implements Selector {
      * @see org.beanio.parser2.Marshaller#marshal(org.beanio.parser2.MarshallingContext)
      */
     public boolean marshal(MarshallingContext context) throws IOException {
-        boolean marshalled = super.marshal(context);
-        if (marshalled) {
-            context.writeRecord();
+        try {
+            boolean marshalled = super.marshal(context);
+            if (marshalled) {
+                context.writeRecord();
+            }
+            return marshalled;
         }
-        return marshalled;
+        finally {
+            // clear the context for the next marshalled record...
+            context.clear();
+        }
     }
     
     /*

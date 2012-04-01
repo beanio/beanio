@@ -57,6 +57,8 @@ public class RecordCollection extends DelegatingParser implements Selector, Prop
             getCollection().add(getSelector().getValue());
         }
         
+        getParser().clearValue();
+        
         return result;
     }
     

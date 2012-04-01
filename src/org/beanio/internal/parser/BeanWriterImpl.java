@@ -88,10 +88,6 @@ public class BeanWriterImpl implements BeanWriter, StatefulWriter {
             // wrap the generic exception in a BeanReaderException
            throw new BeanWriterException("Fatal BeanIOException caught", ex);
         }
-        finally {
-            // clear the marshaling context
-            context.clear();
-        }
     }
 
     /*

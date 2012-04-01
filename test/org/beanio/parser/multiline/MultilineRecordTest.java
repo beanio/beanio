@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 
 import java.io.*;
 import java.text.*;
-import java.util.List;
+import java.util.*;
 
 import org.beanio.*;
 import org.beanio.beans.*;
@@ -157,6 +157,48 @@ public class MultilineRecordTest extends ParserTest {
             
             order = orderList.get(0);
             assertEquals("103", order.getId());
+        }
+        finally {
+            in.close();
+        }
+    }
+    
+    @Test
+    @SuppressWarnings("rawtypes")
+    public void testNestedRecorGroupCollections() throws ParseException {
+        BeanReader in = factory.createReader("ml3", new InputStreamReader(
+            getClass().getResourceAsStream("ml3.txt")));
+        
+        try {
+            // read batch #1
+            Map map = (Map) in.read();
+            List list = (List) map.get("batch");
+            assertEquals(2, list.size());
+            
+            OrderBatch batch = (OrderBatch) list.get(0);
+            assertEquals(2, batch.getBatchCount());
+            List<Order> orderList = batch.getOrders();
+            assertEquals(2, orderList.size());
+            assertEquals("100", orderList.get(0).getId());
+            assertEquals("101", orderList.get(1).getId());
+            
+            batch = (OrderBatch) list.get(1);
+            assertEquals(1, batch.getBatchCount());
+            orderList = batch.getOrders();
+            assertEquals(1, orderList.size());
+            assertEquals("103", orderList.get(0).getId());
+            
+            StringWriter text = new StringWriter();
+            factory.createWriter("ml3", text).write(map);
+            assertEquals(
+                "header,2\n" +
+                "order,100,2012-01-01\n" +
+                "customer,George,Smith\n" +
+                "order,101,2012-01-01\n" +
+                "customer,John,Smith\n" +
+                "header,1\n" +
+                "order,103,2012-01-01\n" +
+                "customer,Jen,Smith\n", text.toString());
         }
         finally {
             in.close();

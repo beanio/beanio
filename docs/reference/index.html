@@ -212,6 +212,9 @@ default <tt>minOccurs</tt> attribute for a <tt>field</tt> bound to an XML attrib
 
 <p>Mapping file changes are illustrated using an example in <a href="#C">Appendix C</a>.</p>
 
+<p>If desired, BeanIO's default <tt>minOccurs</tt> value for a group, record or fields can be
+overridden using property values.  See <a href="#Configuration">Section 7.0 Configuration</a>
+for details.</p>
 
 <h1><a name="GettingStarted">2.0. Getting Started</a></h1>
 <p>To get started with BeanIO, download the latest stable version from 
@@ -3235,6 +3238,21 @@ working directory, and if not found, then from the root of the application's cla
   <td>Sets the default <tt>SimpleDateFormat</tt> pattern for <tt>time</tt> type fields in
     CSV, delimited and fixed length file formats..</td>
   <td><tt>DateFormat. getTimeInstance()</tt></td>
+</tr>
+<tr>
+  <td><tt>org.beanio.group.minOccurs</tt></td>
+  <td>Sets the default <tt>minOccurs</tt> for a <a href="#group"><tt>group</tt></a>.</td>
+  <td><tt>0</tt></td>
+</tr>
+<tr>
+  <td><tt>org.beanio.record.minOccurs</tt></td>
+  <td>Sets the default <tt>minOccurs</tt> for a <a href="#record"><tt>record</tt></a>.</td>
+  <td><tt>0</tt></td>
+</tr>
+<tr>
+  <td><tt>org.beanio.field.minOccurs.[format]</tt></td>
+  <td>Sets the default <tt>minOccurs</tt> for a <a href="#field"><tt>field</tt></a> by stream format.</td>
+  <td><tt>1</tt></td>
 </tr>
 <tr>
   <td><tt>org.beanio.xml.defaultXmlType</tt></td>

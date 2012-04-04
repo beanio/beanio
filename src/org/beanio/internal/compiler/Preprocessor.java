@@ -17,6 +17,7 @@ package org.beanio.internal.compiler;
 
 import org.beanio.BeanIOConfigurationException;
 import org.beanio.internal.config.*;
+import org.beanio.internal.util.Settings;
 
 /**
  * A Preprocesser is responsible for validating a stream configuration, setting
@@ -28,6 +29,8 @@ import org.beanio.internal.config.*;
  */
 public class Preprocessor extends ProcessorSupport {
 
+    private static final Settings settings = Settings.getInstance();
+    
     protected StreamConfig stream;
     protected PropertyConfig propertyRoot;
     private boolean recordIgnored;
@@ -66,7 +69,7 @@ public class Preprocessor extends ProcessorSupport {
      */
     protected void initializeGroup(GroupConfig group) throws BeanIOConfigurationException {
         if (group.getMinOccurs() == null) {
-            group.setMinOccurs(0);
+            group.setMinOccurs(settings.getInt(Settings.DEFAULT_GROUP_MIN_OCCURS, 0));
         }
         if (group.getMaxOccurs() == null) {
             group.setMaxOccurs(Integer.MAX_VALUE);
@@ -172,7 +175,7 @@ public class Preprocessor extends ProcessorSupport {
         
         // assign default min and max occurs
         if (record.getMinOccurs() == null) {
-            record.setMinOccurs(0);
+            record.setMinOccurs(settings.getInt(Settings.DEFAULT_RECORD_MIN_OCCURS, 0));
         }
         if (record.getMaxOccurs() == null) {
             record.setMaxOccurs(Integer.MAX_VALUE);
@@ -273,7 +276,8 @@ public class Preprocessor extends ProcessorSupport {
         
         // set and validate occurrences
         if (field.getMinOccurs() == null) {
-            field.setMinOccurs(1);
+            field.setMinOccurs(settings.getInt(Settings.DEFAULT_FIELD_MIN_OCCURS + 
+                "." + stream.getFormat(), 0));
         }
         if (field.getMaxOccurs() == null) {
             field.setMaxOccurs(Math.max(field.getMinOccurs(), 1));

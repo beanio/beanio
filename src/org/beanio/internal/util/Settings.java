@@ -79,6 +79,12 @@ public class Settings {
      */
     public static final String DEFAULT_MARSHALLING_ENABLED = "org.beanio.marshalDefaultEnabled";
     
+    /** The default minOccurs setting for a group. */
+    public static final String DEFAULT_GROUP_MIN_OCCURS = "org.beanio.group.minOccurs";
+    /** The default minOccurs setting for a record. */
+    public static final String DEFAULT_RECORD_MIN_OCCURS = "org.beanio.record.minOccurs";
+    /** The default minOccurs setting for a field (after appending the stream format) */
+    public static final String DEFAULT_FIELD_MIN_OCCURS = "org.beanio.field.minOccurs";
     
     private static final String DEFAULT_CONFIGURATION_PATH = "org/beanio/internal/config/beanio.properties";
     private static final String DEFAULT_CONFIGURATION_FILENAME = "beanio.properties";
@@ -102,6 +108,25 @@ public class Settings {
      */
     public String getProperty(String key) {
         return properties.getProperty(key);
+    }
+    
+    /**
+     * Returns a BeanIO configuration setting as an integer.
+     * @param key the property key
+     * @param defaultValue the default value if the setting wasn't
+     *   configured or invalid
+     * @return the <tt>int</tt> property value or <tt>defaultValue</tt>
+     */
+    public int getInt(String key, int defaultValue) {
+        try {
+            String value = properties.getProperty(key);
+            if (value != null) {
+                return Integer.parseInt(value);
+            }
+        }
+        catch (NumberFormatException ex) { }
+        
+        return defaultValue;
     }
 
     /**

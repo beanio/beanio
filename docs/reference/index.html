@@ -146,6 +146,7 @@ currently supports XML, CSV, delimited and fixed length file formats. BeanIO is 
   <li>More lenient/sensible defaults.</li>
   <li>Consolidated <tt>reader</tt> and <tt>writer</tt> elements (see <a href="#parser"><tt>parser</tt></a>).</li>
   <li>Support for unmarshalling a subset of a record using a record <tt>target</tt> attribute</li>
+  <li>Mapping file property substitution support.  (M2)</li>
 </ul>
 
 <h2><a name="Migration">1.2. Migrating from 1.2.x</a></h2>
@@ -212,7 +213,7 @@ default <tt>minOccurs</tt> attribute for a <tt>field</tt> bound to an XML attrib
 
 <p>Mapping file changes are illustrated using an example in <a href="#C">Appendix C</a>.</p>
 
-<p>If desired, BeanIO's default <tt>minOccurs</tt> value for a group, record or fields can be
+<p>If desired, BeanIO's default <tt>minOccurs</tt> value for a group, record or field can be
 overridden using property values.  See <a href="#Configuration">Section 7.0 Configuration</a>
 for details.</p>
 
@@ -3288,6 +3289,7 @@ allowed number of child elements:
 <h2><a name="beanio">A.1. <tt>beanio</tt></a></h2>
 <p>The <tt>beanio</tt> element is the root element for a BeanIO mapping file.</p>
 <p>Children:
+<a href="#property"><tt>property</tt></a>*,
 <a href="#import"><tt>import</tt></a>*,
 <a href="#typeHandler"><tt>typeHandler</tt></a>*,
 <a href="#template"><tt>template</tt></a>*,
@@ -3365,8 +3367,22 @@ combination, or explicitly named.</p>
 </p>
 
 <h2><a name="property">A.4. <tt>property</tt></a></h2>
-<p>A <tt>property</tt> element is used to customize other elements, such
-as a <a href="#typeHandler"><tt>typeHandler</tt></a> or <a href="#parser"><tt>parser</tt></a>.</p>
+<p>A <tt>property</tt> element has several uses.</p>
+<ol>
+<li>When used at the top of a mapping file as a direct child of <a href="#beanio"><tt>beanio</tt></a>,
+a <tt>property</tt> may declare properties to use for property substitution in
+other attributes within the mapping file.  
+Property substitution uses the syntax <tt>${propertyName,default}</tt>, where all whitespace
+between the brackets is retained.  Properties cannot be imported from another file.
+</li>
+<li>
+Or, a <tt>property</tt> element may be used to customize other elements, such
+as a <a href="#typeHandler"><tt>typeHandler</tt></a> or <a href="#parser"><tt>parser</tt></a>.
+</li>
+<li>
+Or finally, a <tt>property</tt> value can be used to set constant values on a bean object, which
+is further described below.</li>
+</ol>
 <table>
 <tr>
   <th>Attribute</th>

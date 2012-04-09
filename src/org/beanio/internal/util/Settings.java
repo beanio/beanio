@@ -61,6 +61,8 @@ public class Settings {
      * @since 1.2
      */
     public static final String PROPERTY_ESCAPING_ENABLED = "org.beanio.propertyEscapingEnabled";
+    /** Whether property substitution is enabled for mapping files */
+    public static final String PROPERTY_SUBSTITUTION_ENABLED = "org.beanio.propertySubstitutionEnabled";
     /** The default XML type for a field definition, set to <tt>element</tt> or <tt>attribute</tt>. */
     public static final String DEFAULT_XML_TYPE = "org.beanio.xml.defaultXmlType";
     /** The default namespace prefix for 'http://www.w3.org/2001/XMLSchema-instance' */

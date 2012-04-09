@@ -65,10 +65,14 @@ public class ParserTest {
      */
     protected StreamFactory newStreamFactory(String config) throws IOException {
         StreamFactory factory = StreamFactory.newInstance();
+        loadMappingFile(factory, config);
+        return factory;
+    }
+    
+    protected void loadMappingFile(StreamFactory factory, String config) throws IOException {
         InputStream in = getClass().getResourceAsStream(config);
         try {
             factory.load(in);
-            return factory;
         }
         finally {
             IOUtil.closeQuietly(in);

@@ -6,7 +6,7 @@
   elementFormDefault="qualified" 
   targetNamespace="http://www.beanio.org/2012/03"
   xml:lang="en"
-  version="2.0.0">
+  version="2.0.0.M2">
 
   <annotation>
     <documentation>
@@ -36,13 +36,20 @@
     </annotation>
     <complexType>
       <sequence>
+        <element name="property" minOccurs="0" maxOccurs="unbounded" type="tns:Property">
+          <annotation>
+            <documentation>
+              Declares a property value for substitution using the syntax '${propertyName}'.
+            </documentation>
+          </annotation>
+        </element>
         <element name="import" minOccurs="0" maxOccurs="unbounded" type="tns:Import">
           <annotation>
             <documentation>
               Imports a mapping file.
             </documentation>
           </annotation>
-        </element>
+        </element>       
         <element name="typeHandler" minOccurs="0" maxOccurs="unbounded" type="tns:GlobalTypeHandler">
           <annotation>
             <documentation>

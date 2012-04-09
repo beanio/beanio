@@ -16,7 +16,7 @@
 package org.beanio;
 
 import java.io.*;
-import java.util.Locale;
+import java.util.*;
 
 import org.beanio.internal.util.*;
 
@@ -186,13 +186,24 @@ public abstract class StreamFactory {
      * @throws BeanIOConfigurationException if the mapping file is not found or invalid
      */
     public void loadResource(String resource) throws BeanIOException, BeanIOConfigurationException {
+        loadResource(resource, null);
+    }
+    
+    /**
+     * Loads a BeanIO mapping file from the application's classpath.
+     * @param resource the configuration resource name
+     * @param properties user {@link Properties} for property substitution
+     * @throws BeanIOException if an {@link IOException} or other fatal error is caught while loading the file
+     * @throws BeanIOConfigurationException if the mapping file is not found or invalid
+     */
+    public void loadResource(String resource, Properties properties) throws BeanIOException, BeanIOConfigurationException {
         InputStream in = null;
         try {
             in = getClassLoader().getResourceAsStream(resource);
             if (in == null) {
                 throw new BeanIOConfigurationException("BeanIO mapping file '" + resource + "' not found on classpath");
             }
-            load(in);
+            load(in, properties);
         }
         catch (IOException ex) {
             throw new BeanIOException("Failed to load resource '" + resource + "' from classpath", ex);
@@ -209,9 +220,20 @@ public abstract class StreamFactory {
      * @throws BeanIOConfigurationException if the mapping file is invalid
      */
     public void load(String filename) throws BeanIOException, BeanIOConfigurationException {
-        load(new File(filename));
+        load(filename, null);
     }
 
+    /**
+     * Loads a BeanIO mapping file from the file system, and adds the configured streams to this factory.
+     * @param filename the name of the BeanIO configuration file to load
+     * @param properties user {@link Properties} for property substitution
+     * @throws BeanIOException if an {@link IOException} or other fatal error is caught while loading the file
+     * @throws BeanIOConfigurationException if the mapping file is invalid
+     */
+    public void load(String filename, Properties properties) throws BeanIOException, BeanIOConfigurationException {
+        load(new File(filename), properties);
+    }
+    
     /**
      * Loads a BeanIO mapping file from the file system, and adds the configured streams to this factory.
      * @param file the BeanIO configuration file to load
@@ -219,10 +241,21 @@ public abstract class StreamFactory {
      * @throws BeanIOConfigurationException if the mapping file is invalid
      */
     public void load(File file) throws BeanIOException, BeanIOConfigurationException {
+        load(file, null);
+    }
+    
+    /**
+     * Loads a BeanIO mapping file from the file system, and adds the configured streams to this factory.
+     * @param file the BeanIO configuration file to load
+     * @param properties user {@link Properties} for property substitution
+     * @throws BeanIOException if an {@link IOException} or other fatal error is caught while loading the file
+     * @throws BeanIOConfigurationException if the mapping file is invalid
+     */
+    public void load(File file, Properties properties) throws BeanIOException, BeanIOConfigurationException {
         InputStream in = null;
         try {
             in = new BufferedInputStream(new FileInputStream(file));
-            load(in);
+            load(in, properties);
         }
         catch (IOException ex) {
             throw new BeanIOException("Failed to load '" + file + "' from the file system", ex);
@@ -238,7 +271,18 @@ public abstract class StreamFactory {
      * @throws BeanIOException if an {@link IOException} or other fatal error is caught while reading the input stream
      * @throws BeanIOConfigurationException if the mapping file is invalid
      */
-    public abstract void load(InputStream in) throws IOException, BeanIOConfigurationException;
+    public void load(InputStream in) throws IOException, BeanIOConfigurationException {
+        load(in, null);
+    }
+
+    /**
+     * Loads a BeanIO mapping file, and adds the configured streams to this factory.
+     * @param in the input stream to read the mapping file from
+     * @param properties user {@link Properties} for property substitution
+     * @throws BeanIOException if an {@link IOException} or other fatal error is caught while reading the input stream
+     * @throws BeanIOConfigurationException if the mapping file is invalid
+     */
+    public abstract void load(InputStream in, Properties properties) throws IOException, BeanIOConfigurationException;
 
     /**
      * Returns a new <tt>StreamFactory</tt> instance.  The implementation class is resolved

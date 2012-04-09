@@ -48,13 +48,13 @@ public class DefaultStreamFactory extends StreamFactory {
     }
 
     @Override
-    public void load(InputStream in) throws IOException, BeanIOConfigurationException {
-        Collection<Stream> streams = compiler.loadMapping(in);
+    public void load(InputStream in, Properties properties) throws IOException, BeanIOConfigurationException {
+        Collection<Stream> streams = compiler.loadMapping(in, properties);
         for (Stream stream : streams) {
             addStream(stream);
         }
     }
-
+    
     @Override
     public BeanReader createReader(String name, Reader in, Locale locale) {
         if (locale == null) {

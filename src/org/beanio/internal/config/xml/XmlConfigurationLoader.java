@@ -16,7 +16,7 @@
 package org.beanio.internal.config.xml;
 
 import java.io.*;
-import java.util.Collection;
+import java.util.*;
 
 import org.beanio.BeanIOConfigurationException;
 import org.beanio.internal.config.*;
@@ -46,8 +46,9 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
      * (non-Javadoc)
      * @see org.beanio.config.MultiConfigurationLoader#loadConfigurations(java.io.InputStream)
      */
-    public Collection<BeanIOConfig> loadConfiguration(InputStream in) throws IOException, BeanIOConfigurationException {
-        return createParser().loadConfiguration(in);
+    public Collection<BeanIOConfig> loadConfiguration(InputStream in, Properties properties) 
+        throws IOException, BeanIOConfigurationException {
+        return createParser().loadConfiguration(in, properties);
     }
     
     /**

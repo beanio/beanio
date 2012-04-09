@@ -33,6 +33,7 @@ public class XmlMapping {
     private String name;
     private String location;
     private XmlMapping parent;
+    private Properties properties;
     private BeanIOConfig config = new BeanIOConfig();
     private List<XmlMapping> importList = new LinkedList<XmlMapping>();
     private Map<String,Element> templateMap = new HashMap<String,Element>();
@@ -108,6 +109,26 @@ public class XmlMapping {
     public boolean isLoading(String url) {
         return url.equals(this.location) ||
             (parent != null && parent.isLoading(url));
+    }
+    
+    /**
+     * Sets a property declared in this mapping file.
+     * @param name the property name
+     * @param value the property value
+     */
+    public void setProperty(String name, String value) {
+        if (properties == null) {
+            properties = new Properties();
+        }
+        properties.setProperty(name, value);
+    }
+    
+    /**
+     * Returns the properties declared in this mapping file.
+     * @return the {@link Properties}
+     */
+    public Properties getProperties() {
+        return properties;
     }
 
     /**

@@ -50,18 +50,19 @@ public class StreamCompiler {
     /**
      * Loads a mapping file.
      * @param in the {@link InputStream} to load the mapping file from
+     * @param properties the {@link Properties}
      * @return the {@link Stream} parsers configured in the loaded mapping file
      * @throws IOException if an I/O error occurs reading the mapping file
      * @throws BeanIOConfigurationException if the mapping file is invalid
      */
-    public Collection<Stream> loadMapping(InputStream in) throws IOException,
+    public Collection<Stream> loadMapping(InputStream in, Properties properties) throws IOException,
         BeanIOConfigurationException {
         ConfigurationLoader loader = configurationLoader;
         if (loader == null) {
             loader = getDefaultConfigurationLoader();
         }
         
-        Collection<BeanIOConfig> configList = loader.loadConfiguration(in);
+        Collection<BeanIOConfig> configList = loader.loadConfiguration(in, properties);
         if (configList.isEmpty()) {
             return Collections.emptyList();
         }

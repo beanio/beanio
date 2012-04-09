@@ -16,7 +16,7 @@
 package org.beanio.internal.config;
 
 import java.io.*;
-import java.util.Collection;
+import java.util.*;
 
 import org.beanio.BeanIOConfigurationException;
 
@@ -34,11 +34,13 @@ public interface ConfigurationLoader {
     /**
      * Loads a BeanIO configuration from an input stream.
      * @param in the input stream to read the configuration from
+     * @param properties the {@link Properties} for expansion in the mapping file
      * @return a collection of loaded BeanIO configurations
      * @throws IOException if an I/O error occurs
      * @throws BeanIOConfigurationException if the configuration is invalid or malformed
      * @since 1.2.1
      */
-    public Collection<BeanIOConfig> loadConfiguration(InputStream in) throws IOException, BeanIOConfigurationException;
+    public Collection<BeanIOConfig> loadConfiguration(InputStream in, Properties properties) 
+        throws IOException, BeanIOConfigurationException;
 
 }

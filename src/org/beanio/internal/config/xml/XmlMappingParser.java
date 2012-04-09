@@ -35,8 +35,11 @@ import org.w3c.dom.*;
  * @author Kevin Seim
  * @since 1.2.1
  */
-public class XmlMappingParser {
+public class XmlMappingParser implements StringUtil.PropertySource {
 
+    private static final boolean propertySubstitutionEnabled = 
+        Boolean.valueOf(Settings.getInstance().getProperty(Settings.PROPERTY_SUBSTITUTION_ENABLED));
+    
     /* used to read XML into a DOM object */
     private XmlMappingReader reader;
     /* the mapping currently being parsed */
@@ -45,6 +48,8 @@ public class XmlMappingParser {
     private Map<String,XmlMapping> mappings;
     /* the ClassLoader for loading imported resources */
     private ClassLoader classLoader;
+    /* custom Properties provided by the client for property expansion */
+    private Properties properties;
     
     private LinkedList<Include> includeStack = new LinkedList<Include>();
 
@@ -67,12 +72,15 @@ public class XmlMappingParser {
      * configurations, one for the input stream and one for each imported
      * mapping file (if specified).
      * @param in the input stream to read
+     * @param properties the {@link Properties} to use for property substitution
      * @return the collection of parsed BeanIO configuration objects
      * @throws IOException if an I/O error occurs
      * @throws BeanIOConfigurationException if the configuration is invalid
      */
-    public Collection<BeanIOConfig> loadConfiguration(InputStream in) throws IOException,
-        BeanIOConfigurationException {
+    public Collection<BeanIOConfig> loadConfiguration(InputStream in, Properties properties) 
+        throws IOException, BeanIOConfigurationException {
+        
+        this.properties = properties;
         
         mapping = new XmlMapping();
         mappings = new HashMap<String,XmlMapping>();
@@ -184,6 +192,11 @@ public class XmlMappingParser {
             String name = child.getTagName();
             if ("import".equals(name)) {
                 importConfiguration(child);
+            }
+            else if ("property".equals(name)) {
+                String key = getAttribute(child, "name");
+                String value = getAttribute(child, "value");
+                mapping.setProperty(key, value);
             }
             else if ("typeHandler".equals(name)) {
                 TypeHandlerConfig handler = createHandlerConfig(child);
@@ -637,6 +650,24 @@ public class XmlMappingParser {
         }
     }
     
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.internal.util.StringUtil.PropertiesSource#getProperty(java.lang.String)
+     */
+    public String getProperty(String key) {
+        String value = null;
+        if (properties != null) {
+            value = properties.getProperty(key);
+        }
+        if (value == null) {
+            Properties mappingProperties = mapping.getProperties();
+            if (mappingProperties != null) {
+                value = mappingProperties.getProperty(key);
+            }
+        }
+        return value;
+    }
+
     private String getTypeHandler(Element element, String name) {
         String handler = getAttribute(element, name);
         /*
@@ -647,23 +678,34 @@ public class XmlMappingParser {
         return handler;
     }
     
+    private String doPropertySubstitution(String text) {
+        try {
+            return propertySubstitutionEnabled ?
+                StringUtil.doPropertySubstitution(text, this) : text;
+        }
+        catch (IllegalArgumentException ex) {
+            throw new BeanIOConfigurationException(ex.getMessage(), ex);
+        }
+    }
+    
     private String getOptionalAttribute(Element element, String name) {
         Attr att = element.getAttributeNode(name);
         if (att == null) {
             return null;
         }
         else {
-            return att.getTextContent();
+            return doPropertySubstitution(att.getTextContent());
         }
     }
     
     private String getAttribute(Element element, String name) {
         String value = element.getAttribute(name);
-        if ("".equals(value))
+        if ("".equals(value)) {
             value = null;
-        return value;
+        }
+        return doPropertySubstitution(value);
     }
-
+    
     private int getIntAttribute(Element element, String name, int defaultValue) {
         String text = getAttribute(element, name);
         if (text == null)

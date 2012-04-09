@@ -15,12 +15,12 @@
  */
 package org.beanio.parser.xml;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
 import java.io.*;
 
 import javax.xml.parsers.*;
 
-import org.beanio.internal.util.IOUtil;
 import org.beanio.parser.ParserTest;
 import org.w3c.dom.*;
 import org.xml.sax.*;

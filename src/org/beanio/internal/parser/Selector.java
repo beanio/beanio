@@ -15,6 +15,8 @@
  */
 package org.beanio.internal.parser;
 
+import java.util.Map;
+
 import org.beanio.internal.util.StatefulWriter;
 
 /**
@@ -24,7 +26,7 @@ import org.beanio.internal.util.StatefulWriter;
  * @author Kevin Seim
  * @since 2.0
  */
-public interface Selector extends Parser, StatefulWriter {
+public interface Selector extends Parser {
     
     /* map key used to store the state of the 'count' attribute */
     public static final String COUNT_KEY = "count";
@@ -59,32 +61,32 @@ public interface Selector extends Parser, StatefulWriter {
      * Checks for any unsatisfied components before the stream is closed.
      * @return the first unsatisfied node
      */
-    public Selector close();
+    public Selector close(ParsingContext context);
 
     /**
      * Resets the component count of this Selector's children.
      */
-    public void reset();
+    public void reset(ParsingContext context);
     
     /**
      * Returns the number of times this component was matched within the current
      * iteration of its parent component.
      * @return the match count
      */
-    public int getCount();
+    public int getCount(ParsingContext context);
     
     /**
      * Sets the number of times this component was matched within the current 
      * iteration of its parent component.
      * @param count the new match count
      */
-    public void setCount(int count);
+    public void setCount(ParsingContext context, int count);
     
     /**
      * Returns whether this component has reached its maximum occurrences.
      * @return true if maximum occurrences has been reached
      */
-    public boolean isMaxOccursReached();
+    public boolean isMaxOccursReached(ParsingContext context);
     
     /**
      * Returns the minimum number of occurrences of this component (within the context
@@ -118,4 +120,22 @@ public interface Selector extends Parser, StatefulWriter {
      * @return true if this component is a record group, false otherwise
      */
     public boolean isRecordGroup();
+    
+    /**
+     * Updates a Map with the current state of the Writer to allow for
+     * restoration at a later time.
+     * @param context the {@link ParsingContext}
+     * @param namespace a String to prefix all state keys with
+     * @param state the Map to update with the latest state
+     */
+    public void updateState(ParsingContext context, String namespace, Map<String,Object> state);
+    
+    /**
+     * Restores a Map of previously stored state information.
+     * @param context the {@link ParsingContext}
+     * @param namespace a String to prefix all state keys with
+     * @param state the Map containing the state to restore
+     * @throws IllegalStateException if the Map is missing any state information 
+     */
+    public void restoreState(ParsingContext context, String namespace, Map<String,Object> state) throws IllegalStateException;
 }

@@ -83,7 +83,7 @@ public class JsonWrapper extends DelegatingParser implements JsonNode {
         boolean contentChecked = false;
         
         if (lazy ) {
-            if (!hasContent()) {
+            if (!hasContent(context)) {
                 return false;
             }
             contentChecked = true;
@@ -92,7 +92,7 @@ public class JsonWrapper extends DelegatingParser implements JsonNode {
         JsonMarshallingContext ctx = (JsonMarshallingContext) context;
         
         // if nillable and there is no descendant with content, mark the element nil
-        if (isNillable() && !contentChecked && !hasContent()) {
+        if (isNillable() && !contentChecked && !hasContent(context)) {
             ctx.put(this, null);
         }
         else {

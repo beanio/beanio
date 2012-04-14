@@ -31,12 +31,6 @@ public abstract class DelegatingParser extends ParserComponent {
         super(1);
     }
     
-    /*
-    public String getName() {
-        return getParser().getName();
-    }
-    */
-    
     public boolean matches(UnmarshallingContext context) {
         return getParser().matches(context);
     }
@@ -45,22 +39,20 @@ public abstract class DelegatingParser extends ParserComponent {
         return getParser().unmarshal(context);
     }
     
-    
-
     public boolean marshal(MarshallingContext context) throws IOException {
         return getParser().marshal(context);
     }
 
-    public void clearValue() {
-        getParser().clearValue();
+    public void clearValue(ParsingContext context) {
+        getParser().clearValue(context);
     }
 
-    public void setValue(Object value) {
-        getParser().setValue(value);
+    public void setValue(ParsingContext context, Object value) {
+        getParser().setValue(context, value);
     }
 
-    public Object getValue() {
-        return getParser().getValue();
+    public Object getValue(ParsingContext context) {
+        return getParser().getValue(context);
     }
 
     public int getSize() {
@@ -75,8 +67,8 @@ public abstract class DelegatingParser extends ParserComponent {
         return getParser().isIdentifier();
     }
 
-    public boolean hasContent() {
-        return getParser().hasContent();
+    public boolean hasContent(ParsingContext context) {
+        return getParser().hasContent(context);
     }
     
     protected Parser getParser() {

@@ -16,7 +16,7 @@
 package org.beanio.internal.parser;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 
@@ -31,10 +31,10 @@ public class Record extends Segment implements Selector {
     private int maxOccurs = Integer.MAX_VALUE;
     // record order value
     private int order = 1;
-    // current record count
-    private int count;
     // the record format
     private RecordFormat format;
+    // current record count
+    private ParserLocal<Integer> count = new ParserLocal<Integer>(0);
 
     /**
      * Constructs a new <tt>Record</tt>.
@@ -108,8 +108,8 @@ public class Record extends Segment implements Selector {
             
             Object value = context.getBean();
             if (property.defines(value)) {
-                ++count;
-                property.setValue(value);
+                setCount(context, getCount(context) + 1);
+                property.setValue(context, value);
                 return this;
             }
         }
@@ -122,7 +122,7 @@ public class Record extends Segment implements Selector {
      */
     public Selector matchNext(UnmarshallingContext context) {
         if (matches(context)) {
-            count++;
+            setCount(context, getCount(context) + 1);
             return this;
         }
         return null;
@@ -146,17 +146,17 @@ public class Record extends Segment implements Selector {
 
     /*
      * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#close()
+     * @see org.beanio.internal.parser.Selector#close(org.beanio.internal.parser.ParsingContext)
      */
-    public Selector close() {
-        return getCount() < getMinOccurs() ? this : null;
+    public Selector close(ParsingContext context) {
+        return getCount(context) < getMinOccurs() ? this : null;
     }
 
     /*
      * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#reset()
+     * @see org.beanio.internal.parser.Selector#reset(org.beanio.internal.parser.ParsingContext)
      */
-    public void reset() { }
+    public void reset(ParsingContext context) { }
     
     /**
      * Updates a Map with the current state of the Marshaller.  Used for
@@ -165,8 +165,8 @@ public class Record extends Segment implements Selector {
      * @param state the Map to update with the latest state
      * @since 1.2
      */
-    public void updateState(String namespace, Map<String, Object> state) {
-        state.put(getKey(namespace, COUNT_KEY), count);
+    public void updateState(ParsingContext context, String namespace, Map<String, Object> state) {
+        state.put(getKey(namespace, COUNT_KEY), count.get(context));
     }
 
     /**
@@ -176,13 +176,13 @@ public class Record extends Segment implements Selector {
      * @param state the Map containing the state to restore
      * @since 1.2
      */
-    public void restoreState(String namespace, Map<String, Object> state) {
+    public void restoreState(ParsingContext context, String namespace, Map<String, Object> state) {
         String key = getKey(namespace, COUNT_KEY);
         Integer n = (Integer) state.get(key);
         if (n == null) {
             throw new IllegalStateException("Missing state information for key '" + key + "'");
         }
-        count = n;
+        count.set(context, n);
     }
     
     /**
@@ -221,11 +221,11 @@ public class Record extends Segment implements Selector {
     public void setOrder(int order) {
         this.order = order;
     }
-    public int getCount() {
-        return count;
+    public int getCount(ParsingContext context) {
+        return count.get(context);
     }
-    public void setCount(int count) {
-        this.count = count;
+    public void setCount(ParsingContext context, int count) {
+        this.count.set(context, count);
     }
     public RecordFormat getFormat() {
         return format;
@@ -233,13 +233,20 @@ public class Record extends Segment implements Selector {
     public void setFormat(RecordFormat format) {
         this.format = format;
     }
+    
+    @Override
+    public void registerLocals(Set<ParserLocal<?>> locals) {
+        if (locals.add(count)) {
+            super.registerLocals(locals);
+        }
+    }
 
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Selector#isMaxOccursReached()
      */
-    public boolean isMaxOccursReached() {
-        return count >= getMaxOccurs();
+    public boolean isMaxOccursReached(ParsingContext context) {
+        return getCount(context) >= getMaxOccurs();
     }
     
     @Override

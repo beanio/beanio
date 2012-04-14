@@ -15,6 +15,7 @@
  */
 package org.beanio.internal.parser;
 
+import java.util.Set;
 import java.util.regex.*;
 
 import org.beanio.*;
@@ -35,7 +36,7 @@ public class Field extends ParserComponent implements Property {
     private static final boolean marshalDefault = "true".equalsIgnoreCase(
         Settings.getInstance().getProperty(Settings.DEFAULT_MARSHALLING_ENABLED));
     
-    private Object value = Value.MISSING;
+    private ParserLocal<Object> value = new ParserLocal<Object>(Value.MISSING);
     
     private boolean bound;
     private boolean identifier;
@@ -70,9 +71,9 @@ public class Field extends ParserComponent implements Property {
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Parser#hasContent()
      */
-    public boolean hasContent() {
+    public boolean hasContent(ParsingContext context) {
         if (isBound()) {
-            return getValue() != Value.MISSING;
+            return getValue(context) != Value.MISSING;
         }
         else {
             // fields that aren't bound to a property of a bean object are
@@ -164,14 +165,18 @@ public class Field extends ParserComponent implements Property {
             text = literal;
         }
         else {
+            Object value = getValue(context);
+            
             // the default value may be used to override null property values
             // if enabled (since 1.2.2)
             if (marshalDefault && value == Value.MISSING) {
                 value = defaultValue;
+                setValue(context, defaultValue);
             }
             
             if (value == Value.MISSING) {
                 value = null;
+                setValue(context, null);
             }
             
             // allow the format to bypass type conversion
@@ -202,15 +207,15 @@ public class Field extends ParserComponent implements Property {
         String text = format.extract(context, true);
         if (text == null) {
             // minOccurs is validated at the segment level
-            value = Value.MISSING;
+            setValue(context, Value.MISSING);
             return false;
         }
         
         if (text == Value.INVALID) {
-            value = Value.INVALID;
+            this.value.set(context, Value.INVALID);
         }
         else {
-            value = parseValue(context, text);
+            this.value.set(context, parseValue(context, text));
         }
         return true;
     }
@@ -358,32 +363,32 @@ public class Field extends ParserComponent implements Property {
      * (non-Javadoc)
      * @see org.beanio.parser.Parser#clearValue()
      */
-    public void clearValue() {
-        value = Value.MISSING;
+    public void clearValue(ParsingContext context) {
+        this.value.set(context, Value.MISSING);
     }
     
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Property#createValue()
      */
-    public Object createValue() {
-        return getValue();
+    public Object createValue(ParsingContext context) {
+        return getValue(context);
     }
     
     /*
      * (non-Javadoc)
      * @see org.beanio.parser.Parser#getValue()
      */
-    public Object getValue() {
-        return value;
+    public Object getValue(ParsingContext context) {
+        return value.get(context);
     }
     
     /*
      * (non-Javadoc)
      * @see org.beanio.parser.Parser#setValue(java.lang.Object)
      */
-    public void setValue(Object value) {
-        this.value = value == null ? Value.MISSING : value;
+    public void setValue(ParsingContext context, Object value) {
+        this.value.set(context, value == null ? Value.MISSING : value);
     }
     
     @Override
@@ -422,6 +427,13 @@ public class Field extends ParserComponent implements Property {
         return regex;
     }
     
+    @Override
+    public void registerLocals(Set<ParserLocal<? extends Object>> locals) {
+        if (locals.add(value)) {
+            super.registerLocals(locals);
+        }
+    }
+
     public void setPropertyType(Class<?> type) {
         this.propertyType = type;
     }

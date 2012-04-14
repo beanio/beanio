@@ -138,7 +138,7 @@ public class BeanWriterImpl implements BeanWriter, StatefulWriter {
      * @see org.beanio.parser.StatefulBeanWriter#updateState(java.lang.String, java.util.Map)
      */
     public void updateState(String namespace, Map<String, Object> state) {
-        layout.updateState(namespace + ".m", state);
+        layout.updateState(context, namespace + ".m", state);
         
         RecordWriter writer = context.getRecordWriter();
         if (writer instanceof StatefulWriter) {
@@ -151,7 +151,7 @@ public class BeanWriterImpl implements BeanWriter, StatefulWriter {
      * @see org.beanio.parser.StatefulBeanWriter#restoreState(java.lang.String, java.util.Map)
      */
     public void restoreState(String namespace, Map<String, Object> state) throws IllegalStateException {
-        layout.restoreState(namespace + ".m", state);
+        layout.restoreState(context, namespace + ".m", state);
         
         RecordWriter writer = context.getRecordWriter();
         if (writer instanceof StatefulWriter) {

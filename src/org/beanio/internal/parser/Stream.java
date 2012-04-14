@@ -16,10 +16,9 @@
 package org.beanio.internal.parser;
 
 import java.io.*;
-import java.util.Locale;
+import java.util.*;
 
 import org.beanio.*;
-import org.beanio.internal.util.Replicator;
 import org.beanio.stream.*;
 
 /**
@@ -39,9 +38,10 @@ public class Stream {
     private int mode;
     private StreamFormat format;
     private Selector layout;
-    private Replicator replicator;
     private MessageFactory messageFactory;
-
+    
+    private Set<ParserLocal<?>> locals;
+    
     /**
      * Constructs a new <tt>Stream</tt>.
      * @param format the {@link StreamFormat}
@@ -51,6 +51,14 @@ public class Stream {
             throw new NullPointerException("null format");
         }
         this.format = format;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void init() {
+        locals = (Set<ParserLocal<?>>) (Set<?>) new HashSet<ParserLocal<Object>>();
+        
+        Component parser = ((Component)layout);
+        parser.registerLocals(locals);
     }
     
     /**
@@ -72,14 +80,13 @@ public class Stream {
             throw new NullPointerException("null reader");
         }
         
-        Selector root = replicator.replicate(layout);
-        
         UnmarshallingContext context = format.createUnmarshallingContext();
+        initContext(context);
         context.setMessageFactory(messageFactory);
         context.setLocale(locale);
         context.setRecordReader(format.createRecordReader(in));
         
-        BeanReaderImpl reader = new BeanReaderImpl(context, root);
+        BeanReaderImpl reader = new BeanReaderImpl(context, layout);
         return reader;
     }
     
@@ -96,11 +103,11 @@ public class Stream {
         }
         
         UnmarshallingContext context = format.createUnmarshallingContext();
+        initContext(context);
         context.setMessageFactory(messageFactory);
         context.setLocale(locale);
         
-        return new UnmarshallerImpl(context, 
-            replicator.replicate(layout), recordUnmarshaller);
+        return new UnmarshallerImpl(context, layout, recordUnmarshaller);
     }
 
     /**
@@ -113,12 +120,11 @@ public class Stream {
             throw new NullPointerException("null writer");
         }
         
-        Selector root = replicator.replicate(layout);
-        
         MarshallingContext context = format.createMarshallingContext(true);
+        initContext(context);
         context.setRecordWriter(format.createRecordWriter(out));
-        
-        BeanWriterImpl writer = new BeanWriterImpl(context, root);
+
+        BeanWriterImpl writer = new BeanWriterImpl(context, layout);
         return writer;
     }
     
@@ -132,8 +138,18 @@ public class Stream {
             throw new IllegalArgumentException("Marshaller not supported for stream format");
         }
         
-        return new MarshallerImpl(format.createMarshallingContext(false), 
-            replicator.replicate(layout), recordMarshaller);
+        MarshallingContext context = format.createMarshallingContext(false);
+        initContext(context);
+        
+        return new MarshallerImpl(context, layout, recordMarshaller);
+    }
+    
+    private void initContext(ParsingContext context) {
+        context.createHeap(locals.size());
+        int i=0;
+        for (ParserLocal<?> local : locals) {
+            local.init(i++, context);
+        }
     }
     
     /**
@@ -162,14 +178,6 @@ public class Stream {
 
     public void setLayout(Selector layout) {
         this.layout = layout;
-    }
-    
-    public Replicator getReplicator() {
-        return replicator;
-    }
-
-    public void setReplicator(Replicator replicator) {
-        this.replicator = replicator;
     }
 
     public StreamFormat getFormat() {

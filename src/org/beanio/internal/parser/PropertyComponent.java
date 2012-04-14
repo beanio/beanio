@@ -89,7 +89,7 @@ public abstract class PropertyComponent extends Component implements Property {
     
     /**
      * Returns whether this property should always be instantiated when
-     * {@link #createValue()} is invoked.
+     * {@link #createValue(ParsingContext)} is invoked.
      * @return true to always instantiate this property, false otherwise
      */
     public boolean isRequired() {
@@ -98,7 +98,7 @@ public abstract class PropertyComponent extends Component implements Property {
 
     /**
      * Sets whether this property should always be instantiated when 
-     * {@link #createValue()} is invoked.
+     * {@link #createValue(ParsingContext)} is invoked.
      * @param required true to always instantiate this property, false otherwise
      */
     public void setRequired(boolean required) {

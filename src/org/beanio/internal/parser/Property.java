@@ -53,16 +53,18 @@ public interface Property {
     public String getName();
     
     /**
-     * Clears the property value.  A subsequent call to {@link #getValue()} should
+     * Clears the property value.  A subsequent call to {@link #getValue(ParsingContext)} should
      * return null, or {@link Value#MISSING} for lazy property values.
+     * @param context the {@link ParsingContext}
      */
-    public void clearValue();
+    public void clearValue(ParsingContext context);
     
     /**
      * Creates the property value and returns it.
+     * @param context the {@link ParsingContext}
      * @return the property value
      */
-    public Object createValue();
+    public Object createValue(ParsingContext context);
     
     /**
      * Returns the value of this property.
@@ -74,17 +76,19 @@ public interface Property {
      * segment bound to a bean object, or null if required.  Null field properties should 
      * always return {@link Value#MISSING}.
      * 
+     * @param context  the {@link ParsingContext}
      * @return the property value,
      *   or {@link Value#MISSING} if not present in the stream,
      *   or {@link Value#INVALID} if the field was invalid
      */
-    public Object getValue();
+    public Object getValue(ParsingContext context);
     
     /**
      * Sets the property value (before marshalling).
+     * @param context the {@link ParsingContext}
      * @param value the property value
      */
-    public void setValue(Object value);
+    public void setValue(ParsingContext context, Object value);
     
     public boolean defines(Object value);
     

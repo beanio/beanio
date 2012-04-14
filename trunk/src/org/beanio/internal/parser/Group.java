@@ -16,7 +16,7 @@
 package org.beanio.internal.parser;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.*;
 
 import org.beanio.*;
 
@@ -39,9 +39,9 @@ public class Group extends ParserComponent implements Selector {
     private boolean result = false;
     private Property property = null;
     // the current group count
-    private int count;
+    private ParserLocal<Integer> count = new ParserLocal<Integer>(0);
     // the last matched child
-    private Selector lastMatched;
+    private ParserLocal<Selector> lastMatched = new ParserLocal<Selector>();
     
     /**
      * Constructs a new <tt>Group</tt>.
@@ -75,7 +75,7 @@ public class Group extends ParserComponent implements Selector {
         // unmarshal a bean object that spans multiple records
         
         try {
-            Selector child = (Selector) lastMatched;
+            Selector child = (Selector) lastMatched.get(context);
             child.skip(context);
             
             // read the next record
@@ -83,7 +83,7 @@ public class Group extends ParserComponent implements Selector {
                 context.nextRecord();
                 
                 if (context.isEOF()) {
-                    Selector unsatisfied = close();
+                    Selector unsatisfied = close(context);
                     if (unsatisfied != null) {
                         throw context.newUnsatisfiedRecordException(unsatisfied.getName());
                     }
@@ -93,7 +93,7 @@ public class Group extends ParserComponent implements Selector {
                 // find the child unmarshaller for the record...
                 child = (Selector) matchCurrent(context);
                 if (child == null) {
-                    reset();
+                    reset(context);
                     break;
                 }
                 
@@ -114,7 +114,7 @@ public class Group extends ParserComponent implements Selector {
         // unmarshal a bean object that spans multiple records
         
         try {
-            Selector child = (Selector) lastMatched;
+            Selector child = (Selector) lastMatched.get(context);
             child.unmarshal(context);
             
             // read the next record
@@ -122,7 +122,7 @@ public class Group extends ParserComponent implements Selector {
                 context.nextRecord();
                 
                 if (context.isEOF()) {
-                    Selector unsatisfied = close();
+                    Selector unsatisfied = close(context);
                     if (unsatisfied != null) {
                         throw context.newUnsatisfiedRecordException(unsatisfied.getName());
                     }
@@ -132,7 +132,7 @@ public class Group extends ParserComponent implements Selector {
                 // find the child unmarshaller for the record...
                 child = (Selector) matchCurrent(context);
                 if (child == null) {
-                    reset();
+                    reset(context);
                     break;
                 }
                 
@@ -140,7 +140,7 @@ public class Group extends ParserComponent implements Selector {
             }
             
             if (property != null) {
-                property.createValue();
+                property.createValue(context);
             }
             
             return true;
@@ -196,7 +196,7 @@ public class Group extends ParserComponent implements Selector {
                 
                 Object value = context.getBean();
                 if (property.defines(value)) {
-                    property.setValue(value);
+                    property.setValue(context, value);
                     return this;
                 }
                 
@@ -249,26 +249,27 @@ public class Group extends ParserComponent implements Selector {
      */
     private Selector matchCurrent(ParsingContext context) throws UnsatisfiedNodeException {
         Selector match = null;
+        Selector lastMatch = this.lastMatched.get(context);
         Selector unsatisfied = null;
         
         // check the last matching node - do not check records where the max occurs
         // has already been reached
-        if (lastMatched != null && !(lastMatched.isMaxOccursReached())) {
-            match = matchNext(context, lastMatched);
+        if (lastMatch != null && !(lastMatch.isMaxOccursReached(context))) {
+            match = matchNext(context, lastMatch);
             if (match != null) {
                 return match;
             }
         }
         
         // set the current position to the order of the last matched node (or default to 1)
-        int position = (lastMatched == null) ? 1 : lastMatched.getOrder();
+        int position = (lastMatch == null) ? 1 : lastMatch.getOrder();
         
         // iterate over each child
         for (Component child : getChildren()) {
             Selector node = (Selector) child;
             
             // skip the last node which was already checked
-            if (node == lastMatched) {
+            if (node == lastMatch) {
                 continue;
             }
             // skip nodes where their order is less than the current position
@@ -276,7 +277,7 @@ public class Group extends ParserComponent implements Selector {
                 continue;
             }
             // skip nodes where max occurs has already been met
-            if (node.isMaxOccursReached()) {
+            if (node.isMaxOccursReached(context)) {
                 continue;
             }
             // if no node matched at the current position, increment the position and test the next node
@@ -284,7 +285,7 @@ public class Group extends ParserComponent implements Selector {
                 // before increasing the position, we must validate that all
                 // min occurs have been met at the previous position
                 if (unsatisfied != null) {
-                    if (lastMatched != null) {
+                    if (lastMatch != null) {
                         throw new UnsatisfiedNodeException(unsatisfied);
                     }
                     return null;
@@ -295,7 +296,7 @@ public class Group extends ParserComponent implements Selector {
 
             // if the min occurs has not been met for the next node, set the unsatisfied flag so we
             // can throw an exception before incrementing the position again
-            if (node.getCount() < node.getMinOccurs()) {
+            if (node.getCount(context) < node.getMinOccurs()) {
                 // when marshalling, allow records to be skipped that aren't bound to a property
                 if (context.getMode() != ParsingContext.MARSHALLING || node.getProperty() != null) {
                     unsatisfied = node;    
@@ -306,22 +307,22 @@ public class Group extends ParserComponent implements Selector {
             match = matchNext(context, node);
             if (match != null) {
                 // the group count is incremented only when first invoked
-                if (lastMatched == null) {
-                    ++count;
+                if (lastMatch == null) {
+                	count.set(context, count.get(context) + 1);
                 }
                 // reset the last group when a new record or group is found
                 // at the same level (this has no effect for a record)
                 else {
-                    lastMatched.reset();
+                    lastMatch.reset(context);
                 }
-                lastMatched = node;
+                lastMatched.set(context, node);
                 return match;
             }
         }
         
         // if last was not null, we continued checking for matches at the current position, now
         // we'll check for matches at the beginning (assuming there is no unsatisfied node)
-        if (lastMatched != null) {
+        if (lastMatch != null) {
             if (unsatisfied != null) {
                 throw new UnsatisfiedNodeException(unsatisfied);
             }
@@ -340,10 +341,10 @@ public class Group extends ParserComponent implements Selector {
         Selector unsatisfied = null;
         int position = 1;
         
-        if (lastMatched != null) {
+        if (lastMatched.get(context) != null) {
             
             // no need to check if the max occurs was already reached
-            if (getCount() >= getMaxOccurs()) {
+            if (getCount(context) >= getMaxOccurs()) {
                 return null;
             }
             
@@ -370,10 +371,10 @@ public class Group extends ParserComponent implements Selector {
 
                 match = matchNext(context, node);
                 if (match != null) {
-                    reset();
-                    ++count;
-                    node.setCount(1);
-                    lastMatched = node;
+                    reset(context);
+                    count.set(context, count.get(context) + 1);
+                    node.setCount(context, 1);
+                    lastMatched.set(context, node);
                     
                     return match;
                 }
@@ -404,12 +405,12 @@ public class Group extends ParserComponent implements Selector {
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Selector#reset()
      */
-    public void reset() {
-        lastMatched = null;
+    public void reset(ParsingContext context) {
+        lastMatched.set(context, null);
         for (Component c : getChildren()) {
             Selector node = (Selector) c;
-            node.setCount(0);
-            node.reset();
+            node.setCount(context, 0);
+            node.reset(context);
         }
     }
     
@@ -417,11 +418,12 @@ public class Group extends ParserComponent implements Selector {
      * (non-Javadoc)
      * @see org.beanio.parser2.RecordMatcher#close()
      */
-    public Selector close() {
-        if (lastMatched == null && getMinOccurs() == 0)
+    public Selector close(ParsingContext context) {
+        Selector lastMatch = lastMatched.get(context);
+        if (lastMatch == null && getMinOccurs() == 0)
             return null;
 
-        int pos = lastMatched == null ? 1 : lastMatched.getOrder();
+        int pos = lastMatch == null ? 1 : lastMatch.getOrder();
 
         // find any unsatisfied group
         for (Component c : getChildren()) {
@@ -431,9 +433,9 @@ public class Group extends ParserComponent implements Selector {
                 continue;
             }
 
-            node.close();
+            node.close(context);
 
-            if (node.getCount() < node.getMinOccurs()) {
+            if (node.getCount(context) < node.getMinOccurs()) {
                 return node;
             }
         }
@@ -452,8 +454,8 @@ public class Group extends ParserComponent implements Selector {
      * Tests if the max occurs has been reached for this node.
      * @return true if max occurs has been reached
      */
-    public boolean isMaxOccursReached() {
-        return lastMatched == null && count >= getMaxOccurs();
+    public boolean isMaxOccursReached(ParsingContext context) {
+        return lastMatched.get(context) == null && getCount(context) >= getMaxOccurs();
     }
     
     /*
@@ -471,18 +473,19 @@ public class Group extends ParserComponent implements Selector {
      * @param state the Map to update with the latest state
      * @since 1.2
      */
-    public void updateState(String namespace, Map<String, Object> state) {
-        state.put(getKey(namespace, COUNT_KEY), count);
+    public void updateState(ParsingContext context, String namespace, Map<String, Object> state) {
+        state.put(getKey(namespace, COUNT_KEY), count.get(context));
         
         String lastMatchedChildName = "";
-        if (lastMatched != null) {
-            lastMatchedChildName = lastMatched.getName();
+        Selector lastMatch = lastMatched.get(context);
+        if (lastMatch != null) {
+            lastMatchedChildName = lastMatch.getName();
         }
         state.put(getKey(namespace, LAST_MATCHED_KEY), lastMatchedChildName);
-        
+
         // allow children to update their state
         for (Component node : this) {
-            ((Selector)node).updateState(namespace, state);
+            ((Selector)node).updateState(context, namespace, state);
         }
     }
 
@@ -493,13 +496,13 @@ public class Group extends ParserComponent implements Selector {
      * @param state the Map containing the state to restore
      * @since 1.2
      */
-    public void restoreState(String namespace, Map<String, Object> state) {
+    public void restoreState(ParsingContext context, String namespace, Map<String, Object> state) {
         String key = getKey(namespace, COUNT_KEY);
         Integer n = (Integer) state.get(key);
         if (n == null) {
             throw new IllegalStateException("Missing state information for key '" + key + "'");
         }
-        count = n;
+        this.count.set(context, n);
         
         // determine the last matched child
         key = getKey(namespace, LAST_MATCHED_KEY);
@@ -507,8 +510,9 @@ public class Group extends ParserComponent implements Selector {
         if (lastMatchedChildName == null) {
             throw new IllegalStateException("Missing state information for key '" + key + "'");
         }
+        
         if (lastMatchedChildName.length() == 0) {
-            lastMatched = null;
+            lastMatched.set(context, null);
             lastMatchedChildName = null;
         }
         
@@ -516,9 +520,9 @@ public class Group extends ParserComponent implements Selector {
         for (Component child : getChildren()) {
             if (lastMatchedChildName != null && 
                 lastMatchedChildName.equals(child.getName())) {
-                lastMatched = (Selector) child;
+                lastMatched.set(context, (Selector)child);
             }
-            ((Selector)child).restoreState(namespace, state);
+            ((Selector)child).restoreState(context, namespace, state);
         }
     }
     
@@ -577,25 +581,25 @@ public class Group extends ParserComponent implements Selector {
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Selector#getCount()
      */
-    public int getCount() {
-        return count;
+    public int getCount(ParsingContext context) {
+        return count.get(context);
     }
     
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Selector#setCount(int)
      */
-    public void setCount(int count) {
-        this.count = count;
+    public void setCount(ParsingContext context, int count) {
+        this.count.set(context, count);
     }
     
     /*
      * (non-Javadoc)
      * @see org.beanio.parser2.Parser#clearValue()
      */
-    public void clearValue() {
+    public void clearValue(ParsingContext context) {
         if (property != null) {
-            property.clearValue();
+            property.clearValue(context);
         }
     }
     
@@ -603,16 +607,16 @@ public class Group extends ParserComponent implements Selector {
      * (non-Javadoc)
      * @see org.beanio.parser2.Parser#setValue(java.lang.Object)
      */
-    public void setValue(Object value) {
-        property.setValue(value);
+    public void setValue(ParsingContext context, Object value) {
+        property.setValue(context, value);
     }
     
     /*
      * (non-Javadoc)
      * @see org.beanio.parser2.Parser#getValue()
      */
-    public Object getValue() {
-        return property.getValue();
+    public Object getValue(ParsingContext context) {
+        return property.getValue(context);
     }
     
     
@@ -643,19 +647,32 @@ public class Group extends ParserComponent implements Selector {
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Parser#hasContent()
      */
-    public boolean hasContent() {
+    public boolean hasContent(ParsingContext context) {
         if (property != null) {
-            return property.getValue() != Value.MISSING;
+            return property.getValue(context) != Value.MISSING;
         }
         
         for (Component c : getChildren()) {
-            if (((Parser)c).hasContent()) {
+            if (((Parser)c).hasContent(context)) {
                 return true;
             }
         }
         
         return false;
     }
+    
+    @Override
+    public void registerLocals(Set<ParserLocal<?>> locals) {
+        if (property != null) {
+            ((Component)property).registerLocals(locals);
+        }
+        
+        if (locals.add(lastMatched)) {
+            locals.add(count);
+            super.registerLocals(locals);
+        }
+    }
+    
     
     @Override
     protected boolean isSupportedChild(Component child) {

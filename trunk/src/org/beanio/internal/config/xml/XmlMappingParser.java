@@ -27,7 +27,7 @@ import org.w3c.dom.*;
 /**
  * Parses a mapping file into {@link BeanIOConfig} objects.  A <tt>BeanIOConfig</tt>
  * is produced for each mapping file imported by the mapping file being parsed,
- * and the entire collection is returned from {@link #loadConfiguration(InputStream)}.
+ * and the entire collection is returned from {@link #loadConfiguration(InputStream, Properties)}
  * 
  * <p>This class is not thread safe and a new instance should be created for parsing
  * each input stream.

@@ -29,7 +29,14 @@ import org.beanio.*;
  */
 public class CollectionBean extends PropertyComponent implements Property {
 
-    private Object bean;
+    //private Object bean;
+    
+    private ParserLocal<Object> bean = new ParserLocal<Object>() {
+        @Override
+        protected Object createDefaultValue() {
+            return isRequired() ? null : Value.MISSING;
+        }
+    };
     
     /**
      * Constructs a new <tt>CollectionBean</tt>.
@@ -48,11 +55,11 @@ public class CollectionBean extends PropertyComponent implements Property {
      * (non-Javadoc)
      * @see org.beanio.internal.parser.PropertyComponent#clearValue()
      */
-    public void clearValue() {
+    public void clearValue(ParsingContext context) {
         for (Component child : getChildren()) {
-            ((Property) child).clearValue();
+            ((Property) child).clearValue(context);
         }
-        bean = isRequired() ? null : Value.MISSING;
+        bean.set(context, isRequired() ? null : Value.MISSING);
     }
 
     /*
@@ -60,21 +67,22 @@ public class CollectionBean extends PropertyComponent implements Property {
      * @see org.beanio.internal.parser.PropertyComponent#createValue()
      */
     @SuppressWarnings("unchecked")
-    public Object createValue() {
-        bean = null;
+    public Object createValue(ParsingContext context) {
+        Object b = null;
         
         int backfill = 0;
         
         for (Component child : getChildren()) {
             Property property = (Property) child;
             
-            Object value = property.createValue();
+            Object value = property.createValue(context);
             if (value == Value.INVALID) {
+                bean.set(context, b);
                 return Value.INVALID;
             }
 
             if (value == Value.MISSING) {
-                if (bean == null) {
+                if (b == null) {
                     ++backfill;
                     continue;
                 }
@@ -83,41 +91,42 @@ public class CollectionBean extends PropertyComponent implements Property {
                 }
             }
             
-            if (bean == null) {
-                bean = newInstance();
+            if (b == null) {
+                b = newInstance();
                 for (int i=0; i<backfill; i++) {
-                    ((Collection<Object>)bean).add(null);
+                    ((Collection<Object>)b).add(null);
                 }
             }
-            ((Collection<Object>)bean).add(value);
+            ((Collection<Object>)b).add(value);
         }
 
-        if (bean == null) {
-            bean = isRequired() ? newInstance() : Value.MISSING;
+        if (b == null) {
+            b = isRequired() ? newInstance() : Value.MISSING;
         }
         
-        return bean;
+        bean.set(context, b);
+        return b;
     }
 
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.PropertyComponent#getValue()
      */
-    public Object getValue() {
-        return bean;
+    public Object getValue(ParsingContext context) {
+        return bean.get(context);
     }
 
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.PropertyComponent#setValue(java.lang.Object)
      */
-    public void setValue(Object value) {
+    public void setValue(ParsingContext context, Object value) {
         if (value == null) {
-            clearValue();
+            clearValue(null);
             return;
         }
         
-        this.bean = value;
+        this.bean.set(context, value);
         
         Iterator<?> iter = ((Collection<?>)value).iterator();
         for (Component child : getChildren()) {
@@ -126,7 +135,7 @@ public class CollectionBean extends PropertyComponent implements Property {
                 childValue = iter.next();
             }
 
-            ((Property) child).setValue(childValue);
+            ((Property) child).setValue(context, childValue);
         }
     }
 
@@ -179,4 +188,13 @@ public class CollectionBean extends PropertyComponent implements Property {
             throw new BeanReaderException("Failed to instantiate class '" + getType().getName() + "'", e);
         }
     }
+
+    @Override
+    public void registerLocals(Set<ParserLocal<? extends Object>> locals) {
+        if (locals.add(bean)) {
+            super.registerLocals(locals);
+        }
+    }
+    
+    
 }

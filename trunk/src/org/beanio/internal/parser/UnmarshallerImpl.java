@@ -200,11 +200,11 @@ public class UnmarshallerImpl implements Unmarshaller {
             context.validate();
             
             // return the unmarshalled bean object
-            return parser.getValue();
+            return parser.getValue(context);
         }
         finally {
             if (parser != null) {
-                parser.clearValue();
+                parser.clearValue(context);
             }
         }
     }

@@ -16,7 +16,7 @@
 package org.beanio.internal.parser;
 
 import java.lang.reflect.Constructor;
-import java.util.Map;
+import java.util.*;
 
 import org.beanio.*;
 
@@ -32,10 +32,15 @@ import org.beanio.*;
 public class Bean extends PropertyComponent implements Property {
 
     // the bean object
-    private Object bean;
+    private ParserLocal<Object> bean = new ParserLocal<Object>() {
+        public Object createDefaultValue() {
+            return isRequired() ? null : Value.MISSING;
+        }
+    };
     // the constructor for creating this bean object (if null, the no-arg constructor is used)
     private Constructor<?> constructor;
     // used to temporarily hold constructor argument values when a constructor is specified
+    // TODO remove this instance variable
     private Object[] constructorArgs;
     
     /**
@@ -47,11 +52,11 @@ public class Bean extends PropertyComponent implements Property {
      * (non-Javadoc)
      * @see org.beanio.parser.Property#clearValue()
      */
-    public void clearValue() {
+    public void clearValue(ParsingContext context) {
         for (Component child : getChildren()) {
-            ((Property) child).clearValue();
+            ((Property) child).clearValue(context);
         }
-        bean = isRequired() ? null : Value.MISSING;
+        bean.set(context, isRequired() ? null : Value.MISSING);
     }
     
     /*
@@ -93,8 +98,8 @@ public class Bean extends PropertyComponent implements Property {
      * (non-Javadoc)
      * @see org.beanio.parser.Property#createValue()
      */
-    public Object createValue() {
-        bean = null;
+    public Object createValue(ParsingContext context) {
+        Object b = null;
         
         // populate constructor arguments first
         if (constructor != null) {
@@ -112,7 +117,7 @@ public class Bean extends PropertyComponent implements Property {
                     continue;
                 }
                 
-                Object value = property.createValue();
+                Object value = property.createValue(context);
                 if (value == Value.INVALID) {
                     return Value.INVALID;
                 }
@@ -127,7 +132,7 @@ public class Bean extends PropertyComponent implements Property {
             }
             
             if (create) {
-                bean = newInstance();
+                b = newInstance();
             }
         }
         
@@ -138,18 +143,19 @@ public class Bean extends PropertyComponent implements Property {
                 continue;
             }
             
-            Object value = property.createValue();
+            Object value = property.createValue(context);
             if (value == Value.INVALID) {
+                bean.set(context, b);
                 return Value.INVALID;
             }
             // explicitly null values must still be set on the bean...
             else if (value != Value.MISSING) {
-                if (bean == null) {
-                    bean = newInstance();
+                if (b == null) {
+                    b = newInstance();
                 }
 
                 try {
-                    property.getAccessor().setValue(bean, value);
+                    property.getAccessor().setValue(b, value);
                 }
                 catch (Exception ex) {
                     throw new BeanIOException("Failed to set property '" + property.getName() + 
@@ -158,45 +164,47 @@ public class Bean extends PropertyComponent implements Property {
             }
         }
 
-        if (bean == null) {
-            bean = isRequired() ? newInstance() : Value.MISSING;
+        if (b == null) {
+            b = isRequired() ? newInstance() : Value.MISSING;
         }
         
-        return bean;
+        bean.set(context, b);
+        return b;
     }
     
     /*
      * (non-Javadoc)
      * @see org.beanio.parser2.Property#getValue()
      */
-    public Object getValue() {
-        return bean;
+    public Object getValue(ParsingContext context) {
+        return bean.get(context);
     }
 
     /*
      * Sets the bean object and populates all of its child properties.
      * 
      */
-    public void setValue(Object value) {
+    public void setValue(ParsingContext context, Object value) {
         if (value == null) {
-            clearValue();
+            clearValue(context);
             return;
         }
         
-        this.bean = value;
-        
+        Object b = value;
         Object defaultValue = null; //bean == null ? Value.MISSING : null;
 
         for (Component child : getChildren()) {
             Property property = (Property) child;
             
             Object propertyValue = defaultValue;
-            if (bean != null) {
-                propertyValue = property.getAccessor().getValue(bean);
+            if (b != null) {
+                propertyValue = property.getAccessor().getValue(b);
             }
 
-            property.setValue(propertyValue);
+            property.setValue(context, propertyValue);
         }
+        
+        bean.set(context, b);
     }
     
     /**
@@ -231,7 +239,6 @@ public class Bean extends PropertyComponent implements Property {
     @Override
     public void setRequired(boolean required) {
         super.setRequired(required);
-        this.bean = required ? null : Value.MISSING;
     }
 
     /*
@@ -266,6 +273,13 @@ public class Bean extends PropertyComponent implements Property {
     public void setConstructor(Constructor<?> constructor) {
         this.constructorArgs = constructor == null ? null : new Object[constructor.getParameterTypes().length];
         this.constructor = constructor;
+    }
+    
+    @Override
+    public void registerLocals(Set<ParserLocal<?>> locals) {
+        if (locals.add(bean)) {
+            super.registerLocals(locals);
+        }
     }
     
     @Override

@@ -16,7 +16,7 @@
 package org.beanio.internal.parser;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.*;
 
 import org.beanio.BeanIOException;
 
@@ -40,9 +40,9 @@ public class CollectionParser extends DelegatingParser implements Property, Iter
     // the property accessor, may be null if not bound
     private PropertyAccessor accessor;
     // the property value
-    private Object value = null;    
+    private ParserLocal<Object> value = new ParserLocal<Object>();    
     // the current iteration index
-    private int index = 0;
+    private ParserLocal<Integer> index = new ParserLocal<Integer>();
     
     /**
      * Constructs a new <tt>CollectionParser</tt>.
@@ -53,8 +53,8 @@ public class CollectionParser extends DelegatingParser implements Property, Iter
      * (non-Javadoc)
      * @see org.beanio.parser2.DelegatingParser#clear()
      */
-    public void clearValue() {
-        value = null;
+    public void clearValue(ParsingContext context) {
+        this.value.set(context, null);
     }
        
     /*
@@ -91,7 +91,7 @@ public class CollectionParser extends DelegatingParser implements Property, Iter
      * @see org.beanio.parser2.Marshaller#marshal(org.beanio.parser2.MarshallingContext)
      */
     public boolean marshal(MarshallingContext context) throws IOException {
-        Collection<Object> collection = getCollection();
+        Collection<Object> collection = getCollection(context);
         if (collection == null && minOccurs == 0) {
             return false;
         }
@@ -100,25 +100,30 @@ public class CollectionParser extends DelegatingParser implements Property, Iter
 
         context.pushIteration(this);
         try {
-            index = 0;
+            int i = 0;
+            setIterationIndex(context, i);
+            
             if (collection != null) {
                 for (Object value : collection) {
-                    if (index < maxOccurs) {
-                        delegate.setValue(value);
+                    if (i < maxOccurs) {
+                        delegate.setValue(context, value);
                         delegate.marshal(context);
-                        ++index;
+                        ++i;
+                        setIterationIndex(context, i);
                     }
                     else {
+                        
                         return true;
                     }
                 }
             }
             
-            if (index < minOccurs) {
-                delegate.setValue(null);
-                while (index < minOccurs) {
+            if (i < minOccurs) {
+                delegate.setValue(context, null);
+                while (i < minOccurs) {
                     delegate.marshal(context);
-                    ++index;
+                    ++i;
+                    setIterationIndex(context, i);
                 }
             }
             
@@ -144,17 +149,18 @@ public class CollectionParser extends DelegatingParser implements Property, Iter
             context.pushIteration(this);
             
             Object fieldValue = null;
-            for (index=0; index < maxOccurs; index++) {
+            for (int i=0; i < maxOccurs; i++) {
+                setIterationIndex(context, i);
                 
                 // unmarshal the field
                 boolean found = delegate.unmarshal(context);
                 if (!found) {
-                    delegate.clearValue();
+                    delegate.clearValue(context);
                     break;
                 }
                 
                 // collect the field value and add it to our buffered list
-                fieldValue = delegate.getValue();
+                fieldValue = delegate.getValue(context);
                 if (fieldValue == Value.INVALID) {
                     invalid = true;
                 }
@@ -164,13 +170,15 @@ public class CollectionParser extends DelegatingParser implements Property, Iter
                     }
                 }
                 
-                delegate.clearValue();
+                delegate.clearValue(context);
                 ++count;
             }
         }
         finally {
             context.popIteration();
         }
+        
+        Object value;
         
         // validate minimum occurrences have been met
         if (count < getMinOccurs()) {
@@ -183,6 +191,8 @@ public class CollectionParser extends DelegatingParser implements Property, Iter
         else {
             value = collection;
         }
+        
+        this.value.set(context, value);
         
         return count > 0;
     }
@@ -211,8 +221,8 @@ public class CollectionParser extends DelegatingParser implements Property, Iter
      * Returns whether this iteration contained invalid values when last unmarshalled.
      * @return true if this iteration contained invalid values
      */
-    protected boolean isInvalid() {
-        return value == Value.INVALID;
+    protected boolean isInvalid(ParsingContext context) {
+        return this.value.get(context) == Value.INVALID;
     }
     
     /**
@@ -220,11 +230,14 @@ public class CollectionParser extends DelegatingParser implements Property, Iter
      * @return the {@link Collection}
      */
     @SuppressWarnings("unchecked")
-    protected Collection<Object> getCollection() {
-        if (isInvalid()) {
+    protected Collection<Object> getCollection(ParsingContext context) {
+        Object value = this.value.get(context);
+        if (value == Value.INVALID) {
             return null;
         }
-        return (Collection<Object>) value;
+        else {
+            return (Collection<Object>) value;
+        }
     }
     
     /**
@@ -246,18 +259,21 @@ public class CollectionParser extends DelegatingParser implements Property, Iter
      * (non-Javadoc)
      * @see org.beanio.parser2.Property#create()
      */
-    public Object createValue() {
+    public Object createValue(ParsingContext context) {
+        Object value = this.value.get(context);
         if (value == null) {
             value = createCollection();
+            this.value.set(context, value);
         }
-        return getValue();
+        return getValue(context);
     }
     
     /*
      * (non-Javadoc)
      * @see org.beanio.parser2.DelegatingParser#getValue()
      */
-    public Object getValue() {
+    public Object getValue(ParsingContext context) {
+        Object value = this.value.get(context);
         return value == null ? Value.MISSING : value;
     }
     
@@ -265,14 +281,14 @@ public class CollectionParser extends DelegatingParser implements Property, Iter
      * (non-Javadoc)
      * @see org.beanio.parser2.DelegatingParser#setValue(java.lang.Object)
      */
-    public void setValue(Object value) {
+    public void setValue(ParsingContext context, Object value) {
         // convert empty collections to null so that parent parsers
         // will consider this property missing during marshalling
         if (value != null && ((Collection<?>)value).isEmpty()) {
             value = null;
         }
         
-        this.value = value;
+        this.value.set(context, value);
     }
     
     protected Collection<Object> createCollection() {
@@ -347,16 +363,28 @@ public class CollectionParser extends DelegatingParser implements Property, Iter
      * (non-Javadoc)
      * @see org.beanio.parser2.Iteration#getIterationIndex()
      */
-    public int getIterationIndex() {
-        return index;
+    public int getIterationIndex(ParsingContext context) {
+        return index.get(context);
+    }
+    
+    private void setIterationIndex(ParsingContext context, int index) {
+        this.index.set(context, index);
     }
 
     @Override
-    public boolean hasContent() {
-        Collection<Object> collection = getCollection();
+    public void registerLocals(Set<ParserLocal<? extends Object>> locals) {
+        if (locals.add(value)) {
+            locals.add(index);
+            super.registerLocals(locals);
+        }
+    }
+    
+    @Override
+    public boolean hasContent(ParsingContext context) {
+        Collection<Object> collection = getCollection(context);
         return collection != null && collection.size() > 0; 
     }
-
+    
     @Override
     protected void toParamString(StringBuilder s) {
         super.toParamString(s);

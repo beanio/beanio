@@ -44,8 +44,8 @@ public class RecordArray extends RecordCollection {
     }
 
     @Override
-    public Object getValue() {
-        Collection<Object> collection = super.getCollection();
+    public Object getValue(ParsingContext context) {
+        Collection<Object> collection = super.getCollection(context);
         if (collection == null) {
             return null;
         }
@@ -64,7 +64,7 @@ public class RecordArray extends RecordCollection {
     }
 
     @Override
-    public void setValue(Object value) {
+    public void setValue(ParsingContext context, Object value) {
         Collection<Object> collection = null;
         if (value != null) {
             int length = Array.getLength(value);
@@ -75,7 +75,7 @@ public class RecordArray extends RecordCollection {
                 }
             }
         }
-        super.setValue(collection);
+        super.setValue(context, collection);
     }
     
     @Override

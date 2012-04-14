@@ -28,7 +28,7 @@ public interface Iteration {
      * Returns the index of the current iteration relative to its parent.
      * @return the index of the current iteration
      */
-    public int getIterationIndex();
+    public int getIterationIndex(ParsingContext context);
     
     /**
      * Returns the size of the components that make up a single iteration.

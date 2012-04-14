@@ -16,7 +16,7 @@
 package org.beanio.internal.parser.format.xml;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.*;
 
 import org.beanio.internal.parser.*;
 import org.beanio.internal.util.DomUtil;
@@ -34,7 +34,7 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
     private static final String WRITTEN_KEY = "written";
     
     /* state attributes */
-    private boolean written;
+    private ParserLocal<Boolean> written = new ParserLocal<Boolean>(false);
     
     /* marshalling flags */
     private boolean group;
@@ -138,12 +138,12 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
         XmlMarshallingContext ctx = (XmlMarshallingContext) context;
         
         // stores the initial count before calling matchNext()...
-        int initialCount = getCount();
+        int initialCount = getCount(context);
         
         Selector match = getDelegate().matchNext(context);
         if (match == null) {
-            if (written) {
-                written = false;
+            if (written.get(context)) {
+                written.set(context, false);
                 ctx.closeGroup(this);
             }
             return null;
@@ -156,13 +156,15 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
                 // if the group count increased, we need to close the current group
                 // element (by calling remove) and adding a new one
                 
-                if (written && getCount() > initialCount) {
+                boolean w = written.get(context);
+                if (w && getCount(context) > initialCount) {
                     ctx.closeGroup(this);
-                    written = false;
+                    written.set(context, false);
+                    w = false;
                 }
-                if (!written) {
+                if (!w) {
                     ctx.openGroup(this);
-                    written = true;
+                    written.set(context, true);
                 }
             }
             else {
@@ -218,12 +220,12 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
                         return null;
                     }
                 */
-                if (n != null && n > getCount()) {
-                    if (isMaxOccursReached()) {
+                if (n != null && n > getCount(context)) {
+                    if (isMaxOccursReached(context)) {
                         return null;
                     }
-                    setCount(n);
-                    reset();
+                    setCount(context, n);
+                    reset(context);
                 }
             }
             
@@ -256,12 +258,12 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
      * @param state the Map to update with the latest state
      * @since 1.2
      */
-    public void updateState(String namespace, Map<String, Object> state) {
-        state.put(getKey(namespace, WRITTEN_KEY), written);
+    public void updateState(ParsingContext context, String namespace, Map<String, Object> state) {
+        state.put(getKey(namespace, WRITTEN_KEY), written.get(context));
         
         // allow children to update their state
         for (Component node : getChildren()) {
-            ((Selector)node).updateState(namespace, state);
+            ((Selector)node).updateState(context, namespace, state);
         }
     }
     
@@ -272,17 +274,17 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
      * @param state the Map containing the state to restore
      * @since 1.2
      */
-    public void restoreState(String namespace, Map<String, Object> state) {
+    public void restoreState(ParsingContext context, String namespace, Map<String, Object> state) {
         String key = getKey(namespace, WRITTEN_KEY); 
         Boolean written = (Boolean) state.get(key);
         if (written == null) {
             throw new IllegalStateException("Missing state information for key '" + key + "'");
         }
-        this.written = written;
+        this.written.set(context, written);
         
         // allow children to restore their state
         for (Component child : getChildren()) {
-            ((Selector)child).restoreState(namespace, state);
+            ((Selector)child).restoreState(context, namespace, state);
         }
     }
     
@@ -308,16 +310,16 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Parser#getValue()
      */
-    public Object getValue() {
-        return getDelegate().getValue();
+    public Object getValue(ParsingContext context) {
+        return getDelegate().getValue(context);
     }
 
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Parser#setValue(java.lang.Object)
      */
-    public void setValue(Object value) {
-        getDelegate().setValue(value);
+    public void setValue(ParsingContext context, Object value) {
+        getDelegate().setValue(context, value);
     }
     
     /*
@@ -330,35 +332,35 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
 
     /*
      * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#close()
+     * @see org.beanio.internal.parser.Selector#close(org.beanio.internal.parser.ParsingContext)
      */
-    public Selector close() {
-        return getDelegate().close();
+    public Selector close(ParsingContext context) {
+        return getDelegate().close(context);
     }
 
     /*
      * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#reset()
+     * @see org.beanio.internal.parser.Selector#reset(org.beanio.internal.parser.ParsingContext)
      */
-    public void reset() {
-        written = false;
-        getDelegate().reset();
+    public void reset(ParsingContext context) {
+        written.set(context, false);
+        getDelegate().reset(context);
     }
 
     /*
      * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#getCount()
+     * @see org.beanio.internal.parser.Selector#getCount(org.beanio.internal.parser.ParsingContext)
      */
-    public int getCount() {
-        return getDelegate().getCount();
+    public int getCount(ParsingContext context) {
+        return getDelegate().getCount(context);
     }
 
     /*
      * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#setCount(int)
+     * @see org.beanio.internal.parser.Selector#setCount(org.beanio.internal.parser.ParsingContext, int)
      */
-    public void setCount(int count) {
-        getDelegate().setCount(count);
+    public void setCount(ParsingContext context, int count) {
+        getDelegate().setCount(context, count);
     }
 
     /*
@@ -387,18 +389,18 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
 
     /*
      * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#isMaxOccursReached()
+     * @see org.beanio.internal.parser.Selector#isMaxOccursReached(org.beanio.internal.parser.ParsingContext)
      */
-    public boolean isMaxOccursReached() {
-        return getDelegate().isMaxOccursReached();
+    public boolean isMaxOccursReached(ParsingContext context) {
+        return getDelegate().isMaxOccursReached(context);
     }
     
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Parser#clearValue()
      */
-    public void clearValue() {
-        getDelegate().clearValue();
+    public void clearValue(ParsingContext context) {
+        getDelegate().clearValue(context);
     }
     
     /*
@@ -524,8 +526,8 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Parser#hasContent()
      */
-    public boolean hasContent() {
-        return getDelegate().hasContent();
+    public boolean hasContent(ParsingContext context) {
+        return getDelegate().hasContent(context);
     }
 
     /*
@@ -542,6 +544,13 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
 
     public void setDepth(int depth) {
         this.depth = depth;
+    }
+    
+    @Override
+    public void registerLocals(Set<ParserLocal<?>> locals) {
+        if (locals.add(written)) {
+            super.registerLocals(locals);
+        }
     }
 
     @Override

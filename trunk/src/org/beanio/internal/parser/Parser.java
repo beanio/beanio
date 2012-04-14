@@ -57,26 +57,30 @@ public interface Parser {
     
     /**
      * Returns whether this parser or any of its descendant have content for marshalling.
+     * @param context the {@link ParsingContext}
      * @return true if there is content for marshalling, false otherwise
      */
-    public boolean hasContent();
+    public boolean hasContent(ParsingContext context);
     
     /**
      * Clears the current property value.
+     * @param context TODO
      */
-    public void clearValue();
+    public void clearValue(ParsingContext context);
     
     /**
      * Sets the property value for marshaling.
+     * @param context TODO
      * @param value the property value
      */
-    public void setValue(Object value);
+    public void setValue(ParsingContext context, Object value);
 
     /**
      * Returns the unmarshalled property value.
+     * @param context TODO
      * @return the property value
      */
-    public Object getValue();
+    public Object getValue(ParsingContext context);
     
     /**
      * Returns the size of a single occurrence of this element, which is used to offset

@@ -36,7 +36,7 @@ public class RecordCollection extends DelegatingParser implements Selector, Prop
     // the property accessor, may be null if not bound
     private PropertyAccessor accessor;
     // the property value
-    private Object value = null;   
+    private ParserLocal<Object> value = new ParserLocal<Object>();
     
     /**
      * Constructs a new <tt>RecordCollection</tt>.
@@ -48,16 +48,16 @@ public class RecordCollection extends DelegatingParser implements Selector, Prop
         // allow the delegate to unmarshal itself
         boolean result = super.unmarshal(context);
         
-        Object aggregatedValue = getSelector().getValue();
+        Object aggregatedValue = getSelector().getValue(context);
         if (aggregatedValue != Value.INVALID) {
-            if (value == null) {
-                value = createCollection();
+            if (value.get(context) == null) {
+                value.set(context, createCollection());
             }
             
-            getCollection().add(getSelector().getValue());
+            getCollection(context).add(getSelector().getValue(context));
         }
         
-        getParser().clearValue();
+        getParser().clearValue(context);
         
         return result;
     }
@@ -74,7 +74,7 @@ public class RecordCollection extends DelegatingParser implements Selector, Prop
     public boolean marshal(MarshallingContext context) throws IOException {
         int minOccurs = getMinOccurs();
         
-        Collection<Object> collection = getCollection();
+        Collection<Object> collection = getCollection(context);
         if (collection == null && minOccurs == 0) {
             return false;
         }
@@ -86,7 +86,7 @@ public class RecordCollection extends DelegatingParser implements Selector, Prop
         if (collection != null) {
             for (Object value : collection) {
                 if (index < maxOccurs) {
-                    delegate.setValue(value);
+                    delegate.setValue(context, value);
                     delegate.marshal(context);
                     ++index;
                 }
@@ -97,7 +97,7 @@ public class RecordCollection extends DelegatingParser implements Selector, Prop
         }
         
         if (index < minOccurs) {
-            delegate.setValue(null);
+            delegate.setValue(context, null);
             while (index < minOccurs) {
                 delegate.marshal(context);
                 ++index;
@@ -108,28 +108,29 @@ public class RecordCollection extends DelegatingParser implements Selector, Prop
     }
 
     @Override
-    public void clearValue() {
-        value = null;
+    public void clearValue(ParsingContext context) {
+        value.set(context, null);
     }
 
     @Override
-    public void setValue(Object value) {
+    public void setValue(ParsingContext context, Object value) {
         // convert empty collections to null so that parent parsers
         // will consider this property missing during marshalling
         if (value != null && ((Collection<?>)value).isEmpty()) {
             value = null;
         }
         
-        this.value = value;
+        this.value.set(context, value);
     }
     
     /**
      * Returns the collection value being parsed.
+     * @param context the {@link ParsingContext}
      * @return the {@link Collection}
      */
     @SuppressWarnings("unchecked")
-    protected Collection<Object> getCollection() {
-        return (Collection<Object>) value;
+    protected Collection<Object> getCollection(ParsingContext context) {
+        return (Collection<Object>) value.get(context);
     }
     
     protected Collection<Object> createCollection() {
@@ -145,8 +146,8 @@ public class RecordCollection extends DelegatingParser implements Selector, Prop
     }
 
     @Override
-    public Object getValue() {
-        return value;
+    public Object getValue(ParsingContext context) {
+        return value.get(context);
     }
     
     /*
@@ -187,34 +188,34 @@ public class RecordCollection extends DelegatingParser implements Selector, Prop
 
     /*
      * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#close()
+     * @see org.beanio.internal.parser.Selector#close(org.beanio.internal.parser.ParsingContext)
      */
-    public Selector close() {
-        return getSelector().close();
+    public Selector close(ParsingContext context) {
+        return getSelector().close(context);
     }
 
     /*
      * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#reset()
+     * @see org.beanio.internal.parser.Selector#reset(org.beanio.internal.parser.ParsingContext)
      */
-    public void reset() {
-        getSelector().reset();
+    public void reset(ParsingContext context) {
+        getSelector().reset(context);
     }
 
     /*
      * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#getCount()
+     * @see org.beanio.internal.parser.Selector#getCount(org.beanio.internal.parser.ParsingContext)
      */
-    public int getCount() {
-        return getSelector().getCount();
+    public int getCount(ParsingContext context) {
+        return getSelector().getCount(context);
     }
 
     /*
      * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#setCount(int)
+     * @see org.beanio.internal.parser.Selector#setCount(org.beanio.internal.parser.ParsingContext, int)
      */
-    public void setCount(int count) {
-        getSelector().setCount(count);
+    public void setCount(ParsingContext context, int count) {
+        getSelector().setCount(context, count);
     }
 
     /*
@@ -227,26 +228,26 @@ public class RecordCollection extends DelegatingParser implements Selector, Prop
 
     /*
      * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#isMaxOccursReached()
+     * @see org.beanio.internal.parser.Selector#isMaxOccursReached(org.beanio.internal.parser.ParsingContext)
      */
-    public boolean isMaxOccursReached() {
-        return getSelector().isMaxOccursReached();
+    public boolean isMaxOccursReached(ParsingContext context) {
+        return getSelector().isMaxOccursReached(context);
     }
 
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.util.StatefulWriter#updateState(java.lang.String, java.util.Map)
      */
-    public void updateState(String namespace, Map<String, Object> state) {
-        getSelector().updateState(namespace, state);
+    public void updateState(ParsingContext context, String namespace, Map<String, Object> state) {
+        getSelector().updateState(null, namespace, state);
     }
 
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.util.StatefulWriter#restoreState(java.lang.String, java.util.Map)
      */
-    public void restoreState(String namespace, Map<String, Object> state) throws IllegalStateException {
-        getSelector().restoreState(namespace, state);
+    public void restoreState(ParsingContext context, String namespace, Map<String, Object> state) throws IllegalStateException {
+        getSelector().restoreState(null, namespace, state);
     }
 
     /*
@@ -306,11 +307,11 @@ public class RecordCollection extends DelegatingParser implements Selector, Prop
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Property#createValue()
      */
-    public Object createValue() {
-        if (value == null) {
-            value = createCollection();
+    public Object createValue(ParsingContext context) {
+        if (value.get(context) == null) {
+            value.set(context, createCollection());
         }
-        return getValue();
+        return getValue(context);
     }
 
     /*
@@ -361,8 +362,15 @@ public class RecordCollection extends DelegatingParser implements Selector, Prop
     }
     
     @Override
-    public boolean hasContent() {
-        Collection<Object> collection = getCollection();
+    public boolean hasContent(ParsingContext context) {
+        Collection<Object> collection = getCollection(context);
         return collection != null && collection.size() > 0; 
+    }
+
+    @Override
+    public void registerLocals(Set<ParserLocal<? extends Object>> locals) {
+        if (locals.add(value)) {
+            super.registerLocals(locals);
+        }
     }
 }

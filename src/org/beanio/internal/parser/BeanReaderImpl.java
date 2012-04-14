@@ -105,11 +105,11 @@ public class BeanReaderImpl implements BeanReader {
             context.validate();
             
             // return the unmarshalled bean object
-            return parser.getValue();
+            return parser.getValue(context);
         }
         finally {
             if (parser != null) {
-                parser.clearValue();
+                parser.clearValue(context);
             }
         }
     }
@@ -133,7 +133,7 @@ public class BeanReaderImpl implements BeanReader {
         if (context.isEOF()) {
             try {
                 // calling close will determine if all min occurs have been met
-                Selector unsatisfied = layout.close();
+                Selector unsatisfied = layout.close(context);
                 if (unsatisfied != null) {
                     throw context.newUnsatisfiedRecordException(unsatisfied.getName());
                 }

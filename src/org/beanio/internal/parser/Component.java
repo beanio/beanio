@@ -15,6 +15,8 @@
  */
 package org.beanio.internal.parser;
 
+import java.util.Set;
+
 import org.beanio.internal.util.TreeNode;
 
 /**
@@ -40,4 +42,14 @@ public abstract class Component extends TreeNode<Component> {
         super(size);
     }
     
+    /**
+     * Called by a stream to register variables stored in the parsing context.  This method
+     * should be overridden by subclasses that need to register one or more parser context variables.
+     * @param locals set of local variables
+     */
+    public void registerLocals(Set<ParserLocal<? extends Object>> locals) {
+        for (Component c : getChildren()) {
+            c.registerLocals(locals);
+        }
+    }
 }

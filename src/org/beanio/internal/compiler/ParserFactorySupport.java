@@ -55,7 +55,6 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     private TypeHandlerFactory typeHandlerFactory;
     private ClassLoader classLoader;
     
-    private Replicator replicator = new Replicator();
     private LinkedList<Component> parserStack = new LinkedList<Component>();
     private LinkedList<Component> propertyStack = new LinkedList<Component>();
     
@@ -79,6 +78,9 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         createPreprocessor(config).process(config);
         
         process(config);
+        
+        // calculate the heap size
+        stream.init();
         
         //((TreeNode)stream.getLayout()).print();
         
@@ -126,7 +128,6 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             parserStack.getLast().add(component);
         }
         parserStack.addLast(component);
-        replicator.register(component);
         //System.out.println("Layout: " + parserStack);
     }
     
@@ -160,7 +161,6 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         }
         
         propertyStack.addLast(component);
-        replicator.register(component);
         //System.out.println("Property: " + propertyStack);
     }
 
@@ -172,7 +172,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         Property last = (Property) propertyStack.removeLast();
         if (propertyStack.isEmpty()) {
             // if we popped the last property, initialize the entire tree by calling clearValue 
-            last.clearValue();
+            //TODO is this still needed? last.clearValue(null);
         }
         else {
             if (last.isIdentifier()) {
@@ -320,7 +320,6 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         }
 
         stream.setMessageFactory(messageFactory);
-        stream.setReplicator(replicator);
         
         initializeGroup(config);
     }

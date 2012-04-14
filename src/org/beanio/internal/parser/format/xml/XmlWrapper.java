@@ -92,7 +92,7 @@ public class XmlWrapper extends DelegatingParser implements XmlNode {
         boolean contentChecked = false;
         
         if (lazy && !repeating) {
-            if (!hasContent()) {
+            if (!hasContent(context)) {
                 return false;
             }
             contentChecked = true;
@@ -108,7 +108,7 @@ public class XmlWrapper extends DelegatingParser implements XmlNode {
         parent.appendChild(element);
         
         // if nillable and there is no descendant with content, mark the element nil
-        if (isNillable() && !contentChecked && !hasContent()) {
+        if (isNillable() && !contentChecked && !hasContent(context)) {
             element.setAttributeNS(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "nil", "true");
         }
         // otherwise marshal our descendants

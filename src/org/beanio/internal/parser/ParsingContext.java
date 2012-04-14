@@ -30,6 +30,7 @@ public abstract class ParsingContext {
     /** Marsalling mode */
     public static final char MARSHALLING = 'M';
     
+    private Object[] localHeap;
     private ArrayList<Iteration> iterationStack = new ArrayList<Iteration>();
     
     /**
@@ -69,7 +70,7 @@ public abstract class ParsingContext {
      */
     public final int getAdjustedFieldPosition(int position) {
         for (Iteration i : iterationStack) {
-            position += i.getIterationIndex() * i.getIterationSize();
+            position += i.getIterationIndex(this) * i.getIterationSize();
         }
         return position;
     }
@@ -83,7 +84,7 @@ public abstract class ParsingContext {
             return 0;
         }
         else {
-            return iterationStack.get(iterationStack.size() - 1).getIterationIndex();
+            return iterationStack.get(iterationStack.size() - 1).getIterationIndex(this);
         }
     }
 
@@ -93,5 +94,17 @@ public abstract class ParsingContext {
      */
     public final boolean isRepeating() {
         return !iterationStack.isEmpty();
+    }
+    
+    public final void createHeap(int size) {
+        localHeap = new Object[size];
+    }
+    
+    public final Object getLocal(int index) {
+        return localHeap[index];
+    }
+    
+    public final void setLocal(int index, Object obj) {
+        localHeap[index] = obj;
     }
 }

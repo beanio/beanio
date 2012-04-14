@@ -26,7 +26,7 @@ import java.util.*;
  * {@link #setProperty(Property)}.
  * 
  * <p>Repeating segments will always marshal a value when {@link #marshal(MarshallingContext)} 
- * is called.  If not repeating, lazy segments are only marshalled if {@link #hasContent()} 
+ * is called.  If not repeating, lazy segments are only marshalled if {@link #hasContent(ParsingContext)} 
  * returns true. 
  * 
  * @author Kevin Seim
@@ -47,8 +47,12 @@ public class Segment extends ParserComponent {
     // the property bound to this segment, may be null
     private Property property;
     // temporarily stores missing children during unmarshalling
-    private List<Parser> missing = new ArrayList<Parser>();
-
+    private ParserLocal<List<Parser>> missing = new ParserLocal<List<Parser>>() {
+        protected List<Parser> createDefaultValue() {
+            return new ArrayList<Parser>();
+        }
+    };
+    
     /**
      * Constructs a new <tt>Segment</tt>.
      */
@@ -58,9 +62,9 @@ public class Segment extends ParserComponent {
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Parser#clearValue()
      */
-    public void clearValue() {
+    public void clearValue(ParsingContext context) {
         if (property != null) {
-            property.clearValue();
+            property.clearValue(context);
         }
     }
     
@@ -84,6 +88,8 @@ public class Segment extends ParserComponent {
      * @see org.beanio.parser2.Parser#unmarshal(org.beanio.parser2.UnmarshallingContext)
      */
     public boolean unmarshal(UnmarshallingContext context) {
+        List<Parser> missing = this.missing.get(context);
+        
         // unmarshals all children and determine existence,
         // if a child exists, the segment must exist
         // existence may also be predetermined in any tag based format (such as XML)
@@ -106,7 +112,7 @@ public class Segment extends ParserComponent {
             if (missing.isEmpty()) {
                 // if the segment valid and bound to a property, create the property value
                 if (property != null) {
-                    property.createValue();
+                    property.createValue(context);
                 }
             }
             // otherwise create appropriate field errors for missing children
@@ -130,7 +136,7 @@ public class Segment extends ParserComponent {
         // since we allow Collections containing a null reference to force
         // output of a bean, we also check that we are not repeating
         if (lazy && !repeating) {
-            if (!hasContent()) {
+            if (!hasContent(context)) {
                 return false;
             }
         }
@@ -146,13 +152,13 @@ public class Segment extends ParserComponent {
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Parser#hasContent()
      */
-    public boolean hasContent() {
+    public boolean hasContent(ParsingContext context) {
         if (property != null) {
-            return property.getValue() != Value.MISSING;
+            return property.getValue(context) != Value.MISSING;
         }
         
         for (Component c : getChildren()) {
-            if (((Parser)c).hasContent()) {
+            if (((Parser)c).hasContent(context)) {
                 return true;
             }
         }
@@ -164,13 +170,13 @@ public class Segment extends ParserComponent {
      * (non-Javadoc)
      * @see org.beanio.parser2.Parser#getValue()
      */
-    public Object getValue() {
+    public Object getValue(ParsingContext context) {
         // getValue() may be called for a record where no property is set
         if (property == null) {
             return null;
         }
         else {
-            return property.getValue();
+            return property.getValue(context);
         }
     }
     
@@ -178,9 +184,9 @@ public class Segment extends ParserComponent {
      * (non-Javadoc)
      * @see org.beanio.parser2.Parser#setValue(java.lang.Object)
      */
-    public void setValue(Object value) {
+    public void setValue(ParsingContext context, Object value) {
         if (property != null) {
-            property.setValue(value);
+            property.setValue(context, value);
         }
     }
 
@@ -232,8 +238,20 @@ public class Segment extends ParserComponent {
             property = (Property) map.get(property);
         }
         
-        missing = new ArrayList<Parser>();
+        //missingOld = new ArrayList<Parser>();
     }
+    
+    @Override
+    public void registerLocals(Set<ParserLocal<?>> locals) {
+        if (property != null) {
+            ((Component)property).registerLocals(locals);
+        }
+        
+        if (locals.add(missing)) {
+            super.registerLocals(locals);
+        }
+    }
+    
     
     public boolean isExistencePredetermined() {
         return existencePredetermined;

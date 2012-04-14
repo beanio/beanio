@@ -43,12 +43,12 @@ public class ArrayParser extends CollectionParser {
     }
     
     @Override
-    public Object getValue() {
-        if (isInvalid()) {
-            return super.getValue();
+    public Object getValue(ParsingContext context) {
+        if (isInvalid(context)) {
+            return super.getValue(context);
         }
         
-        Collection<Object> collection = super.getCollection();
+        Collection<Object> collection = super.getCollection(context);
         if (collection == null) {
             return null;
         }
@@ -62,7 +62,7 @@ public class ArrayParser extends CollectionParser {
     }
 
     @Override
-    public void setValue(Object value) {
+    public void setValue(ParsingContext context, Object value) {
         Collection<Object> collection = null;
         if (value != null) {
             int length = Array.getLength(value);
@@ -73,7 +73,7 @@ public class ArrayParser extends CollectionParser {
                 }
             }
         }
-        super.setValue(collection);
+        super.setValue(context, collection);
     }
     
     @Override

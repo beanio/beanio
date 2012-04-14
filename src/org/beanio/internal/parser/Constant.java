@@ -52,30 +52,38 @@ public class Constant extends Component implements Property {
      * (non-Javadoc)
      * @see org.beanio.parser.Property#clearValue()
      */
-    public void clearValue() { }
+    public void clearValue(ParsingContext context) { }
 
     /*
      * (non-Javadoc)
      * @see org.beanio.parser.Property#createValue()
      */
-    public Object createValue() {
-        return getValue();
+    public Object createValue(ParsingContext context) {
+        return getValue(context);
     }
 
     /*
      * (non-Javadoc)
      * @see org.beanio.parser.Property#getValue()
      */
-    public Object getValue() {
+    public Object getValue(ParsingContext context) {
         return value;
     }
 
+    /**
+     * Sets the constant value.
+     * @param value the value
+     */
+    public void setValue(Object value) {
+        this.value = value;
+    }
+    
     /*
      * (non-Javadoc)
      * @see org.beanio.parser.Property#setValue(java.lang.Object)
      */
-    public void setValue(Object value) {
-        this.value = value;
+    public void setValue(ParsingContext context, Object value) {
+        
     }
 
     /*

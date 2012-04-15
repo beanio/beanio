@@ -536,14 +536,6 @@ public class Group extends ParserComponent implements Selector {
         return namespace + "." + getName() + "." + name;
     }
     
-    @Override
-    public void updateReferences(Map<Object, Object> map) {
-        super.updateReferences(map);
-        if (property != null) {
-            property = (Property) map.get(property);
-        }
-    }
-    
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Selector#isRecordGroup()

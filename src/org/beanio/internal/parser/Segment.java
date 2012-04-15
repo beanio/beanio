@@ -229,17 +229,6 @@ public class Segment extends ParserComponent {
     public void setIdentifier(boolean identifier) {
         this.identifier = identifier;
     }
-
-    @Override
-    public void updateReferences(Map<Object, Object> map) {
-        super.updateReferences(map);
-        
-        if (property != null) {
-            property = (Property) map.get(property);
-        }
-        
-        //missingOld = new ArrayList<Parser>();
-    }
     
     @Override
     public void registerLocals(Set<ParserLocal<?>> locals) {
@@ -251,7 +240,6 @@ public class Segment extends ParserComponent {
             super.registerLocals(locals);
         }
     }
-    
     
     public boolean isExistencePredetermined() {
         return existencePredetermined;

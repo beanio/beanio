@@ -17,8 +17,6 @@ package org.beanio.internal.parser;
 
 import java.util.Map;
 
-import org.beanio.internal.util.StatefulWriter;
-
 /**
  * A <tt>Selector</tt> is used to match a {@link Group} or {@link Record} for
  * marshalling and unmarshalling.
@@ -55,22 +53,29 @@ public interface Selector extends Parser {
      */
     public Selector matchAny(UnmarshallingContext context);
 
+    /**
+     * Skips a record or group of records.
+     * @param the {@link ParsingContext}
+     */
     public void skip(UnmarshallingContext context);
     
     /**
      * Checks for any unsatisfied components before the stream is closed.
+     * @param the {@link ParsingContext}
      * @return the first unsatisfied node
      */
     public Selector close(ParsingContext context);
 
     /**
      * Resets the component count of this Selector's children.
+     * @param the {@link ParsingContext}
      */
     public void reset(ParsingContext context);
     
     /**
      * Returns the number of times this component was matched within the current
      * iteration of its parent component.
+     * @param the {@link ParsingContext}
      * @return the match count
      */
     public int getCount(ParsingContext context);
@@ -78,12 +83,14 @@ public interface Selector extends Parser {
     /**
      * Sets the number of times this component was matched within the current 
      * iteration of its parent component.
+     * @param the {@link ParsingContext}
      * @param count the new match count
      */
     public void setCount(ParsingContext context, int count);
     
     /**
      * Returns whether this component has reached its maximum occurrences.
+     * @param the {@link ParsingContext}
      * @return true if maximum occurrences has been reached
      */
     public boolean isMaxOccursReached(ParsingContext context);

@@ -40,8 +40,11 @@ public class Bean extends PropertyComponent implements Property {
     // the constructor for creating this bean object (if null, the no-arg constructor is used)
     private Constructor<?> constructor;
     // used to temporarily hold constructor argument values when a constructor is specified
-    // TODO remove this instance variable
-    private Object[] constructorArgs;
+    private ParserLocal<Object[]> constructorArgs = new ParserLocal<Object[]>() {
+        public Object[] createDefaultValue() {
+            return constructor != null ? new Object[constructor.getParameterTypes().length] : null;
+        }
+    };
     
     /**
      * Constructs a new <tt>Bean</tt>.
@@ -106,6 +109,8 @@ public class Bean extends PropertyComponent implements Property {
             // lazily create...
             boolean create = false;
             
+            Object[] cargs = constructorArgs.get(context);
+            
             for (Component child : getChildren()) {
                 Property property = (Property) child;
                 
@@ -128,11 +133,11 @@ public class Bean extends PropertyComponent implements Property {
                     create = true;
                 }
                 
-                constructorArgs[accessor.getConstructorArgumentIndex()] = value;
+                cargs[accessor.getConstructorArgumentIndex()] = value;
             }
             
             if (create) {
-                b = newInstance();
+                b = newInstance(context);
             }
         }
         
@@ -151,7 +156,7 @@ public class Bean extends PropertyComponent implements Property {
             // explicitly null values must still be set on the bean...
             else if (value != Value.MISSING) {
                 if (b == null) {
-                    b = newInstance();
+                    b = newInstance(context);
                 }
 
                 try {
@@ -165,7 +170,7 @@ public class Bean extends PropertyComponent implements Property {
         }
 
         if (b == null) {
-            b = isRequired() ? newInstance() : Value.MISSING;
+            b = isRequired() ? newInstance(context) : Value.MISSING;
         }
         
         bean.set(context, b);
@@ -209,9 +214,10 @@ public class Bean extends PropertyComponent implements Property {
     
     /**
      * Creates a new instance of this bean object.
+     * @param context the {@link ParsingContext}
      * @return the new bean <tt>Object</tt>
      */
-    protected Object newInstance() {
+    protected Object newInstance(ParsingContext context) {
         // if the bean class is null, the record will be ignored and null is returned here
         Class<?> beanClass = getType();
         if (beanClass == null) {
@@ -223,7 +229,7 @@ public class Bean extends PropertyComponent implements Property {
                 return beanClass.newInstance();
             }
             else {
-                return constructor.newInstance(constructorArgs);
+                return constructor.newInstance(constructorArgs.get(context));
             }
         }
         catch (Exception e) {
@@ -271,7 +277,6 @@ public class Bean extends PropertyComponent implements Property {
      * @param constructor the {@link Constructor}
      */
     public void setConstructor(Constructor<?> constructor) {
-        this.constructorArgs = constructor == null ? null : new Object[constructor.getParameterTypes().length];
         this.constructor = constructor;
     }
     
@@ -280,14 +285,5 @@ public class Bean extends PropertyComponent implements Property {
         if (locals.add(bean)) {
             super.registerLocals(locals);
         }
-    }
-    
-    @Override
-    public Bean clone() {
-        Bean clone = (Bean) super.clone();
-        if (clone.constructorArgs != null) {
-            clone.constructorArgs = (Object[]) constructorArgs.clone();
-        }
-        return clone;
     }
 }

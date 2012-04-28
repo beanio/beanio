@@ -6,7 +6,7 @@
   elementFormDefault="qualified" 
   targetNamespace="http://www.beanio.org/2012/03"
   xml:lang="en"
-  version="2.0.0.M2">
+  version="2.0.0">
 
   <annotation>
     <documentation>
@@ -164,6 +164,13 @@
         <documentation>
           The maximum number of times the stream may be read from the input
           stream.  Defaults to 1.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="occurs" type="tns:occurs" use="optional">
+      <annotation>
+        <documentation>
+          Shortcut for specifying both minOccurs and maxOccurs.  Examples: '1', '0-3', '2+'.
         </documentation>
       </annotation>
     </attribute>
@@ -425,6 +432,13 @@
         <documentation>
           The maximum number of occurrences of this group or record.
           Defaults to 'unbounded'.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="occurs" type="tns:occurs" use="optional">
+      <annotation>
+        <documentation>
+          Shortcut for specifying both minOccurs and maxOccurs.  Examples: '1', '0-3', '2+'.
         </documentation>
       </annotation>
     </attribute>
@@ -801,6 +815,13 @@
         </documentation>
       </annotation>
     </attribute>
+    <attribute name="occurs" type="tns:occurs" use="optional">
+      <annotation>
+        <documentation>
+          Shortcut for specifying both minOccurs and maxOccurs.  Examples: '1', '0-3', '2+'.
+        </documentation>
+      </annotation>
+    </attribute>
     <attribute name="xmlType" type="xsd:string" use="optional">
       <annotation>
         <documentation>
@@ -945,6 +966,13 @@
         </documentation>
       </annotation>
     </attribute>
+    <attribute name="occurs" type="tns:occurs" use="optional">
+      <annotation>
+        <documentation>
+          Shortcut for specifying both minOccurs and maxOccurs.  Examples: '1', '0-3', '2+'.
+        </documentation>
+      </annotation>
+    </attribute>
     <attribute name="template" type="xsd:string" use="optional">
       <annotation>
         <documentation>
@@ -1024,6 +1052,12 @@
         </restriction>
       </simpleType>
     </union>
+  </simpleType>
+
+  <simpleType name="occurs">
+    <restriction base="xsd:string">
+      <xsd:pattern value="[0-9]+((-[0-9]+)|(\++))?" />
+    </restriction>
   </simpleType>
 
   <simpleType name="character">

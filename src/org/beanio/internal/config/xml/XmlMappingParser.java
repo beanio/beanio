@@ -377,13 +377,8 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         config.setFormat(getAttribute(element, "format"));
         config.setMode(getAttribute(element, "mode"));
         config.setResourceBundle(getAttribute(element, "resourceBundle"));
-        config.setMinOccurs(getIntAttribute(element, "minOccurs", 0));
         config.setStrict(getBooleanAttribute(element, "strict", config.isStrict()));
-        
-        Integer maxOccurs = getUnboundedIntegerAttribute(element, "maxOccurs", Integer.MAX_VALUE);
-        if (maxOccurs == null)
-            maxOccurs = 1;
-        config.setMaxOccurs(maxOccurs);
+        populatePropertyConfigOccurs(config, element);
         
         config.setXmlName(getAttribute(element, "xmlName"));
         config.setXmlNamespace(getOptionalAttribute(element, "xmlNamespace"));
@@ -553,8 +548,47 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         config.setGetter(getAttribute(element, "getter"));
         config.setSetter(getAttribute(element, "setter"));
         config.setCollection(getAttribute(element, "collection"));
-        config.setMinOccurs(getIntegerAttribute(element, "minOccurs"));
-        config.setMaxOccurs(getUnboundedIntegerAttribute(element, "maxOccurs", Integer.MAX_VALUE));
+        populatePropertyConfigOccurs(config, element);
+    }
+    
+    private void populatePropertyConfigOccurs(PropertyConfig config, Element element) {
+        if (hasAttribute(element, "occurs")) {
+            if (hasAttribute(element, "minOccurs") || hasAttribute(element, "maxOccurs")) {
+                throw new BeanIOConfigurationException("occurs cannot be used with minOccurs or maxOccurs");
+            }
+            
+            // parse occurs (e.g. '1', '0-1', '0+', '1+' etc)
+            String occurs = getAttribute(element, "occurs");
+            if (occurs == null) {
+                throw new BeanIOConfigurationException("Invalid occurs '" + occurs + "'");
+            }
+            
+            try {
+                if (occurs.endsWith("+")) {
+                    config.setMinOccurs(Integer.parseInt(occurs.substring(0, occurs.length() - 1)));
+                    config.setMaxOccurs(Integer.MAX_VALUE);
+                }
+                else {
+                    int n = occurs.indexOf('-');
+                    if (n < 0) {
+                        n = Integer.parseInt(occurs);
+                        config.setMinOccurs(n);
+                        config.setMaxOccurs(n);
+                    }
+                    else {
+                        config.setMinOccurs(Integer.parseInt(occurs.substring(0, n)));
+                        config.setMaxOccurs(Integer.parseInt(occurs.substring(n + 1)));
+                    }
+                }
+            }
+            catch (NumberFormatException ex) {
+                throw new BeanIOConfigurationException("Invalid occurs '" + occurs + "'", ex);
+            }
+        }
+        else {
+            config.setMinOccurs(getIntegerAttribute(element, "minOccurs"));
+            config.setMaxOccurs(getUnboundedIntegerAttribute(element, "maxOccurs", Integer.MAX_VALUE));
+        }
     }
     
     /**
@@ -696,6 +730,10 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         else {
             return doPropertySubstitution(att.getTextContent());
         }
+    }
+    
+    private boolean hasAttribute(Element element, String name) {
+        return element.getAttributeNode(name) != null;
     }
     
     private String getAttribute(Element element, String name) {

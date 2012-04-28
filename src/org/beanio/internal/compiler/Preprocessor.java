@@ -48,8 +48,14 @@ public class Preprocessor extends ProcessorSupport {
      * @param stream the stream configuration to process
      */
     protected void initializeStream(StreamConfig stream) throws BeanIOConfigurationException { 
+        if (stream.getMinOccurs() == null) {
+            stream.setMinOccurs(0);
+        }
         if (stream.getMaxOccurs() == null) {
             stream.setMaxOccurs(1);
+        }
+        if (stream.getMaxOccurs() <= 0) {
+            throw new BeanIOConfigurationException("Maximum occurrences must be greater than 0");
         }
         
         initializeGroup(stream);
@@ -73,6 +79,9 @@ public class Preprocessor extends ProcessorSupport {
         }
         if (group.getMaxOccurs() == null) {
             group.setMaxOccurs(Integer.MAX_VALUE);
+        }
+        if (group.getMaxOccurs() <= 0) {
+            throw new BeanIOConfigurationException("Maximum occurrences must be greater than 0");
         }
         // validate occurrences
         if (group.getMaxOccurs() < group.getMinOccurs()) {
@@ -180,6 +189,9 @@ public class Preprocessor extends ProcessorSupport {
         if (record.getMaxOccurs() == null) {
             record.setMaxOccurs(Integer.MAX_VALUE);
         }
+        if (record.getMaxOccurs() <= 0) {
+            throw new BeanIOConfigurationException("Maximum occurrences must be greater than 0");
+        }
         
         if (propertyRoot == null) {
             propertyRoot = record;
@@ -282,11 +294,11 @@ public class Preprocessor extends ProcessorSupport {
         if (field.getMaxOccurs() == null) {
             field.setMaxOccurs(Math.max(field.getMinOccurs(), 1));
         }
-        if (field.getMaxOccurs() == 0) {
-            throw new BeanIOConfigurationException("maxOccurs must be greater than 0");
+        if (field.getMaxOccurs() <= 0) {
+            throw new BeanIOConfigurationException("Maximum occurrences must be greater than 0");
         }
         if (field.getMaxOccurs() < field.getMinOccurs()) {
-            throw new BeanIOConfigurationException("maxOccurs cannot be less than minOccurs");
+            throw new BeanIOConfigurationException("Maximum occurrences cannot be less than minimum occurrences");
         }
         
         // set and validate min and max length

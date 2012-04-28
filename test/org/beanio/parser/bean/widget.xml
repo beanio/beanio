@@ -21,7 +21,7 @@
   <stream name="w2" format="csv">
     <record name="record1" class="org.beanio.parser.bean.Widget">
       <segment name="parts" getter="getPartsList" setter="setPartsList" class="org.beanio.parser.bean.Widget" 
-        collection="list" minOccurs="2" maxOccurs="2">
+        collection="list" occurs="2">
         <field name="name" />
         <field name="model" />
         <segment name="partsList" class="org.beanio.parser.bean.Widget" collection="list" minOccurs="2" maxOccurs="2">
@@ -38,7 +38,7 @@
       <field name="id" length="2" justify="right" />
       <field name="name" length="5" />
       <field name="model" length = "5" />
-      <segment name="partsList" class="org.beanio.parser.bean.Widget" collection="list" minOccurs="0" maxOccurs="unbounded">
+      <segment name="partsList" class="org.beanio.parser.bean.Widget" collection="list" occurs="0+">
         <field name="id" length="2" justify="right" />
         <field name="name" length="5" />
         <field name="model" length="5" />
@@ -122,6 +122,21 @@
         <field name="name" length="5" />
       </segment>
       <field name="name" length="5" />
+    </record>
+  </stream>
+
+  <stream name="w10" format="fixedlength">
+    <record name="record" class="map">
+    
+      <segment name="b1" collection="list" class="map" minOccurs="2" maxOccurs="2">
+        <field name="f0" length="2" />
+        <segment name="b2" collection="list" class="map" minOccurs="2" maxOccurs="2">
+          <field name="f1" length="2" />
+        </segment>
+        <field name="f2" length="2" />
+      </segment>
+      
+      <field name="eof" length="3" />
     </record>
   </stream>
 

@@ -27,7 +27,7 @@
     <record name="h" order="1" minOccurs="1" maxOccurs="1">
       <field name="type" rid="true" literal="H" />
     </record>
-    <group name="batch1" order="2" minOccurs="1" maxOccurs="2">
+    <group name="batch1" order="2" occurs="1-2">
       <record name="h1" minOccurs="1" maxOccurs="1">
         <field name="type" rid="true" literal="H1" />
       </record>
@@ -72,15 +72,15 @@
     </record>
   </stream>
 
-  <stream name="g4" format="csv" minOccurs="1" maxOccurs="unbounded">
+  <stream name="g4" format="csv" occurs="1+">
     <record name="h" order="1" minOccurs="1" maxOccurs="1">
       <field name="type" rid="true" literal="H" />
     </record>
-    <group name="batch" order="2" minOccurs="0" maxOccurs="3">
+    <group name="batch" order="2" occurs="0-3">
       <record name="h" order="1" minOccurs="0" maxOccurs="1">
         <field name="type" rid="true" literal="BH" />
       </record>
-      <record name="d" order="2" minOccurs="0" maxOccurs="unbounded">
+      <record name="d" order="2" occurs="0+">
         <field name="type" rid="true" literal="BD" />
       </record>
       <record name="t1" order="3" minOccurs="0" maxOccurs="1">

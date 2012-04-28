@@ -280,4 +280,44 @@ public class BeanParserTest extends ParserTest {
             in.close();
         }
     }
+    
+    @Test
+    @SuppressWarnings("rawtypes")
+    public void testNestedBeans() throws IOException {
+        BeanReader in = factory.createReader("w10", new InputStreamReader(
+            getClass().getResourceAsStream("w10_nestedBeans.txt")));
+        
+        try {
+            Map map = (Map) in.read();
+            map = (Map) in.read();
+            assertEquals("eof", (String)map.get("eof"));
+            
+            List list = (List) map.get("b1");
+            assertNotNull(list);
+            assertEquals(2, list.size());
+            
+            Map b1 = (Map) list.get(0);
+            assertEquals("a", b1.get("f0"));
+            assertEquals("d", b1.get("f2"));
+            
+            List b2List = (List) b1.get("b2");
+            assertEquals("b", ((Map)b2List.get(0)).get("f1"));
+            assertEquals("c", ((Map)b2List.get(1)).get("f1"));
+            
+            b1 = (Map) list.get(1);
+            assertEquals("e", b1.get("f0"));
+            assertEquals("h", b1.get("f2"));
+            
+            b2List = (List) b1.get("b2");
+            assertEquals("f", ((Map)b2List.get(0)).get("f1"));
+            assertEquals("g", ((Map)b2List.get(1)).get("f1"));
+            
+            StringWriter text = new StringWriter();
+            factory.createWriter("w10", text).write(map);
+            assertEquals("a b c d e f g h eof" + lineSeparator, text.toString());
+        }
+        finally {
+            in.close();
+        }
+    }
 }

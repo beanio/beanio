@@ -139,5 +139,20 @@
       <field name="name" length="5" />
     </record>
   </stream>
+   
+  <stream name="w10" format="fixedlength">
+    <record name="record" class="map">
+    
+      <bean name="b1" collection="list" class="map" minOccurs="2" maxOccurs="2">
+        <field name="f0" length="2" />
+        <bean name="b2" collection="list" class="map" minOccurs="2" maxOccurs="2">
+          <field name="f1" length="2" />
+        </bean>
+        <field name="f2" length="2" />
+      </bean>
+      
+      <field name="eof" length="3" />
+    </record>
+  </stream>
 
 </beanio>

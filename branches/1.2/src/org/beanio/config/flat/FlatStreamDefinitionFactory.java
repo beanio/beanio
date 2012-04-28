@@ -66,64 +66,55 @@ public abstract class FlatStreamDefinitionFactory extends StreamDefinitionFactor
         
         //printStack(beanDefinition, 0);
 
-        // validate there are no field gaps for descendants of collections
-        validateCollections(beanDefinition, false);
         // validate min and max occurs will not confuse the parser
         validateOccurrences(beanDefinition);
-
-        // set bean lengths and calculate the default record min & max length
-        calculateRecordLength(beanDefinition);
         
-        // calculate default record minimum and maximum length
-        int minLength = 0;
-        int maxLength = 0;
-        for (FieldDefinition field : fieldList) {
-            minLength = Math.max(minLength, getRecordMinLength(field));
-            maxLength = Math.max(maxLength, getRecordMaxLength(field));
-        }
-        if (maxLength == Integer.MAX_VALUE) {
-            maxLength = -1;
+        // calculate nested bean lengths, and the overall default record min and max length
+        Segment s = calculateRecordLengths(beanDefinition, false);
+        
+        // handle the special case where the record did not have any fields
+        if (s.position == Integer.MAX_VALUE) {
+            s.position = 0;
         }
         
-        // validate and set the minimum length of the record
-        if (recordConfig.getMinLength() == null) {
-            // do nothing, minLength already set
+        // adjust segment for position
+        s.minLength += s.position;
+        if (s.maxLength < Integer.MAX_VALUE) {
+            s.maxLength += s.position;
         }
         else {
+            s.maxLength = -1;
+        }
+        
+        // config can override
+        if (recordConfig.getMinLength() != null) {
             if (recordConfig.getMinLength() < 0) {
                 throw new BeanIOConfigurationException(
                     "minLength must be at least 0 on record '" + recordConfig.getName() + "'");
             }
-            minLength = recordConfig.getMinLength();
+            
+            s.minLength = recordConfig.getMinLength();
         }
-        definition.setMinLength(minLength);
-
-        // validate and set the maximum length of the record
-        if (recordConfig.getMaxLength() == null) {
-            maxLength = maxLength < 0 ? maxLength : Math.max(minLength, maxLength);
-        }
-        // handle unbounded
-        else if (recordConfig.getMaxLength() < 0) {
-            maxLength = -1;
-        }
-        else if (recordConfig.getMaxLength() > 0 && recordConfig.getMaxLength() < minLength) {
-            if (recordConfig.getMinLength() == null) {
-                throw new BeanIOConfigurationException("maxLength must be at least " + minLength);                
+        if (recordConfig.getMaxLength() != null) {
+            if (recordConfig.getMaxLength() > 0 && recordConfig.getMaxLength() < s.minLength) {
+                if (recordConfig.getMinLength() == null) {
+                    throw new BeanIOConfigurationException("maxLength must be at least " + s.minLength);                
+                }
+                else {
+                    throw new BeanIOConfigurationException("maxLength must be greater than or " +
+                        "equal to minLength on record '" + recordConfig.getName() + "'");
+                }
             }
-            else {
-                throw new BeanIOConfigurationException("maxLength must be greater than or " +
-                    "equal to minLength on record '" + recordConfig.getName() + "'");
-            }
+            s.maxLength = recordConfig.getMaxLength();
         }
-        else {
-            maxLength = recordConfig.getMaxLength();
-        }
-        definition.setMaxLength(maxLength);
         
+        definition.setMinLength(s.minLength);
+        definition.setMaxLength(s.maxLength);
+
         // perform the last validations after all fields have been constructed and ordered
         for (FieldDefinition field : fieldList) {
             // set lazy to true for any field with a position greater than the minimum length of the record
-            field.setLazy(!(field.getPosition() < minLength));
+            field.setLazy(!(field.getPosition() < s.minLength));
         }
     }
        
@@ -153,46 +144,104 @@ public abstract class FlatStreamDefinitionFactory extends StreamDefinitionFactor
     }
     
     /**
-     * Validates there are no field gaps in any descendant of a collection.
-     * @param beanDefinition the bean definition to validate
-     * @param isCollection <tt>true</tt> if any ancestor of <tt>beanDefinition</tt> is a collection
+     * Holds length information about a segment.
      */
-    protected void validateCollections(BeanDefinition beanDefinition, boolean isCollection) {
+    protected static class Segment {
+        protected int position;
+        protected int minLength;
+        protected int maxLength;
+        protected boolean isVariableLength() { return minLength != maxLength; }
+    }
+    
+    /**
+     * Calculates the default minimum and maximum record length, and sets the
+     * length of nested beans in the process.
+     * @param beanDefinition the definition to calculate lengths for
+     * @param isCollection whether the definition is a collection
+     * @return the segment lengths
+     */
+    protected Segment calculateRecordLengths(BeanDefinition beanDefinition, boolean isCollection) {
+        /*
+         * Calculates the length of the record two different ways and takes the maximum
+         * of the two:
+         * 1.  by summing up the parts
+         * 2.  by subtracting the segment position from the last field in the segment
+         */
+        
         isCollection = isCollection || beanDefinition.isCollection();
         
-        int min = Integer.MAX_VALUE;
+        int start = Integer.MAX_VALUE;
+        int end = 0;
+        int min = 0;
         int max = 0;
-        int length = 0;
-        PropertyDefinition previous = null;
         
         for (PropertyDefinition property : beanDefinition.getPropertyList()) {
             if (property.isBean()) {
-                FlatBeanDefinition child = (FlatBeanDefinition)property;
-                validateCollections(child, isCollection);
-            }
-            else if (property.isField()) {
-                if (previous != null) {
-                    if (previous.isCollection()) {
-                        // assume min and max occurs are the same (which is validated elsewhere)
-                        length += previous.getMaxOccurs() * previous.getLength();
-                    }
-                    else {
-                        length += previous.getLength();
-                    }
+                FlatBeanDefinition childBean = (FlatBeanDefinition)property;
+                Segment s = calculateRecordLengths(childBean, isCollection);
+                
+                start = Math.min(start, s.position);
+                
+                min += childBean.getMinOccurs() * s.minLength;
+                
+                if (childBean.getMaxOccurs() < 0) {
+                    max = Integer.MAX_VALUE;
+                }
+                else if (max < Integer.MAX_VALUE && s.maxLength < Integer.MAX_VALUE) {
+                    max += childBean.getMaxOccurs() * s.maxLength;
                 }
                 
-                FieldDefinition field = (FieldDefinition) property;
-                min = Math.min(field.getPosition(), min);
-                max = Math.max(field.getPosition(), max);
+                if (end < Integer.MAX_VALUE) {
+                    if (s.maxLength < Integer.MAX_VALUE && childBean.getMaxOccurs() < Integer.MAX_VALUE) {
+                        end = Math.max(end, s.position + s.maxLength * childBean.getMaxOccurs());
+                    }
+                    else {
+                        end = Integer.MAX_VALUE;
+                    }
+                }
+            }
+            else if (property.isField()) {
+                FieldDefinition childField = (FieldDefinition) property;
+
+                start = Math.min(childField.getPosition(), start);
                 
-                previous = property;
+                min += childField.getLength() * childField.getMinOccurs();
+                
+                if (childField.getMaxOccurs() < 0) {
+                    max = Integer.MAX_VALUE;
+                }
+                else if (max < Integer.MAX_VALUE) {
+                    max += childField.getMaxOccurs() * childField.getLength();
+                }
+                
+                if (end < Integer.MAX_VALUE) {
+                    if (childField.getMaxOccurs() < Integer.MAX_VALUE) {
+                        end = Math.max(end, childField.getPosition() + 
+                            childField.getLength() * childField.getMaxOccurs());
+                    }
+                    else {
+                        end = Integer.MAX_VALUE;
+                    }
+                }
             }
         }
         
-        if (isCollection && (max - min) != length) {
-            throw new BeanIOConfigurationException("Invalid '" + beanDefinition.getName()  +
-                "' bean configuration: field gaps not allowed for children of collections");
+        Segment segment = new Segment();
+        segment.position = start;
+        segment.minLength = min;
+        segment.maxLength = max;
+        
+        int length = segment.maxLength;
+        if (end == Integer.MAX_VALUE || length == Integer.MAX_VALUE) {
+            length = -1;
         }
+        else {
+            length = Math.max(length, end - start);
+        }
+        beanDefinition.setLength(length);
+        
+        segment.maxLength = length < 0 ? Integer.MAX_VALUE : length;
+        return segment;
     }
     
     /**
@@ -245,123 +294,6 @@ public abstract class FlatStreamDefinitionFactory extends StreamDefinitionFactor
     }
         
     /**
-     * Returns the minimum length of the record based solely on the given field.
-     * Collection type bean definitions must have a valid length setting prior
-     * to calling this method.
-     * @param field the field to use to determine the minimum record length
-     * @return the minimum record length
-     */
-    private int getRecordMinLength(FieldDefinition field) {
-        if (field.getMinOccurs() == 0) {
-            return 0;
-        }
-        
-        int n = field.getPosition() + field.getLength() * (field.getMinOccurs() - 1);
-        PropertyDefinition property = field;
-        while ((property = property.getParent()) != null) {
-            if (property.getMinOccurs() == 0) {
-                return 0;
-            }
-            
-            n += property.getLength() * (property.getMinOccurs() - 1);
-        }
-        
-        return n + field.getLength();
-    }
-    
-    /**
-     * Returns the maximum length of the record based solely on the given field.
-     * Collection type bean definitions must have a valid length setting prior
-     * to calling this method.
-     * @param field the field to use to determine the maximum record length
-     * @return the maximum record length
-     */
-    private int getRecordMaxLength(FieldDefinition field) {
-        if (field.getMaxOccurs() < 0) {
-            return Integer.MAX_VALUE;
-        }
-        
-        int n = field.getPosition() + field.getLength() * (field.getMaxOccurs() - 1);
-        PropertyDefinition property = field;
-        while ((property = property.getParent()) != null) {
-            if (property.getMaxOccurs() < 0) {
-                return Integer.MAX_VALUE;
-            }
-            
-            n += property.getLength() * (property.getMaxOccurs() - 1);
-        }
-        
-        return n + field.getLength();
-    }
-    
-    /**
-     * Calculate and set bean lengths.  And determine the default min and max record length.
-     * @param beanDefinition the record level bean definition
-     * @return the record block containing the min and max length
-     */
-    private Block calculateRecordLength(BeanDefinition beanDefinition) {
-        Block block = new Block();
-        for (PropertyDefinition property : beanDefinition.getPropertyList()) {
-            if (property.isBean()) {
-                BeanDefinition bean = (BeanDefinition) property;
-                Block beanSize = calculateRecordLength(bean);
-                bean.setLength(beanSize.getLength());
-                block.update(bean, beanSize);
-            }
-            else if (property.isField()) {
-                block.update((FieldDefinition) property);
-            }
-        }
-        return block;
-    }
-    
-    /* this implementation assumes the same field is not reused */
-    private static class Block {
-        private int max = 0;
-        private FieldDefinition firstField;
-        private FieldDefinition lastField;
-        
-        public int getLength() {
-            if (max < 0) {
-                return -1;
-            }
-            else if (lastField == null) {
-                return max;
-            }
-            else if (lastField.getMaxOccurs() < 0) {
-                return -1;
-            }
-            else {
-                return max + lastField.getPosition() + 
-                    lastField.getLength() * lastField.getMaxOccurs() - firstField.getPosition();
-            }
-        }
-        
-        public void update(FieldDefinition property) {
-            if (firstField == null) {
-                firstField = property;
-            }
-            else if (property.getPosition() < firstField.getPosition()) {
-                firstField = property;
-            }
-            
-            if (lastField == null) {
-                lastField = property;
-            }
-            else if (property.getPosition() > lastField.getPosition()) {
-                lastField = property;
-            }
-        }
-        
-        public void update(BeanDefinition bean, Block size) {
-            if (bean.getMaxOccurs() < 0)
-                this.max = -1;
-            else
-                this.max += size.getLength() * bean.getMaxOccurs();
-        }
-    }
-        
-    /**
      * Comparator for sorting property definitions.
      */
     private static class PropertyDefinitionComparator implements Comparator<PropertyDefinition> {
@@ -391,7 +323,7 @@ public abstract class FlatStreamDefinitionFactory extends StreamDefinitionFactor
         }
     }
     
-    /*
+    @SuppressWarnings("unused")
     private void printStack(BeanDefinition bean, int level) {
         for (int i=0; i<level; i++)
             System.out.print("  ");
@@ -401,12 +333,11 @@ public abstract class FlatStreamDefinitionFactory extends StreamDefinitionFactor
             if (prop.isBean()) {
                 printStack((BeanDefinition) prop, level);
             }
-            else {
+            else if (prop.isField()) {
                 for (int i=0; i<level; i++)
                     System.out.print("  ");
-                System.out.println(prop.getName());
+                System.out.println(prop.getName() + " " + ((FieldDefinition)prop).getPosition());
             }
         }
     }
-    */
 }

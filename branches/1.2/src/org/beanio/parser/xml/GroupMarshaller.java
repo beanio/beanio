@@ -88,9 +88,16 @@ public class GroupMarshaller extends Marshaller {
             Node child = parentNode.appendChild(document.createElementNS(
                 xml.getNamespace(), xml.getName()));
             child.setUserData(XmlWriter.IS_GROUP_ELEMENT, Boolean.TRUE, null);
-            child.setPrefix(xml.getPrefix());
             if (!xml.isNamespaceAware()) {
                 child.setUserData(XmlWriter.IS_NAMESPACE_IGNORED, Boolean.TRUE, null);
+            }
+            else {
+                if ("".equals(xml.getPrefix())) {
+                    child.setUserData(XmlWriter.IS_DEFAULT_NAMESPACE, Boolean.TRUE, null);
+                }
+                else {
+                    child.setPrefix(xml.getPrefix());
+                }
             }
             
             return child;

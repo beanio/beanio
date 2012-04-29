@@ -325,4 +325,22 @@ public class XmlNamespaceTest extends XmlParserTest {
         
         assertXmlEquals(load("ns10_out.xml"), s.toString());
     }
+    
+    /**
+     * Test namespace declarations on the root element.  Also test default XML
+     * header values.
+     */
+    @Test
+    public void testEmptyPrefix() throws Exception {
+        StringWriter s = new StringWriter();
+        BeanWriter out = factory.createWriter("stream11", s);
+        
+        Person person = new Person();
+        person.setFirstName("Joe");
+        person.setLastName("Smith");
+        out.write(person);
+        out.close();
+        
+        assertXmlEquals(load("ns11_out.xml"), s.toString());
+    }
 }

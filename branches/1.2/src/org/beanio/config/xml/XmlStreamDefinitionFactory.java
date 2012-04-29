@@ -112,11 +112,7 @@ public class XmlStreamDefinitionFactory extends StreamDefinitionFactory {
         else {
             xmlNamespaceAware = true;
         }
-        
-        if ("".equals(xmlPrefix)) {
-            xmlPrefix = null;
-        }
-        
+
         XmlDefinition xml = ((XmlGroupDefinition)definition).getXmlDefinition();
         xml.setType(xmlType);
         xml.setName(xmlName);
@@ -283,9 +279,6 @@ public class XmlStreamDefinitionFactory extends StreamDefinitionFactory {
         if (xmlNamespaceSet) {
             xml.setNamespace(xmlNamespace);
             xml.setNamespaceAware(xmlNamespaceAware);
-            if ("".equals(xmlPrefix)) {
-                xmlPrefix = null;
-            }
             xml.setPrefix(xmlPrefix);
             
             String wrapperName = propertyConfig.getXmlWrapper();

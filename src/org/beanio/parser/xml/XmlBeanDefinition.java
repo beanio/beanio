@@ -251,7 +251,12 @@ public class XmlBeanDefinition extends BeanDefinition implements XmlNode {
                 element.setUserData(XmlWriter.IS_NAMESPACE_IGNORED, Boolean.TRUE, null);
             }
             else {
-                element.setPrefix(xml.getPrefix());
+                if ("".equals(xml.getPrefix())) {
+                    element.setUserData(XmlWriter.IS_DEFAULT_NAMESPACE, Boolean.TRUE, null);
+                }
+                else {
+                    element.setPrefix(xml.getPrefix());
+                }
             }
             parent.appendChild(element);
             
@@ -373,7 +378,12 @@ public class XmlBeanDefinition extends BeanDefinition implements XmlNode {
                 element.setUserData(XmlWriter.IS_NAMESPACE_IGNORED, Boolean.TRUE, null);
             }
             else {
-                element.setPrefix(fieldXml.getPrefix());
+                if ("".equals(fieldXml.getPrefix())) {
+                    element.setUserData(XmlWriter.IS_DEFAULT_NAMESPACE, Boolean.TRUE, null);
+                }
+                else {
+                    element.setPrefix(fieldXml.getPrefix());
+                }
             }
             parent.appendChild(element);
             
@@ -413,7 +423,12 @@ public class XmlBeanDefinition extends BeanDefinition implements XmlNode {
             element.setUserData(XmlWriter.IS_NAMESPACE_IGNORED, Boolean.TRUE, null);
         }
         else {
-            element.setPrefix(wrapper.getPrefix());
+            if ("".equals(wrapper.getPrefix())) {
+                element.setUserData(XmlWriter.IS_DEFAULT_NAMESPACE, Boolean.TRUE, null);
+            }
+            else {
+                element.setPrefix(wrapper.getPrefix());
+            }
         }
         parent.appendChild(element);
         

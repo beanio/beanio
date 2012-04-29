@@ -46,9 +46,15 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
     /**
      * The DOM user data key to indicate whether the namespace of a DOM element
      * should be ignored when writing to the output stream.  The value must be 
-     * of type <tt>java.lang.Boolean</tt>. 
+     * of type {@link Boolean} 
      */
     public static final String IS_NAMESPACE_IGNORED = "isNamespaceIgnored";
+    
+    /**
+     * The DOM user data key to indicate whether the declared namespace should
+     * override the default namespace.  The value must be of type {@link Boolean}.
+     */
+    public static final String IS_DEFAULT_NAMESPACE = "isDefaultNamespace";
     
     /**
      * The DOM user data key to indicate a DOM element is a group element and should
@@ -227,6 +233,12 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
                 ignoreNamespace = true;
             }
             namespace = "";
+        }
+        
+        if (prefix == null && !ignoreNamespace) {
+            if (Boolean.TRUE.equals(element.getUserData(IS_DEFAULT_NAMESPACE))) {
+                prefix = "";
+            }
         }
         
         // flag indicating if the element is empty or not

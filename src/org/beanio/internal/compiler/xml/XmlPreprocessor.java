@@ -81,10 +81,6 @@ public class XmlPreprocessor extends Preprocessor {
         else {
             group.setXmlNamespaceAware(true);
         }
-        
-        if ("".equals(group.getXmlPrefix())) {
-            group.setXmlPrefix(null);
-        }
     }
 
     @Override
@@ -109,9 +105,6 @@ public class XmlPreprocessor extends Preprocessor {
         if (segment.getXmlPrefix() != null) {
             if (segment.getXmlNamespace() == null) {
                 throw new BeanIOConfigurationException("Missing namespace for configured XML prefix");
-            }
-            if ("".equals(segment.getXmlPrefix())) {
-                segment.setXmlPrefix(null);
             }
         }
         
@@ -175,9 +168,6 @@ public class XmlPreprocessor extends Preprocessor {
         if (field.getXmlPrefix() != null) {
             if (field.getXmlNamespace() == null) {
                 throw new BeanIOConfigurationException("Missing namespace for configured XML prefix");
-            }
-            if ("".equals(field.getXmlPrefix())) {
-                field.setXmlPrefix(null);
             }
         }
         

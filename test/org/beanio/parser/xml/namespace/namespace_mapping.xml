@@ -115,4 +115,20 @@
     </group>
   </stream>
 
+  <stream name="stream11" format="xml" xmlName="stream" xmlNamespace="stream" xmlPrefix="s">
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory">
+      <property name="suppressHeader" value="false" />
+      <property name="namespaces" value="
+        g urn:group
+        r urn:record
+        xi  http://www.w3.org/2001/XMLSchema-instance" />
+    </parser>
+    <group name="group" xmlNamespace="urn:group">
+      <record name="person" class="org.beanio.parser.xml.Person" xmlNamespace="urn:record" xmlPrefix="">
+        <field name="firstName" />
+        <field name="lastName" />
+      </record>
+    </group>
+  </stream>
+
 </beanio>

@@ -20,6 +20,7 @@ import java.io.IOException;
 import javax.xml.XMLConstants;
 
 import org.beanio.internal.parser.*;
+import org.beanio.stream.xml.XmlWriter;
 import org.w3c.dom.*;
 
 /**
@@ -102,6 +103,17 @@ public class XmlWrapper extends DelegatingParser implements XmlNode {
         
         // create an element for this node
         Element element = ctx.getDocument().createElementNS(getNamespace(), getLocalName());
+        if (!isNamespaceAware()) {
+            element.setUserData(XmlWriter.IS_NAMESPACE_IGNORED, Boolean.TRUE, null);
+        }
+        else {
+            if ("".equals(getPrefix())) {
+                element.setUserData(XmlWriter.IS_DEFAULT_NAMESPACE, Boolean.TRUE, null);
+            }
+            else {
+                element.setPrefix(getPrefix());
+            }
+        }
         
         // append the new element to its parent
         Node parent = ctx.getParent();

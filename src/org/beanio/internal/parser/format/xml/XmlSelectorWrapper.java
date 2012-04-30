@@ -94,12 +94,19 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
         Node parent = ctx.getParent();
         Node node = parent.appendChild(
             ctx.getDocument().createElementNS(getNamespace(), getLocalName()));
-        node.setPrefix(getPrefix());
         if (group && ctx.isStreaming()) {
             node.setUserData(XmlWriter.IS_GROUP_ELEMENT, Boolean.TRUE, null);
         }
         if (!isNamespaceAware()) {
             node.setUserData(XmlWriter.IS_NAMESPACE_IGNORED, Boolean.TRUE, null);
+        }
+        else {
+            if ("".equals(getPrefix())) {
+                node.setUserData(XmlWriter.IS_DEFAULT_NAMESPACE, Boolean.TRUE, null);
+            }
+            else {
+                node.setPrefix(getPrefix());
+            }
         }
         
         ctx.setParent(node);

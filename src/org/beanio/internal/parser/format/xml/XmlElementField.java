@@ -84,7 +84,12 @@ public class XmlElementField extends XmlFieldFormat {
             element.setUserData(XmlWriter.IS_NAMESPACE_IGNORED, Boolean.TRUE, null);
         }
         else {
-            element.setPrefix(getPrefix());
+            if ("".equals(getPrefix())) {
+                element.setUserData(XmlWriter.IS_DEFAULT_NAMESPACE, Boolean.TRUE, null);
+            }
+            else {
+                element.setPrefix(getPrefix());
+            }
         }
         
         if (fieldText == null && isNillable()) {

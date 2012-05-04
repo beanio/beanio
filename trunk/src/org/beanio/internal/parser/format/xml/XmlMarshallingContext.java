@@ -124,6 +124,14 @@ public class XmlMarshallingContext extends MarshallingContext {
                     if (!xml.isNamespaceAware()) {
                         node.setUserData(XmlWriter.IS_NAMESPACE_IGNORED, Boolean.TRUE, null);
                     }
+                    else {
+                        if ("".equals(xml.getPrefix())) {
+                            node.setUserData(XmlWriter.IS_DEFAULT_NAMESPACE, Boolean.TRUE, null);
+                        }
+                        else {
+                            node.setPrefix(xml.getPrefix());
+                        }
+                    }
                     
                     this.parent = node;
                 }

@@ -11,7 +11,7 @@
 <body>
 
 <div class="title">BeanIO 2.0 Reference Guide</div>
-<p><i>Revision 1</i>, &copy; 2010-2012 Kevin Seim</p>
+<p><i>Revision 2</i>, &copy; 2010-2012 Kevin Seim</p>
 <p style="font-size: 90%"><i>Copies of this document may be made for your own use and for
 distribution to others, provided that you do not charge any fee for such copies and further provided
 that each copy contains this Copyright Notice, whether distributed in print or electronically.</i></p>
@@ -146,7 +146,8 @@ currently supports XML, CSV, delimited and fixed length file formats. BeanIO is 
   <li>More lenient/sensible defaults.</li>
   <li>Consolidated <tt>reader</tt> and <tt>writer</tt> elements (see <a href="#parser"><tt>parser</tt></a>).</li>
   <li>Support for unmarshalling a subset of a record using a record <tt>target</tt> attribute</li>
-  <li>Mapping file property substitution support.  (M2)</li>
+  <li>Mapping file property substitution support using the syntax <tt>${propertyName}</tt> or <tt>${propertyName,default}</tt>.</li>
+  <li>A new <tt>occurs</tt> attribute for specifying both <tt>minOccurs</tt> and <tt>maxOccurs</tt>.  Examples: '0-1', '1+', '3'.</li>
 </ul>
 
 <h2><a name="Migration">1.2. Migrating from 1.2.x</a></h2>
@@ -3588,6 +3589,19 @@ The following additional attributes are accepted in this scenario:</p>
   <td>*</td>
 </tr>
 <tr>
+  <td><tt>occurs</tt></td>
+  <td>An alternative to specifying both <tt>minOccurs</tt> and <tt>maxOccurs</tt>.
+    The attribute uses the following syntax:
+    <table border="0" style="margin: 10px 10px 10px 10px;">
+      <tr><td>N</td>  <td>minOccurs and maxOccurs set to N (e.g. '1')</td></tr>
+      <tr><td>N-M</td><td>minOccurs set to N, maxOccurs set to M (e.g. '0-1')</td></tr>
+      <tr><td>N+</td> <td>minOccurs set to N, maxOccurs is unbounded (e.g. '1+')</td></tr>
+    </table>
+  </td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
   <td><tt>xmlType</tt></td>
   <td>The XML node type mapped to the stream.  
   If not specified or set to <tt>element</tt>, the stream is mapped to the root element of the
@@ -3741,6 +3755,19 @@ the group as a whole.</p>
   <td>*</td>
 </tr>
 <tr>
+  <td><tt>occurs</tt></td>
+  <td>An alternative to specifying both <tt>minOccurs</tt> and <tt>maxOccurs</tt>.
+    The attribute uses the following syntax:
+    <table border="0" style="margin: 10px 10px 10px 10px;">
+      <tr><td>N</td>  <td>minOccurs and maxOccurs set to N (e.g. '1')</td></tr>
+      <tr><td>N-M</td><td>minOccurs set to N, maxOccurs set to M (e.g. '0-1')</td></tr>
+      <tr><td>N+</td> <td>minOccurs set to N, maxOccurs is unbounded (e.g. '1+')</td></tr>
+    </table>
+  </td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
   <td><tt>xmlType</tt></td>
   <td>The XML node type mapped to this group.  
   If not specified or set to <tt>element</tt>, this group is mapped to an XML element.  When set to 
@@ -3872,6 +3899,19 @@ the group as a whole.</p>
   <td><tt>maxOccurs</tt></td>
   <td>The maximum number of occurrences of this record within its parent group or stream.
     Defaults to <tt>unbounded</tt>.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>occurs</tt></td>
+  <td>An alternative to specifying both <tt>minOccurs</tt> and <tt>maxOccurs</tt>.
+    The attribute uses the following syntax:
+    <table border="0" style="margin: 10px 10px 10px 10px;">
+      <tr><td>N</td>  <td>minOccurs and maxOccurs set to N (e.g. '1')</td></tr>
+      <tr><td>N-M</td><td>minOccurs set to N, maxOccurs set to M (e.g. '0-1')</td></tr>
+      <tr><td>N+</td> <td>minOccurs set to N, maxOccurs is unbounded (e.g. '1+')</td></tr>
+    </table>
+  </td>
   <td>No</td>
   <td>*</td>
 </tr>
@@ -4025,6 +4065,19 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
     <p>Maximum occurrences is not used for validation.  If bounded, the
       size of a bound collection will not exceed the configured value, and additional occurrences
       are ignored.</p>
+  </td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>occurs</tt></td>
+  <td>An alternative to specifying both <tt>minOccurs</tt> and <tt>maxOccurs</tt>.
+    The attribute uses the following syntax:
+    <table border="0" style="margin: 10px 10px 10px 10px;">
+      <tr><td>N</td>  <td>minOccurs and maxOccurs set to N (e.g. '1')</td></tr>
+      <tr><td>N-M</td><td>minOccurs set to N, maxOccurs set to M (e.g. '0-1')</td></tr>
+      <tr><td>N+</td> <td>minOccurs set to N, maxOccurs is unbounded (e.g. '1+')</td></tr>
+    </table>
   </td>
   <td>No</td>
   <td>*</td>
@@ -4244,6 +4297,19 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
     number of occurrences of this field.
     <p>Maximum occurrences is not used for validation. When bounded, the size of a 
     collection will not exceed the configured value, and additional occurrences are ignored.</p>
+  </td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>occurs</tt></td>
+  <td>An alternative to specifying both <tt>minOccurs</tt> and <tt>maxOccurs</tt>.
+    The attribute uses the following syntax:
+    <table border="0" style="margin: 10px 10px 10px 10px;">
+      <tr><td>N</td>  <td>minOccurs and maxOccurs set to N (e.g. '1')</td></tr>
+      <tr><td>N-M</td><td>minOccurs set to N, maxOccurs set to M (e.g. '0-1')</td></tr>
+      <tr><td>N+</td> <td>minOccurs set to N, maxOccurs is unbounded (e.g. '1+')</td></tr>
+    </table>
   </td>
   <td>No</td>
   <td>*</td>

@@ -19,8 +19,9 @@ import static org.junit.Assert.*;
 
 import java.io.*;
 import java.math.*;
+import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Map;
+import java.util.*;
 
 import org.beanio.*;
 import org.beanio.parser.ParserTest;
@@ -65,10 +66,13 @@ public class TypesParserTest extends ParserTest {
             assertEquals(Boolean.TRUE, record.getBooleanValue());
             assertEquals(new BigInteger("10"), record.getBigIntegerValue());
             assertEquals(new BigDecimal("10"), record.getBigDecimalValue());
-
+            assertEquals(UUID.fromString("fbd9d2be-35dc-41fb-abc9-f4b4c8757eb5"), record.getId());
+            assertEquals(new URL("http://www.google.com"), record.getUrl());
+            
             text = new StringWriter();
             factory.createWriter("t1", text).write(record);
-            assertEquals("10,10,-10,10,10.1,-10.1,A,ABC,010170,true,10,10" + lineSep, text.toString());
+            assertEquals("10,10,-10,10,10.1,-10.1,A,ABC,010170,true,10,10" + 
+                ",fbd9d2be-35dc-41fb-abc9-f4b4c8757eb5,http://www.google.com" + lineSep, text.toString());
 
             record = (ObjectRecord) in.read();
             assertNull(record.getByteValue());
@@ -83,10 +87,12 @@ public class TypesParserTest extends ParserTest {
             assertNull(record.getBooleanValue());
             assertNull(record.getBigIntegerValue());
             assertNull(record.getBigDecimalValue());
-
+            assertNull(record.getId());
+            assertNull(record.getUrl());
+            
             text = new StringWriter();
             factory.createWriter("t1", text).write(record);
-            assertEquals(",,,,,,,,,,," + lineSep, text.toString());
+            assertEquals(",,,,,,,,,,,,," + lineSep, text.toString());
         }
         finally {
             in.close();

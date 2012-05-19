@@ -27,6 +27,8 @@
       <field name="booleanValue" />
       <field name="bigIntegerValue" />
       <field name="bigDecimalValue" />
+      <field name="id" />
+      <field name="url" />
     </record>
   </stream>
 

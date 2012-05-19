@@ -350,8 +350,8 @@ public abstract class JsonReaderSupport {
     }
     
     /**
-     * 
-     * @return
+     * Reads a Unicode character in JSON format.
+     * @return the Unicode character
      * @throws IOException
      */
     protected char readUnicode() throws IOException {

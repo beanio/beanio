@@ -16,7 +16,8 @@
 package org.beanio.parser.types;
 
 import java.math.*;
-import java.util.Date;
+import java.net.URL;
+import java.util.*;
 
 /**
  * <tt>ObjectRecord</tt> is used to test type handlers for Objects.
@@ -38,6 +39,8 @@ public class ObjectRecord {
 	private Boolean booleanValue;
 	private BigInteger bigIntegerValue;
 	private BigDecimal bigDecimalValue;
+	private UUID id;
+	private URL url;
 	
 	public Byte getByteValue() {
 		return byteValue;
@@ -111,4 +114,16 @@ public class ObjectRecord {
 	public void setBigDecimalValue(BigDecimal bigDecimalValue) {
 		this.bigDecimalValue = bigDecimalValue;
 	}
+    public UUID getId() {
+        return id;
+    }
+    public void setId(UUID id) {
+        this.id = id;
+    }
+    public URL getUrl() {
+        return url;
+    }
+    public void setUrl(URL url) {
+        this.url = url;
+    }
 }

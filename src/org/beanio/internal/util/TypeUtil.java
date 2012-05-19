@@ -16,6 +16,7 @@
 package org.beanio.internal.util;
 
 import java.math.*;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -104,6 +105,8 @@ public class TypeUtil {
      * <tr><td>bigdecimal</td><td>java.math.BigDecimal</td></tr>
      * <tr><td>decimal</td><td>java.math.BigDecimal</td></tr>
      * <tr><td>biginteger</td><td>java.math.BigInteger</td></tr>
+     * <tr><td>uuid</td><td>java.util.UUID</td></tr>
+     * <tr><td>url</td><td>java.net.URL</td></tr>
      * <tr><td>date</td><td>java.util.Date</td></tr>
      * <tr><td>time</td><td>java.util.Date</td></tr>
      * <tr><td>datetime</td><td>java.util.Date</td></tr></tr>
@@ -142,6 +145,12 @@ public class TypeUtil {
             return BigDecimal.class;
         else if ("biginteger".equalsIgnoreCase(type))
             return BigInteger.class;
+        else if ("uuid".equalsIgnoreCase(type)) {
+            return UUID.class;
+        }
+        else if ("url".equalsIgnoreCase(type)) {
+            return URL.class;
+        }
         else if (
             DATE_ALIAS.equalsIgnoreCase(type) ||
             TIME_ALIAS.equalsIgnoreCase(type) ||

@@ -1,6 +1,11 @@
 Project BeanIO Change Log
 =========================
 
+Changes in version 1.2.5 (2012-05-18)
+-------------------------------------
+* Fixed calculation of record length in some circumstances for repeating nested beans (gc0033)
+* Added support for xmlPrefix="" despite a namespace declaration on the root element (gc0032)
+
 Changes in version 1.2.4 (2012-03-24)
 -------------------------------------
 * Updated OSGi manifest entries in build.xml (gc0026)

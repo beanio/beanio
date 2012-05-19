@@ -1,0 +1,6 @@
+<people xmlns="http://test" xmlns:f="http://field">
+  <friends>
+    <f:friend xmlns:ns1="http://att" ns1:gender="M">John</f:friend>
+    <f:friend xmlns:ns1="http://att" ns1:gender="F">Jen</f:friend>
+  </friends>
+</people>

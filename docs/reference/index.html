@@ -1369,7 +1369,7 @@ for validation purposes.</p>
 
 <h3><a name="FieldTypeConversion">4.3.1. Field Type Conversion</a></h3>
 <p>The property type of a field is determined by introspecting the bean object the field belongs to.
-If the bean class is of type <tt>java.util.Map</tt>, BeanIO will assume the field is of type
+If the bean class is of type <tt>java.util.Map</tt> or <tt>java.util.Collection</tt>, BeanIO will assume the field is of type
 <tt>java.lang.String</tt>, unless a field type is explicitly declared using a field's <tt>type</tt>
 attribute.</p>
 <p>The <tt>type</tt> attribute may be set to any fully qualified class name or to one of the 
@@ -1397,6 +1397,8 @@ or alias <tt>integer</tt> or <tt>int</tt>.</p>
     <tt>time</tt>
   </td>
 </tr>
+<tr><td>java.util.UUID</td><td>-</td><td><tt>uuid</tt></td></tr>
+<tr><td>java.net.URL</td><td>-</td><td><tt>url</tt></td></tr>
 </table>
 <p class="indent"><sup>1</sup> By default, the <tt>date</tt> alias is used for <tt>java.util.Date</tt> types that 
 contain date information only, and the <tt>time</tt> alias is used for <tt>java.util.Date</tt> types that contain 
@@ -3476,6 +3478,10 @@ The following additional attributes are accepted in this scenario:</p>
 
 <h2><a name="template">A.5. <tt>template</tt></a></h2>
 <p>The <tt>template</tt> element is used to create reusable lists of bean properties.</p>
+<p>Note that templates are "expanded" at the time they are included.  This means an imported 
+  template that relies on property substitution will use property values from the 
+  mapping file that included it and not the mapping file where the template was declared.
+</p>
 <p>Attributes:</p>
 <table>
 <tr>

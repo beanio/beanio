@@ -16,6 +16,7 @@
 package org.beanio.internal.util;
 
 import java.math.*;
+import java.net.URL;
 import java.text.DateFormat;
 import java.util.*;
 
@@ -73,7 +74,9 @@ public class TypeHandlerFactory {
         defaultFactory.registerHandlerFor(BigDecimal.class, new BigDecimalTypeHandler());
         defaultFactory.registerHandlerFor(BigInteger.class, new BigIntegerTypeHandler());
         defaultFactory.registerHandlerFor(Boolean.class, new BooleanTypeHandler());
-
+        defaultFactory.registerHandlerFor(UUID.class, new UUIDTypeHandler());
+        defaultFactory.registerHandlerFor(URL.class, new URLTypeHandler());
+        
         Settings settings = Settings.getInstance();
         defaultFactory.registerHandlerFor(TypeUtil.DATETIME_ALIAS, new DateTypeHandler(
             settings.getProperty(Settings.DEFAULT_DATETIME_FORMAT)));

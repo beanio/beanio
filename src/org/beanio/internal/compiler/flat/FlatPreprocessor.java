@@ -176,7 +176,7 @@ public class FlatPreprocessor extends Preprocessor {
             segment.getMaxSize() == Integer.MAX_VALUE) {
             defaultPosition = Integer.MAX_VALUE;
         }
-        else if (segment.isRepeating() && segment.getMinOccurs() != segment.getMaxOccurs()) {
+        else if (segment.isRepeating() && !segment.getMinOccurs().equals(segment.getMaxOccurs())) {
             defaultPosition = Integer.MAX_VALUE;
         }
         else {

@@ -40,7 +40,7 @@ public class JsonRecordMarshaller extends JsonWriterSupport implements RecordMar
     
     /**
      * Constructs a new <tt>JsonRecordMarshaller</tt>.
-     * @param the {@link JsonParserConfiguration}
+     * @param config the {@link JsonParserConfiguration}
      */
     public JsonRecordMarshaller(JsonParserConfiguration config) {
         init(out, config);

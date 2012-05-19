@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import static org.junit.Assert.assertEquals;
 import java.io.*;
 
 import org.beanio.stream.delimited.*;
-import org.junit.*;
+import org.junit.Test;
 
 /**
- * JUnit test cases for testing the {@link DelimitedWriter} and {@link DelimitedRecordParserFactory}.
+ * JUnit test cases for testing the <tt>DelimitedWriter</tt> and <tt>DelimitedWriterFactory</tt>.
  * 
  * @author Kevin Seim
  * @since 1.0
@@ -32,18 +32,9 @@ public class DelimitedWriterTest {
 
     private static final String lineSep = System.getProperty("line.separator");
 
-    private DelimitedRecordParserFactory factory;
-
-    @Before
-    public void setUp() throws Exception {
-        factory = new DelimitedRecordParserFactory();
-    }
-    
     @Test(expected = IllegalArgumentException.class)
     public void testDelimiterIsEscape() {
-        factory.setDelimiter(',');
-        factory.setEscape(',');
-        factory.createWriter(new StringWriter());
+        new DelimitedWriter(new StringWriter(), ',', ',');
     }
 
     @Test
@@ -64,18 +55,15 @@ public class DelimitedWriterTest {
 
     @Test
     public void testCustomDelimiterAndEscape() throws IOException {
-        factory.setDelimiter(',');
-        factory.setEscape('\\');
-        
         StringWriter text = new StringWriter();
-        RecordWriter out = factory.createWriter(text);
+        RecordWriter out = new DelimitedWriter(text, ',', '\\');
         out.write(new String[] { "value1", "value2," });
         assertEquals("value1,value2\\," + lineSep, text.toString());
     }
 
     @Test
     public void testDefaultFactoryConfiguration() throws IOException {
-        DelimitedRecordParserFactory factory = new DelimitedRecordParserFactory();
+        DelimitedWriterFactory factory = new DelimitedWriterFactory();
         StringWriter text = new StringWriter();
         RecordWriter out = factory.createWriter(text);
         out.write(new String[] { "value1", "value\t2" });
@@ -84,7 +72,7 @@ public class DelimitedWriterTest {
 
     @Test
     public void testCustomFactoryConfiguration() throws IOException {
-        DelimitedRecordParserFactory factory = new DelimitedRecordParserFactory();
+        DelimitedWriterFactory factory = new DelimitedWriterFactory();
         factory.setDelimiter(',');
         factory.setEscape('\\');
         factory.setRecordTerminator("");
@@ -96,7 +84,7 @@ public class DelimitedWriterTest {
 
     @Test
     public void testFlushAndClose() throws IOException {
-        DelimitedRecordParserFactory factory = new DelimitedRecordParserFactory();
+        DelimitedWriterFactory factory = new DelimitedWriterFactory();
         factory.setDelimiter(',');
         factory.setEscape('\\');
         factory.setRecordTerminator("");

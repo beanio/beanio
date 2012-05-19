@@ -55,7 +55,45 @@ public class FixedLengthReader implements RecordReader {
      * @param in the input stream to read from
      */
     public FixedLengthReader(Reader in) {
-        this(in, (FixedLengthParserConfiguration) null);
+        this(in, (FixedLengthReaderConfiguration) null);
+    }
+
+    /**
+     * Constructs a new <tt>FixedLengthReader</tt>.
+     * @param in the input stream to read from
+     * @param lineContinuationCharacter the line continuation character,
+     *   or <tt>null</tt> to disable line continuations
+     * @deprecated use {@link FixedLengthReader#FixedLengthReader(Reader, FixedLengthReaderConfiguration)} instead
+     */
+    public FixedLengthReader(Reader in, Character lineContinuationCharacter) {
+        this(in, lineContinuationCharacter, null);
+    }
+    
+    /**
+     * Constructs a new <tt>FixedLengthReader</tt>.
+     * @param in the input stream to read from
+     * @param lineContinuationCharacter the line continuation character,
+     *   or <tt>null</tt> to disable line continuations
+     * @param recordTerminator the character used to signify the end of a record
+     * @deprecated use {@link FixedLengthReader#FixedLengthReader(Reader, FixedLengthReaderConfiguration)} instead
+     */
+    public FixedLengthReader(Reader in, Character lineContinuationCharacter, Character recordTerminator) {
+        this.in = in;
+        
+        if (lineContinuationCharacter == null) {
+            this.multilineEnabled = false;
+        }
+        else {
+            if (recordTerminator != null && lineContinuationCharacter == recordTerminator) {
+                throw new IllegalArgumentException("The line continuation character and recrod terminator cannot match.");
+            }    
+            this.multilineEnabled = true;
+            this.lineContinuationChar = lineContinuationCharacter;
+        }
+        
+        if (recordTerminator != null) {
+            this.recordTerminator = recordTerminator;
+        }
     }
     
     /**
@@ -65,24 +103,15 @@ public class FixedLengthReader implements RecordReader {
      * @throws IllegalArgumentException if a configuration setting is invalid
      * @since 1.2
      */
-    public FixedLengthReader(Reader in, FixedLengthParserConfiguration config) throws IllegalArgumentException {
+    public FixedLengthReader(Reader in, FixedLengthReaderConfiguration config) throws IllegalArgumentException {
         if (config == null) {
-            config = new FixedLengthParserConfiguration();
+            config = new FixedLengthReaderConfiguration();
         }
         
         this.in = in;
         
         if (config.getRecordTerminator() != null) {
-            String s = config.getRecordTerminator();
-            if ("\n\r".equals(s)) {
-                // use default
-            }
-            else if (s.length() == 1) {
-                this.recordTerminator = s.charAt(0);
-            }
-            else if (s.length() > 1) {
-                throw new IllegalArgumentException("Record terminator must be a single character");
-            }
+            this.recordTerminator = config.getRecordTerminator();
         }
         
         if (config.getLineContinuationCharacter() == null) {
@@ -93,12 +122,12 @@ public class FixedLengthReader implements RecordReader {
             this.lineContinuationChar = config.getLineContinuationCharacter();
             
             if (recordTerminator != 0 && lineContinuationChar == recordTerminator) {
-                throw new IllegalArgumentException("The line continuation character and record terminator cannot match.");
+                throw new IllegalArgumentException("The line continuation character and recrod terminator cannot match.");
             }
         }
         
         if (config.isCommentEnabled()) {
-            commentReader = new CommentReader(in, config.getComments(), this.recordTerminator);
+            commentReader = new CommentReader(in, config.getComments(), config.getRecordTerminator());
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.beanio.stream.csv.*;
 import org.junit.Test;
 
 /**
- * JUnit test cases for testing the <tt>CsvWriter</tt> and <tt>CsvRecordParserFactory</tt>.
+ * JUnit test cases for testing the <tt>CsvWriter</tt> and <tt>CsvWriterFactory</tt>.
  * 
  * @author Kevin Seim
  * @since 1.0
@@ -34,7 +34,7 @@ public class CsvWriterTest {
 
     @Test
     public void testDefaultConfiguration() throws IOException {
-        CsvRecordParserFactory factory = new CsvRecordParserFactory();
+        CsvWriterFactory factory = new CsvWriterFactory();
         StringWriter text = new StringWriter();
         RecordWriter out = factory.createWriter(text);
         out.write(new String[] { "value1", "\"value2\"", "value,3" });
@@ -43,7 +43,7 @@ public class CsvWriterTest {
 
     @Test
     public void testCustomConfiguration() throws IOException {
-        CsvRecordParserFactory factory = new CsvRecordParserFactory();
+        CsvWriterFactory factory = new CsvWriterFactory();
         factory.setDelimiter(':');
         factory.setQuote('\'');
         factory.setEscape('\\');
@@ -56,7 +56,7 @@ public class CsvWriterTest {
 
     @Test
     public void testAlwaysQuote() throws IOException {
-        CsvRecordParserFactory factory = new CsvRecordParserFactory();
+        CsvWriterFactory factory = new CsvWriterFactory();
         factory.setQuote('\'');
         factory.setEscape('\\');
         factory.setRecordTerminator("");
@@ -69,7 +69,7 @@ public class CsvWriterTest {
 
     @Test
     public void testMultiline() throws IOException {
-        CsvRecordParserFactory factory = new CsvRecordParserFactory();
+        CsvWriterFactory factory = new CsvWriterFactory();
         factory.setQuote('\'');
         factory.setEscape('\\');
         factory.setRecordTerminator("");
@@ -83,7 +83,7 @@ public class CsvWriterTest {
 
     @Test
     public void testFlushAndClose() throws IOException {
-        CsvRecordParserFactory factory = new CsvRecordParserFactory();
+        CsvWriterFactory factory = new CsvWriterFactory();
         factory.setQuote('\'');
         factory.setEscape('\\');
         factory.setRecordTerminator("");

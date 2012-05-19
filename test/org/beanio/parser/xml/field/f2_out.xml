@@ -3,6 +3,6 @@
     <age>00025</age>
   </person>
   <person>
-    <age/>
+    <age>00000</age>
   </person>
 </stream>

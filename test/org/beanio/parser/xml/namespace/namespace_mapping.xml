@@ -1,10 +1,25 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<beanio xmlns="http://www.beanio.org/2012/03" 
+<!-- 
+    Copyright 2011 Kevin Seim
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+       http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<beanio xmlns="http://www.beanio.org/2011/01" 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.beanio.org/2012/03 http://www.beanio.org/2012/03/mapping.xsd">
+  xsi:schemaLocation="http://www.beanio.org/2011/01 http://www.beanio.org/2011/01/mapping.xsd">
 
   <stream name="stream" format="xml">
-    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <group name="group">
       <record name="person" class="org.beanio.parser.xml.Person">
         <field name="firstName" />
@@ -13,7 +28,7 @@
   </stream>
   
   <stream name="stream1" format="xml" xmlName="stream" xmlNamespace="*">
-    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <group name="group">
       <record name="person" class="org.beanio.parser.xml.Person">
         <field name="firstName" />
@@ -22,7 +37,7 @@
   </stream>
 
   <stream name="stream2" format="xml" xmlName="stream" xmlNamespace="stream">
-    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <group name="group" xmlNamespace="group">
       <record name="person" class="org.beanio.parser.xml.Person" xmlNamespace="record">
         <field name="firstName" xmlNamespace="field" minOccurs="0" />
@@ -31,7 +46,7 @@
   </stream>  
 
   <stream name="stream3" format="xml" xmlName="stream" xmlNamespace="stream">
-    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <group name="group" xmlNamespace="group">
       <record name="person" class="org.beanio.parser.xml.Person" xmlNamespace="*">
         <field name="firstName" />
@@ -40,7 +55,7 @@
   </stream>  
 
   <stream name="stream4" format="xml" xmlName="stream" xmlNamespace="stream">
-    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <group name="group" xmlNamespace="group">
       <record name="person" class="org.beanio.parser.xml.Person" xmlNamespace="record">
         <field name="firstName" xmlNamespace="*" />
@@ -49,7 +64,7 @@
   </stream>  
 
   <stream name="stream5" format="xml" xmlName="stream" xmlNamespace="stream">
-    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <group name="group" xmlNamespace="*">
       <record name="person" class="org.beanio.parser.xml.Person">
         <field name="firstName" xmlNamespace="field" />
@@ -58,7 +73,7 @@
   </stream>  
 
   <stream name="stream6" format="xml" xmlName="stream" xmlNamespace="stream">
-    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <group name="group">
       <record name="person" class="org.beanio.parser.xml.Person" xmlNamespace="record" xmlPrefix="r">
         <field name="firstName" />
@@ -67,7 +82,7 @@
   </stream>  
 
   <stream name="stream7" format="xml" xmlName="stream" xmlNamespace="stream">
-    <parser class="org.beanio.parser.xml.TestXmlWriterFactory" />
+    <writer class="org.beanio.parser.xml.TestXmlWriterFactory" />
     <group name="group" xmlNamespace="group">
       <record name="person" class="org.beanio.parser.xml.Person" xmlNamespace="record" xmlPrefix="r">
         <field name="firstName" xmlNamespace="field" xmlPrefix="f" />
@@ -76,11 +91,11 @@
   </stream>  
 
   <stream name="stream8" format="xml" xmlName="stream" xmlNamespace="stream" xmlPrefix="s">
-    <parser class="org.beanio.parser.xml.TestXmlWriterFactory">
+    <writer class="org.beanio.parser.xml.TestXmlWriterFactory">
       <property name="suppressHeader" value="false" />
       <property name="version" value="1.1" />
       <property name="encoding" value="ASCII" />
-    </parser>
+    </writer>
     <group name="group">
       <record name="person" class="org.beanio.parser.xml.Person" xmlNamespace="record">
         <field name="firstName" />
@@ -89,10 +104,10 @@
   </stream>
 
   <stream name="stream9" format="xml" xmlName="stream" xmlNamespace="stream" xmlPrefix="s">
-    <parser class="org.beanio.parser.xml.TestXmlWriterFactory">
+    <writer class="org.beanio.parser.xml.TestXmlWriterFactory">
       <property name="suppressHeader" value="false" />
       <property name="encoding" value="" />
-    </parser>
+    </writer>
     <group name="group" xmlNamespace="group" xmlPrefix="g">
       <record name="person" class="org.beanio.parser.xml.Person" xmlNamespace="stream">
         <field name="firstName" />
@@ -101,12 +116,12 @@
   </stream>
   
   <stream name="stream10" format="xml" xmlName="stream" xmlNamespace="stream" xmlPrefix="s">
-    <parser class="org.beanio.parser.xml.TestXmlWriterFactory">
+    <writer class="org.beanio.parser.xml.TestXmlWriterFactory">
       <property name="suppressHeader" value="false" />
       <property name="namespaces" value="
         g group 
         xi  http://www.w3.org/2001/XMLSchema-instance        " />
-    </parser>
+    </writer>
     <group name="group" xmlNamespace="group">
       <record name="person" class="org.beanio.parser.xml.Person">
         <field name="firstName" nillable="true" />
@@ -116,13 +131,13 @@
   </stream>
 
   <stream name="stream11" format="xml" xmlName="stream" xmlNamespace="stream" xmlPrefix="s">
-    <parser class="org.beanio.parser.xml.TestXmlWriterFactory">
+    <writer class="org.beanio.parser.xml.TestXmlWriterFactory">
       <property name="suppressHeader" value="false" />
       <property name="namespaces" value="
         g urn:group
         r urn:record
         xi  http://www.w3.org/2001/XMLSchema-instance" />
-    </parser>
+    </writer>
     <group name="group" xmlNamespace="urn:group">
       <record name="person" class="org.beanio.parser.xml.Person" xmlNamespace="urn:record" xmlPrefix="">
         <field name="firstName" />

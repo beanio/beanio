@@ -1,7 +1,0 @@
-{
-  "customer": {
-    "firstName": "Jen",
-    "lastName": "Jones"
-  },
-  "account": "1234"
-}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,7 @@ import org.beanio.stream.util.CommentReader;
 
 /**
  * A <tt>CsvReader</tt> is used to parse CSV formatted flat files into records
- * of <tt>String</tt> arrays.  
- * 
- * <p>The CSV format supported is defined by specification 
+ * of <tt>String</tt> arrays.  The CSV format supported is defined by specification 
  * RFC 4180.  By default, there is one exception: lines that span multiple records will 
  * throw an exception.  To allow quoted multi-line fields, simply set 
  * <tt>multilineEnabled</tt> to <tt>true</tt> when constructing the reader.
@@ -34,7 +32,7 @@ import org.beanio.stream.util.CommentReader;
  * <ul>
  * <li>The default quotation mark character, '"', can be overridden.</li>
  * <li>The default escape character, '"', can be overridden or disabled altogether.</li>
- * <li>Whitespace can be allowed outside of quoted values.</li>
+ * <li>Whitespace can be allowed outside of quoted values.<li>
  * <li>Quotation marks can be allowed in unquoted fields (as long as the quotation
  *   mark is not the first character in the field</li>
  * </ul>
@@ -71,6 +69,64 @@ public class CsvReader implements RecordReader {
     public CsvReader(Reader in) {
         this(in, null);
     }
+
+    /**
+     * Constructs a new <tt>CsvReader</tt>.
+     * @param in the input stream to read from
+     * @param delimiter the field delimiter
+     * @param escape the escape character, or <tt>null</tt> to disable escaping
+     * @param multilineEnabled set to <tt>true</tt> to allow quoted fields to contain
+     *   newline and carriage return characters
+     * @deprecated use {@link CsvReader#CsvReader(Reader, CsvReaderConfiguration)} instead
+     */
+    public CsvReader(Reader in, char delimiter, Character escape, boolean multilineEnabled) {
+        this(in, delimiter, '"', escape, multilineEnabled, false, false);
+    }
+
+    /**
+     * Constructs a new <tt>CsvReader</tt>.
+     * @param in the input stream to read from
+     * @param delimiter the field delimiter
+     * @param quote the quotation character
+     * @param escape the escape character, or <tt>null</tt> to disable escaping
+     * @param multilineEnabled set to <tt>true</tt> to allow quoted fields to contain
+     *   newline and carriage return characters
+     * @param whitespaceAllowed set to <tt>true</tt> to ignore whitespace outside
+     *   of quoted fields
+     * @param unquotedQuotesAllowed set to <tt>true</tt> to allow fields containing
+     *   quotation marks in unquoted fields, for example: 'Mark said "...'.
+     *   Note that if the quotation mark is at the beginning of the field, the
+     *   field is considered quoted and a trailing quotation mark is required.
+     * @throws IllegalArgumentException if the configuration is invalid
+     * @deprecated use {@link CsvReader#CsvReader(Reader, CsvReaderConfiguration)} instead
+     */
+    public CsvReader(Reader in, char delimiter, char quote, Character escape,
+        boolean multilineEnabled, boolean whitespaceAllowed, boolean unquotedQuotesAllowed)
+        throws IllegalArgumentException {
+
+        this.in = in;
+        this.delim = delimiter;
+        this.quote = quote;
+        this.endQuote = quote;
+        if (this.quote == this.delim) {
+            throw new IllegalArgumentException("The CSV field delimiter cannot " +
+                "match the character used for the quotation mark.");
+        }
+        this.multilineEnabled = multilineEnabled;
+        this.whitespaceAllowed = whitespaceAllowed;
+        this.unquotedQuotesAllowed = unquotedQuotesAllowed;
+        if (escape != null) {
+            this.escapeEnabled = true;
+            this.escapeChar = escape;
+            if (this.escapeChar == this.delim) {
+                throw new IllegalArgumentException(
+                    "The CSV field delimiter cannot match the escape character.");
+            }
+        }
+        else {
+            this.escapeEnabled = false;
+        }
+    }
     
     /**
      * Constructs a new <tt>CsvReader</tt>.
@@ -79,9 +135,9 @@ public class CsvReader implements RecordReader {
      * @throws IllegalArgumentException if a configuration setting is invalid
      * @since 1.2
      */
-    public CsvReader(Reader in, CsvParserConfiguration config) throws IllegalArgumentException {
+    public CsvReader(Reader in, CsvReaderConfiguration config) throws IllegalArgumentException {
         if (config == null) {
-            config = new CsvParserConfiguration();
+            config = new CsvReaderConfiguration();
         }
         
         this.in = in;

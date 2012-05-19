@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,7 @@ public class DelimitedParserTest extends ParserTest {
         try {
             assertRecordError(in, 1, "record1", "Too few fields 2");
             assertRecordError(in, 2, "record1", "Too many fields 4");
-            assertFieldError(in, 3, "record1", "field4", null, "Expected minimum 1 occurrences");
-            assertFieldError(in, 4, "record1", "field4", "", "Required field not set");
+            assertFieldError(in, 3, "record1", "field4", null, "Required field not set");
         }
         finally {
             in.close();

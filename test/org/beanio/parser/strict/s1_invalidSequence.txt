@@ -1,3 +1,0 @@
-detail,Joe,Smith
-header,2012-01-01
-trailer,1

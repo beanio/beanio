@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package org.beanio.parser.xml;
 
-import org.beanio.stream.xml.*;
+import org.beanio.stream.xml.XmlWriterFactory;
 
 /**
  * Default writer factory for XML related test cases.
@@ -26,7 +26,7 @@ import org.beanio.stream.xml.*;
  * @author Kevin Seim
  * @since 1.1
  */
-public class TestXmlWriterFactory extends XmlRecordParserFactory {
+public class TestXmlWriterFactory extends XmlWriterFactory {
 
     /**
      * Constructs a new <tt>TestXmlWriterFactory</tt>.

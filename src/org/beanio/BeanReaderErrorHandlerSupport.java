@@ -56,8 +56,8 @@ public class BeanReaderErrorHandlerSupport implements BeanReaderErrorHandler {
     }
 
     /**
-     * Handles <tt>InvalidRecordException</tt> and <tt>InvalidRecordGroupException</tt> errors.  
-     * By default, this method simply rethrows the exception.
+     * Handles <tt>InvalidRecordException</tt> errors.  By default, this method
+     * simply rethrows the exception.
      * @param ex the <tt>InvalidRecordException</tt> to handle
      * @throws Exception if the exception is not handled
      */

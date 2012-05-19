@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,101 +16,44 @@
 package org.beanio;
 
 /**
- * Exception thrown by a {@link BeanReader} or {@link Unmarshaller}.
- * 
- * <p>In most cases, a subclass of this exception is thrown.  In a few (but rare) fatal cases, 
- * this exception may be thrown directly.
+ * A subclass of <tt>BeanReaderException</tt> is thrown for any exception
+ * that occurs while using a <tt>BeanReader</tt> to read from an input stream.
  * 
  * @author Kevin Seim
  * @since 1.0
  * @see BeanReader
  */
-public class BeanReaderException extends BeanIOException {
+public abstract class BeanReaderException extends BeanIOException {
 
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 1L;
 
-    private RecordContext[] recordContext;
-    
+    private BeanReaderContext context;
+
     /**
      * Constructs a new <tt>BeanReaderException</tt>.
+     * @param context the current context of the bean reader
      * @param message the error message
      */
-    public BeanReaderException(String message) {
-        super(message);
+    public BeanReaderException(BeanReaderContext context, String message) {
+        this(context, message, null);
     }
-    
+
     /**
      * Constructs a new <tt>BeanReaderException</tt>.
+     * @param context the current context of the bean reader
      * @param message the error message
      * @param cause the root cause
      */
-    public BeanReaderException(String message, Throwable cause) {
+    public BeanReaderException(BeanReaderContext context, String message, Throwable cause) {
         super(message, cause);
-    }
-    
-    /**
-     * Returns the number of unmarshalled records with context information
-     * available if {@link #getRecordContext(int)} is called.
-     * @return the unmarshalled record count
-     */
-    public int getRecordCount() {
-        return recordContext == null ? 0 : recordContext.length;
-    }
-    
-    /**
-     * Returns the record context that caused the error.  May be null if there is no
-     * context information associated with the exception.  If there is more than one
-     * record context, this method returns the context of the first record and is
-     * equivalent to calling getRecordContext(0).
-     * @return the {@link RecordContext}
-     * @since 2.0
-     * @deprecated use {@link #getRecordContext()}
-     */
-    public RecordContext getContext() {
-        return getRecordContext();
-    }
-    
-    /**
-     * Returns the record context that caused the error.  May be null if there is no
-     * context information associated with the exception.  If there is more than one
-     * record context, this method returns the context of the first record and is
-     * equivalent to calling getRecordContext(0).
-     * @return the {@link RecordContext}
-     * @since 2.0
-     * @see #getRecordContext(int)
-     */
-    public RecordContext getRecordContext() {
-        return getRecordCount() > 0 ? getRecordContext(0) : null;
+        this.context = context;
     }
 
     /**
-     * Returns the record context for a given record index.  The first record uses index 0.
-     * @param index the record index
-     * @return the {@link RecordContext}
-     * @throws IndexOutOfBoundsException if there is no record for the given index
-     * @since 2.0
-     * @see #getRecordCount() 
+     * Returns the current state of the bean reader.
+     * @return bean reader context
      */
-    public RecordContext getRecordContext(int index) throws IndexOutOfBoundsException {
-        return recordContext[index];
-    }
-    
-    /**
-     * Sets the record context that caused the exception.  This method simply wraps
-     * the supplied context in an array and invokes {@link #setRecordContext(RecordContext[])}.
-     * @param recordContext the {@link RecordContext}
-     * @since 2.0
-     */
-    protected void setRecordContext(RecordContext recordContext) {
-        setRecordContext(new RecordContext[] { recordContext });
-    }
-    
-    /**
-     * Sets the record context(s) that caused the exception.
-     * @param recordContext the array of {@link RecordContext}
-     * @since 2.0
-     */
-    protected void setRecordContext(RecordContext[] recordContext) {
-        this.recordContext = recordContext;
+    public BeanReaderContext getContext() {
+        return context;
     }
 }

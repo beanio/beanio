@@ -16,8 +16,8 @@
 package org.beanio.stream;
 
 /**
- * A <tt>RecordIOException</tt> is thrown when a {@link RecordReader} or {@link RecordUnmarshaller} 
- * encounters a malformed record.  Subsequent reads from a <tt>RecordReader</tt> may or may not be possible. 
+ * A <tt>RecordIOException</tt> is thrown when a record reader encounters
+ * a malformed record and subsequent reads may still be possible. 
  * 
  * @author Kevin Seim
  * @since 1.0

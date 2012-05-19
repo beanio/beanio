@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,34 +16,31 @@
 package org.beanio;
 
 /**
- * Exception thrown when a record does not adhere to the expected syntax of
- * the stream format.  Subsequent calls to {@link BeanReader#read()} are not
- * likely to be successful.
+ * Exception thrown when a record cannot be parsed.
  * 
  * @author Kevin Seim
  * @since 1.0
  */
 public class MalformedRecordException extends BeanReaderException {
 
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Constructs a new <tt>MalformedRecordException</tt>.
-     * @param context the record context for the malformed record
+     * @param context the current context of the bean reader
      * @param message the error message
      */
-    public MalformedRecordException(RecordContext context, String message) {
+    public MalformedRecordException(BeanReaderContext context, String message) {
         this(context, message, null);
     }
 
     /**
      * Constructs a new <tt>MalformedRecordException</tt>.
-     * @param context the record context for the malformed record
+     * @param context the current context of the bean reader
      * @param message the error message
      * @param cause the root cause
      */
-    public MalformedRecordException(RecordContext context, String message, Throwable cause) {
-        super(message, cause);
-        setRecordContext(context);
+    public MalformedRecordException(BeanReaderContext context, String message, Throwable cause) {
+        super(context, message, cause);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
  */
 package org.beanio.parser.xml;
 
-import static org.junit.Assert.assertEquals;
-
+import static org.junit.Assert.*;
 import java.io.*;
 
 import javax.xml.parsers.*;
 
 import org.beanio.parser.ParserTest;
+import org.beanio.util.IOUtil;
 import org.w3c.dom.*;
 import org.xml.sax.*;
 
@@ -32,6 +32,28 @@ import org.xml.sax.*;
  * @since 1.1
  */
 public class XmlParserTest extends ParserTest {
+
+    /**
+     * Loads the contents of a file into a String.
+     * @param filename the name of the file to load
+     * @return the file contents
+     * @throws IOException if an I/O error occurs
+     */
+    public String load(String filename) throws IOException {
+        Reader in = new InputStreamReader(getClass().getResourceAsStream(filename));
+        StringBuilder s = new StringBuilder();
+        try {
+            int n = -1;
+            char [] c = new char[1024];
+            while ((n = in.read(c)) != -1) {
+                s.append(c, 0, n);
+            }
+            return s.toString();
+        }
+        finally {
+            IOUtil.closeQuietly(in);
+        }
+    }
     
     /**
      * Compares expected and actual XML documents using the documnet object model's

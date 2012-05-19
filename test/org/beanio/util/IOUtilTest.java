@@ -17,7 +17,6 @@ package org.beanio.util;
 
 import java.io.*;
 
-import org.beanio.internal.util.IOUtil;
 import org.junit.Test;
 
 /**

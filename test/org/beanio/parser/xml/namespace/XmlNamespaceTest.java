@@ -327,7 +327,8 @@ public class XmlNamespaceTest extends XmlParserTest {
     }
     
     /**
-     * Test xmlPrefix=""
+     * Test namespace declarations on the root element.  Also test default XML
+     * header values.
      */
     @Test
     public void testEmptyPrefix() throws Exception {

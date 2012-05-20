@@ -1883,7 +1883,7 @@ Jon,Anderson,Manager,85000,03182007,1212 North Ave,Chicago,IL,60614</pre>
 
 <p>In our mapping file, in order to bind a segment to a collection, simply set it's <tt>collection</tt> 
 attribute to the fully qualified class name of a <tt>java.util.Collection</tt> subclass,
-or to one of the collection type aliaes below.</p>
+or to one of the collection type aliases below.</p>
 <table class="indent">
 <tr><th>Class</th><th>Alias</th><th>Default Implementation</th></tr>
 <tr><td>java.util.Collection</td><td><tt>collection</tt></td><td>java.util.ArrayList</td></tr>
@@ -1895,7 +1895,7 @@ or to one of the collection type aliaes below.</p>
 <p>Repeating segments can declare the number of occurrences
 using the <tt>minOccurs</tt> and <tt>maxOccurs</tt> attributes.  If not declared, <tt>minOccurs</tt>
 will default to 1, and <tt>maxOccurs</tt> will default to the <tt>minOccurs</tt> value or 1, whichever
-is greater.  If the number of occurences is variable (i.e. <tt>maxOccurs</tt> is greater than 
+is greater.  If the number of occurrences is variable (i.e. <tt>maxOccurs</tt> is greater than 
 <tt>minOccurs</tt>), the segment must be the last segment in the record (for CSV, delimited and fixed length
 streams).</p>
 <pre class="file">
@@ -1923,7 +1923,7 @@ streams).</p>
 <ul>
   <li>Repeating segments must appear consecutively in the record.</li>
   <li>Every field in a repeating segment must be declared.  (There can be no field gaps in the segment configuration.)</li>
-  <li>A repeating segment may not contain any repeating descendents with variable occurrences.</li>
+  <li>A repeating segment may not contain any repeating descendants with variable occurrences.</li>
   <li>Repeating fields or fields that belong to a repeating segment may not be used for record identification.</li>
 </ul>
 
@@ -1934,7 +1934,7 @@ streams).</p>
 <p>A <tt>BeanReader</tt> will throw an <tt>InvalidRecordException</tt> if a record or one of 
 its fields fails a configured validation rule.  There are two types of errors reported
 for an invalid record: record level errors and field level errors.  If a record level error occurs, 
-further processing of the record is aborted and an excception is immediatedly thrown.  If a field level error is 
+further processing of the record is aborted and an excception is immediately thrown.  If a field level error is 
 reported, the <tt>BeanReader</tt> will continue to process the record's other fields before throwing 
 an exception.</p>
 
@@ -2436,7 +2436,7 @@ the mapping file could be updated as shown below.</p>
 <h2><a name="XmlNamespaces">5.3. XML Namespaces</a></h2>
 <p>XML namespaces can be enabled through the use of the <tt>xmlNamespace</tt> attribute
 on any mapping component (stream, group, record, segment or field).  By default, all mapping elements 
-inherit their namespace (or lack thereof) from their parent.  When a namespace is delcared, the local
+inherit their namespace (or lack thereof) from their parent.  When a namespace is declared, the local
 name <i>and</i> namespace must match when unmarshalling XML, and appropriate namespace declarations
 are included when marshalling bean objects.  For example, let's suppose our employee file contains
 namespaces as shown below.</p>
@@ -3280,7 +3280,7 @@ working directory, and if not found, then from the root of the application's cla
 <h1><a name="A">Appendix A:  XML Mapping File Reference</a></h1>
 <p>Appendix A is the complete reference for the BeanIO 2.x XML mapping file schema.  The root element
 of a mapping file is <tt><a href="#beanio">beanio</a></tt> with namespace 
-<tt>http://www.beanio.org/2012/03</tt>.  The following notatiion is used to indicate the
+<tt>http://www.beanio.org/2012/03</tt>.  The following notation is used to indicate the
 allowed number of child elements:
  </p>
 <div style="margin-left: 5%">
@@ -3425,7 +3425,7 @@ The following additional attributes are accepted in this scenario:</p>
 <tr>
   <td><tt>getter</tt></td>
   <td>The getter method used to retrieve the property value from its parent bean class.
-    By default, the getter method is determined through intropection using
+    By default, the getter method is determined through introspection using
     the property name.</td>
   <td>No</td>
   <td>*</td>
@@ -3433,7 +3433,7 @@ The following additional attributes are accepted in this scenario:</p>
 <tr>
   <td><tt>setter</tt></td>
   <td>The setter method used to set the property value on its parent bean class.  
-    By default, the setter method is determined through intropection using
+    By default, the setter method is determined through introspection using
     the property name.</td>
   <td>No</td>
   <td>*</td>
@@ -3449,7 +3449,7 @@ The following additional attributes are accepted in this scenario:</p>
 <tr>
   <td><tt>type</tt></td>
   <td>The fully qualified class name or type alias of the property value.  By default,
-    BeanIO will derrive the property type from the bean class.  This attribute
+    BeanIO will derive the property type from the bean class.  This attribute
     can be used to override the default or may be required if the bean class
     is of type <tt>Map</tt>.</td>
   <td>No</td>
@@ -3711,7 +3711,7 @@ the group as a whole.</p>
     assignable to <tt>java.util.Collection</tt>,
     or to one of the collection type aliases: <tt>list</tt>, <tt>set</tt> or <tt>array</tt>.
     A collection type can only be set if <tt>class</tt> is also set.
-    <p>BeanIO will not derrive the collection type from it's parent bean object.</p>
+    <p>BeanIO will not derive the collection type from it's parent bean object.</p>
   </td>
   <td>No</td>
   <td>*</td>
@@ -3719,7 +3719,7 @@ the group as a whole.</p>
 <tr>
   <td><tt>getter</tt></td>
   <td>The getter method used to get the bean object bound to this group from 
-    it's parent.  By default, the getter method is determined through intropection using
+    it's parent.  By default, the getter method is determined through introspection using
     the group name.  Ignored if <tt>class</tt> is not set.</td>
   <td>No</td>
   <td>*</td>
@@ -3727,7 +3727,7 @@ the group as a whole.</p>
 <tr>
   <td><tt>setter</tt></td>
   <td>The setter method used to set the bean object bound to this group on the bean object of
-    it's parent.  By default, the setter method is determined through intropection using
+    it's parent.  By default, the setter method is determined through introspection using
     the group name.  Ignored if <tt>class</tt> is not set.</td>
   <td>No</td>
   <td>*</td>
@@ -3855,7 +3855,7 @@ the group as a whole.</p>
 <tr>
   <td><tt>getter</tt></td>
   <td>The getter method used to get the bean object bound to this record from 
-    it's parent.  By default, the getter method is determined through intropection using
+    it's parent.  By default, the getter method is determined through introspection using
     the record name.  Ignored if <tt>class</tt> is not set.</td>
   <td>No</td>
   <td>*</td>
@@ -3863,7 +3863,7 @@ the group as a whole.</p>
 <tr>
   <td><tt>setter</tt></td>
   <td>The setter method used to set the bean object bound to this record on the bean object of
-    it's parent.  By default, the setter method is determined through intropection using
+    it's parent.  By default, the setter method is determined through introspection using
     the record name.  Ignored if <tt>class</tt> is not set.</td>
   <td>No</td>
   <td>*</td>
@@ -3875,7 +3875,7 @@ the group as a whole.</p>
     assignable to <tt>java.util.Collection</tt>,
     or to one of the collection type aliases: <tt>list</tt>, <tt>set</tt> or <tt>array</tt>.
     A collection type can only be set if <tt>class</tt> is also set.
-    <p>BeanIO will not derrive the collection type from it's parent bean object.</p>
+    <p>BeanIO will not derive the collection type from it's parent bean object.</p>
   </td>
   <td>No</td>
   <td>*</td>
@@ -4014,7 +4014,7 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
 <tr>
   <td><tt>getter</tt></td>
   <td>The getter method used to get the bean object bound to this segment from it's parent.  
-    By default, the getter method is determined through intropection using
+    By default, the getter method is determined through introspection using
     the segment name.  Ignored if <tt>class</tt> is not set.</td>
   <td>No</td>
   <td>*</td>
@@ -4022,7 +4022,7 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
 <tr>
   <td><tt>setter</tt></td>
   <td>The setter method used to set the bean object bound to this segment on the bean object 
-    of it's parent.  By default, the setter method is determined through intropection using
+    of it's parent.  By default, the setter method is determined through introspection using
     the segment name.  Ignored if <tt>class</tt> is not set.</td>
   <td>No</td>
   <td>*</td>
@@ -4034,7 +4034,7 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
     assignable to <tt>java.util.Collection</tt>,
     or to one of the collection type aliases: <tt>list</tt>, <tt>set</tt> or <tt>array</tt>.
     A collection type can only be set if <tt>class</tt> is also set.
-    <p>BeanIO will not derrive the collection type from it's parent bean object.</p>
+    <p>BeanIO will not derive the collection type from it's parent bean object.</p>
     <p>There are a few restrictions specific to repeating segments in any "flat" format (delimited, CSV or fixedlength):</p>
     <ul>
     <li>Repeating segments must appear in the stream consecutively.</li>
@@ -4163,7 +4163,7 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
 <tr>
   <td><tt>getter</tt></td>
   <td>The getter method used to retrieve the property value for this field from its parent
-    bean class.  By default, the getter method is determined through intropection using
+    bean class.  By default, the getter method is determined through introspection using
     the field name.</td>
   <td>No</td>
   <td>*</td>
@@ -4171,7 +4171,7 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
 <tr>
   <td><tt>setter</tt></td>
   <td>The setter method used to set the property value of this field on its parent bean class.  
-    By default, the setter method is determined through intropection using
+    By default, the setter method is determined through introspection using
     the field name.
     <p>If the field is a constructor argument, <tt>setter</tt> may be set to '#N', where
       N is the position of the argumnet in the constructor beginning at 1.</p>
@@ -4263,7 +4263,7 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
 <tr>
   <td><tt>type</tt></td>
   <td>The fully qualified class name or type alias of the field value.  By default,
-    BeanIO will derrive the field type from its parent bean class.  This attribute
+    BeanIO will derive the field type from its parent bean class.  This attribute
     can be used to override the default, or may be needed when its parent class
     is of type <tt>java.util.Map</tt>.</td>
   <td>No</td>
@@ -4277,7 +4277,7 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
     is used to declare the property type of an item stored in the collection.  
     May be set to <tt>array</tt> if the collection type is a Java array.
     <p>Repeating fields bound to a property value must have <tt>collection</tt> configured.
-    BeanIO will not derrive the collection type from a field's parent bean class.</p>
+    BeanIO will not derive the collection type from a field's parent bean class.</p>
   </td>
   <td>No</td>
   <td>*</td>

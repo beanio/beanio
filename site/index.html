@@ -129,7 +129,7 @@ public class Contact {
     <span class="comment">&lt;!-- Detail records are bound to example.Contact --&gt;</span>
     &lt;record name="contact" class="example.Contact"&gt;
       <span class="comment">&lt;!-- 'ignore' indicates this field is not bound to a bean property --&gt;</span>
-      &lt;field name="type" rid="true" literal="D" ignore="true" /&gt;
+      &lt;field name="recordType" rid="true" literal="D" ignore="true" /&gt;
       &lt;field name="firstName" /&gt;
       &lt;field name="lastName" /&gt;
       &lt;field name="street" /&gt;
@@ -201,7 +201,7 @@ public class ExampleMain {
     }
 }</pre>      
       
-      <p>That's it!  But of course, BeanIO support many other cool
+      <p>That's it!  But of course, BeanIO supports many other cool
         features.  For example, if we wanted to strictly validate our contacts input
         file, we could make the following additions to our mapping file.</p>
       
@@ -218,7 +218,7 @@ public class ExampleMain {
     &lt;/record&gt;  
   
     &lt;record name="contact" class="example.Contact" <b>occurs="0+"</b>&gt;
-      &lt;field name="type" rid="true" literal="D" ignore="true" /&gt;
+      &lt;field name="recordType" rid="true" literal="D" ignore="true" /&gt;
       <span class="comment">&lt;!-- 'maxLength' enforces a maximum String length --&gt;</span>
       &lt;field name="firstName" <b>maxLength="20"</b> /&gt;
       &lt;field name="lastName" <b>required="true"</b> <b>maxLength="30"</b> /&gt;
@@ -237,7 +237,37 @@ public class ExampleMain {
   &lt;/stream&gt;
 &lt;/beanio&gt;</pre>        
       
-      <p>But that's still not all, check out the <a href="2.0/docs/reference/index.html">reference guide</a>
+      <p>Need to support XML instead?  Simply change the stream <tt>format</tt> to 'xml', remove
+        the <tt>recordType</tt> fields, and presto!  You can now read and write documents
+        like the following:</p>
+      
+<pre class="file">
+&lt;contacts&gt;
+  &lt;header&gt;
+    &lt;fileDate&gt;2012-05-19&lt;/fileDate&gt;
+  &lt;/header&gt;
+  &lt;contact&gt;
+    &lt;firstName&gt;Joe&lt;/firstName&gt;
+    &lt;lastName&gt;Johnson&lt;/lastName&gt;
+    &lt;street&gt;123 Main St&lt;/street&gt;
+    &lt;city&gt;Chicago&lt;/city&gt;
+    &lt;state&gt;IL&lt;/state&gt;
+    &lt;zip&gt;60610&lt;/zip&gt;
+  &lt;/contact&gt;
+  &lt;contact&gt;
+    &lt;firstName&gt;Jane&lt;/firstName&gt;
+    &lt;lastName&gt;Smith&lt;/lastName&gt;
+    &lt;street/&gt;
+    &lt;city/&gt;
+    &lt;state/&gt;
+    &lt;zip/&gt;
+  &lt;/contact&gt;
+  &lt;trailer&gt;
+    &lt;recordCount&gt;2&lt;/recordCount&gt;
+  &lt;/trailer&gt;
+&lt;/contacts&gt;</pre>          
+      
+      <p>But that's not all, check out the <a href="2.0/docs/reference/index.html">reference guide</a>
         for more information.</p>
       
     </div>

@@ -1,6 +1,16 @@
 Project BeanIO Change Log
 =========================
 
+Changes in version 2.0.0 (2012-05-20)
+----------------------------------------
+* Added support for nested groups bound to bean objects.
+* Added support for mapping file properties using ${propertyName[,default]} syntax.
+* Improved performance for instantiating new parsers. 
+* Added 'occurs' attribute for specifying both minOccurs and maxOccurs.
+* Added experimental support for JSON (still missing some critical features).
+* Added support for xmlPrefix="" despite a namespace declaration on the root element (gc0032)
+* Fixed auto boxing mistake for comparing Integers that may cause a BeanIOConfigurationException for repeating segments (gc0034).
+
 Changes in version 2.0.0.M1 (2012-03-03)
 ----------------------------------------
 * New parser engine, internal classes moved to org.beanio.internal
@@ -24,6 +34,16 @@ Changes in version 2.0.0.M1 (2012-03-03)
   - Added a 'strict' attribute to the 'stream' element to calculate and enforce record ordering and lengths
   - Modified 'minLength' and 'maxLength' to default to '0' and 'unbounded' respectively for 'record' elements, unless 'strict'
   - The 'order' attribute must be declared for all components with the same parent, or for none of them which defaults to unordered (unless 'strict')
+
+Changes in version 1.2.5 (2012-05-18)
+-------------------------------------
+* Fixed calculation of record length in some circumstances for repeating nested beans (gc0033)
+* Added support for xmlPrefix="" despite a namespace declaration on the root element (gc0032)
+
+Changes in version 1.2.4 (2012-03-24)
+-------------------------------------
+* Updated OSGi manifest entries in build.xml (gc0026)
+* Fixed HTML comments in reference guide example
 
 Changes in version 1.2.3 (2012-02-12)
 -------------------------------------

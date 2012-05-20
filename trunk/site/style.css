@@ -62,6 +62,16 @@ a { border-bottom: 1px dashed #8a0007; text-decoration: none; }
 	padding: 3px 10px 20px 0px;
 	font-size: 85%;
 }
+
+.overview {
+	margin-bottom: 100px;
+}
+.overview h2 {
+	font-size: 100%;
+	font-weight: bold;	
+	margin-top: 10px;
+}
+
 .news {
  	margin-top: 40px;	
 }
@@ -88,4 +98,42 @@ a { border-bottom: 1px dashed #8a0007; text-decoration: none; }
 }
 tt {
 	font-size: 120%;
+}
+
+table {
+	margin-left: 5%; 
+	border-collapse: collapse; 
+}
+td, th {
+    vertical-align: top;
+    padding-right: 20px;
+    padding-left: 5px;
+    border: 1px solid gray;
+}
+
+.file {
+	font-size: 9pt;
+	background: #F5F5F5;
+    border: 1px solid black;
+    margin-left: 5%;
+    margin-right: 5%;	
+    padding: 3px 8px 3px 8px;
+}
+
+.java {
+	font-size: 9pt;
+    background: #F5F5F5;
+    border: 1px solid black;
+    margin-left: 5%;
+    margin-right: 5%;   
+    padding: 3px 8px 3px 8px;
+}
+.comment {
+    color: green;	
+}
+
+
+pre b, .highlight {
+	color: #000088;
+	font-weight: bold;
 }

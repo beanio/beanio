@@ -2,10 +2,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head profile="http://www.w3.org/2005/10/profile">
-  <title>BeanIO Home</title>
+  <title>BeanIO</title>
   <meta http-equiv="Content-Type" content="text/html;" />
   <meta name="description" content="BeanIO is an open source Java library for marshalling and unmarshalling bean objects from a stream, with support for XML, CSV, delimited and fixed length file formats."/>
-  <meta name="keywords" content="beanio, java, oxm, xml, fixed length, csv, delimited, parser, file, stream, bean, binding, mapping"/>
+  <meta name="keywords" content="beanio, java, marshaller, unmarshaller, oxm, xml, fixed length, csv, delimited, parser, file, stream, bean, mapping"/>
   <link rel="stylesheet" href="style.css" type="text/css" />
   <link rel="icon" href="favicon.ico" />
   <link rel="shortcut icon" href="favicon.ico" />
@@ -20,10 +20,11 @@
   <div class="menu">
     <div class="submenu">
 	  <div class="item"><a class="active" href="#">about</a></div>
+      <div class="item"><a href="http://code.google.com/p/beanio/">news</a></div>
 	  <div class="item"><a href="http://www.apache.org/licenses/LICENSE-2.0">license</a></div>
 	  <div class="item"><a href="http://code.google.com/p/beanio/downloads/list">download</a></div>
 	  <div class="item"><a href="http://code.google.com/p/beanio/issues/list">issue tracking</a></div>
-	  <div class="item"><a href="http://groups.google.com/group/beanio">mailing list</a></div>
+	  <div class="item"><a href="http://groups.google.com/group/beanio">forum</a></div>
     </div>
     <br />
     <h1>2.0 Documentation</h1>
@@ -57,126 +58,192 @@
 	  </ul>
     </div>
     
-    <p>The BeanIO project is hosted at <a href="http://code.google.com/p/beanio/">Google Code</a></p>
+    <p>Source control for the BeanIO project is hosted by <a href="http://code.google.com/p/beanio/">Google Code</a></p>
+
+    <div class="overview">
+      <h2>A Quick Example</h2>
+      
+      <p>Let's suppose you want to read and write a CSV flat file of contact information
+        with the following record layout:</p>
+      
+      <table>
+        <tr><th>&nbsp;</th><th>Field Name</th><th>Format</th></tr>
+        <tr><td colspan="3"><i>Header Record</i></td></tr>
+        <tr><td>0</td><td>Record Type</td><td>"H"</td></tr>
+        <tr><td>1</td><td>File Date</td><td>Date (YYYY-MM-DD)</td></tr>
+        <tr><td colspan="3"><i>Detail Record</i></td></tr>
+        <tr><td>0</td><td>Record Type</td><td>"D"</td></tr>
+        <tr><td>1</td><td>First Name</td><td>String</td></tr>
+        <tr><td>2</td><td>Last Name</td><td>String</td></tr>
+        <tr><td>3</td><td>Street</td><td>String</td></tr>
+        <tr><td>4</td><td>City</td><td>String</td></tr>
+        <tr><td>5</td><td>State</td><td>String</td></tr>
+        <tr><td>6</td><td>Zip</td><td>String</td></tr>
+        <tr><td colspan="3"><i>Trailer Record</i></td></tr>
+        <tr><td>0</td><td>Record Type</td><td>"T"</td></tr>
+        <tr><td>1</td><td>Detail Record Count</td><td>Integer</td></tr>        
+      </table>
+      
+      <p>A sample input file could look like this:</p>
+
+<pre class="file">
+H,2012-05-19
+D,Joe,Johnson,123 Main St,Chicago,IL,60610
+D,Jane,Smith,,,,
+D,Albert,Jackson,456 State St,Chicago,IL,60614
+T,3
+</pre>   
+
+      <p>And let's suppose you want to bind detail records to the following Java class.</p>
+      
+<pre class="java">
+package example;
+
+public class Contact {
+    String firstName;
+    String lastName;
+    String street;
+    String city;
+    String state;
+    String zip;
     
-    <div class="news">
-      <h2>BeanIO 2.0.0.M1 Released <span class="date">March 3, 2012</span></h2>
-      <p>The first milestone release for BeanIO 2.0 is now available for 
-        <a href="http://code.google.com/p/beanio/downloads/list">download</a>.  
-        Release 2.0.0.M1 adds several new features including support for constructors,
-        direct access to public variables, <tt>Marshaller</tt> and <tt>Unmarshaller</tt>
-        interfaces, and mapping bean objects that span multiple records, 
-        The release is not backwards compatible with prior releases.  Please refer to the 
-        <a href="2.0/docs/reference/index.html">reference guide</a> for more information.</p>
+    <span class="comment">// getters and setters not shown...</span>
+}</pre>
+      
+      <p>BeanIO is configured using an XML mapping file.  A 2.0 mapping file named "contacts.xml"
+      (shown below) can be used to read and write our CSV contacts file.</p>
+      
+<pre class="file">
+&lt;beanio xmlns="http://www.beanio.org/2012/03"&gt;
 
-      <h2>BeanIO 1.2.3 Released <span class="date">February 12, 2012</span></h2>
-      <p>Release 1.2.3 contains a few minor bug fixes and is fully backwards compatible with
-        prior 1.2.x releases.  The release can be downloaded 
-        <a href="http://code.google.com/p/beanio/downloads/list">here</a>.</p>
+  <span class="comment">&lt;!-- 'format' identifies the type of stream --&gt;</span>
+  &lt;stream name="contacts" format="csv"&gt;
+    <span class="comment">&lt;!-- 'class' binds the header record to a java.util.HashMap --&gt;</span>
+    &lt;record name="header" class="map"&gt;
+      <span class="comment">&lt;!-- 'rid' indicates this field is used to identify the record --&gt;</span>
+      &lt;field name="recordType" rid="true" literal="H" /&gt;
+      <span class="comment">&lt;!-- 'format' can be used to provide Date and Number formats --&gt;</span>
+      &lt;field name="fileDate" type="date" format="yyyy-MM-dd" /&gt;
+    &lt;/record&gt;  
+  
+    <span class="comment">&lt;!-- Detail records are bound to example.Contact --&gt;</span>
+    &lt;record name="contact" class="example.Contact"&gt;
+      <span class="comment">&lt;!-- 'ignore' indicates this field is not bound to a bean property --&gt;</span>
+      &lt;field name="type" rid="true" literal="D" ignore="true" /&gt;
+      &lt;field name="firstName" /&gt;
+      &lt;field name="lastName" /&gt;
+      &lt;field name="street" /&gt;
+      &lt;field name="city" /&gt;
+      &lt;field name="state" /&gt;
+      &lt;field name="zip" /&gt;
+    &lt;/record&gt;
+
+    <span class="comment">&lt;!-- 'target' binds the trailer record to the Integer record count field --&gt;</span>
+    &lt;record name="trailer" target="recordCount"&gt;
+      <span class="comment">&lt;!-- 'literal' is used to define constant values --&gt;</span>
+      &lt;field name="recordType" rid="true" literal="T" /&gt;
+      <span class="comment">&lt;!-- 'type' can be declared where bean introspection is not possible --&gt;</span>
+      &lt;field name="recordCount" type="int" /&gt;
+    &lt;/record&gt;  
+    
+  &lt;/stream&gt;
+&lt;/beanio&gt;</pre>      
+      
+      <p>Using the mapping file and bean object from above, the following code will read
+        and write our CSV contacts file.  (For brevity, exception handling is lacking.)</p>
+      
+<pre class="java">
+package example;
+
+import org.beanio.*;
+import java.io.*;
+
+public class ExampleMain {
+
+    public static void main(String[] args) throws Exception {
+        <span class="comment">// create a BeanIO StreamFactory</span>
+        StreamFactory factory = StreamFactory.newInstance();
+        <span class="comment">// load the mapping file from the working directory</span>
+        factory.load("contacts.xml");
         
-      <h2>BeanIO 1.2.2 Released <span class="date">December 18, 2011</span></h2>
-      <p>Release 1.2.2 is a minor patch release.  The only functional change is the marshaling
-        of configured field defaults for null property values or fields where <tt>ignore="true"</tt>.
-        In prior releases, a field default was only used during unmarshaling.
-        This behavior can be disabled for backwards compatibility by setting
-        <tt>org.beanio.marshalDefaultEnabled</tt> to <tt>false</tt>.  The release can be downloaded 
-        <a href="http://code.google.com/p/beanio/downloads/list">here</a>.</p>
-
-      <h2>BeanIO 1.2.1 Released <span class="date">September 21, 2011</span></h2>
-      <p>Release 1.2.1 introduces templates, and fixes the mapping file import logic and
-        other minor defects.  The <tt>ConfigurationLoader</tt> interface and its implementation
-        required significant changes, but the release is otherwise fully backwards compatible with
-        1.2.0.  The release can be downloaded 
-        <a href="http://code.google.com/p/beanio/downloads/list">here</a>.</p>
-      
-      <h2>BeanIO 1.2.0 Released <span class="date">September 8, 2011</span></h2>
-      <p>Release 1.2.0 adds support for <a href="http://static.springsource.org/spring-batch/">Spring Batch</a>, 
-        includes several minor enhancements, and fixes all known defects.  For further details and migration information,
-        please refer to the <a href="http://beanio.org/docs/reference/index.html#Introduction">reference guide</a>.
-        The release can be downloaded <a href="http://code.google.com/p/beanio/downloads/list">here</a>.</p>
+        <span class="comment">// create a BeanReader to read from "input.csv"</span>
+        BeanReader in = factory.createReader("contacts", new File("input.csv"));
+        <span class="comment">// create a BeanWriter to write to "output.csv"</span>
+        BeanWriter out = factory.createWriter("contacts", new File("output.csv"));        
         
-      <h2>BeanIO 1.1.1 Released <span class="date">July 21, 2011</span></h2>
-      <p>Release 1.1.1 clarifies and improves support for optional padded fields.
-        Padded field behavior has been minorly impacted, although 
-        previously supported behavior can be reproduced using the <tt>required</tt>
-        field attribute.  Please see defect
-        <a href="http://code.google.com/p/beanio/issues/detail?id=11&can=1">gc0011</a>
-        for details.</p>
-      
-      <h2>BeanIO 1.1.0 Released <span class="date">June 19, 2011</span></h2>
-      <p>Release 1.1.0 adds support for marshalling and unmarshalling bean objects from XML
-        formatted streams.  BeanIO provides Object-to-XML mapping (OXM) capabilities using
-        an XML pull parser (aka <a href="http://en.wikipedia.org/wiki/StAX">STaX</a>), which allows 
-        for reading and writing large XML streams one bean object at a time.  The mapping file and all
-        major interfaces are fully backwards compatible with previous releases.  The release can be downloaded
-        <a href="http://code.google.com/p/beanio/downloads/list">here</a>.</p>
-      
-      <h2>BeanIO 1.0.2 Released <span class="date">June 7, 2011</span></h2>
-      <p>Release 1.0.2 fixes all known issues and will be the last 1.0.x release before
-        the upcoming 1.1.0 release (with XML stream support).  Version 1.1.0
-        is expected to be released soon, so if you are an existing BeanIO user, you may want to
-        wait before updating your library.  BeanIO 1.0.2 can be downloaded
-        <a href="http://code.google.com/p/beanio/downloads/list">here</a>.</p>
-
-      <h2>BeanIO 1.0.1 Released <span class="date">April 18, 2011</span></h2>
-      <p>Release 1.0.1 fixes the default field position calculation for fields
-        that follow a recurring bean definition in a fixed length stream (see issue
-        <a href="http://code.google.com/p/beanio/issues/detail?id=7&can=1">gc0007</a>).
-        This issue did not impact delimited or CSV formatted streams.</p>
-
-      <h2>BeanIO 1.0 Released <span class="date">February 22, 2011</span></h2>
-      <p>Release 1.0 is the first non-beta release and is fully backwards compatible.  This
-        release fixes all known issues and includes the following minor enhancements:</p>
-      <ul>
-        <li>A record terminating character (other than the default carriage return and/or line feed) can be configured 
-          for delimited and fixed length input streams.</li>
-        <li>Field padding can be applied to any stream format, instead of just fixed length formatted streams.</li>
-        <li>An updated reference guide is included with documentation for handling nested beans.</li>
-      </ul>
-      <p>Further 1.0.x builds will be released as needed for any reported issues.  And if all goes well, 
-        the next major release (tentatively targeted for June 2011) will include support for mapping 
-        XML formatted streams.</p>
-      
-      <h2>BeanIO 0.9.3 Released <span class="date">February 7, 2011</span></h2>
-      <p>Release 0.9.3 adds support for mapping beans and collections of beans to a record
-        bean object.  The syntax is documented in Appendix A of the reference guide.  Further
-        documentation (with examples) will be forthcoming in a future release.  Release 0.9.3 is fully backwards
-        compatible with the following two exceptions:
-      </p>
-      <ul>
-        <li>In a record definition, field positions must be declared for all fields, or for none of them.
-          If no field positions are declared, BeanIO will assign a default position based on the order
-          in which the field was declared (this is existing behavior).  If all field position are declared,
-          fields may be declared in any order (this is new behavior)</li>
-        <li>When a bean object is written to a stream, null values for fields whose position is greater
-          than the minimum length of the record, will not be written unless a non-null value is written
-          for a subsequent field.  As in prior releases, if the record <tt>minLength</tt> is not set, BeanIO
-          assumes all declared fields must be written out.</li>
-      </ul>
-      <p>This release contains the last of all planned features targeted for a non-beta 1.0 release, which
-        should be published in the coming weeks.  The release distribution 
-        can be downloaded <a href="http://code.google.com/p/beanio/downloads/list">here</a>. </p>
+        Object record = null;
         
-      <h2>BeanIO 0.9.2 Released <span class="date">January 29, 2011</span></h2>
-      <p>Release 0.9.2 fixes several critical bugs for fixed length formatted streams, and add supports
-       for collection and array type bean properties.  The release distribution can be downloaded
-        <a href="http://code.google.com/p/beanio/downloads/list">here</a>.
-      </p>
+        <span class="comment">// read records from "input.csv"</span>
+        while ((record = in.read()) != null) {
+        
+            <span class="comment">// process each record</span>
+            if ("header".equals(in.getRecordName())) {
+                Map&lt;String,Object&gt; header = (Map&lt;String,Object&gt;) record;
+                System.out.println(header.get("fileDate"));
+            }
+            else if ("contact".equals(in.getRecordName())) {
+                Contact contact = (Contact) record;
+                <span class="comment">// process the contact...</span>
+            }
+            else if ("trailer".equals(in.getRecordName())) {
+                Integer recordCount = (Integer) record;
+                System.out.println(recordCount + " contacts processed");
+            }
+            
+            <span class="comment">// write the record to "output.csv"</span>
+            out.write(record);
+        }
+        
+        in.close();
+        
+        out.flush();
+        out.close();
+    }
+}</pre>      
       
-      <h2>BeanIO 0.9.1 Released <span class="date">January 23, 2011</span></h2>
-      <p>Release 0.9.1 includes improved type handling capabilities and simplified Date and Number
-        format declarations.  The release distribution can be downloaded
-        <a href="http://code.google.com/p/beanio/downloads/list">here</a>.
-      </p>
-      <h2>BeanIO 0.9.0 Released <span class="date">January 18, 2011</span></h2>
-      <p>Release 0.9.0 is the first ever BeanIO release and can be downloaded <a href="http://code.google.com/p/beanio/downloads/list">here</a>.
-        The reference guide and API docs are included in the distribution.
-      </p>
+      <p>That's it!  But of course, BeanIO support many other cool
+        features.  For example, if we wanted to strictly validate our contacts input
+        file, we could make the following additions to our mapping file.</p>
+      
+<pre class="file">
+&lt;beanio xmlns="http://www.beanio.org/2012/03"&gt;
+
+  <span class="comment">&lt;!-- 'strict' enforces record order and record sizes --&gt;</span>
+  &lt;stream name="contacts" format="csv" <b>strict="true"</b>&gt;
+    <span class="comment">&lt;!-- 'occurs' enforces minimum and maximum record occurrences --&gt;</span>
+    &lt;record name="header" class="map" <b>occurs="1"</b>&gt;
+      &lt;field name="recordType" rid="true" literal="H" /&gt;
+      <span class="comment">&lt;!-- 'required' indicates a field value is required --&gt;</span>
+      &lt;field name="fileDate" type="date" format="yyyy-MM-dd" <b>required="true"</b>/&gt;
+    &lt;/record&gt;  
+  
+    &lt;record name="contact" class="example.Contact" <b>occurs="0+"</b>&gt;
+      &lt;field name="type" rid="true" literal="D" ignore="true" /&gt;
+      <span class="comment">&lt;!-- 'maxLength' enforces a maximum String length --&gt;</span>
+      &lt;field name="firstName" <b>maxLength="20"</b> /&gt;
+      &lt;field name="lastName" <b>required="true"</b> <b>maxLength="30"</b> /&gt;
+      &lt;field name="street" <b>maxLength="30"</b> /&gt;
+      &lt;field name="city" <b>maxLength="25"</b> /&gt;
+      &lt;field name="state" <b>minLength="2" maxLength="2"</b> /&gt;
+      <span class="comment">&lt;!-- 'regex' enforces pattern matching --&gt;</span>
+      &lt;field name="zip" <b>regex="\d{5}"</b> /&gt;
+    &lt;/record&gt;
+
+    &lt;record name="trailer" target="recordCount" <b>occurs="1"</b>&gt;
+      &lt;field name="recordType" rid="true" literal="T" /&gt;
+      &lt;field name="recordCount" type="int" <b>required="true"</b> /&gt;
+    &lt;/record&gt;  
+    
+  &lt;/stream&gt;
+&lt;/beanio&gt;</pre>        
+      
+      <p>But that's still not all, check out the <a href="2.0/docs/reference/index.html">reference guide</a>
+        for more information.</p>
+      
     </div>
   </div>
-  
   <div class="footer">
-    &copy;2011 Kevin Seim, All rights reserved.
+    &copy;2011-2012 Kevin Seim, All rights reserved.
   </div>
 </div>
 </body>

@@ -57,4 +57,17 @@
     </record>
   </stream>
 
+  <stream name="stream6" format="csv">
+    <record name="header" order="1" occurs="1">
+      <field name="h1" default="Header1" />
+      <field name="h2" default="Header2" />
+      <field name="h3" default="Header3" />
+    </record>
+    <record name="detail" class="map" order="2" occurs="0+">
+      <field name="d1" />
+      <field name="d2" />
+      <field name="d3" />
+    </record>
+  </stream>
+
 </beanio>

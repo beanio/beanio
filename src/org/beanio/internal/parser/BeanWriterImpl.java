@@ -58,8 +58,9 @@ public class BeanWriterImpl implements BeanWriter, StatefulWriter {
     public void write(String recordName, Object bean) throws BeanWriterException {
         ensureOpen();
         
-        if (bean == null) {
-            throw new BeanWriterException("null bean object");
+        if (recordName == null && bean == null) {
+            throw new BeanWriterException("Bean identification failed: a record " +
+                "name or bean object must be provided");
         }
         
         try {
@@ -71,8 +72,16 @@ public class BeanWriterImpl implements BeanWriter, StatefulWriter {
             // find the parser in the layout that defines the given bean
             Selector matched = layout.matchNext(context);
             if (matched == null) {
-                throw new BeanWriterException("Bean identification failed: No record or group mapping for class '"
-                    + bean.getClass() + "' at the current stream position");                
+                if (recordName != null) {
+                    throw new BeanWriterException("Bean identification failed: " +
+                        "record name '" + recordName + "' not matched at the current position" +
+                        (bean != null ? " for bean class '" + bean.getClass() + "'" : ""));
+                }
+                else {
+                    throw new BeanWriterException("Bean identification failed: " +
+                        "no record or group mapping for bean class '" + bean.getClass() + 
+                        "' at the current position");                    
+                }            
             }
             
             // marshal the bean object

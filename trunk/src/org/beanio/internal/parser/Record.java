@@ -113,6 +113,13 @@ public class Record extends Segment implements Selector {
                 return this;
             }
         }
+        else if (context.getBean() == null) {
+            String componentName = context.getComponentName();
+            if (componentName != null && getName().equals(componentName)) {
+                setCount(context, getCount(context) + 1);
+                return this;
+            }
+        }
         return null;
     }
 

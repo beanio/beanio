@@ -204,7 +204,7 @@ public class Group extends ParserComponent implements Selector {
             }
         }
         catch (UnsatisfiedNodeException ex) {
-            throw new BeanWriterException("Bean identification failed.  Expected record type '" + 
+            throw new BeanWriterException("Bean identification failed: expected record type '" + 
                 ex.getNode().getName() + "'", ex);
         }
     }

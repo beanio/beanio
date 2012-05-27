@@ -68,11 +68,13 @@ public class TypesParserTest extends ParserTest {
             assertEquals(new BigDecimal("10"), record.getBigDecimalValue());
             assertEquals(UUID.fromString("fbd9d2be-35dc-41fb-abc9-f4b4c8757eb5"), record.getId());
             assertEquals(new URL("http://www.google.com"), record.getUrl());
+            assertEquals(TypeEnum.ONE, record.getEnum1());
+            assertEquals(TypeEnum.TWO, record.getEnum2());
             
             text = new StringWriter();
             factory.createWriter("t1", text).write(record);
             assertEquals("10,10,-10,10,10.1,-10.1,A,ABC,010170,true,10,10" + 
-                ",fbd9d2be-35dc-41fb-abc9-f4b4c8757eb5,http://www.google.com" + lineSep, text.toString());
+                ",fbd9d2be-35dc-41fb-abc9-f4b4c8757eb5,http://www.google.com,ONE,two" + lineSep, text.toString());
 
             record = (ObjectRecord) in.read();
             assertNull(record.getByteValue());
@@ -89,10 +91,12 @@ public class TypesParserTest extends ParserTest {
             assertNull(record.getBigDecimalValue());
             assertNull(record.getId());
             assertNull(record.getUrl());
+            assertNull(record.getEnum1());
+            assertNull(record.getEnum2());
             
             text = new StringWriter();
             factory.createWriter("t1", text).write(record);
-            assertEquals(",,,,,,,,,,,,," + lineSep, text.toString());
+            assertEquals(",,,,,,,,,,,,,,," + lineSep, text.toString());
         }
         finally {
             in.close();

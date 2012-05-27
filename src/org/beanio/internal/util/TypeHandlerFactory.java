@@ -20,6 +20,7 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.util.*;
 
+import org.beanio.BeanIOConfigurationException;
 import org.beanio.types.*;
 import org.beanio.types.xml.*;
 
@@ -198,17 +199,15 @@ public class TypeHandlerFactory {
         }
         
         if (TypeUtil.isAliasOnly(type)) {
-            type = type.toLowerCase();
+            return getHandler(TYPE_KEY + type.toLowerCase(), format, properties);
         }
         else {
             Class<?> clazz = TypeUtil.toType(classLoader, type);
             if (clazz == null) {
                 return null;
             }
-            type = clazz.getName();
+            return getTypeHandlerFor(clazz, format, properties);
         }
-
-        return getHandler(TYPE_KEY + type, format, properties);
     }
 
     /**
@@ -231,12 +230,37 @@ public class TypeHandlerFactory {
      * @throws IllegalArgumentException if a custom property value was invalid
      * @since 2.0
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public TypeHandler getTypeHandlerFor(Class<?> clazz, String format, Properties properties) throws IllegalArgumentException {
         if (clazz == null) {
             throw new NullPointerException();
         }
         clazz = TypeUtil.toWrapperClass(clazz);
-        return getHandler(TYPE_KEY + clazz.getName(), format, properties);
+        
+        TypeHandler handler = getHandler(TYPE_KEY + clazz.getName(), format, properties);
+        if (handler == null && Enum.class.isAssignableFrom(clazz)) {
+            return getEnumHandler((Class<Enum>) clazz, properties);
+        }
+        
+        return handler;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private TypeHandler getEnumHandler(Class<Enum> clazz, Properties properties) {
+        String format = null;
+        if (properties != null) {
+            format = properties.getProperty("format");
+        }
+        if (format == null || "name".equals(format)) {
+            return new EnumTypeHandler((Class<Enum>) clazz);
+        }
+        else if ("toString".equals(format)) {
+            return new ToStringEnumTypeHandler((Class<Enum>) clazz);
+        }
+        else {
+            throw new BeanIOConfigurationException("Invalid format '" + format + "', " +
+                "expected 'toString' or 'name' (default)");
+        }
     }
 
     private TypeHandler getHandler(String key, String format, Properties properties) throws IllegalArgumentException {

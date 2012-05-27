@@ -29,6 +29,8 @@
       <field name="bigDecimalValue" />
       <field name="id" />
       <field name="url" />
+      <field name="enum1" />
+      <field name="enum2" format="toString" />
     </record>
   </stream>
 

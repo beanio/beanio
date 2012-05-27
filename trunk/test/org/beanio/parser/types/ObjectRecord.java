@@ -41,6 +41,8 @@ public class ObjectRecord {
 	private BigDecimal bigDecimalValue;
 	private UUID id;
 	private URL url;
+	private TypeEnum enum1;
+	private TypeEnum enum2;
 	
 	public Byte getByteValue() {
 		return byteValue;
@@ -125,5 +127,17 @@ public class ObjectRecord {
     }
     public void setUrl(URL url) {
         this.url = url;
+    }
+    public TypeEnum getEnum1() {
+        return enum1;
+    }
+    public void setEnum1(TypeEnum enum1) {
+        this.enum1 = enum1;
+    }
+    public TypeEnum getEnum2() {
+        return enum2;
+    }
+    public void setEnum2(TypeEnum enum2) {
+        this.enum2 = enum2;
     }
 }

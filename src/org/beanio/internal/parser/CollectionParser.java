@@ -29,16 +29,10 @@ import org.beanio.BeanIOException;
  * @author Kevin Seim
  * @since 2.0
  */
-public class CollectionParser extends DelegatingParser implements Property, Iteration {
+public class CollectionParser extends Aggregation {
 
-    // minimum occurrences
-    private int minOccurs = 0;
-    // maximum occurrences
-    private int maxOccurs = Integer.MAX_VALUE;
     // the collection type
     private Class<? extends Collection<Object>> type;
-    // the property accessor, may be null if not bound
-    private PropertyAccessor accessor;
     // the property value
     private ParserLocal<Object> value = new ParserLocal<Object>();    
     // the current iteration index
@@ -197,18 +191,6 @@ public class CollectionParser extends DelegatingParser implements Property, Iter
         return count > 0;
     }
     
-    @Override
-    public boolean isLazy() {
-        return minOccurs == 0;
-    }
-    
-    /*
-     * Returns false.  Iterations cannot be used to identify records.
-     */
-    public boolean isIdentifier() {
-        return false;
-    }
-    
     /**
      * Returns whether this iteration is a property of a bean object.
      * @return true if this iteration is a property, false otherwise
@@ -303,52 +285,12 @@ public class CollectionParser extends DelegatingParser implements Property, Iter
         return null;
     }
     
-    public int getMinOccurs() {
-        return minOccurs;
-    }
-
-    public void setMinOccurs(int minOccurs) {
-        this.minOccurs = minOccurs;
-    }
-
-    public int getMaxOccurs() {
-        return maxOccurs;
-    }
-
-    public void setMaxOccurs(int maxOccurs) {
-        this.maxOccurs = maxOccurs;
-    }
-    
     /*
      * (non-Javadoc)
      * @see org.beanio.parser2.Property#type()
      */
     public int type() {
         return Property.AGGREGATION_COLLECTION;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.parser2.Property#setIdentifier(boolean)
-     */
-    public void setIdentifier(boolean identifier) {
-        throw new UnsupportedOperationException();
-    }
-    
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.parser2.Property#setAccessor(org.beanio.parser2.PropertyAccessor)
-     */
-    public void setAccessor(PropertyAccessor accessor) {
-        this.accessor = accessor;
-    }
-    
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.parser2.Property#getAccessor()
-     */
-    public PropertyAccessor getAccessor() {
-        return accessor;
     }
     
     /*

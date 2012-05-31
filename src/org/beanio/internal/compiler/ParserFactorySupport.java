@@ -37,7 +37,7 @@ import org.beanio.types.*;
  * {@link Preprocessor} is used to validate and set default configuration settings. And
  * secondly, the finalized configuration is walked again (using a {@link ProcessorSupport},
  * to create the parser and property tree structure.  As components are initialized they can
- * be added to the tree structure using stacks and the {@link #pushParser(Component)} and 
+ * be added to the tree structure using stacks with the {@link #pushParser(Component)} and 
  * {@link #pushProperty(Component)} methods.  After a component is finalized, it should be
  * removed from the stack using the {@link #popParser()} or {@link #popProperty()} method.
  * 
@@ -499,32 +499,39 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     protected void finalizeRecord(RecordConfig config, Record record) { 
         String target = config.getTarget();
         if (target != null) {
-            Component c = findTarget(record, target);
-            if (c == null) {
-                throw new BeanIOConfigurationException("Record target '" + target + "' not found");
-            }
-            
-            Property property = null;
-            if (c instanceof Property) {
-                property = (Property) c;
-            }
-            if (property == null || property.getType() == null) {
-                throw new BeanIOConfigurationException("No class defined for record target '" + target + "'");
-            }
-            record.setProperty(property);
+            record.setProperty(findTarget(record, target));
         }
     }
     
-    private Component findTarget(Component c, String name) {
+    private Property findTarget(Segment segment, String name) {
+        Component c = findDescendant("target", segment, name);
+        if (c == null) {
+            throw new BeanIOConfigurationException("Descendant target '" + name + "' not found");
+        }
+        
+        Property property = null;
+        if (c instanceof Property) {
+            property = (Property) c;
+        }
+        if (property == null || property.getType() == null) {
+            throw new BeanIOConfigurationException("No class defined for record target '" + name + "'");
+        }
+        return property;
+    }
+    
+    private Component findDescendant(String type, Component c, String name) {
         if (name.equals(c.getName())) {
             return c;
         }
         for (Component child : c.getChildren()) {
-            Component match = findTarget(child, name);
+            
+            Component match = findDescendant(type, child, name);
             if (match != null) {
                 if (c instanceof Iteration) {
-                    throw new BeanIOConfigurationException("A record target cannot repeat");
+                    throw new BeanIOConfigurationException("A " + type + " may not repeat," +
+                        " or belong to a segment that repeats");
                 }
+                
                 return match;
             }
         }
@@ -553,12 +560,12 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      * @param property the {@link Property} bound to the segment, or null if no bean was bound
      */
     protected void initializeSegmentIteration(SegmentConfig config, Property property) {
-        // wrap the segment in an iteration
-        CollectionParser collection = createParserIteration(config, property);
+        // wrap the segment in an aggregation component
+        Aggregation agg = createAggregation(config, property);
         
-        pushParser(collection);
+        pushParser(agg);
         if (property != null) {
-            pushProperty(collection);
+            pushProperty(agg);
         }
     }
     
@@ -599,7 +606,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         if (config.isConstant()) {
             return false;
         }
-        return (config.getType() != null);
+        return (config.getType() != null || config.getTarget() != null);
     }
     
     /*
@@ -619,9 +626,28 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      * @param config the segment configuration
      */
     protected void finalizeSegmentIteration(SegmentConfig config) {
-        popParser();
+        Aggregation aggregation = (Aggregation) popParser();
         if (config.getType() != null) {
             popProperty(); // pop the iteration
+        }
+        
+        // assumes key is not null only for map aggregation
+        String key = config.getKey();
+        if (key != null) {
+            // aggregations only have a single descendant so calling getFirst() is safe
+            Component c = findDescendant("key", aggregation.getFirst(), key);
+            if (c == null) {
+                throw new BeanIOConfigurationException("Key '" + key + "' not found");
+            }
+            
+            Property property = null;
+            if (c instanceof Property) {
+                property = (Property) c;
+            }
+            if (property == null || property.getType() == null) {
+                throw new BeanIOConfigurationException("Key '" + key + "' is not a property");
+            }
+            ((MapParser)aggregation).setKey(property);
         }
     }
     
@@ -644,7 +670,12 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      * @param config the segment configuration
      * @param segment the new {@link Segment}
      */
-    protected void finalizeSegment(SegmentConfig config, Segment segment) { }
+    protected void finalizeSegment(SegmentConfig config, Segment segment) {
+        String target = config.getTarget();
+        if (target != null) {
+            segment.setProperty(findTarget(segment, target));
+        }
+    }
 
     /*
      * (non-Javadoc)
@@ -685,13 +716,13 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         // whether or not this property is bound to a bean property, Collections targets are not
         boolean bind = isBound() && config.isBound() && !config.isRepeating();
         
-        CollectionParser repeater = null;
+        Aggregation aggregation = null;
         if (config.isRepeating()) {
-            repeater = createParserIteration(config, field);
+            aggregation = createAggregation(config, field);
             
-            pushParser(repeater);
-            if (repeater.isProperty()) {
-                pushProperty(repeater);
+            pushParser(aggregation);
+            if (aggregation.isProperty()) {
+                pushProperty(aggregation);
             }
         }
         else {
@@ -715,9 +746,9 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         }
         popParser();
         
-        if (repeater != null) {
+        if (aggregation != null) {
             popParser();
-            if (repeater.isProperty()) {
+            if (aggregation.isProperty()) {
                 popProperty();
             }
         }
@@ -769,7 +800,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      *   a property of its parent bean
      * @return the iteration component
      * @throws BeanIOConfigurationException if the collection type is invalid
-     */
+     *
     protected CollectionParser createParserIteration(PropertyConfig config, Property property) 
         throws BeanIOConfigurationException
     {
@@ -790,6 +821,89 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         CollectionParser iteration = null;
         if (collectionType == TypeUtil.ARRAY_TYPE) {
             iteration = new ArrayParser();
+        }
+        else {
+            iteration = new CollectionParser();
+        }
+        iteration.setName(config.getName());
+        iteration.setMinOccurs(config.getMinOccurs());
+        iteration.setMaxOccurs(config.getMaxOccurs());
+        iteration.setType(collectionType);
+        
+        // if collection was set, then this is a property of its parent
+        if (collectionType != null) {
+            Class<?> reflectedType = reflectCollectionType(iteration, property, 
+                config.getGetter(), config.getSetter());
+            
+            // descriptor may be null if the parent was Map or Collection
+            if (collectionType == TypeUtil.ARRAY_TYPE) {
+                Class<? extends Object> arrayType = property.getType();
+                
+                // reflectedType may be null if our parent is a Map
+                if (reflectedType != null) {
+                    // use the reflected component type for an array
+                    arrayType = reflectedType.getComponentType();
+                    
+                    // override target type if we were able to reflect its value
+                    property.setType(arrayType);
+                }
+                else if (arrayType == null) {
+                    // default to String
+                    arrayType = String.class;
+                }
+                
+                ((ArrayParser)iteration).setArrayType(arrayType);
+            }
+        }
+        
+        return iteration;
+    }
+    */
+
+    /**
+     * Creates an iteration for a repeating segment or field.
+     * @param config the property configuration
+     * @param property the property component, may be null if the iteration is not
+     *   a property of its parent bean
+     * @return the iteration component
+     * @throws BeanIOConfigurationException if the collection type is invalid
+     */
+    protected Aggregation createAggregation(PropertyConfig config, Property property) 
+        throws BeanIOConfigurationException
+    {
+        boolean isMap = false;
+        
+        String collection = config.getCollection();
+        
+        // determine the collection type
+        Class<?> collectionType = null;
+        if (collection != null) {
+            collectionType = TypeUtil.toAggregationType(collection);
+            if (collectionType == null) {
+                throw new BeanIOConfigurationException("Invalid collection type or " +
+                    "type alias '" + collection + "'");
+            }
+            
+            isMap = Map.class.isAssignableFrom(collectionType);
+            if (isMap && config.getComponentType() == ComponentConfig.FIELD) {
+                throw new BeanIOConfigurationException("Map type collections are " +
+                    "not supported for fields");
+            }
+            if (isMap && ((SegmentConfig)config).getKey() == null) {
+                throw new BeanIOConfigurationException("Key required for Map type " +
+                    "collection");
+            }
+            
+            collectionType = getConcreteAggregationType(collectionType);
+        }
+        
+        // create the appropriate iteration type
+        Aggregation iteration = null;
+        if (collectionType == TypeUtil.ARRAY_TYPE) {
+            iteration = new ArrayParser();
+        }
+        else if (isMap) {
+            iteration = new MapParser();
         }
         else {
             iteration = new CollectionParser();
@@ -1334,6 +1448,33 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         }
         else {
             return collectionType;
+        }
+    }
+    
+    /**
+     * Returns a concrete Class implementation for an aggregation type.
+     * @param type the configured {@link Map} or {@link Collection} type
+     * @return the concrete aggregation Class type
+     */
+    private Class<?> getConcreteAggregationType(Class<?> type) {
+        if (type == null) {
+            return null;
+        }
+        else if (type != TypeUtil.ARRAY_TYPE && 
+            (type.isInterface() || Modifier.isAbstract(type.getModifiers()))) {
+            
+            if (Set.class.isAssignableFrom(type)) {
+                return HashSet.class;
+            }
+            else if (Map.class.isAssignableFrom(type)) {
+                return LinkedHashMap.class;
+            }
+            else {
+                return ArrayList.class;
+            }
+        }
+        else {
+            return type;
         }
     }
     

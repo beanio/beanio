@@ -28,7 +28,6 @@ public class RecordConfig extends SegmentConfig implements SelectorConfig {
     private Integer order;
     private Integer minLength;
     private Integer maxLength;
-    private String target;
     
     /**
      * Constructs a new <tt>RecordConfig</tt>.
@@ -98,23 +97,5 @@ public class RecordConfig extends SegmentConfig implements SelectorConfig {
      */
     public void setOrder(Integer order) {
         this.order = order;
-    }
-
-    /**
-     * Returns the name of the target property for this record.
-     * @return the target property name
-     */
-    public String getTarget() {
-        return target;
-    }
-
-    /**
-     * Sets the name of the target property for this record, which can be used
-     * in lieu of <tt>class</tt> to return simple field types contained within
-     * the record.
-     * @param target the target property name
-     */
-    public void setTarget(String target) {
-        this.target = target;
     }
 }

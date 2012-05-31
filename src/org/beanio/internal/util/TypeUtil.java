@@ -199,13 +199,39 @@ public class TypeUtil {
             return (Class<? extends Collection<Object>>)(Class<?>) List.class;
         else if ("set".equalsIgnoreCase(type))
             return (Class<? extends Collection<Object>>)(Class<?>) Set.class;
-        
+
         try {
             Class<?> clazz = Class.forName(type);
             if (!Collection.class.isAssignableFrom(clazz)) {
                 return null;
             }
             return (Class<? extends Collection<Object>>) clazz;
+        }
+        catch (ClassNotFoundException ex) {
+            return null;
+        }
+    }
+    
+    public static Class<?> toAggregationType(String type) {
+        if ("array".equalsIgnoreCase(type))
+            return ARRAY_TYPE;
+        else if ("collection".equalsIgnoreCase(type))
+            return Collection.class;
+        else if ("list".equalsIgnoreCase(type))
+            return List.class;
+        else if ("set".equalsIgnoreCase(type))
+            return Set.class;
+        else if ("map".equalsIgnoreCase(type))
+            return Map.class;
+        
+        try {
+            Class<?> clazz = Class.forName(type);
+            if (Collection.class.isAssignableFrom(clazz))
+                return clazz;
+            else if (Map.class.isAssignableFrom(clazz))
+                return clazz;
+            else
+                return null;
         }
         catch (ClassNotFoundException ex) {
             return null;

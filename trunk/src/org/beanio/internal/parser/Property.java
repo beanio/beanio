@@ -36,6 +36,8 @@ public interface Property {
     public static final int AGGREGATION_ARRAY = 4;
     /** The collection property type used to aggregate multiple occurrences of a single property */
     public static final int AGGREGATION_COLLECTION = 5;
+    /** The map property type used to aggregate multiple occurrences of key/value pairs */
+    public static final int AGGREGATION_MAP = 6;
     
     /**
      * Returns the property type.

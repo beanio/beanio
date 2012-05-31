@@ -40,6 +40,8 @@ public class SegmentConfig extends PropertyConfig {
 
     private boolean constant;
     private boolean defaultExistence;
+    private String key;
+    private String target;
     
     /**
      * Constructs a new <tt>SegmentConfig</tt>.
@@ -125,5 +127,41 @@ public class SegmentConfig extends PropertyConfig {
      */
     public void setDefaultExistence(boolean defaultExistence) {
         this.defaultExistence = defaultExistence;
+    }
+
+    /**
+     * Returns the name of the property descendant to use for the
+     * Map key when <tt>collection</tt> is set to <tt>map</tt>.
+     * @return the key property name
+     */
+    public String getKey() {
+        return key;
+    }
+
+    /**
+     * Sets the name of the property descendant to use for the
+     * Map key when <tt>collection</tt> is set to <tt>map</tt>.
+     * @param key the key property name
+     */
+    public void setKey(String key) {
+        this.key = key;
+    }
+    
+    /**
+     * Returns the name of the target property for this segment.
+     * @return the target property name
+     */
+    public String getTarget() {
+        return target;
+    }
+
+    /**
+     * Sets the name of the target property for this segment, which can be used
+     * in lieu of <tt>class</tt> to return simple field types contained within
+     * the segment.
+     * @param target the target property name
+     */
+    public void setTarget(String target) {
+        this.target = target;
     }
 }

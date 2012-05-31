@@ -64,14 +64,15 @@ public class TypeUtilTest {
     }
     
     @Test
-    public void testToCollection() {
-        assertEquals(List.class, TypeUtil.toCollectionType("list"));
-        assertEquals(Collection.class, TypeUtil.toCollectionType("collection"));
-        assertEquals(Set.class, TypeUtil.toCollectionType("set"));
-        assertEquals(TypeUtil.ARRAY_TYPE, TypeUtil.toCollectionType("array"));
-        assertEquals(ArrayList.class, TypeUtil.toCollectionType("java.util.ArrayList"));
-        assertEquals(AbstractList.class, TypeUtil.toCollectionType("java.util.AbstractList"));
-        assertNull(TypeUtil.toCollectionType("java.util.HashMap"));
-        assertNull(TypeUtil.toCollectionType("org.beanio.types.NoClass"));
+    public void testToAggregation() {
+        assertEquals(List.class, TypeUtil.toAggregationType("list"));
+        assertEquals(Collection.class, TypeUtil.toAggregationType("collection"));
+        assertEquals(Set.class, TypeUtil.toAggregationType("set"));
+        assertEquals(TypeUtil.ARRAY_TYPE, TypeUtil.toAggregationType("array"));
+        assertEquals(ArrayList.class, TypeUtil.toAggregationType("java.util.ArrayList"));
+        assertEquals(AbstractList.class, TypeUtil.toAggregationType("java.util.AbstractList"));
+        assertEquals(Map.class, TypeUtil.toAggregationType("map"));
+        assertEquals(HashMap.class, TypeUtil.toAggregationType("java.util.HashMap"));
+        assertNull(TypeUtil.toAggregationType("org.beanio.types.NoClass"));
     }
 }

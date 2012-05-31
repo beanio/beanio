@@ -237,8 +237,8 @@ public class Preprocessor extends ProcessorSupport {
             throw new BeanIOConfigurationException("Maximum occurrences cannot be less than mininum occurrences");
         }
         
-        if (segment.getCollection() != null && segment.getType() == null) {
-            throw new BeanIOConfigurationException("Class required if collection is set");
+        if (segment.getCollection() != null && segment.getType() == null && segment.getTarget() == null) {
+            throw new BeanIOConfigurationException("Class or target required if collection is set");
         }
         
         if (propertyRoot == null || propertyRoot != segment) {

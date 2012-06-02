@@ -419,6 +419,7 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         GroupConfig config = new GroupConfig();
         populatePropertyConfig(config, element);
         config.setOrder(getIntegerAttribute(element, "order"));
+        config.setKey(getAttribute(element, "key"));
         config.setXmlName(getAttribute(element, "xmlName"));
         config.setXmlNamespace(getOptionalAttribute(element, "xmlNamespace"));
         config.setXmlPrefix(getOptionalAttribute(element, "xmlPrefix"));
@@ -453,6 +454,7 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         RecordConfig segment = new RecordConfig();
         populatePropertyConfig(segment, element);
         segment.setType(getAttribute(element, "class"));
+        segment.setKey(getAttribute(element, "key"));
         segment.setTarget(getAttribute(element, "target"));
         segment.setOrder(getIntegerAttribute(element, "order"));
         segment.setMinLength(getIntegerAttribute(element, "minLength"));

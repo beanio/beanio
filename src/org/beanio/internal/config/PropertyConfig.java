@@ -409,6 +409,15 @@ public abstract class PropertyConfig extends ComponentConfig {
         return isCollection() || (maxOccurs != null && maxOccurs > 1);
     }
     
+    /**
+     * Returns the name of the property descendant to use for the
+     * Map key when <tt>collection</tt> is set to <tt>map</tt>.
+     * @return the key property name
+     */
+    public String getKey() {
+        return null;
+    }
+    
     @Override
     protected boolean isSupportedChild(ComponentConfig child) {
         return false;

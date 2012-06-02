@@ -543,6 +543,13 @@
         </documentation>
       </annotation>
     </attribute>
+    <attribute name="key" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The descendant field name to use for the map key when 'collection' is bound to a java.util.Map.
+        </documentation>
+      </annotation>
+    </attribute>
     <attribute name="target" type="xsd:string" use="optional">
       <annotation>
         <documentation>
@@ -555,7 +562,7 @@
         <documentation>
           The type of collection for repeating records.  May be set to any
           collection class name or one of the following aliases: 'array', 'list',
-          or 'set'.
+          'set', or 'map'.
         </documentation>
       </annotation>
     </attribute>

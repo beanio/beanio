@@ -204,4 +204,55 @@ public class MultilineRecordTest extends ParserTest {
             in.close();
         }
     }
+    
+    @Test
+    public void testRecordMap() throws ParseException {
+        BeanReader in = factory.createReader("ml4", new InputStreamReader(
+            getClass().getResourceAsStream("ml4.txt")));
+        
+        try {
+            StringWriter text = new StringWriter();
+            BeanWriter out = factory.createWriter("ml4", text);
+            
+            OrderItem item;
+            
+            // read order #1
+            Order order = (Order) in.read();
+            Map<String,OrderItem> itemMap = order.getItemMap();
+            Assert.assertNotNull(itemMap);
+            Assert.assertEquals(2, itemMap.size());
+            
+            item = itemMap.get("soda");
+            Assert.assertNotNull(item);
+            Assert.assertEquals("soda", item.getName());
+            Assert.assertEquals(2, item.getQuantity());
+
+            item = itemMap.get("carrots");
+            Assert.assertNotNull(item);
+            Assert.assertEquals("carrots", item.getName());
+            Assert.assertEquals(5, item.getQuantity());
+            
+            out.write(order);
+            
+            order = (Order) in.read();
+            itemMap = order.getItemMap();
+            Assert.assertNotNull(itemMap);
+            Assert.assertEquals(3, itemMap.size());
+            
+            out.write(order);
+            out.flush();
+            
+            assertEquals(
+                "order,100,2012-01-01\n" +
+                "item,soda,2\n" +
+                "item,carrots,5\n" +
+                "order,101,2012-01-01\n" +
+                "item,banana,1\n" +
+                "item,apple,2\n" +
+                "item,cereal,3\n", text.toString());
+        }
+        finally {
+            in.close();
+        }
+    }
 }

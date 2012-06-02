@@ -87,4 +87,22 @@
     </group>
   </stream>
 
+  <stream name="ml4" format="csv" strict="true">
+    <parser>
+      <property name="lineSeparator" value="\n" />
+    </parser>
+    <group name="order" class="org.beanio.beans.Order" order="2" occurs="1+">
+      <record name="header" minOccurs="1" maxOccurs="1" order="1">
+        <field name="type" rid="true" literal="order" ignore="true" />
+        <field name="id" />
+        <field name="date" format="yyyy-MM-dd" />
+      </record>
+      <record name="itemMap" class="org.beanio.beans.OrderItem" collection="map" key="name" occurs="1-100" order="2">
+        <field name="type" rid="true" literal="item" ignore="true" />
+        <field name="name" />
+        <field name="quantity" />
+      </record>
+    </group>
+  </stream>
+
 </beanio>

@@ -24,6 +24,7 @@ public class Order {
     private String paymentMethod;
     private Person customer;
     private List<OrderItem> items;
+    private Map<String,OrderItem> itemMap;
     
     public String getId() {
         return id;
@@ -55,7 +56,12 @@ public class Order {
     public void setItems(List<OrderItem> items) {
         this.items = items;
     }
-    
+    public Map<String, OrderItem> getItemMap() {
+        return itemMap;
+    }
+    public void setItemMap(Map<String, OrderItem> itemMap) {
+        this.itemMap = itemMap;
+    }
     public String toString() {
         return id;
     }

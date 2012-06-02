@@ -79,7 +79,7 @@ public class RecordArray extends RecordCollection {
     }
     
     @Override
-    protected Collection<Object> createCollection() {
+    protected Collection<Object> createAggregationType() {
         return new ArrayList<Object>();
     }
 

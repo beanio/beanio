@@ -16,9 +16,7 @@
 package org.beanio.internal.parser;
 
 import java.io.IOException;
-import java.util.*;
-
-import org.beanio.*;
+import java.util.Collection;
 
 /**
  * A {@link Parser} tree component for parsing a collection of bean objects, where
@@ -29,15 +27,8 @@ import org.beanio.*;
  * @author Kevin Seim
  * @since 2.0
  */
-public class RecordCollection extends DelegatingParser implements Selector, Property {
+public class RecordCollection extends RecordAggregation {
 
-    // the collection type
-    private Class<? extends Collection<Object>> type;
-    // the property accessor, may be null if not bound
-    private PropertyAccessor accessor;
-    // the property value
-    private ParserLocal<Object> value = new ParserLocal<Object>();
-    
     /**
      * Constructs a new <tt>RecordCollection</tt>.
      */
@@ -51,7 +42,7 @@ public class RecordCollection extends DelegatingParser implements Selector, Prop
         Object aggregatedValue = getSelector().getValue(context);
         if (aggregatedValue != Value.INVALID) {
             if (value.get(context) == null) {
-                value.set(context, createCollection());
+                value.set(context, createAggregationType());
             }
             
             getCollection(context).add(getSelector().getValue(context));
@@ -60,14 +51,6 @@ public class RecordCollection extends DelegatingParser implements Selector, Prop
         getParser().clearValue(context);
         
         return result;
-    }
-    
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#skip(org.beanio.internal.parser.UnmarshallingContext)
-     */
-    public void skip(UnmarshallingContext context) {
-        getSelector().skip(context);
     }
 
     @Override
@@ -108,19 +91,13 @@ public class RecordCollection extends DelegatingParser implements Selector, Prop
     }
 
     @Override
-    public void clearValue(ParsingContext context) {
-        value.set(context, null);
-    }
-
-    @Override
     public void setValue(ParsingContext context, Object value) {
         // convert empty collections to null so that parent parsers
         // will consider this property missing during marshalling
         if (value != null && ((Collection<?>)value).isEmpty()) {
             value = null;
         }
-        
-        this.value.set(context, value);
+        super.setValue(context, value);
     }
     
     /**
@@ -130,171 +107,9 @@ public class RecordCollection extends DelegatingParser implements Selector, Prop
      */
     @SuppressWarnings("unchecked")
     protected Collection<Object> getCollection(ParsingContext context) {
-        return (Collection<Object>) value.get(context);
+        return (Collection<Object>) super.getValue(context);
     }
     
-    protected Collection<Object> createCollection() {
-        if (type != null) {
-            try {
-                return type.newInstance();
-            }
-            catch (Exception ex) {
-                throw new BeanIOException("Failed to instantiate class '" + type.getName() + "'");
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public Object getValue(ParsingContext context) {
-        return value.get(context);
-    }
-    
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#getProperty()
-     */
-    public Property getProperty() {
-        // for now, a collection cannot be a property root so its safe to return null here
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#matchNextRecord(org.beanio.internal.parser.UnmarshallingContext)
-     */
-    public Selector matchNext(UnmarshallingContext context) {
-        if (getSelector().matchNext(context) != null) {
-            return this;
-        }
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#matchAny(org.beanio.internal.parser.UnmarshallingContext)
-     */
-    public Selector matchAny(UnmarshallingContext context) {
-        return getSelector().matchAny(context);
-    }
-    
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#matchNextBean(org.beanio.internal.parser.MarshallingContext, java.lang.Object)
-     */
-    public Selector matchNext(MarshallingContext context) {
-        return getSelector().matchNext(context);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#close(org.beanio.internal.parser.ParsingContext)
-     */
-    public Selector close(ParsingContext context) {
-        return getSelector().close(context);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#reset(org.beanio.internal.parser.ParsingContext)
-     */
-    public void reset(ParsingContext context) {
-        getSelector().reset(context);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#getCount(org.beanio.internal.parser.ParsingContext)
-     */
-    public int getCount(ParsingContext context) {
-        return getSelector().getCount(context);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#setCount(org.beanio.internal.parser.ParsingContext, int)
-     */
-    public void setCount(ParsingContext context, int count) {
-        getSelector().setCount(context, count);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#getOrder()
-     */
-    public int getOrder() {
-        return getSelector().getOrder();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#isMaxOccursReached(org.beanio.internal.parser.ParsingContext)
-     */
-    public boolean isMaxOccursReached(ParsingContext context) {
-        return getSelector().isMaxOccursReached(context);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.util.StatefulWriter#updateState(java.lang.String, java.util.Map)
-     */
-    public void updateState(ParsingContext context, String namespace, Map<String, Object> state) {
-        getSelector().updateState(null, namespace, state);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.util.StatefulWriter#restoreState(java.lang.String, java.util.Map)
-     */
-    public void restoreState(ParsingContext context, String namespace, Map<String, Object> state) throws IllegalStateException {
-        getSelector().restoreState(null, namespace, state);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#getMinOccurs()
-     */
-    public int getMinOccurs() {
-        return getSelector().getMinOccurs();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#getMaxOccurs()
-     */
-    public int getMaxOccurs() {
-        return getSelector().getMaxOccurs();
-    }
-    
-    @Override
-    protected boolean isSupportedChild(Component child) {
-        return child instanceof Selector;
-    }
-    
-    /**
-     * Returns the child selector.
-     * @return the child {@link Selector}
-     */
-    public Selector getSelector() {
-        return (Selector) getFirst();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Property#getAccessor()
-     */
-    public PropertyAccessor getAccessor() {
-        return accessor;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Property#setAccessor(org.beanio.internal.parser.PropertyAccessor)
-     */
-    public void setAccessor(PropertyAccessor accessor) {
-        this.accessor = accessor;
-    }
-
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Property#type()
@@ -303,74 +118,9 @@ public class RecordCollection extends DelegatingParser implements Selector, Prop
         return Property.AGGREGATION_COLLECTION;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Property#createValue()
-     */
-    public Object createValue(ParsingContext context) {
-        if (value.get(context) == null) {
-            value.set(context, createCollection());
-        }
-        return getValue(context);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Property#defines(java.lang.Object)
-     */
-    public boolean defines(Object value) {
-        throw new IllegalStateException("A RecordCollection cannot identify a bean");
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Property#setIdentifier(boolean)
-     */
-    public void setIdentifier(boolean identifier) {
-        // a collection cannot be used to identify a bean
-    }
-
-    @Override
-    public boolean isIdentifier() {
-        // a collection cannot be used to identify a bean
-        return false;
-    }
-
-    /**
-     * Sets the collection type.
-     * @param collectionType {@link Collection} class type
-     */
-    @SuppressWarnings("unchecked")
-    public void setType(Class<?> collectionType) {
-        this.type = (Class<? extends Collection<Object>>) collectionType;
-    }
-    
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Property#getType()
-     */
-    public Class<? extends Collection<Object>> getType() {
-        return type;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Selector#isRecordGroup()
-     */
-    public boolean isRecordGroup() {
-        return false;
-    }
-    
     @Override
     public boolean hasContent(ParsingContext context) {
         Collection<Object> collection = getCollection(context);
         return collection != null && collection.size() > 0; 
-    }
-
-    @Override
-    public void registerLocals(Set<ParserLocal<? extends Object>> locals) {
-        if (locals.add(value)) {
-            super.registerLocals(locals);
-        }
     }
 }

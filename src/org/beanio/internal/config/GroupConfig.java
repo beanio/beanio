@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Kevin Seim
+ * Copyright 2010-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,8 @@ package org.beanio.internal.config;
 public class GroupConfig extends PropertyConfig implements SelectorConfig {
 
     private Integer order;
-
+    private String key;
+    
     /**
      * Constructs a new <tt>GroupConfig</tt>.
      */
@@ -60,6 +61,24 @@ public class GroupConfig extends PropertyConfig implements SelectorConfig {
         this.order = order;
     }
     
+    /**
+     * Returns the name of the property descendant to use for the
+     * Map key when <tt>collection</tt> is set to <tt>map</tt>.
+     * @return the key property name
+     */
+    public String getKey() {
+        return key;
+    }
+
+    /**
+     * Sets the name of the property descendant to use for the
+     * Map key when <tt>collection</tt> is set to <tt>map</tt>.
+     * @param key the key property name
+     */
+    public void setKey(String key) {
+        this.key = key;
+    }
+
     @Override
     protected boolean isSupportedChild(ComponentConfig child) {
         switch (child.getComponentType()) {

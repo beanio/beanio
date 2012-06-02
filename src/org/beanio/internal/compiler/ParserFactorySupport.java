@@ -357,11 +357,11 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     
     protected void initializeGroupIteration(GroupConfig config, Property property) {
         // wrap the segment in an iteration
-        Component collection = createSelectorIteration(config, property);
+        Component aggregation = createRecordAggregation(config, property);
 
-        pushParser(collection);
+        pushParser(aggregation);
         if (property != null) {
-            pushProperty(collection);
+            pushProperty(aggregation);
         }
     }
     
@@ -431,7 +431,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     
     protected void initializeRecordIteration(RecordConfig config, Property property) {
         // wrap the segment in an iteration
-        Component collection = createSelectorIteration(config, property);
+        Component collection = createRecordAggregation(config, property);
 
         pushParser(collection);
         if (property != null) {
@@ -487,7 +487,26 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         }
         
         // pop the iteration from the parser stack
-        popParser();
+        RecordAggregation aggregation = (RecordAggregation) popParser();
+        
+        // assumes key is not null only for map aggregation
+        String key = config.getKey();
+        if (key != null) {
+            // aggregations only have a single descendant so calling getFirst() is safe
+            Component c = findDescendant("key", aggregation.getFirst(), key);
+            if (c == null) {
+                throw new BeanIOConfigurationException("Key '" + key + "' not found");
+            }
+            
+            Property property = null;
+            if (c instanceof Property) {
+                property = (Property) c;
+            }
+            if (property == null || property.getType() == null) {
+                throw new BeanIOConfigurationException("Key '" + key + "' is not a property");
+            }
+            ((RecordMap)aggregation).setKey(property);
+        }
     }
     
     /**
@@ -792,73 +811,6 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         pushProperty(constant);
         popProperty();
     }
-    
-    /**
-     * Creates an iteration for a repeating segment or field.
-     * @param config the property configuration
-     * @param property the property component, may be null if the iteration is not
-     *   a property of its parent bean
-     * @return the iteration component
-     * @throws BeanIOConfigurationException if the collection type is invalid
-     *
-    protected CollectionParser createParserIteration(PropertyConfig config, Property property) 
-        throws BeanIOConfigurationException
-    {
-        String collection = config.getCollection();
-        
-        // determine the collection type
-        Class<? extends Collection<Object>> collectionType = null;
-        if (collection != null) {
-            collectionType = TypeUtil.toCollectionType(collection);
-            if (collectionType == null) {
-                throw new BeanIOConfigurationException("Invalid collection type or " +
-                    "type alias '" + collection + "'");
-            }
-            collectionType = getConcreteCollectionType(collectionType);
-        }
-        
-        // create the appropriate iteration type
-        CollectionParser iteration = null;
-        if (collectionType == TypeUtil.ARRAY_TYPE) {
-            iteration = new ArrayParser();
-        }
-        else {
-            iteration = new CollectionParser();
-        }
-        iteration.setName(config.getName());
-        iteration.setMinOccurs(config.getMinOccurs());
-        iteration.setMaxOccurs(config.getMaxOccurs());
-        iteration.setType(collectionType);
-        
-        // if collection was set, then this is a property of its parent
-        if (collectionType != null) {
-            Class<?> reflectedType = reflectCollectionType(iteration, property, 
-                config.getGetter(), config.getSetter());
-            
-            // descriptor may be null if the parent was Map or Collection
-            if (collectionType == TypeUtil.ARRAY_TYPE) {
-                Class<? extends Object> arrayType = property.getType();
-                
-                // reflectedType may be null if our parent is a Map
-                if (reflectedType != null) {
-                    // use the reflected component type for an array
-                    arrayType = reflectedType.getComponentType();
-                    
-                    // override target type if we were able to reflect its value
-                    property.setType(arrayType);
-                }
-                else if (arrayType == null) {
-                    // default to String
-                    arrayType = String.class;
-                }
-                
-                ((ArrayParser)iteration).setArrayType(arrayType);
-            }
-        }
-        
-        return iteration;
-    }
-    */
 
     /**
      * Creates an iteration for a repeating segment or field.
@@ -898,24 +850,24 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         }
         
         // create the appropriate iteration type
-        Aggregation iteration = null;
+        Aggregation aggregation = null;
         if (collectionType == TypeUtil.ARRAY_TYPE) {
-            iteration = new ArrayParser();
+            aggregation = new ArrayParser();
         }
         else if (isMap) {
-            iteration = new MapParser();
+            aggregation = new MapParser();
         }
         else {
-            iteration = new CollectionParser();
+            aggregation = new CollectionParser();
         }
-        iteration.setName(config.getName());
-        iteration.setMinOccurs(config.getMinOccurs());
-        iteration.setMaxOccurs(config.getMaxOccurs());
-        iteration.setType(collectionType);
+        aggregation.setName(config.getName());
+        aggregation.setMinOccurs(config.getMinOccurs());
+        aggregation.setMaxOccurs(config.getMaxOccurs());
+        aggregation.setType(collectionType);
         
         // if collection was set, then this is a property of its parent
         if (collectionType != null) {
-            Class<?> reflectedType = reflectCollectionType(iteration, property, 
+            Class<?> reflectedType = reflectCollectionType(aggregation, property, 
                 config.getGetter(), config.getSetter());
             
             // descriptor may be null if the parent was Map or Collection
@@ -935,50 +887,61 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
                     arrayType = String.class;
                 }
                 
-                ((ArrayParser)iteration).setArrayType(arrayType);
+                ((ArrayParser)aggregation).setArrayType(arrayType);
             }
         }
         
-        return iteration;
+        return aggregation;
     }
-    
+
     /**
-     * Creates an iteration for a repeating record.
-     * @param config the record configuration
+     * Creates an aggregation for a repeating record or group.
+     * @param config the record or group configuration
      * @param property the property component
-     * @return the created {@link RecordCollection}
+     * @return the created {@link RecordAggregation}
      * @throws BeanIOConfigurationException
      */
-    protected RecordCollection createSelectorIteration(PropertyConfig config, Property property) 
+    protected RecordAggregation createRecordAggregation(PropertyConfig config, Property property) 
         throws BeanIOConfigurationException
     {
+        boolean isMap = false;
         String collection = config.getCollection();
         
         // determine the collection type
-        Class<? extends Collection<Object>> collectionType = null;
+        Class<?> collectionType = null;
         if (collection != null) {
-            collectionType = TypeUtil.toCollectionType(collection);
+            collectionType = TypeUtil.toAggregationType(collection);
             if (collectionType == null) {
                 throw new BeanIOConfigurationException("Invalid collection type or " +
                     "type alias '" + collection + "'");
             }
-            collectionType = getConcreteCollectionType(collectionType);
+            
+            isMap = Map.class.isAssignableFrom(collectionType);
+            if (isMap && config.getKey() == null) {
+                throw new BeanIOConfigurationException("Key required for Map type " +
+                    "collection");
+            }
+            
+            collectionType = getConcreteAggregationType(collectionType);
         }
         
         // create the appropriate iteration type
-        RecordCollection iteration;;
+        RecordAggregation aggregation;;
         if (collectionType == TypeUtil.ARRAY_TYPE) {
-            iteration = new RecordArray();
+            aggregation = new RecordArray();
+        }
+        else if (isMap) {
+            aggregation = new RecordMap();
         }
         else {
-            iteration = new RecordCollection();
+            aggregation = new RecordCollection();
         }
-        iteration.setName(config.getName());
-        iteration.setType(collectionType);
+        aggregation.setName(config.getName());
+        aggregation.setType(collectionType);
         
         // if collection was set, then this is a property of its parent
         if (collectionType != null) {
-            Class<?> reflectedType = reflectCollectionType(iteration, property, 
+            Class<?> reflectedType = reflectCollectionType(aggregation, property, 
                 config.getGetter(), config.getSetter());
             
             // descriptor may be null if the parent was Map or Collection
@@ -998,11 +961,11 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
                     arrayType = String.class;
                 }
                 
-                ((RecordArray)iteration).setArrayType(arrayType);
+                ((RecordArray)aggregation).setArrayType(arrayType);
             }
         }
         
-        return iteration;
+        return aggregation;
     }
    
     /**
@@ -1130,6 +1093,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             case Property.COLLECTION:
             case Property.AGGREGATION_ARRAY:
             case Property.AGGREGATION_COLLECTION:
+            case Property.AGGREGATION_MAP:
                 return;
             case Property.MAP:
                 property.setAccessor(new MapAccessor(property.getName()));
@@ -1422,33 +1386,6 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             }
         }
         return beanClass;
-    }
-    
-    /**
-     * Returns the default concrete Collection subclass for a Collection type.
-     * @param collectionType the configured Collection type
-     * @return a concrete Collection subclass
-     */
-    @SuppressWarnings("unchecked")
-    private Class<? extends Collection<Object>> getConcreteCollectionType(
-        Class<? extends Collection<Object>> collectionType) {
-        
-        if (collectionType == null) {
-            return null;
-        }
-        else if (collectionType != TypeUtil.ARRAY_TYPE && 
-            (collectionType.isInterface() || Modifier.isAbstract(collectionType.getModifiers()))) {
-            
-            if (Set.class.isAssignableFrom(collectionType)) {
-                return (Class<? extends Collection<Object>>)(Class<?>) HashSet.class;
-            }
-            else {
-                return (Class<? extends Collection<Object>>)(Class<?>) ArrayList.class;
-            }
-        }
-        else {
-            return collectionType;
-        }
     }
     
     /**

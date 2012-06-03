@@ -49,7 +49,7 @@ h3 {
     color: green;	
 }
 
-.highlight {
+pre b, .highlight {
 	color: #000088;
 	font-weight: bold;
 }

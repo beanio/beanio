@@ -168,10 +168,6 @@ public class Preprocessor extends ProcessorSupport {
      * @param record the record configuration to process
      */
     protected void initializeRecord(RecordConfig record) throws BeanIOConfigurationException {
-        // validate both 'class' and 'target' aren't set
-        if (record.getType() != null && record.getTarget() != null) {
-            throw new BeanIOConfigurationException("Cannot set both 'class' and 'target'");
-        }
         
         // a record is ignored if a 'class' was not set and the property root is null
         // or the record repeats
@@ -223,6 +219,11 @@ public class Preprocessor extends ProcessorSupport {
      */
     protected void initializeSegment(SegmentConfig segment) throws BeanIOConfigurationException {
 
+        // validate both 'class' and 'target' aren't set
+        if (segment.getType() != null && segment.getTarget() != null) {
+            throw new BeanIOConfigurationException("Cannot set both 'class' and 'target'");
+        }
+        
         // set default occurrences and validate
         if (segment.getMinOccurs() == null) {
             segment.setMinOccurs(1);
@@ -237,6 +238,9 @@ public class Preprocessor extends ProcessorSupport {
             throw new BeanIOConfigurationException("Maximum occurrences cannot be less than mininum occurrences");
         }
         
+        if (segment.getKey() != null && segment.getCollection() == null) {
+            throw new BeanIOConfigurationException("Unexpected key value when collection not set");
+        }
         if (segment.getCollection() != null && segment.getType() == null && segment.getTarget() == null) {
             throw new BeanIOConfigurationException("Class or target required if collection is set");
         }

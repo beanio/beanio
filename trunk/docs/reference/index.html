@@ -11,7 +11,7 @@
 <body>
 
 <div class="title">BeanIO 2.0 Reference Guide</div>
-<p><i>Revision 2</i>, &copy; 2010-2012 Kevin Seim</p>
+<p><i>Revision 3</i>, &copy; 2010-2012 Kevin Seim</p>
 <p style="font-size: 90%"><i>Copies of this document may be made for your own use and for
 distribution to others, provided that you do not charge any fee for such copies and further provided
 that each copy contains this Copyright Notice, whether distributed in print or electronically.</i></p>
@@ -148,6 +148,8 @@ currently supports XML, CSV, delimited and fixed length file formats. BeanIO is 
   <li>Support for unmarshalling a subset of a record using a record <tt>target</tt> attribute</li>
   <li>Mapping file property substitution support using the syntax <tt>${propertyName}</tt> or <tt>${propertyName,default}</tt>.</li>
   <li>A new <tt>occurs</tt> attribute for specifying both <tt>minOccurs</tt> and <tt>maxOccurs</tt>.  Examples: '0-1', '1+', '3'.</li>
+  <li>Default type handling for Enums (since 2.0.1).</li>
+  <li>Support for binding a repeating segment or record to a Map collection (since 2.0.1).</li>
 </ul>
 
 <h2><a name="Migration">1.2. Migrating from 1.2.x</a></h2>
@@ -1882,13 +1884,14 @@ Jane,Doe,Architect,80000,01152008,456 Main St,Chicago,IL,60611,111 Michigan Ave,
 Jon,Anderson,Manager,85000,03182007,1212 North Ave,Chicago,IL,60614</pre>
 
 <p>In our mapping file, in order to bind a segment to a collection, simply set it's <tt>collection</tt> 
-attribute to the fully qualified class name of a <tt>java.util.Collection</tt> subclass,
-or to one of the collection type aliases below.</p>
+attribute to the fully qualified class name of a <tt>java.util.Collection</tt> or <tt>java.util.Map</tt> 
+subclass, or to one of the collection type aliases below.</p>
 <table class="indent">
 <tr><th>Class</th><th>Alias</th><th>Default Implementation</th></tr>
 <tr><td>java.util.Collection</td><td><tt>collection</tt></td><td>java.util.ArrayList</td></tr>
 <tr><td>java.util.List</td><td><tt>list</tt></td><td>java.util.ArrayList</td></tr>
 <tr><td>java.util.Set</td><td><tt>set</tt></td><td>java.util.HashSet</td></tr>
+<tr><td>java.util.Map</td><td><tt>map</tt></td><td>java.util.LinkedHashMap</td></tr>
 <tr><td>(Java Array)</td><td><tt>array</tt></td><td>N/A</td></tr>
 </table>
 
@@ -1923,12 +1926,52 @@ streams).</p>
 <ul>
   <li>Repeating segments must appear consecutively in the record.</li>
   <li>Every field in a repeating segment must be declared.  (There can be no field gaps in the segment configuration.)</li>
-  <li>A repeating segment may not contain any repeating descendants with variable occurrences.</li>
+  <li>A repeating segment may not contain repeating descendants with variable occurrences.</li>
   <li>Repeating fields or fields that belong to a repeating segment may not be used for record identification.</li>
 </ul>
+<h3><a name="StreamValidation">4.5.2.1. Inline Maps</a></h3>
+<p>As noted above, a segment can also be bound to a <tt>java.util.Map</tt> which provides support for "inline" maps.
+For example, given the following CSV file of users,</p>
 
+<pre class="file">
+id1,firstName1,lastName1,id2,firstName2,lastName2
+jsmith,Joe,Smith,jdoe,Jane,Doe</pre>
 
+<p>The following mapping file could be used to create a Map of <tt>User</tt> objects by ID.  The <tt>key</tt>
+attribute is used to set the name of a descendant field to use for the Map key.</p>
+<pre class="file">
+&lt;beanio&gt;
 
+  &lt;stream name="employeeFile" format="csv"&gt;
+    &lt;record name="employee" target="userMap"&gt;
+      &lt;segment name="userMap" class="example.User" <b>collection="map" key="id"</b> 
+          minOccurs="1" maxOccurs="unbounded"&gt;
+        &lt;field name="id" /&gt;
+        &lt;field name="firstName" /&gt;
+        &lt;field name="lastName" /&gt;  
+      &lt;/segment&gt;
+    &lt;/record&gt; 
+  &lt;/stream&gt;
+  
+&lt;/beanio&gt;</pre>
+
+<p>If a Map of last names by ID is needed instead, simply replace the <tt>class</tt> attribute with <tt>target</tt>
+and specify the name of the descendant field to use for the Map value.  In this case, first name is effectively ignored.</p>
+<pre class="file">
+&lt;beanio&gt;
+
+  &lt;stream name="employeeFile" format="csv"&gt;
+    &lt;record name="employee" target="userMap"&gt;
+      &lt;segment name="userMap" collection="map" key="id" <b>target="lastName"</b> 
+          minOccurs="1" maxOccurs="unbounded"&gt;
+        &lt;field name="id" /&gt;
+        &lt;field name="firstName" /&gt;
+        &lt;field name="lastName" /&gt;  
+      &lt;/segment&gt;
+    &lt;/record&gt; 
+  &lt;/stream&gt;
+  
+&lt;/beanio&gt;</pre>
 
 <h2><a name="StreamValidation">4.6. Stream Validation</a></h2>
 <p>A <tt>BeanReader</tt> will throw an <tt>InvalidRecordException</tt> if a record or one of 
@@ -3872,10 +3915,18 @@ the group as a whole.</p>
   <td><tt>collection</tt></td>
   <td>The collection type for repeating records bound to a parent bean object (configured on
     a <a href="#group"><tt>group</tt></a>).  The value may be set to any fully qualified class name 
-    assignable to <tt>java.util.Collection</tt>,
-    or to one of the collection type aliases: <tt>list</tt>, <tt>set</tt> or <tt>array</tt>.
-    A collection type can only be set if <tt>class</tt> is also set.
+    assignable to <tt>java.util.Collection</tt> or <tt>java.util.Map</tt>,
+    or to one of the collection type aliases: <tt>list</tt>, <tt>set</tt>, <tt>map</tt> or <tt>array</tt>.
+    A collection type can only be set if <tt>class</tt> or <tt>target</tt> is also set.
     <p>BeanIO will not derive the collection type from it's parent bean object.</p>
+  </td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>key</tt></td>
+  <td>The name of a descendant field to use for the Map key when <tt>collection</tt>
+    is assignable to a <tt>java.util.Map</tt>.
   </td>
   <td>No</td>
   <td>*</td>
@@ -4012,6 +4063,14 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
   <td>*</td>
 </tr>
 <tr>
+  <td><tt>target</tt></td>
+  <td>The name of a descendant field to assign to this segment in lieu of a <tt>class</tt>.
+    If set, all other descendants are not bound to a parent bean property.
+  </td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
   <td><tt>getter</tt></td>
   <td>The getter method used to get the bean object bound to this segment from it's parent.  
     By default, the getter method is determined through introspection using
@@ -4031,9 +4090,10 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
   <td><tt>collection</tt></td>
   <td>The collection type for repeating segments bound to a parent bean object.  
     The value may be set to any fully qualified class name 
-    assignable to <tt>java.util.Collection</tt>,
-    or to one of the collection type aliases: <tt>list</tt>, <tt>set</tt> or <tt>array</tt>.
-    A collection type can only be set if <tt>class</tt> is also set.
+    assignable to <tt>java.util.Collection</tt> or <tt>java.util.Map</tt>,
+    or to one of the collection type aliases: <tt>list</tt>, <tt>set</tt>, <tt>map</tt>
+    or <tt>array</tt>.
+    A collection type can only be set if <tt>class</tt> or <tt>target</tt> is also set.
     <p>BeanIO will not derive the collection type from it's parent bean object.</p>
     <p>There are a few restrictions specific to repeating segments in any "flat" format (delimited, CSV or fixedlength):</p>
     <ul>
@@ -4043,6 +4103,14 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
     <li>Repeating segments must fully declare all child fields- there can be no gaps in the definition.
       (However, you can still skip over unbound values using the <tt>ignore</tt> field attribute.)</li>
     </ul>
+  </td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>key</tt></td>
+  <td>The name of a descendant field to use for the Map key when <tt>collection</tt>
+    is assignable to a <tt>java.util.Map</tt>.
   </td>
   <td>No</td>
   <td>*</td>

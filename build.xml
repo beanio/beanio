@@ -65,8 +65,11 @@
       <map from="${basedir}/src/" to=""/>
     </pathconvert>
     <property name="osgi.export-package" value='${osgi.packages};version="${version}"' />
+
+    <!-- JarJar is used to package ASM with BeanIO -->
+	<taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="lib/jarjar-1.3.jar"/>
     
-    <jar destfile="${target}/beanio.jar">
+    <jarjar destfile="${target}/beanio.jar">
       <manifest>
         <attribute name="Implementation-Title" value="BeanIO ${version}" />
         <attribute name="Implementation-Version" value="${version}" />
@@ -84,6 +87,7 @@
       </manifest>
       <metainf dir="${basedir}">
         <include name="LICENSE.txt" />
+        <include name="LICENSE-ASM.txt" />
         <include name="NOTICE.txt" />
       </metainf>
       <fileset dir="${classes.main}" />
@@ -91,7 +95,10 @@
         <exclude name="**/*.java" />
         <exclude name="**/package.html" />
       </fileset>
-    </jar>
+      <!-- Bundle ASM with BeanIO -->
+      <zipfileset src="lib/asm-4.0.jar" />
+      <rule pattern="org.objectweb.asm.**" result="org.beanio.internal.asm.@1"/>
+    </jarjar>
   </target>
 
   <!-- Creates docs related directories -->
@@ -158,9 +165,13 @@
       <pathelement location="test" />
       <fileset dir="lib">
         <include name="*.jar" />
+        <exclude name="jarjar-1.3.jar" />
       </fileset>
     </path>
 
+    <property name="temp" refid="classpath.test"/>
+    <echo message="${temp}" />
+    
     <!-- Compile test classes -->
     <mkdir dir="${classes.test}" />
     <javac srcdir="test" destdir="${classes.test}" debug="true" includeAntRuntime="false" classpathref="classpath.test" />

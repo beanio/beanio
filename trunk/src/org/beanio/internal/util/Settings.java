@@ -87,6 +87,8 @@ public class Settings {
     public static final String DEFAULT_RECORD_MIN_OCCURS = "org.beanio.record.minOccurs";
     /** The default minOccurs setting for a field (after appending the stream format) */
     public static final String DEFAULT_FIELD_MIN_OCCURS = "org.beanio.field.minOccurs";
+    /** The method of property access to use, 'reflection' (default) or 'asm' is supported */
+    public static final String PROPERTY_ACCESSOR_METHOD = "org.beanio.propertyAccessorFactory";
     
     private static final String DEFAULT_CONFIGURATION_PATH = "org/beanio/internal/config/beanio.properties";
     private static final String DEFAULT_CONFIGURATION_FILENAME = "beanio.properties";

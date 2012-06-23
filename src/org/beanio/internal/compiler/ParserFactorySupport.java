@@ -20,7 +20,8 @@ import java.lang.reflect.*;
 import java.util.*;
 import java.util.regex.PatternSyntaxException;
 
-import org.beanio.*;
+import org.beanio.BeanIOConfigurationException;
+import org.beanio.internal.compiler.accessor.*;
 import org.beanio.internal.config.*;
 import org.beanio.internal.parser.*;
 import org.beanio.internal.parser.Field;
@@ -48,11 +49,15 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
 
     private static final String CONSTRUCTOR_PREFIX = "#";
     
+    private static final boolean asmEnabled = "asm".equalsIgnoreCase(
+        Settings.getInstance().getProperty(Settings.PROPERTY_ACCESSOR_METHOD));
+    
     private Stream stream;
     private String streamFormat;
     private boolean readEnabled = true;
     private boolean writeEnabled = true;
     private TypeHandlerFactory typeHandlerFactory;
+    private PropertyAccessorFactory accessorFactory;
     private ClassLoader classLoader;
     
     private LinkedList<Component> parserStack = new LinkedList<Component>();
@@ -76,6 +81,13 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         
         // pre-process configuration settings to set defaults and validate as much as possible 
         createPreprocessor(config).process(config);
+        
+        if (asmEnabled) {
+            accessorFactory = new AsmAccessorFactory(classLoader);
+        }
+        else {
+            accessorFactory = new ReflectionAccessorFactory();
+        }
         
         process(config);
         
@@ -1019,7 +1031,8 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
                 getter, setter, construtorArgumentIndex >= 0);
             reflectedType = descriptor.getPropertyType();
             
-            iteration.setAccessor(new MethodReflectionAccessor(descriptor, construtorArgumentIndex));
+            iteration.setAccessor(accessorFactory.getPropertyAccessor( 
+                parent.getType(), descriptor, construtorArgumentIndex));
         }
         catch (BeanIOConfigurationException ex) {
             // if a method accessor is not found, attempt to find a public field
@@ -1030,7 +1043,8 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             }
             reflectedType = field.getType();
             
-            iteration.setAccessor(new FieldReflectionAccessor(field, construtorArgumentIndex));
+            iteration.setAccessor(accessorFactory.getPropertyAccessor( 
+                parent.getType(), field, construtorArgumentIndex));
         }
 
         // reflectedType may be null for read-only streams using a constructor argument
@@ -1103,7 +1117,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         String setter = config.getSetter();
         String getter = config.getGetter();
         
-        // parse the constructor argument index from the 'setter'
+        // parse the constructor argument index from the 'sett  er'
         
         int construtorArgumentIndex = -1;
         if (setter != null && setter.startsWith(CONSTRUCTOR_PREFIX)) {
@@ -1127,7 +1141,8 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
                 getter, setter, construtorArgumentIndex >= 0);
             reflectedType = descriptor.getPropertyType();
             
-            property.setAccessor(new MethodReflectionAccessor(descriptor, construtorArgumentIndex));
+            property.setAccessor(accessorFactory.getPropertyAccessor( 
+                parent.getType(), descriptor, construtorArgumentIndex));
         }
         catch (BeanIOConfigurationException ex) {
             // if a method accessor is not found, attempt to find a public field
@@ -1136,10 +1151,10 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
                 // give up and rethrow the exception
                 throw ex;    
             }
-            
-            property.setAccessor(new FieldReflectionAccessor(field, construtorArgumentIndex));
-            
             reflectedType = field.getType();
+            
+            property.setAccessor(accessorFactory.getPropertyAccessor( 
+                parent.getType(), field, construtorArgumentIndex));
         }
         
         // validate the reflected type

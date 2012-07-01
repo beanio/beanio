@@ -108,7 +108,7 @@ public class FlatPreprocessor extends Preprocessor {
             }
             if (segment.getComponentType() != ComponentConfig.RECORD && 
                 segment.isRepeating() && 
-                config.getMinOccurs() == 0) {
+                config.getMinOccurs().equals(0)) {
                 throw new BeanIOConfigurationException("A repeating segment may not contain " +
                     "components where minOccurs=0");
             }
@@ -172,7 +172,7 @@ public class FlatPreprocessor extends Preprocessor {
         segment.setMinSize(minSize);
         
         // calculate the next position
-        if (segment.getMaxOccurs() == Integer.MAX_VALUE ||
+        if (segment.getMaxOccurs().equals(Integer.MAX_VALUE) ||
             segment.getMaxSize() == Integer.MAX_VALUE) {
             defaultPosition = Integer.MAX_VALUE;
         }
@@ -260,12 +260,12 @@ public class FlatPreprocessor extends Preprocessor {
         }
         config.setPosition(defaultPosition);
         
-        // set the next default position to MAX_VALUE if the occurences of this field is unbounded
-        if (config.getMaxOccurs() == Integer.MAX_VALUE) {
+        // set the next default position to MAX_VALUE if the occurrences of this field is unbounded
+        if (config.getMaxOccurs().equals(Integer.MAX_VALUE)) {
             defaultPosition = Integer.MAX_VALUE;
         }
         // or if the number of occurrence is indeterminate
-        else if (config.isRepeating() && config.getMinOccurs() != config.getMaxOccurs()) {
+        else if (config.isRepeating() && !config.getMinOccurs().equals(config.getMaxOccurs())) {
             defaultPosition = Integer.MAX_VALUE;
         }
         else {

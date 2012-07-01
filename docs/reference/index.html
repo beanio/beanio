@@ -148,8 +148,12 @@ currently supports XML, CSV, delimited and fixed length file formats. BeanIO is 
   <li>Support for unmarshalling a subset of a record using a record <tt>target</tt> attribute</li>
   <li>Mapping file property substitution support using the syntax <tt>${propertyName}</tt> or <tt>${propertyName,default}</tt>.</li>
   <li>A new <tt>occurs</tt> attribute for specifying both <tt>minOccurs</tt> and <tt>maxOccurs</tt>.  Examples: '0-1', '1+', '3'.</li>
-  <li>Default type handling for Enums (since 2.0.1).</li>
-  <li>Support for binding a repeating segment or record to a Map collection (since 2.0.1).</li>
+</ul>
+<p>And since 2.0.1:</p>
+<ul>
+  <li>Default type handling for Enums. See section <a href="#FieldTypeConversion">4.3.1. Field Type Conversion</a>.</li>
+  <li>Support for binding a repeating segment or record to a Map collection.  See section <a href="#InlineMaps">4.5.2.1 Inline Maps</a>.</li>
+  <li>Optional property invocation using ASM bytecode generation.  See section <a href="#Configuration">7.0. Configuration</a>. </li>
 </ul>
 
 <h2><a name="Migration">1.2. Migrating from 1.2.x</a></h2>
@@ -1401,11 +1405,16 @@ or alias <tt>integer</tt> or <tt>int</tt>.</p>
 </tr>
 <tr><td>java.util.UUID</td><td>-</td><td><tt>uuid</tt></td></tr>
 <tr><td>java.net.URL</td><td>-</td><td><tt>url</tt></td></tr>
+<tr><td>java.lang.Enum<sup>2</sup></td><td>-</td><td><tt>-</tt></td></tr>
 </table>
 <p class="indent"><sup>1</sup> By default, the <tt>date</tt> alias is used for <tt>java.util.Date</tt> types that 
 contain date information only, and the <tt>time</tt> alias is used for <tt>java.util.Date</tt> types that contain 
 only time information.  Only the <tt>datetime</tt> alias can be used to replace the default type handler 
 for the <tt>java.util.Date</tt> class.</p>
+<p class="indent"><sup>2</sup> By default, enums are converted using <tt>Enum.valueOf(Class, String)</tt>.
+If <tt>format="toString"</tt>, the enum will be converted using values computed by calling <tt>toString()</tt>
+for each enum value.  In either case, conversion is case sensitive.  As with other types, a custom type handler
+can also be used for enums. </p>
 
 <p>Optionally, a <tt>format</tt> attribute can be used to pass a decimal format for <tt>java.lang.Number</tt> types, and
 for passing a date format for <tt>java.util.Date</tt> types.  In the example below, the <tt>hireDate</tt> 
@@ -1929,7 +1938,7 @@ streams).</p>
   <li>A repeating segment may not contain repeating descendants with variable occurrences.</li>
   <li>Repeating fields or fields that belong to a repeating segment may not be used for record identification.</li>
 </ul>
-<h3><a name="StreamValidation">4.5.2.1. Inline Maps</a></h3>
+<h3><a name="InlineMaps">4.5.2.1. Inline Maps</a></h3>
 <p>As noted above, a segment can also be bound to a <tt>java.util.Map</tt> which provides support for "inline" maps.
 For example, given the following CSV file of users,</p>
 
@@ -3300,6 +3309,17 @@ working directory, and if not found, then from the root of the application's cla
   <td><tt>org.beanio.field.minOccurs.[format]</tt></td>
   <td>Sets the default <tt>minOccurs</tt> for a <a href="#field"><tt>field</tt></a> by stream format.</td>
   <td><tt>1</tt></td>
+</tr>
+<tr>
+  <td><tt>org.beanio.propertyAccessorFactory </tt></td>
+  <td>Sets the method of property invocation to use. Defaults to <tt>reflection</tt>,
+    but may be set to <tt>asm</tt> to use <a href="http://asm.ow2.org/">ASM</a> 
+    bytecode generation for setting bean
+    properties.  (In my limited benchmarking, this can improve marshalling and 
+    unmarshalling performance by up to 20% in a 1.5 JVM.  Modern JVM's (1.6+) will likely
+    see little to no performance improvement.  I strongly recommend conducting your
+    own benchmarking tests before changing this setting.)</td>
+  <td><tt>reflection</tt></td>
 </tr>
 <tr>
   <td><tt>org.beanio.xml.defaultXmlType</tt></td>

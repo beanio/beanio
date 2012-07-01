@@ -1,8 +1,17 @@
 Project BeanIO Change Log
 =========================
 
+Changes in version 2.0.1 (2012-07-01)
+-------------------------------------
+* Added support for marshalling static records (gc0036)
+* Added default type handling support for enums
+* Added support for binding a collection of segments to an "inline" map
+* Added support for binding a collection of records to a map
+* Added support for accessing properties using ASM bytecode generation
+* Fixed additional occurrences of auto boxing errors (gc0034)
+
 Changes in version 2.0.0 (2012-05-20)
-----------------------------------------
+-------------------------------------
 * Added support for nested groups bound to bean objects.
 * Added support for mapping file properties using ${propertyName[,default]} syntax.
 * Improved performance for instantiating new parsers. 

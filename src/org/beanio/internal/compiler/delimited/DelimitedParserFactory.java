@@ -78,7 +78,7 @@ public class DelimitedParserFactory extends FlatParserFactory {
             format.setPadding(padding);
         }
         
-        format.setLazy(config.getMinOccurs() == 0);
+        format.setLazy(config.getMinOccurs().equals(0));
 
         return format;
     }

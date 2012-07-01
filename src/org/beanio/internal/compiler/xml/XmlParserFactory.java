@@ -138,7 +138,7 @@ public class XmlParserFactory extends ParserFactorySupport {
             wrapper.setPrefix(config.getXmlPrefix());
             wrapper.setNillable(config.isNillable());
             wrapper.setRepeating(config.isRepeating());
-            wrapper.setLazy(config.getMinOccurs() == 0);
+            wrapper.setLazy(config.getMinOccurs().equals(0));
             pushParser(wrapper);
         }
         super.initializeSegmentMain(config, property);
@@ -209,7 +209,7 @@ public class XmlParserFactory extends ParserFactorySupport {
             throw new IllegalStateException("Invalid xml type: " + config.getXmlType());
         }
         format.setName(config.getName());
-        format.setLazy(config.getMinOccurs() == 0);
+        format.setLazy(config.getMinOccurs().equals(0));
         
         if (config.getLength() != null) {
             FieldPadding padding = new FieldPadding();

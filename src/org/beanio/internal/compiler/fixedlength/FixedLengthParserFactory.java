@@ -67,7 +67,7 @@ public class FixedLengthParserFactory extends FlatParserFactory {
         FixedLengthFieldFormat format = new FixedLengthFieldFormat();
         format.setName(config.getName());
         format.setPosition(config.getPosition());
-        format.setLazy(config.getMinOccurs() == 0);
+        format.setLazy(config.getMinOccurs().equals(0));
         
         FieldPadding padding = new FixedLengthFieldPadding();
         padding.setLength(config.getLength());

@@ -308,7 +308,7 @@ public class Field extends ParserComponent implements Property {
         // perform type conversion and return the result
         try {
             // if there is no type handler, assume its a String
-            Object value = (handler == null) ? fieldText : handler.parse(fieldText);
+            Object value = (handler == null) ? text : handler.parse(text);
             
             // validate primitive values are not null
             if (value == null && propertyType != null && propertyType.isPrimitive()) {

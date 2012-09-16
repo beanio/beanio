@@ -45,6 +45,8 @@ public class Bean extends PropertyComponent implements Property {
             return constructor != null ? new Object[constructor.getParameterTypes().length] : null;
         }
     };
+    // whether to return null for objects with all nulls and/or empty strings
+    private boolean lazy;
     
     /**
      * Constructs a new <tt>Bean</tt>.
@@ -122,7 +124,7 @@ public class Bean extends PropertyComponent implements Property {
                     continue;
                 }
                 
-                Object value = property.createValue(context);
+                Object value = property.getValue(context);
                 if (value == Value.INVALID) {
                     return Value.INVALID;
                 }
@@ -130,7 +132,7 @@ public class Bean extends PropertyComponent implements Property {
                     value = null;
                 }
                 else {
-                    create = true;
+                    create = create || !lazy || hasValue(value);
                 }
                 
                 cargs[accessor.getConstructorArgumentIndex()] = value;
@@ -141,14 +143,14 @@ public class Bean extends PropertyComponent implements Property {
             }
         }
         
-        
         for (Component child : getChildren()) {
             Property property = (Property) child;
             if (property.getAccessor().isConstructorArgument()) {
                 continue;
             }
             
-            Object value = property.createValue(context);
+            Object value = property.getValue(context);
+            
             if (value == Value.INVALID) {
                 bean.set(context, b);
                 return Value.INVALID;
@@ -156,7 +158,17 @@ public class Bean extends PropertyComponent implements Property {
             // explicitly null values must still be set on the bean...
             else if (value != Value.MISSING) {
                 if (b == null) {
-                    b = newInstance(context);
+                    if (lazy) {
+                        if (!hasValue(value)) {
+                            continue;
+                        }
+                        
+                        b = newInstance(context);
+                        backfill(context, b, child);
+                    }
+                    else {
+                        b = newInstance(context);
+                    }
                 }
 
                 try {
@@ -175,6 +187,35 @@ public class Bean extends PropertyComponent implements Property {
         
         bean.set(context, b);
         return b;
+    }
+    
+    /**
+     * Backfill bean properties up to the component <code>stop</code>.
+     * @param context the parsing context
+     * @param bean the bean object
+     * @param stop the component to stop at
+     */
+    private void backfill(ParsingContext context, Object bean, Component stop) {
+        for (Component child : getChildren()) {
+            if (stop == child) {
+                return;
+            }
+            Property property = (Property) child;
+            if (property.getAccessor().isConstructorArgument()) {
+                continue;
+            }
+            try {
+                property.getAccessor().setValue(bean, property.getValue(context));
+            }
+            catch (Exception ex) {
+                throw new BeanIOException("Failed to set property '" + property.getName() + 
+                    "' on bean '" + getName() + "'", ex);
+            }
+        }
+    }
+    
+    private boolean hasValue(Object value) {
+        return value != null && !"".equals(value);
     }
     
     /*
@@ -285,5 +326,13 @@ public class Bean extends PropertyComponent implements Property {
         if (locals.add(bean)) {
             super.registerLocals(locals);
         }
+    }
+
+    public boolean isLazy() {
+        return lazy;
+    }
+
+    public void setLazy(boolean lazy) {
+        this.lazy = lazy;
     }
 }

@@ -158,7 +158,8 @@ public class CollectionParser extends Aggregation {
                 if (fieldValue == Value.INVALID) {
                     invalid = true;
                 }
-                else {
+                // the field value may still be missing if 'lazy' is true on a child segment
+                else if (fieldValue != Value.MISSING) {
                     if (collection != null) {
                         collection.add(fieldValue);
                     }

@@ -40,7 +40,7 @@ public abstract class RecordAggregation extends DelegatingParser implements Sele
     
     /**
      * Sets the collection type.
-     * @param collectionType {@link Collection} class type
+     * @param type {@link Collection} class type
      */
     public void setType(Class<?> type) {
         this.type = type;

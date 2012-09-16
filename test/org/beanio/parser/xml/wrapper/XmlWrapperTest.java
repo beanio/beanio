@@ -58,7 +58,8 @@ public class XmlWrapperTest extends XmlParserTest {
             assertEquals("Blue", list.get(1));
             assertEquals("Green", list.get(2));
             List<Address> addressList = person.getAddressList();
-            assertEquals(0, addressList.size());
+            assertNull(addressList);
+            //assertEquals(0, addressList.size());
             out.write(person);
             
             person = (Person) in.read();
@@ -99,8 +100,9 @@ public class XmlWrapperTest extends XmlParserTest {
             out.write(person);
             
             person = (Person) in.read();
-            assertNotNull(person.getColor());
-            assertEquals(0, person.getColor().size());
+            assertNull(person.getColor());
+            //assertNotNull(person.getColor());
+            //assertEquals(0, person.getColor().size());
             out.write(person);
 
             out.close();

@@ -603,6 +603,7 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         SegmentConfig config = new SegmentConfig();
         populatePropertyConfig(config, element);
         config.setType(getAttribute(element, "class"));
+        config.setLazy(getBooleanAttribute(element, "lazy", config.isLazy()));
         config.setKey(getAttribute(element, "key"));
         config.setTarget(getAttribute(element, "target"));
         config.setXmlName(getAttribute(element, "xmlName"));

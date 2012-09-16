@@ -634,9 +634,10 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     }
 
     protected boolean isSegmentRequired(SegmentConfig config) {
+        /*
         if (config.isConstant()) {
-            return false;
-        }
+            return true;
+        }*/
         return (config.getType() != null || config.getTarget() != null);
     }
     
@@ -1360,6 +1361,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             Bean bean = new Bean();
             bean.setName(config.getName());
             bean.setType(beanClass);
+            bean.setLazy(config.isLazy());
             bean.setRequired(propertyStack.isEmpty());
             property = bean;
         }

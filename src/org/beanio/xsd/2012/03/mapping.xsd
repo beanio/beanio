@@ -6,7 +6,7 @@
   elementFormDefault="qualified" 
   targetNamespace="http://www.beanio.org/2012/03"
   xml:lang="en"
-  version="2.0.0">
+  version="2.0.2">
 
   <annotation>
     <documentation>
@@ -954,6 +954,14 @@
           The type of collection for repeating segments bound to a bean object.  
           May be set to any java.util.Collection or java.util.Map implementation class name
           or one of the following aliases: 'array', 'list', 'set', or 'map'.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="lazy" type="xsd:boolean" use="optional">
+      <annotation>
+        <documentation>
+          Set to true if the class should not be instantiated if all attributes
+          are null or empty strings.
         </documentation>
       </annotation>
     </attribute>

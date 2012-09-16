@@ -381,15 +381,6 @@ public abstract class PropertyConfig extends ComponentConfig {
     public void setMaxSize(int maxSize) {
         this.maxSize = maxSize;
     }
- 
-    /**
-     * Returns whether this component may optionally exist in the stream
-     * (based on the configured minimum occurrences).
-     * @return true if this component is optional
-     */
-    public boolean isLazy() {
-        return minOccurs != null && minOccurs == 0;
-    }
     
     /**
      * Returns whether this component is bound to a collection or array.
@@ -420,6 +411,10 @@ public abstract class PropertyConfig extends ComponentConfig {
     
     @Override
     protected boolean isSupportedChild(ComponentConfig child) {
+        return false;
+    }
+    
+    public boolean isLazy() {
         return false;
     }
 }

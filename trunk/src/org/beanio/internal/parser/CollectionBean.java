@@ -75,7 +75,7 @@ public class CollectionBean extends PropertyComponent implements Property {
         for (Component child : getChildren()) {
             Property property = (Property) child;
             
-            Object value = property.createValue(context);
+            Object value = property.getValue(context);
             if (value == Value.INVALID) {
                 bean.set(context, b);
                 return Value.INVALID;

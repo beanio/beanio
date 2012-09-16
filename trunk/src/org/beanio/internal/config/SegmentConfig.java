@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Kevin Seim
+ * Copyright 2011-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import java.util.*;
  */
 public class SegmentConfig extends PropertyConfig {
 
+    private boolean lazy;
     private boolean constant;
     private boolean defaultExistence;
     private String key;
@@ -163,5 +164,23 @@ public class SegmentConfig extends PropertyConfig {
      */
     public void setTarget(String target) {
         this.target = target;
+    }
+
+    /**
+     * Returns whether the property assigned to this segment should only be instantiated
+     * if at least one child element is not null or the empty string.
+     */
+    @Override
+    public boolean isLazy() {
+        return lazy;
+    }
+
+    /**
+     * Sets whether the property assigned to this segment should only be instantiated
+     * if at least one child element is not null or the empty string.
+     * @param lazy the new lazy value
+     */
+    public void setLazy(boolean lazy) {
+        this.lazy = lazy;
     }
 }

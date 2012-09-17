@@ -86,6 +86,10 @@ public class CsvReader implements RecordReader {
         
         this.in = in;
         this.delim = config.getDelimiter();
+        if (this.delim == ' ') {
+            throw new IllegalArgumentException("The CSV field delimiter '" + this.delim + 
+                "' is not supported");
+        }
         this.quote = config.getQuote();
         this.endQuote = quote;
         if (this.quote == this.delim) {

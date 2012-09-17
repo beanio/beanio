@@ -56,6 +56,10 @@ public class CsvRecordParser implements RecordMarshaller, RecordUnmarshaller {
         }
         
         delim = config.getDelimiter();
+        if (this.delim == ' ') {
+            throw new IllegalArgumentException("The CSV field delimiter '" + this.delim + 
+                "' is not supported");
+        }
         quote = config.getQuote();
         endQuote = quote;
         if (quote == delim) {

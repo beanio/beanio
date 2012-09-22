@@ -92,6 +92,9 @@ public class FieldPadding {
             text = "";
             currentLength = 0;
         }
+        else if (length < 0) {
+            return text;
+        }
         else {
             currentLength = text.length();
             if (currentLength == length) {

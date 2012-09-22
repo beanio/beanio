@@ -38,11 +38,13 @@ public class FixedLengthFieldPadding extends FieldPadding {
     public void init() {
         super.init();
         
-        StringBuilder s = new StringBuilder(getLength());
-        for (int i=0,j=getLength(); i<j; i++) {
-            s.append(' ');
+        if (getLength() > 0) {
+            StringBuilder s = new StringBuilder(getLength());
+            for (int i=0,j=getLength(); i<j; i++) {
+                s.append(' ');
+            }
+            setPaddedNull(s.toString());
         }
-        setPaddedNull(s.toString());
     }
     
     @Override

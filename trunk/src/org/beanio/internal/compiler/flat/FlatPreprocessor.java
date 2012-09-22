@@ -223,6 +223,11 @@ public class FlatPreprocessor extends Preprocessor {
                 throw new BeanIOConfigurationException("length required for fixed length fields");
             }
         }
+        else {
+            if (new Integer(-1).equals(field.getLength())) {
+                field.setLength(null);
+            }
+        }
         // default the padding character to a single space
         if (field.getLength() != null) {
             if (field.getPadding() == null) {
@@ -232,8 +237,14 @@ public class FlatPreprocessor extends Preprocessor {
         
         // calculate the size of the field
         int size = getSize(field);
-        field.setMaxSize(size);
-        field.setMinSize(size);
+        if (size == -1) {
+            field.setMinSize(0);
+            field.setMaxSize(Integer.MAX_VALUE);
+        }
+        else {
+            field.setMaxSize(size);
+            field.setMinSize(size);
+        }
         
         // calculate the position of this field (size must be calculated first)
         if (positionRequired == null) {
@@ -254,14 +265,24 @@ public class FlatPreprocessor extends Preprocessor {
      * @param config the field configuration to calculate the position for
      */
     private void calculateDefaultPosition(FieldConfig config) {
+        
         if (defaultPosition == Integer.MAX_VALUE) {
-            throw new BeanIOConfigurationException("Cannot determine field position, field is preceded by " +
-                "a component with indeterminate or unbounded occurences");
+            String error = "Cannot determine field position, field is preceded by " +
+                "a component with indeterminate occurences";
+            
+            if (isFixedLength()) {
+                error += "or unbounded length";
+            }
+            
+            throw new BeanIOConfigurationException(error);
         }
         config.setPosition(defaultPosition);
         
         // set the next default position to MAX_VALUE if the occurrences of this field is unbounded
         if (config.getMaxOccurs().equals(Integer.MAX_VALUE)) {
+            defaultPosition = Integer.MAX_VALUE;
+        }
+        else if (isFixedLength() && config.getMaxSize() == Integer.MAX_VALUE) {
             defaultPosition = Integer.MAX_VALUE;
         }
         // or if the number of occurrence is indeterminate

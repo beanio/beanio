@@ -49,7 +49,10 @@ public class FixedLengthUnmarshallingContext extends UnmarshallingContext {
 
     /**
      * Returns the field text at the given position in the record.
+     * @param name the field name
      * @param position the position of the field in the record
+     * @param length the field length, or -1 if the field is at the end of the
+     *   record and unbounded
      * @return the field text, or null if the record length is less than
      *   the position of the field
      */
@@ -57,6 +60,10 @@ public class FixedLengthUnmarshallingContext extends UnmarshallingContext {
         position = getAdjustedFieldPosition(position);
         if (recordLength <= position) {
             return null;
+        }
+        
+        if (length < 0) {
+            return record.substring(position);
         }
         
         String text = record.substring(position, Math.min(recordLength, position + length));

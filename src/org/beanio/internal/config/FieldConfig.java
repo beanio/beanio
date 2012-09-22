@@ -197,7 +197,9 @@ public class FieldConfig extends SimplePropertyConfig {
 
     /**
      * Returns the length of this field in characters.  Applies to fixed
-     * length and padded fields.
+     * length and padded fields.  May return -1 (aka 'unbounded'), for the
+     * last field in a fixed length record to indicate it is not padded and
+     * of variable length.
      * @return the length of this field
      */
     public Integer getLength() {

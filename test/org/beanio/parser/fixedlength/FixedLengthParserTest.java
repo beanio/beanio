@@ -219,4 +219,19 @@ public class FixedLengthParserTest extends ParserTest {
             in.close();
         }
     }
+    
+    @Test
+    @SuppressWarnings("rawtypes")
+    public void testVariableLengthField() {
+        String record = "kevin     johnson";
+        
+        Unmarshaller u = factory.createUnmarshaller("f6");
+        
+        Map map = (Map) u.unmarshal(record);
+        assertEquals("kevin", map.get("firstName"));
+        assertEquals("johnson", map.get("lastName"));
+        
+        Marshaller m = factory.createMarshaller("f6");
+        assertEquals(record, m.marshal(map).toString());
+    }
 }

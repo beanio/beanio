@@ -650,7 +650,7 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         config.setIdentifier(getBooleanAttribute(element, "rid", 
             config.isIdentifier()));
         config.setBound(!getBooleanAttribute(element, "ignore", false));
-        config.setLength(getIntegerAttribute(element, "length"));
+        config.setLength(getUnboundedIntegerAttribute(element, "length", -1));
         config.setPadding(getCharacterAttribute(element, "padding"));
         config.setJustify(getAttribute(element, "justify"));
         config.setXmlType(getAttribute(element, "xmlType"));

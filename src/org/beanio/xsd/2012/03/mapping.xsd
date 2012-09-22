@@ -773,7 +773,7 @@
         </documentation>
       </annotation>
     </attribute>
-    <attribute name="length" type="xsd:positiveInteger" use="optional">
+    <attribute name="length" type="tns:limit" use="optional">
       <annotation>
         <documentation>
           The padded length of the field text (in characters).  Use 'minLength'

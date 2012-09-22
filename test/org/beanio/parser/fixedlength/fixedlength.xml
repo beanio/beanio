@@ -77,4 +77,11 @@
     </record>
   </stream>
 
+  <stream name="f6" format="fixedlength">
+    <record name="record" class="map">
+      <field name="firstName" length="10" />
+      <field name="lastName" length="unbounded" />
+    </record>
+  </stream>
+
 </beanio>

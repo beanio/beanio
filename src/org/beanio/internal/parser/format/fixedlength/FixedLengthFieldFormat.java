@@ -40,7 +40,7 @@ public class FixedLengthFieldFormat extends FlatFieldFormatSupport implements Fi
         }
         
         FieldPadding padding = getPadding();
-        if (text.length() != padding.getLength()) {
+        if (padding.getLength() >= 0 && text.length() != padding.getLength()) {
             if (reportErrors) {
                 context.addFieldError(getName(), text, "length", padding.getLength());
             }

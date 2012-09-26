@@ -69,6 +69,11 @@ public class BeanUtil {
             throw new BeanIOConfigurationException("Class not set");
         }
         
+        // use our own class loader for BeanIO classes
+        if (className.startsWith("org.beanio.")) {
+            classLoader = BeanUtil.class.getClassLoader();
+        }
+        
         Class<?> clazz = null;
         try {
             // load the class

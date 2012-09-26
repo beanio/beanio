@@ -326,7 +326,16 @@ public abstract class StreamFactory {
         }
 
         try {
-            StreamFactory factory = (StreamFactory) classLoader.loadClass(className).newInstance();
+            // use our own class loader for BeanIO classes
+            StreamFactory factory;
+            if (className.startsWith("org.beanio.")) {
+                factory = (StreamFactory) StreamFactory.class.getClassLoader().
+                    loadClass(className).newInstance();
+            }
+            else {
+                factory = (StreamFactory) classLoader.loadClass(className).newInstance();
+            }
+            
             factory.setClassLoader(classLoader);
             factory.init();
             return factory;

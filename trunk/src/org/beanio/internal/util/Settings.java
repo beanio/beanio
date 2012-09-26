@@ -159,7 +159,7 @@ public class Settings {
         Properties props = new Properties();
 
         // load default configuration settings
-        loadProperties(classLoader.getResource(DEFAULT_CONFIGURATION_PATH), props);
+        loadProperties(Settings.class.getClassLoader().getResource(DEFAULT_CONFIGURATION_PATH), props);
 
         boolean required = false;
         String location = System.getProperty(CONFIGURATION_PROPERTY);

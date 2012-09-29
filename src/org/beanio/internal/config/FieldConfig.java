@@ -47,7 +47,8 @@ public class FieldConfig extends SimplePropertyConfig {
     private String defaultValue;
     private Character padding;
     private String justify = LEFT;
-
+    private boolean keepPadding;
+    
     /**
      * Constructs a new <tt>FieldConfig</tt>.
      */
@@ -249,5 +250,22 @@ public class FieldConfig extends SimplePropertyConfig {
      */
     public void setJustify(String justify) {
         this.justify = justify;
+    }
+
+    /**
+     * Returns whether a fixed length field should keep its padding
+     * when unmarshalled.  Defaults to false.
+     * @return true to keep padding, false otherwise
+     */
+    public boolean isKeepPadding() {
+        return keepPadding;
+    }
+
+    /**
+     * Sets whether a fixed length field should keep its padding when unmarshalled.
+     * @param keepPadding true to keep field padding, false otherwise
+     */
+    public void setKeepPadding(boolean keepPadding) {
+        this.keepPadding = keepPadding;
     }
 }

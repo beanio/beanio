@@ -157,14 +157,18 @@ currently supports XML, CSV, delimited and fixed length file formats. BeanIO is 
 </ul>
 <p>Since 2.0.2:</p>
 <ul>
-  <li>Field trim logic fixed (gc0038).</li>
+  <li>Field <tt>trim</tt> logic fixed (gc0038).</li>
+  <li>Fixed OSGi class loading issues that may result in a <tt>NullPointerException</tt> (gc0042)</li>
   <li>Segments now support a <tt>lazy</tt> attribute to prevent class instantiation during unmarshalling
     for segments found in the stream that contain all null or empty string attributes. </li>
   <li>Collections wrapped by a nillable segment will be unmarshalled as null (instead of an empty
     collection) in XML streams.</li>
   <li>The last field in a fixed length record may be of variable length (and unpadded) by setting
     the field <tt>length</tt> to <tt>unbounded</tt>.</li>
-</ul>
+  <li>The null character can be escaped in property values using <tt>\0</tt>.</li>
+  <li>Added a <tt>keepPadding</tt> field attribute to instruct BeanIO not to unpad a fixed
+    length field during unmarshalling.</li>
+</ul> 
 
 <h2><a name="Migration">1.2. Migrating from 1.2.x</a></h2>
 <p>Release 2.0 is not backwards compatible with prior releases.  Sorry.  This section contains the
@@ -4497,6 +4501,13 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
   </td>
   <td>No</td>
   <td><tt>*</tt></td>
+</tr>
+<tr>
+  <td><tt>keepPadding</tt></td>
+  <td>Set to <tt>true</tt> if field padding should not be removed when unmarshalling
+    a fixed length field.  Defaults to <tt>false</tt>.</td>
+  <td>No</td>
+  <td>fixedlength</td>
 </tr>
 <tr>
   <td><tt>justify</tt></td>

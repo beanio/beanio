@@ -26,7 +26,9 @@ import org.beanio.internal.parser.format.flat.FlatFieldFormatSupport;
  * @since 2.0
  */
 public class FixedLengthFieldFormat extends FlatFieldFormatSupport implements FieldFormat {
-
+    
+    private boolean keepPadding;
+    
     /**
      * Constructs a new <tt>FixedLengthFieldFormat</tt>.
      */
@@ -45,6 +47,17 @@ public class FixedLengthFieldFormat extends FlatFieldFormatSupport implements Fi
                 context.addFieldError(getName(), text, "length", padding.getLength());
             }
             return Value.INVALID;
+        }
+        else if (keepPadding) {
+            // return empty string for required fields to trigger the field validation
+            if (!padding.isOptional()) {
+                String s = padding.unpad(text);
+                if (s.length() == 0) {
+                    return s;
+                }
+            }
+            
+            return text;
         }
         else {
             return padding.unpad(text);
@@ -66,5 +79,14 @@ public class FixedLengthFieldFormat extends FlatFieldFormatSupport implements Fi
     @Override
     public int getSize() {
         return getPadding().getLength();
+    }    
+    
+    /**
+     * Set to true to keep field padding during unmarshalling.
+     * @param keepPadding true to keep padding
+     * @since 2.0.2
+     */
+    public void setKeepPadding(boolean keepPadding) {
+        this.keepPadding = keepPadding;
     }
 }

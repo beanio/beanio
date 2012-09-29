@@ -234,4 +234,24 @@ public class FixedLengthParserTest extends ParserTest {
         Marshaller m = factory.createMarshaller("f6");
         assertEquals(record, m.marshal(map).toString());
     }
+    
+    @Test
+    @SuppressWarnings("rawtypes")
+    public void testKeepPadding() {
+        Marshaller m = factory.createMarshaller("f7");
+        BeanReader in = factory.createReader("f7", new InputStreamReader(
+            getClass().getResourceAsStream("f7.txt")));
+        
+        try {
+            Map map = (Map) in.read();
+            assertEquals("kevin     ", map.get("firstName"));
+            assertEquals("          ", map.get("lastName"));
+            assertEquals("kevin               ", m.marshal(map).toString());
+            
+            assertFieldError(in, 2, "record", "firstName", "          ", "Required field not set");
+        }
+        finally {
+            in.close();
+        }
+    }
 }

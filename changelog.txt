@@ -1,6 +1,17 @@
 Project BeanIO Change Log
 =========================
 
+Changes in version 2.0.2 (2012-09-29)
+-------------------------------------
+* Fixed field trim logic (gc0038)
+* Exception is thrown for a CSV space delimiter (gc0039)
+* Prevented possible duplicate segment bean creation (gc0041)
+* Added support for "lazy" beans assigned to a segment
+* Added support for a single variable length field at the end of a fixed length record
+* Added support for the 'keepPadding' field attribute
+* Added support for escaping the null character using \0 in property values
+* Fixed OSGi class loading issues when loading internal 'org.beanio' classes and resources (gc0042)
+
 Changes in version 2.0.1 (2012-07-01)
 -------------------------------------
 * Added support for marshalling static records (gc0036)

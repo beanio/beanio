@@ -55,12 +55,15 @@ public class Settings {
      *   <li><tt>\r</tt> - Carriage Return</li>
      *   <li><tt>\t</tt> - Tab</li>
      *   <li><tt>\f</tt> - Form Feed</li>
+     *   <li><tt>\0</tt> - Null</li>
      * </ul>
      * <p>A backslash preceding any other character is ignored.
      * <p>Set to <tt>false</tt> to disable.
      * @since 1.2
      */
     public static final String PROPERTY_ESCAPING_ENABLED = "org.beanio.propertyEscapingEnabled";
+    /** Whether the null character can be escaped using <tt>\0</tt> when property escaping is enabled. */
+    public static final String NULL_ESCAPING_ENABLED = "org.beanio.propertyEscapingEnabled";
     /** Whether property substitution is enabled for mapping files */
     public static final String PROPERTY_SUBSTITUTION_ENABLED = "org.beanio.propertySubstitutionEnabled";
     /** The default XML type for a field definition, set to <tt>element</tt> or <tt>attribute</tt>. */

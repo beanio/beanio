@@ -789,6 +789,14 @@
         </documentation>
       </annotation>
     </attribute>
+    <attribute name="keepPadding" type="xsd:boolean" use="optional">
+      <annotation>
+        <documentation>
+          Whether to keep the padding when unmarshalling a fixed length field.
+          Defaults to 'false'.
+        </documentation>
+      </annotation>
+    </attribute>
     <attribute name="justify" type="tns:justification" use="optional">
       <annotation>
         <documentation>

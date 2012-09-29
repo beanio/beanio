@@ -84,4 +84,11 @@
     </record>
   </stream>
 
+  <stream name="f7" format="fixedlength">
+    <record name="record" class="map">
+      <field name="firstName" length="10" required="true" keepPadding="true" />
+      <field name="lastName" length="10" keepPadding="true" />
+    </record>
+  </stream>
+
 </beanio>

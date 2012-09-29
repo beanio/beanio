@@ -3281,6 +3281,12 @@ working directory, and if not found, then from the root of the application's cla
   <td><tt>true</tt></td>
 </tr>
 <tr>
+  <td><tt>org.beanio.nullEscapingEnabled</tt></td>
+  <td>Whether the null character can be escaped using <tt>\0</tt> when property escaping is enabled.
+    Set to <tt>true</tt> or <tt>false</tt>.</td>
+  <td><tt>true</tt></td>
+</tr>
+<tr>
   <td><tt>org.beanio.marshalDefaultEnabled</tt></td>
   <td>Whether a configured <a href="#field"><tt>field</tt></a> default is marshalled for null property values.
     May be disabled for backwards compatibility by setting the value to <tt>false</tt>.
@@ -3477,7 +3483,7 @@ is further described below.</li>
       or <a href="#parser"><tt>parser</tt></a>, default type handlers only are used to convert
       property text to an object value.  String and Character type property values can use the following escape
       sequences: <tt>\\</tt> (Backslash), <tt>\n</tt> (Line Feed), <tt>\r</tt> (Carriage Return), <tt>\t</tt> (Tab),
-      and <tt>\f</tt> (Form Feed).  A backslash preceding any other character is ignored.</p>
+      <tt>\0</tt> (Null) and <tt>\f</tt> (Form Feed).  A backslash preceding any other character is ignored.</p>
   </td>
   <td>Yes</td>
 </tr>

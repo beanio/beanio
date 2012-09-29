@@ -30,6 +30,9 @@ import org.beanio.types.*;
  */
 public class BeanUtil {
 
+    private static final boolean NULL_ESCAPING_ENABLED = "true".equalsIgnoreCase(
+        Settings.getInstance().getProperty(Settings.NULL_ESCAPING_ENABLED));
+    
     private final static TypeHandlerFactory typeHandlerFactory;
     static {
         typeHandlerFactory = new TypeHandlerFactory(BeanUtil.class.getClassLoader());
@@ -197,6 +200,9 @@ public class BeanUtil {
             else if ("\\f".equals(text)) {
                 return '\f';
             }
+            else if (NULL_ESCAPING_ENABLED && "\\0".equals(text)) {
+                return '\0';
+            }
             
             throw new TypeConversionException("Invalid character");
         }
@@ -259,6 +265,15 @@ public class BeanUtil {
                     case 'f':
                         value.append('\f');
                         break;
+                    case '0':
+                        if (NULL_ESCAPING_ENABLED) {
+                            value.append('\0');
+                        }
+                        else {
+                            value.append(c);
+                        }
+                        break;
+                       
                     default:
                         value.append(c);
                         break;

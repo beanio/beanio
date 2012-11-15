@@ -36,7 +36,6 @@ public class Group extends ParserComponent implements Selector {
     private int minOccurs = 0;
     private int maxOccurs = Integer.MAX_VALUE;
     private int order = 1;
-    private boolean result = false;
     private Property property = null;
     // the current group count
     private ParserLocal<Integer> count = new ParserLocal<Integer>(0);
@@ -237,7 +236,7 @@ public class Group extends ParserComponent implements Selector {
             match = matchAgain(context);
         }
         if (match != null) {
-            return isResult() ? this : match;
+            return property != null ? this : match;
         }
         return null;
     }
@@ -561,12 +560,6 @@ public class Group extends ParserComponent implements Selector {
     }
     public void setOrder(int order) {
         this.order = order;
-    }
-    public boolean isResult() {
-        return result;
-    }
-    public void setResult(boolean result) {
-        this.result = result;
     }
     
     /*

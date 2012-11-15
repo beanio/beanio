@@ -384,7 +384,6 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         group.setMaxOccurs(config.getMaxOccurs());
         group.setOrder(config.getOrder());
         group.setProperty(property);
-        group.setResult(property != null && propertyStack.isEmpty());
         
         pushParser(group);
         if (property != null) {

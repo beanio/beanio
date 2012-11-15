@@ -41,7 +41,7 @@ public class MultilineRecordTest extends ParserTest {
         factory = newStreamFactory("multiline_mapping.xml");
     }
 
-    //@Test
+    @Test
     public void testRecordGroup() throws ParseException {
         BeanReader in = factory.createReader("ml1", new InputStreamReader(
             getClass().getResourceAsStream("ml1.txt")));
@@ -250,6 +250,36 @@ public class MultilineRecordTest extends ParserTest {
                 "item,banana,1\n" +
                 "item,apple,2\n" +
                 "item,cereal,3\n", text.toString());
+        }
+        finally {
+            in.close();
+        }
+    }
+    
+    @Test
+    @SuppressWarnings("rawtypes")
+    public void testNestedRecorGroupNonCollection() throws ParseException {
+        BeanReader in = factory.createReader("ml5", new InputStreamReader(
+            getClass().getResourceAsStream("ml5.txt")));
+        
+        try {
+            OrderBatch batch = (OrderBatch) in.read();
+            assertEquals(2, batch.getBatchCount());
+            
+            Order order = batch.getOrder();
+            assertNotNull(order);
+            assertEquals("100", order.getId());
+            
+            Person customer = order.getCustomer();
+            assertNotNull(customer);
+            assertEquals("George", customer.getFirstName());
+            
+            StringWriter text = new StringWriter();
+            factory.createWriter("ml5", text).write(batch);
+            assertEquals(
+                "header,2\n" +
+                "order,100,2012-01-01\n" +
+                "customer,George,Smith\n", text.toString());
         }
         finally {
             in.close();

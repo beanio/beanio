@@ -5,6 +5,7 @@ import java.util.*;
 public class OrderBatch {
 
     private int batchCount;
+    private Order order;
     private List<Order> orders;
     
     public int getBatchCount() {
@@ -12,6 +13,12 @@ public class OrderBatch {
     }
     public void setBatchCount(int batchCount) {
         this.batchCount = batchCount;
+    }
+    public Order getOrder() {
+        return order;
+    }
+    public void setOrder(Order order) {
+        this.order = order;
     }
     public List<Order> getOrders() {
         return orders;

@@ -358,9 +358,13 @@ public class XmlMappingParser implements StringUtil.PropertySource {
                     props = new Properties();
                 }
 
-                props.put(
-                    child.getAttribute("name"),
-                    child.getAttribute("value"));
+                String propertyName = getAttribute(child, "name");
+                String propertyValue = getAttribute(child, "value");
+                if (propertyValue == null) {
+                    propertyValue = "";
+                }
+                
+                props.put(propertyName, propertyValue);
             }
         }
         return props;

@@ -17,8 +17,6 @@ package org.beanio.internal.parser;
 
 import java.util.*;
 
-import org.beanio.BeanIOException;
-
 /**
  * 
  * @author Kevin Seim
@@ -29,7 +27,7 @@ public abstract class RecordAggregation extends DelegatingParser implements Sele
     // the property accessor, may be null if not bound
     private PropertyAccessor accessor;
     // the property value
-    protected ParserLocal<Object> value = new ParserLocal<Object>();
+    protected ParserLocal<Object> value = new ParserLocal<Object>(Value.MISSING);
     // the collection type
     private Class<?> type;
     
@@ -45,7 +43,7 @@ public abstract class RecordAggregation extends DelegatingParser implements Sele
     public void setType(Class<?> type) {
         this.type = type;
     }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Property#getType()
@@ -59,22 +57,22 @@ public abstract class RecordAggregation extends DelegatingParser implements Sele
      * @see org.beanio.internal.parser.Property#createValue()
      */
     public Object createValue(ParsingContext context) {
-        if (value.get(context) == null) {
+        if (value.get(context) == Value.MISSING) {
             value.set(context, createAggregationType());
         }
         return getValue(context);
     }
     
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.internal.parser.Property#getNullValue()
+     */
+    public Object getNullValue() {
+        return createAggregationType();
+    }
+    
     protected Object createAggregationType() {
-        if (type != null) {
-            try {
-                return type.newInstance();
-            }
-            catch (Exception ex) {
-                throw new BeanIOException("Failed to instantiate class '" + type.getName() + "'");
-            }
-        }
-        return null;
+        return ObjectUtils.newInstance(type);
     }
     
     @Override
@@ -84,11 +82,11 @@ public abstract class RecordAggregation extends DelegatingParser implements Sele
     
     @Override
     public void clearValue(ParsingContext context) {
-        value.set(context, null);
+        value.set(context, Value.MISSING);
     }
 
     @Override
-    public void setValue(ParsingContext context, Object value) {        
+    public void setValue(ParsingContext context, Object value) {
         this.value.set(context, value);
     }
     

@@ -25,7 +25,7 @@ public class RecordMap extends RecordAggregation {
         
         Object aggregatedValue = getSelector().getValue(context);
         if (aggregatedValue != Value.INVALID) {
-            if (value.get(context) == null) {
+            if (value.get(context) == Value.MISSING) {
                 value.set(context, createAggregationType());
             }
             

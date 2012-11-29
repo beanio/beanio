@@ -18,8 +18,6 @@ package org.beanio.internal.parser;
 import java.io.IOException;
 import java.util.*;
 
-import org.beanio.BeanIOException;
-
 /**
  * A {@link Parser} component for aggregating inline {@link Map} objects.
  * For example: <tt>key1,field1,key2,field2</tt>.
@@ -250,15 +248,7 @@ public class MapParser extends Aggregation {
     }
     
     protected Map<Object,Object> createMap() {
-        if (type != null) {
-            try {
-                return type.newInstance();
-            }
-            catch (Exception ex) {
-                throw new BeanIOException("Failed to instantiate class '" + type.getName() + "'");
-            }
-        }
-        return null;
+        return ObjectUtils.newInstance(type);
     }
     
     /**

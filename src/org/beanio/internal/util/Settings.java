@@ -92,6 +92,11 @@ public class Settings {
     public static final String DEFAULT_FIELD_MIN_OCCURS = "org.beanio.field.minOccurs";
     /** The method of property access to use, 'reflection' (default) or 'asm' is supported */
     public static final String PROPERTY_ACCESSOR_METHOD = "org.beanio.propertyAccessorFactory";
+    /**
+     * Whether version 2.0.0 style unmarshalling should be supported which instantiates bean objects
+     * for missing fields and records during unmarshalling.  This behavior is not recommended.
+     */
+    public static final String CREATE_MISSING_BEANS = "org.beanio.createMissingBeans";
     
     private static final String DEFAULT_CONFIGURATION_PATH = "org/beanio/internal/config/beanio.properties";
     private static final String DEFAULT_CONFIGURATION_FILENAME = "beanio.properties";
@@ -115,6 +120,16 @@ public class Settings {
      */
     public String getProperty(String key) {
         return properties.getProperty(key);
+    }
+    
+    /**
+     * Returns the boolean value of a BeanIO configuration setting.
+     * @param key the property key
+     * @return true if the property value is "true" (case insensitive), 
+     *   or false if the property is any other value
+     */
+    public boolean getBoolean(String key) {
+        return "true".equalsIgnoreCase(getProperty(key));
     }
     
     /**

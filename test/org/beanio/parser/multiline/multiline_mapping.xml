@@ -132,4 +132,22 @@
     </group>
   </stream>
 
+  <stream name="ml6" format="csv" strict="true">
+    <parser>
+      <property name="lineSeparator" value="\n" />
+    </parser>
+    <group name="orderGroup" class="org.beanio.beans.Order" order="2" occurs="1">
+      <record name="order" order="1" occurs="1">
+        <field name="type" rid="true" literal="order" ignore="true" />
+        <field name="id" />
+        <field name="date" format="yyyy-MM-dd" />
+      </record>
+      <record name="items" class="org.beanio.beans.OrderItem" collection="list" order="2" occurs="0+">
+        <field name="type" rid="true" literal="item" ignore="true" />
+        <field name="name" />
+        <field name="quantity" />
+      </record>
+    </group>
+  </stream>
+
 </beanio>

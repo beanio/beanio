@@ -18,8 +18,6 @@ package org.beanio.internal.parser;
 import java.io.IOException;
 import java.util.*;
 
-import org.beanio.BeanIOException;
-
 /**
  * A <tt>CollectionParser</tt> provides iteration support for a {@link Segment} or {@link Field},
  * and is optionally bound to a {@link Collection} type property value.
@@ -240,6 +238,14 @@ public class CollectionParser extends Aggregation {
     
     /*
      * (non-Javadoc)
+     * @see org.beanio.internal.parser.Property#getNullValue()
+     */
+    public Object getNullValue() {
+        return createCollection();
+    }
+
+    /*
+     * (non-Javadoc)
      * @see org.beanio.parser2.Property#create()
      */
     public Object createValue(ParsingContext context) {
@@ -275,15 +281,7 @@ public class CollectionParser extends Aggregation {
     }
     
     protected Collection<Object> createCollection() {
-        if (type != null) {
-            try {
-                return type.newInstance();
-            }
-            catch (Exception ex) {
-                throw new BeanIOException("Failed to instantiate class '" + type.getName() + "'");
-            }
-        }
-        return null;
+        return ObjectUtils.newInstance(type);
     }
     
     /*

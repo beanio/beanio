@@ -15,6 +15,8 @@
  */
 package org.beanio.internal.parser;
 
+import org.beanio.internal.util.Settings;
+
 /**
  * Base class for {@link Property} implementations that hold other properties (e.g. a bean object or collection).
  * 
@@ -25,6 +27,9 @@ package org.beanio.internal.parser;
  */
 public abstract class PropertyComponent extends Component implements Property {
 
+    protected static boolean createMissingBeans = Settings.getInstance().getBoolean(
+        Settings.CREATE_MISSING_BEANS);
+    
     // the class type of the bean object
     private Class<?> type;
     // indicates whether the bean is always instantiated

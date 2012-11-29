@@ -17,8 +17,6 @@ package org.beanio.internal.parser;
 
 import java.util.*;
 
-import org.beanio.*;
-
 /**
  * A {@link Property} that stores children in a {@link Collection}.
  * 
@@ -29,8 +27,6 @@ import org.beanio.*;
  */
 public class CollectionBean extends PropertyComponent implements Property {
 
-    //private Object bean;
-    
     private ParserLocal<Object> bean = new ParserLocal<Object>() {
         @Override
         protected Object createDefaultValue() {
@@ -70,12 +66,14 @@ public class CollectionBean extends PropertyComponent implements Property {
     public Object createValue(ParsingContext context) {
         Object b = null;
         
-        int backfill = 0;
-        
         for (Component child : getChildren()) {
             Property property = (Property) child;
             
             Object value = property.getValue(context);
+            if (createMissingBeans && value == Value.MISSING) {
+                value = property.createValue(context);
+            }
+            
             if (value == Value.INVALID) {
                 bean.set(context, b);
                 return Value.INVALID;
@@ -83,20 +81,16 @@ public class CollectionBean extends PropertyComponent implements Property {
 
             if (value == Value.MISSING) {
                 if (b == null) {
-                    ++backfill;
                     continue;
                 }
-                else {
-                    value = null;
-                }
+                value = null;
             }
             
             if (b == null) {
                 b = newInstance();
-                for (int i=0; i<backfill; i++) {
-                    ((Collection<Object>)b).add(null);
-                }
+                backfill((Collection<Object>)b, child);
             }
+            
             ((Collection<Object>)b).add(value);
         }
 
@@ -106,6 +100,15 @@ public class CollectionBean extends PropertyComponent implements Property {
         
         bean.set(context, b);
         return b;
+    }
+    
+    private void backfill(Collection<Object> collection, Component to) {
+        for (Component child : getChildren()) {
+            if (child == to) {
+                return;
+            }
+            collection.add(null);
+        }
     }
 
     /*
@@ -181,12 +184,7 @@ public class CollectionBean extends PropertyComponent implements Property {
      * @return the new bean <tt>Object</tt>
      */
     protected Object newInstance() {
-        try {
-            return getType().newInstance();
-        }
-        catch (Exception e) {
-            throw new BeanReaderException("Failed to instantiate class '" + getType().getName() + "'", e);
-        }
+        return ObjectUtils.newInstance(getType());
     }
 
     @Override

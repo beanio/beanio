@@ -40,7 +40,7 @@ public class MultilineRecordTest extends ParserTest {
     public void setup() throws Exception {
         factory = newStreamFactory("multiline_mapping.xml");
     }
-
+    
     @Test
     public void testRecordGroup() throws ParseException {
         BeanReader in = factory.createReader("ml1", new InputStreamReader(
@@ -122,7 +122,7 @@ public class MultilineRecordTest extends ParserTest {
             in.close();
         }
     }
-    
+        
     @Test
     public void testNestedRecorGroup() throws ParseException {
         BeanReader in = factory.createReader("ml2", new InputStreamReader(
@@ -257,7 +257,6 @@ public class MultilineRecordTest extends ParserTest {
     }
     
     @Test
-    @SuppressWarnings("rawtypes")
     public void testNestedRecorGroupNonCollection() throws ParseException {
         BeanReader in = factory.createReader("ml5", new InputStreamReader(
             getClass().getResourceAsStream("ml5.txt")));
@@ -280,6 +279,26 @@ public class MultilineRecordTest extends ParserTest {
                 "header,2\n" +
                 "order,100,2012-01-01\n" +
                 "customer,George,Smith\n", text.toString());
+        }
+        finally {
+            in.close();
+        }
+    }
+    
+    @Test
+    public void testEmptyRecordList() throws ParseException {
+        BeanReader in = factory.createReader("ml6", new InputStreamReader(
+            getClass().getResourceAsStream("ml6.txt")));
+        
+        try {
+            // read a valid multi-line record
+            Order order = (Order) in.read();
+
+            assertEquals(1, in.getLineNumber());
+            assertEquals(1, in.getRecordCount());
+            assertEquals("orderGroup", in.getRecordName());
+         
+            assertNull(order.getItems());
         }
         finally {
             in.close();

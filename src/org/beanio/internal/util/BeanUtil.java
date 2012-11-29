@@ -204,7 +204,7 @@ public class BeanUtil {
                 return '\0';
             }
             
-            throw new TypeConversionException("Invalid character");
+            throw new TypeConversionException("Invalid character '" + text + "'");
         }
 
         /*

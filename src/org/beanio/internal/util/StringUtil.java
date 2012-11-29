@@ -57,7 +57,7 @@ public final class StringUtil {
     public static String doPropertySubstitution(String text, PropertySource properties) 
         throws IllegalArgumentException
     {
-        if (text == null || text.length() == 0) {
+        if (text == null || text.length() < 3) {
             return text;
         }
         

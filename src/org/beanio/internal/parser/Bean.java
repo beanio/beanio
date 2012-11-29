@@ -129,7 +129,7 @@ public class Bean extends PropertyComponent implements Property {
                     return Value.INVALID;
                 }
                 else if (value == Value.MISSING) {
-                    value = null;
+                    value = createMissingBeans ? property.createValue(context) : null;
                 }
                 else {
                     create = create || !lazy || hasValue(value);
@@ -150,6 +150,9 @@ public class Bean extends PropertyComponent implements Property {
             }
             
             Object value = property.getValue(context);
+            if (createMissingBeans && value == Value.MISSING) {
+                value = property.createValue(context);
+            }
             
             if (value == Value.INVALID) {
                 bean.set(context, b);
@@ -204,8 +207,14 @@ public class Bean extends PropertyComponent implements Property {
             if (property.getAccessor().isConstructorArgument()) {
                 continue;
             }
+            
+            Object value = property.getValue(context);
+            if (value == Value.MISSING) {
+                continue;
+            }
+            
             try {
-                property.getAccessor().setValue(bean, property.getValue(context));
+                property.getAccessor().setValue(bean, value);
             }
             catch (Exception ex) {
                 throw new BeanIOException("Failed to set property '" + property.getName() + 

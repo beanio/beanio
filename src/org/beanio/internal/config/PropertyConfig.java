@@ -338,7 +338,7 @@ public abstract class PropertyConfig extends ComponentConfig {
     }
 
     /**
-     * Sets whether this component is used to identify a reocrd during
+     * Sets whether this component is used to identify a record during
      * unmarshalling or a bean during marshalling.
      * @param b <tt>true</tt> if this component is used for identification
      */

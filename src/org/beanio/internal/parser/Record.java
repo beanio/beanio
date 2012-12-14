@@ -140,6 +140,11 @@ public class Record extends Segment implements Selector {
      * @see org.beanio.parser2.Unmarshaller#matches(org.beanio.parser2.UnmarshallingContext)
      */
     public boolean matches(UnmarshallingContext context) {
+        if (format != null) {
+            if (!format.matches(context)) {
+                return false;
+            }
+        }
         return super.matches(context);
     }
 

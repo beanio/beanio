@@ -16,6 +16,7 @@
 package org.beanio.internal.parser.format.delimited;
 
 import org.beanio.internal.parser.*;
+import org.beanio.internal.parser.format.fixedlength.FixedLengthUnmarshallingContext;
 
 /**
  * A {@link RecordFormat} for delimited records.
@@ -31,10 +32,22 @@ public class DelimitedRecordFormat implements RecordFormat {
     private int minLength = 0;
     private int maxLength = Integer.MAX_VALUE;
     
+    private int minMatchLength = 0;
+    private int maxMatchLength = Integer.MAX_VALUE;
+    
     /**
      * Constructs a new <tt>DelimitedRecordFormat</tt>.
      */
     public DelimitedRecordFormat() { }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.internal.parser.RecordFormat#matches(org.beanio.internal.parser.UnmarshallingContext)
+     */
+    public boolean matches(UnmarshallingContext context) {
+        int length = ((DelimitedUnmarshallingContext)context).getFieldCount();
+        return !(length < minMatchLength || length > maxMatchLength);
+    }
     
     /*
      * (non-Javadoc)
@@ -82,5 +95,37 @@ public class DelimitedRecordFormat implements RecordFormat {
      */
     public void setMaxLength(int maxLength) {
         this.maxLength = maxLength;
+    }
+
+    /**
+     * Returns the minimum record length for identifying a record.
+     * @return the minimum number of fields
+     */
+    public int getMinMatchLength() {
+        return minMatchLength;
+    }
+
+    /**
+     * Sets the minimum record length for identifying a record.
+     * @param minMatchLength the minimum number of fields
+     */
+    public void setMinMatchLength(int minMatchLength) {
+        this.minMatchLength = minMatchLength;
+    }
+
+    /**
+     * Returns the maximum record length for identifying a record.
+     * @return the maximum number of fields
+     */
+    public int getMaxMatchLength() {
+        return maxMatchLength;
+    }
+
+    /**
+     * Sets the maximum record length for identifying a record.
+     * @param maxMatchLength the maximum number of fields
+     */
+    public void setMaxMatchLength(int maxMatchLength) {
+        this.maxMatchLength = maxMatchLength;
     }
 }

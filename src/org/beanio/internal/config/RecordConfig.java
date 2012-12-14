@@ -17,8 +17,8 @@ package org.beanio.internal.config;
 
 /**
  * A record is a segment that is bound to a record in a stream.  The physical
- * representation of a record is dependent on the type of stream.  A more typical
- * example might be a line in fixed length or delimited flat file.
+ * representation of a record is dependent on the type of stream.  A typical
+ * example might be a line in a fixed length or delimited flat file.
  * 
  * @author Kevin Seim
  * @since 2.0
@@ -28,6 +28,8 @@ public class RecordConfig extends SegmentConfig implements SelectorConfig {
     private Integer order;
     private Integer minLength;
     private Integer maxLength;
+    private Integer minMatchLength;
+    private Integer maxMatchLength;
     
     /**
      * Constructs a new <tt>RecordConfig</tt>.
@@ -77,6 +79,38 @@ public class RecordConfig extends SegmentConfig implements SelectorConfig {
      */
     public void setMaxLength(Integer maxLength) {
         this.maxLength = maxLength;
+    }
+    
+    /**
+     * Returns the minimum record length for identifying this record.
+     * @return the minimum record length, or null if no minimum length applies
+     */
+    public Integer getMinMatchLength() {
+        return minMatchLength;
+    }
+
+    /**
+     * Sets the minimum record length for identifying this record.
+     * @param minMatchLength the minimum record length, or null if no minimum length applies
+     */
+    public void setMinMatchLength(Integer minMatchLength) {
+        this.minMatchLength = minMatchLength;
+    }
+
+    /**
+     * Returns the maximum record length for identifying this record.
+     * @return the maximum record length, or null if no maximum length applies
+     */
+    public Integer getMaxMatchLength() {
+        return maxMatchLength;
+    }
+
+    /**
+     * Sets the maximum record length for identifying this record.
+     * @param maxMatchLength the maximum record length, or null if no maximum length applies
+     */
+    public void setMaxMatchLength(Integer maxMatchLength) {
+        this.maxMatchLength = maxMatchLength;
     }
 
     /**

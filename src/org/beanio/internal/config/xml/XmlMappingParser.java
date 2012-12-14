@@ -469,6 +469,12 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         segment.setJsonName(getAttribute(element, "jsonName"));
         segment.setJsonType(getAttribute(element, "jsonType"));
         
+        Range range = getRangeAttribute(element, "ridLength");
+        if (range != null) {
+            segment.setMinMatchLength(range.getMin());
+            segment.setMaxMatchLength(range.getMax());
+        }
+        
         String template = getOptionalAttribute(element, "template");
         if (template != null) {
             includeTemplate(segment, template, 0);
@@ -563,32 +569,10 @@ public class XmlMappingParser implements StringUtil.PropertySource {
                 throw new BeanIOConfigurationException("occurs cannot be used with minOccurs or maxOccurs");
             }
             
-            // parse occurs (e.g. '1', '0-1', '0+', '1+' etc)
-            String occurs = getAttribute(element, "occurs");
-            if (occurs == null) {
-                throw new BeanIOConfigurationException("Invalid occurs '" + occurs + "'");
-            }
-            
-            try {
-                if (occurs.endsWith("+")) {
-                    config.setMinOccurs(Integer.parseInt(occurs.substring(0, occurs.length() - 1)));
-                    config.setMaxOccurs(Integer.MAX_VALUE);
-                }
-                else {
-                    int n = occurs.indexOf('-');
-                    if (n < 0) {
-                        n = Integer.parseInt(occurs);
-                        config.setMinOccurs(n);
-                        config.setMaxOccurs(n);
-                    }
-                    else {
-                        config.setMinOccurs(Integer.parseInt(occurs.substring(0, n)));
-                        config.setMaxOccurs(Integer.parseInt(occurs.substring(n + 1)));
-                    }
-                }
-            }
-            catch (NumberFormatException ex) {
-                throw new BeanIOConfigurationException("Invalid occurs '" + occurs + "'", ex);
+            Range range = getRangeAttribute(element, "occurs");
+            if (range != null) {
+                config.setMinOccurs(range.getMin());
+                config.setMaxOccurs(range.getMax());
             }
         }
         else {
@@ -791,6 +775,40 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         return "true".equals(text) || "1".equals(text);
     }
     
+    private Range getRangeAttribute(Element element, String name) {
+
+        // parse occurs (e.g. '1', '0-1', '0+', '1+' etc)
+        String range = getAttribute(element, name);
+        if (range == null) {
+            return null;
+        }
+        
+        try {
+            Integer min = null;
+            Integer max = null;
+            
+            if (range.endsWith("+")) {
+                min = Integer.parseInt(range.substring(0, range.length() - 1));
+                max = Integer.MAX_VALUE;
+            }
+            else {
+                int n = range.indexOf('-');
+                if (n < 0) {
+                    min = max = Integer.parseInt(range);
+                }
+                else {
+                    min = Integer.parseInt(range.substring(0, n));
+                    max = Integer.parseInt(range.substring(n + 1));
+                }
+            }
+            
+            return new Range(min, max);
+        }
+        catch (NumberFormatException ex) {
+            throw new BeanIOConfigurationException("Invalid " + name + " '" + range + "'", ex);
+        }
+    }
+    
     private static final class Include {
         private String template;
         private int offset = 0;
@@ -806,6 +824,24 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         
         public int getOffset() {
             return offset;
+        }
+    }
+    
+    private static final class Range {
+        private Integer min;
+        private Integer max;
+        
+        public Range(Integer min, Integer max) {
+            this.min = min;
+            this.max = max;
+        }
+        
+        public Integer getMin() {
+            return min;
+        }
+        
+        public Integer getMax() {
+            return max;
         }
     }
 }

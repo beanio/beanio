@@ -6,7 +6,7 @@
   elementFormDefault="qualified" 
   targetNamespace="http://www.beanio.org/2012/03"
   xml:lang="en"
-  version="2.0.2">
+  version="2.0.3">
 
   <annotation>
     <documentation>
@@ -167,7 +167,7 @@
         </documentation>
       </annotation>
     </attribute>
-    <attribute name="occurs" type="tns:occurs" use="optional">
+    <attribute name="occurs" type="tns:range" use="optional">
       <annotation>
         <documentation>
           Shortcut for specifying both minOccurs and maxOccurs.  Examples: '1', '0-3', '2+'.
@@ -435,7 +435,7 @@
         </documentation>
       </annotation>
     </attribute>
-    <attribute name="occurs" type="tns:occurs" use="optional">
+    <attribute name="occurs" type="tns:range" use="optional">
       <annotation>
         <documentation>
           Shortcut for specifying both minOccurs and maxOccurs.  Examples: '1', '0-3', '2+'.
@@ -533,6 +533,15 @@
           The maximum length of the record.  For delimited/CSV formatted streams,
           the maximum length is specified in fields.  For fixed length formatted 
           streams, the maximum length is specified in characters.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="ridLength" type="tns:range" use="optional">
+      <annotation>
+        <documentation>
+          The allowable range of record lengths for identifying the record.  
+          For delimited/CSV formatted streams, length is measured in fields.  
+          For fixed length formatted streams, length is measured in characters.
         </documentation>
       </annotation>
     </attribute>
@@ -830,7 +839,7 @@
         </documentation>
       </annotation>
     </attribute>
-    <attribute name="occurs" type="tns:occurs" use="optional">
+    <attribute name="occurs" type="tns:range" use="optional">
       <annotation>
         <documentation>
           Shortcut for specifying both minOccurs and maxOccurs.  Examples: '1', '0-3', '2+'.
@@ -1003,7 +1012,7 @@
         </documentation>
       </annotation>
     </attribute>
-    <attribute name="occurs" type="tns:occurs" use="optional">
+    <attribute name="occurs" type="tns:range" use="optional">
       <annotation>
         <documentation>
           Shortcut for specifying both minOccurs and maxOccurs.  Examples: '1', '0-3', '2+'.
@@ -1091,7 +1100,7 @@
     </union>
   </simpleType>
 
-  <simpleType name="occurs">
+  <simpleType name="range">
     <restriction base="xsd:string">
       <xsd:pattern value="[0-9]+((-[0-9]+)|(\++))?" />
     </restriction>

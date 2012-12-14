@@ -11,7 +11,7 @@
 <body>
 
 <div class="title">BeanIO 2.0 Reference Guide</div>
-<p><i>Revision 4</i>, &copy; 2010-2012 Kevin Seim</p>
+<p><i>Revision 5</i>, &copy; 2010-2012 Kevin Seim</p>
 <p style="font-size: 90%"><i>Copies of this document may be made for your own use and for
 distribution to others, provided that you do not charge any fee for such copies and further provided
 that each copy contains this Copyright Notice, whether distributed in print or electronically.</i></p>
@@ -169,6 +169,16 @@ currently supports XML, CSV, delimited and fixed length file formats. BeanIO is 
   <li>Added a <tt>keepPadding</tt> field attribute to instruct BeanIO not to unpad a fixed
     length field during unmarshalling.</li>
 </ul> 
+<p>Since 2.0.3:</p>
+<ul>
+  <li>Support for record identification based on record length (gc0046)</li>
+  <li>Fixed a bug introduced in 2.0.2 that unmarshalled nested groups bound to 
+    non-collection bean objects as null (gc0043)</li>
+  <li>Fixed property substitution for <tt>property</tt> configuration elements (gc0045)</li>
+  <li>Fixed unmarshalling logic that invoked setter methods (with null) for missing
+    stream elements under some circumstances</li>
+</ul> 
+
 
 <h2><a name="Migration">1.2. Migrating from 1.2.x</a></h2>
 <p>Release 2.0 is not backwards compatible with prior releases.  Sorry.  This section contains the
@@ -3372,6 +3382,16 @@ allowed number of child elements:
 	? Zero or one<br />
 </div>
 
+<h4><a name="range">Ranges</a></h4>
+<p>Where noted, some attributes can be configured using a range notation.  A range
+is expressed using the following syntax, where N and M are integer values:</p>
+<table class="indent" border="0">
+  <tr><td>N</td>  <td>Upper and lower boundaries are set to N.</td></tr>
+  <tr><td>N-M</td><td>Lower boundery is set to N.  Upper boundary is set to M.</td></tr>
+  <tr><td>N+</td> <td>Lower boundary is set to N.  No upper boundary.</td></tr>
+</table>
+
+
 <h2><a name="beanio">A.1. <tt>beanio</tt></a></h2>
 <p>The <tt>beanio</tt> element is the root element for a BeanIO mapping file.</p>
 <p>Children:
@@ -3381,6 +3401,7 @@ allowed number of child elements:
 <a href="#template"><tt>template</tt></a>*,
 <a href="#stream"><tt>stream</tt></a>*
 </p>
+
 
 <h2><a name="import">A.2. <tt>import</tt></a></h2>
 <p>The <tt>import</tt> element is used to import type handlers, templates and streams
@@ -3679,13 +3700,8 @@ The following additional attributes are accepted in this scenario:</p>
 </tr>
 <tr>
   <td><tt>occurs</tt></td>
-  <td>An alternative to specifying both <tt>minOccurs</tt> and <tt>maxOccurs</tt>.
-    The attribute uses the following syntax:
-    <table border="0" style="margin: 10px 10px 10px 10px;">
-      <tr><td>N</td>  <td>minOccurs and maxOccurs set to N (e.g. '1')</td></tr>
-      <tr><td>N-M</td><td>minOccurs set to N, maxOccurs set to M (e.g. '0-1')</td></tr>
-      <tr><td>N+</td> <td>minOccurs set to N, maxOccurs is unbounded (e.g. '1+')</td></tr>
-    </table>
+  <td>An alternative to specifying both <tt>minOccurs</tt> and <tt>maxOccurs</tt>
+    that uses <a href="#range">range notation</a>.
   </td>
   <td>No</td>
   <td>*</td>
@@ -3845,13 +3861,8 @@ the group as a whole.</p>
 </tr>
 <tr>
   <td><tt>occurs</tt></td>
-  <td>An alternative to specifying both <tt>minOccurs</tt> and <tt>maxOccurs</tt>.
-    The attribute uses the following syntax:
-    <table border="0" style="margin: 10px 10px 10px 10px;">
-      <tr><td>N</td>  <td>minOccurs and maxOccurs set to N (e.g. '1')</td></tr>
-      <tr><td>N-M</td><td>minOccurs set to N, maxOccurs set to M (e.g. '0-1')</td></tr>
-      <tr><td>N+</td> <td>minOccurs set to N, maxOccurs is unbounded (e.g. '1+')</td></tr>
-    </table>
+  <td>An alternative to specifying both <tt>minOccurs</tt> and <tt>maxOccurs</tt>
+    that uses <a href="#range">range notation</a>.
   </td>
   <td>No</td>
   <td>*</td>
@@ -4001,13 +4012,8 @@ the group as a whole.</p>
 </tr>
 <tr>
   <td><tt>occurs</tt></td>
-  <td>An alternative to specifying both <tt>minOccurs</tt> and <tt>maxOccurs</tt>.
-    The attribute uses the following syntax:
-    <table border="0" style="margin: 10px 10px 10px 10px;">
-      <tr><td>N</td>  <td>minOccurs and maxOccurs set to N (e.g. '1')</td></tr>
-      <tr><td>N-M</td><td>minOccurs set to N, maxOccurs set to M (e.g. '0-1')</td></tr>
-      <tr><td>N+</td> <td>minOccurs set to N, maxOccurs is unbounded (e.g. '1+')</td></tr>
-    </table>
+  <td>An alternative to specifying both <tt>minOccurs</tt> and <tt>maxOccurs</tt>
+    that uses <a href="#range">range notation</a>.
   </td>
   <td>No</td>
   <td>*</td>
@@ -4019,6 +4025,16 @@ the group as a whole.</p>
   </td>
   <td>No</td>
   <td>*</td>
+</tr>
+<tr>
+  <td><tt>ridLength</tt></td>
+  <td>The expected length of this record for identifying it.  The value uses
+    <a href="#range">range notation</a>.
+    <p>If the stream format is <tt>delimited</tt> or <tt>csv</tt>, record length is measured by
+     number of fields.  If the stream format is <tt>fixedlength</tt>, record length is measured in characters.</p>
+    </td>
+  <td>No</td>
+  <td>csv, delimited, fixedlength</td>
 </tr>
 <tr>
   <td><tt>minLength</tt></td>
@@ -4185,13 +4201,8 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
 </tr>
 <tr>
   <td><tt>occurs</tt></td>
-  <td>An alternative to specifying both <tt>minOccurs</tt> and <tt>maxOccurs</tt>.
-    The attribute uses the following syntax:
-    <table border="0" style="margin: 10px 10px 10px 10px;">
-      <tr><td>N</td>  <td>minOccurs and maxOccurs set to N (e.g. '1')</td></tr>
-      <tr><td>N-M</td><td>minOccurs set to N, maxOccurs set to M (e.g. '0-1')</td></tr>
-      <tr><td>N+</td> <td>minOccurs set to N, maxOccurs is unbounded (e.g. '1+')</td></tr>
-    </table>
+  <td>An alternative to specifying both <tt>minOccurs</tt> and <tt>maxOccurs</tt>
+    that uses <a href="#range">range notation</a>.
   </td>
   <td>No</td>
   <td>*</td>
@@ -4427,13 +4438,8 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
 </tr>
 <tr>
   <td><tt>occurs</tt></td>
-  <td>An alternative to specifying both <tt>minOccurs</tt> and <tt>maxOccurs</tt>.
-    The attribute uses the following syntax:
-    <table border="0" style="margin: 10px 10px 10px 10px;">
-      <tr><td>N</td>  <td>minOccurs and maxOccurs set to N (e.g. '1')</td></tr>
-      <tr><td>N-M</td><td>minOccurs set to N, maxOccurs set to M (e.g. '0-1')</td></tr>
-      <tr><td>N+</td> <td>minOccurs set to N, maxOccurs is unbounded (e.g. '1+')</td></tr>
-    </table>
+  <td>An alternative to specifying both <tt>minOccurs</tt> and <tt>maxOccurs</tt>
+    that uses <a href="#range">range notation</a>.
   </td>
   <td>No</td>
   <td>*</td>

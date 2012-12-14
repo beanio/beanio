@@ -54,6 +54,12 @@ public class DelimitedParserFactory extends FlatParserFactory {
         if (config.getMaxLength() != null) {
             format.setMaxLength(config.getMaxLength());
         }
+        if (config.getMinMatchLength() != null) {
+            format.setMinMatchLength(config.getMinMatchLength());
+        }
+        if (config.getMaxMatchLength() != null) {
+            format.setMaxMatchLength(config.getMaxMatchLength());
+        }
         return format;
     }
 

@@ -26,6 +26,15 @@ package org.beanio.internal.parser;
 public interface RecordFormat {
 
     /**
+     * Returns whether the record meets configured matching criteria
+     * during unmarshalling.
+     * @param context the {@link UnmarshallingContext}
+     * @return true if the record meets all matching criteria, false otherwise
+     * @since 2.0.3
+     */
+    public boolean matches(UnmarshallingContext context);
+    
+    /**
      * Validates a record during unmarshalling.
      * @param context the {@link UnmarshallingContext} to validate
      */

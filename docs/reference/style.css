@@ -29,6 +29,9 @@ h3 {
   font-size: 115%;
   font-style: italic;
 }
+h4 {
+  margin-bottom: 0;
+}
 
 .file {
 	background: #F5F5F5;

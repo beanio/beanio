@@ -342,4 +342,40 @@ public class XmlNamespaceTest extends XmlParserTest {
         
         assertXmlEquals(load("ns11_out.xml"), s.toString());
     }
+    
+    /**
+     * Test xmlPrefix=""
+     */
+    @Test
+    public void testEmptyPrefix2() throws Exception {
+        StringWriter s = new StringWriter();
+        BeanWriter out = factory.createWriter("stream12", s);
+
+        Person person = new Person();
+        Address address = new Address();
+        address.setCity("San Francisco");
+        person.setAddress(address);
+        out.write(person);
+        out.close();
+
+        assertXmlEquals(load("ns12_out.xml"), s.toString());
+    }
+
+    /**
+     * Test xmlPrefix=""
+     */
+    @Test
+    public void testEmptyPrefix3() throws Exception {
+        StringWriter s = new StringWriter();
+        BeanWriter out = factory.createWriter("stream13", s);
+
+        Person person = new Person();
+        Address address = new Address();
+        address.setCity("San Francisco");
+        person.setAddress(address);
+        out.write(person);
+        out.close();
+
+        assertXmlEquals(load("ns13_out.xml"), s.toString());
+    }
 }

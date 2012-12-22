@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Kevin Seim
+ * Copyright 2011-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -150,7 +150,6 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
         init();
 
         try {
-            xmlOutputFactory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, true);
             out = xmlOutputFactory.createXMLStreamWriter(writer);
         }
         catch (XMLStreamException e) {
@@ -239,7 +238,6 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
         if (prefix == null && !ignoreNamespace) {
             if (Boolean.TRUE.equals(element.getUserData(IS_DEFAULT_NAMESPACE))) {
                 setDefaultNamespace = true;
-                prefix = null;
             }
         }
         
@@ -255,6 +253,7 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
             }
             else if (prefix != null) {
                 out.writeStartElement(prefix, name, namespace);
+                out.writeNamespace(prefix, namespace);
             }
             else {
                 out.writeStartElement(name);
@@ -287,8 +286,14 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
                 prefix = null;
             }
             else {
-                if (prefix == null && !setDefaultNamespace) {
-                    prefix = elementStack.findPrefix(namespace);
+                String p = elementStack.findPrefix(namespace);
+                
+                boolean declareNamespace = false;
+                if (p == null) {
+                    declareNamespace = true;
+                }
+                else if (prefix == null && !setDefaultNamespace) {
+                    prefix = p;
                 }
                 
                 if (prefix == null) {
@@ -298,7 +303,6 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
                     else {
                         out.writeStartElement(name);
                     }
-                    out.writeDefaultNamespace(namespace);
                 }
                 else {
                     if (empty) {
@@ -308,33 +312,57 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
                         out.writeStartElement(prefix, name, namespace);
                     }
                 }
+                
+                if (setDefaultNamespace) {
+                    out.writeDefaultNamespace(namespace);
+                }
+                else if (declareNamespace) {
+                    out.writeNamespace(prefix, namespace);
+                }
             }
         }
         
         // write attributes
+        Set<String> attPrefixSet = null;
         NamedNodeMap map = element.getAttributes();
         for (int i=0,j=map.getLength(); i<j; i++) {
             Attr att = (Attr) map.item(i);
             String attName = att.getLocalName();
             String attNamespace = att.getNamespaceURI();
             String attPrefix = att.getPrefix();
+            
             if (attNamespace == null) {
                 out.writeAttribute(attName, att.getValue());
             }
             else {
-                if (attPrefix == null) {
-                    attPrefix = elementStack.findPrefix(attNamespace);
-                }
-                if (attPrefix == null) {
-                    attPrefix = namespaceMap.get(attNamespace);
+                String p = elementStack.findPrefix(attNamespace);
+                
+                boolean declareNamespace = false;
+                if (p == null) {
                     if (attPrefix == null) {
-                        attPrefix = createNamespace(attNamespace);
+                        attPrefix = namespaceMap.get(attNamespace);
+                        if (attPrefix == null) {
+                            attPrefix = createNamespace(attNamespace);
+                        }
+                    }    
+                    
+                    if (attPrefixSet == null || !attPrefixSet.contains(attPrefix)) {
+                        declareNamespace = true;
                     }
-                    out.writeAttribute(attPrefix, attNamespace, attName, att.getValue());
                 }
-                else {
-                    out.writeAttribute(attPrefix, attNamespace, attName, att.getValue());
+                else if (attPrefix == null) {
+                    attPrefix = p;
                 }
+                
+                if (declareNamespace) {
+                    out.writeNamespace(attPrefix, attNamespace);
+                    if (attPrefixSet == null) {
+                        attPrefixSet = new HashSet<String>();
+                    }
+                    attPrefixSet.add(attPrefix);
+                }
+                
+                out.writeAttribute(attPrefix, attNamespace, attName, att.getValue());
             }
         }
         

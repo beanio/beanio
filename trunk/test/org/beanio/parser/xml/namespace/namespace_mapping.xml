@@ -131,4 +131,33 @@
     </group>
   </stream>
 
+  <stream name="stream12" format="xml" xmlType="none" strict="true">
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory">
+      <property name="suppressHeader" value="false" />
+      <property name="namespaces" value="
+        e urn:external
+        r urn:record
+        xi  http://www.w3.org/2001/XMLSchema-instance" />
+    </parser>
+    <record name="person" class="org.beanio.parser.xml.Person" xmlNamespace="urn:stream" xmlPrefix="">
+      <segment name="address" class="org.beanio.parser.xml.Address" xmlNamespace="urn:record" xmlPrefix="">
+      </segment>
+    </record>
+  </stream>
+
+  <stream name="stream13" format="xml" xmlType="none" strict="true">
+    <parser class="org.beanio.parser.xml.TestXmlWriterFactory">
+      <property name="suppressHeader" value="false" />
+      <property name="namespaces" value="
+        e urn:external
+        r urn:record
+        xi  http://www.w3.org/2001/XMLSchema-instance" />
+    </parser>
+    <record name="person" class="org.beanio.parser.xml.Person" xmlNamespace="urn:stream" xmlPrefix="">
+      <segment name="address" class="org.beanio.parser.xml.Address" xmlNamespace="urn:record" xmlPrefix="">
+        <field name="city" xmlType="attribute" xmlNamespace="urn:external" xmlPrefix="e"/>
+      </segment>
+    </record>
+  </stream>
+
 </beanio>

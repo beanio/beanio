@@ -230,7 +230,7 @@ public class Settings {
      * Returns a URL for a file name, or null if the file doesn't exist.
      */
     private static URL getFileURL(String location) {
-        File file = new File(DEFAULT_CONFIGURATION_FILENAME);
+        File file = new File(location);
         if (file.exists()) {
             try {
                 return file.toURI().toURL();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -419,25 +419,48 @@ public class Group extends ParserComponent implements Selector {
      */
     public Selector close(ParsingContext context) {
         Selector lastMatch = lastMatched.get(context);
-        if (lastMatch == null && getMinOccurs() == 0)
+        
+        if (lastMatch == null && getMinOccurs() == 0) {
             return null;
-
+        }
+        
         int pos = lastMatch == null ? 1 : lastMatch.getOrder();
-
-        // find any unsatisfied group
+        
+        Selector unsatisfied = findUnsatisfiedChild(context, pos);
+        if (unsatisfied != null) {
+            return unsatisfied;
+        }
+        
+        if (getCount(context) < getMinOccurs()) {
+            // try to find a specific record before reporting any record from this group
+            if (pos > 1) {
+                reset(context);
+                unsatisfied = findUnsatisfiedChild(context, 1);
+                if (unsatisfied != null) {
+                    return unsatisfied;
+                }
+            }
+            
+            return this;
+        }
+        
+        return null;
+    }
+    
+    private Selector findUnsatisfiedChild(ParsingContext context, int from) {
+        // find any unsatisfied child
         for (Component c : getChildren()) {
             Selector node = (Selector) c;
-            
-            if (node.getOrder() < pos) {
+            if (node.getOrder() < from) {
                 continue;
             }
 
-            node.close(context);
-
-            if (node.getCount(context) < node.getMinOccurs()) {
-                return node;
+            Selector unsatisfied = node.close(context);
+            if (unsatisfied != null) {
+                return unsatisfied;
             }
         }
+        
         return null;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,6 +74,7 @@ public class Preprocessor extends ProcessorSupport {
      * @param group the group configuration to process
      */
     protected void initializeGroup(GroupConfig group) throws BeanIOConfigurationException {
+        
         if (group.getMinOccurs() == null) {
             group.setMinOccurs(settings.getInt(Settings.DEFAULT_GROUP_MIN_OCCURS, 0));
         }

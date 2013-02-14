@@ -134,6 +134,16 @@ public class GroupParserTest extends ParserTest {
         test("g5", "g5_subgroups.txt");
     }
     
+    @Test(expected = UnexpectedRecordException.class)
+    public void testMissingRecordEOF() {
+        test("g6", "g6_missingRecordEOF.txt");
+    }
+
+    @Test(expected = UnexpectedRecordException.class)
+    public void testMissingGroupEOF() {
+        test("g7", "g7_missingGroupEOF.txt");
+    }
+    
     /**
      * Fully parses the given file.
      * @param name the name of the stream

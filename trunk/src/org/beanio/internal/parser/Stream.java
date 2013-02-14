@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ public class Stream {
     private StreamFormat format;
     private Selector layout;
     private MessageFactory messageFactory;
+    private boolean ignoreUnidentifiedRecords;
     
     private Set<ParserLocal<?>> locals;
     
@@ -87,6 +88,7 @@ public class Stream {
         context.setRecordReader(format.createRecordReader(in));
         
         BeanReaderImpl reader = new BeanReaderImpl(context, layout);
+        reader.setIgnoreUnidentifiedRecords(ignoreUnidentifiedRecords);
         return reader;
     }
     
@@ -194,5 +196,23 @@ public class Stream {
 
     public void setMessageFactory(MessageFactory messageFactory) {
         this.messageFactory = messageFactory;
+    }
+
+    /**
+     * Returns whether to ignore unidentified records.  Defaults to false.
+     * @return true to ignore unidentified records, false otherwise
+     * @since 2.0.4
+     */
+    public boolean isIgnoreUnidentifiedRecords() {
+        return ignoreUnidentifiedRecords;
+    }
+
+    /**
+     * Sets whether to ignore unidentified records.  Defaults to false.
+     * @param ignoreUnidentifiedRecords true to ignore unidentified records, false otherwise
+     * @since 2.0.4
+     */
+    public void setIgnoreUnidentifiedRecords(boolean ignoreUnidentifiedRecords) {
+        this.ignoreUnidentifiedRecords = ignoreUnidentifiedRecords;
     }
 }

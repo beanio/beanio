@@ -12,7 +12,7 @@
     <documentation>
       The BeanIO stream mapping configuration XML schema.
 
-      Copyright 2011-2012 Kevin Seim
+      Copyright 2011-2013 Kevin Seim
   
       Licensed under the Apache License, Version 2.0 (the "License");
       you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@
       <annotation>
         <documentation>
           The name of the mapping file to import.  Prefix the file name with 'classpath:' to load 
-          file from the classpath, or with 'file:' to load the file from the file system.
+          the file from the classpath, or with 'file:' to load the file from the file system.
         </documentation>
       </annotation>
     </attribute>
@@ -171,6 +171,13 @@
       <annotation>
         <documentation>
           Shortcut for specifying both minOccurs and maxOccurs.  Examples: '1', '0-3', '2+'.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="ignoreUnidentifiedRecords" type="xsd:boolean" use="optional">
+      <annotation>
+        <documentation>
+          Ignores unidentified records.
         </documentation>
       </annotation>
     </attribute>

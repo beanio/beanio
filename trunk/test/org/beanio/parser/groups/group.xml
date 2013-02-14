@@ -127,4 +127,26 @@
     </record>
   </stream>
 
+  <stream name="g6" format="csv">
+    <group name="group" minOccurs="2" maxOccurs="unbounded">
+      <record name="header" order="1" minOccurs="0" maxOccurs="1" class="map">
+        <field name="recordType" length="1" rid="true" literal="H" />
+      </record>
+      <record name="trailer" order="2" minOccurs="1" maxOccurs="1" class="map">
+        <field name="recordType" length="1" rid="true" literal="T" />
+      </record>
+    </group>
+  </stream>
+
+  <stream name="g7" format="csv">
+    <group name="group" minOccurs="2" maxOccurs="unbounded">
+      <record name="header" order="1" minOccurs="0" maxOccurs="1" class="map">
+        <field name="recordType" length="1" rid="true" literal="H" />
+      </record>
+      <record name="trailer" order="2" minOccurs="0" maxOccurs="1" class="map">
+        <field name="recordType" length="1" rid="true" literal="T" />
+      </record>
+    </group>
+  </stream>
+
 </beanio>

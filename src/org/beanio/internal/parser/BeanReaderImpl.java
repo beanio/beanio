@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,8 @@ public class BeanReaderImpl implements BeanReader {
     private String recordName;
     // error handler
     private BeanReaderErrorHandler errorHandler;
+    // whether to ignore unidentified records
+    private boolean ignoreUnidentifiedRecords;
     
     /**
      * Constructs a new <tt>BeanReaderImpl</tt>.
@@ -55,11 +57,11 @@ public class BeanReaderImpl implements BeanReader {
     public Object read() {
         ensureOpen();
         
-        if (layout == null) {
-            return null;
-        }
-        
         while (true) {
+            if (layout == null) {
+                return null;
+            }
+            
             try {
                 Object bean = internalRead();
                 if (bean != null) {
@@ -126,34 +128,49 @@ public class BeanReaderImpl implements BeanReader {
         // clear the current record name
         recordName = null;
         
-        // read the next record
-        context.nextRecord();
-
-        // validate all record nodes are satisfied when the end of the file is reached
-        if (context.isEOF()) {
-            try {
-                // calling close will determine if all min occurs have been met
-                Selector unsatisfied = layout.close(context);
-                if (unsatisfied != null) {
-                    throw context.newUnsatisfiedRecordException(unsatisfied.getName());
+        do {
+            // read the next record
+            context.nextRecord();
+    
+            // validate all record nodes are satisfied when the end of the file is reached
+            if (context.isEOF()) {
+                try {
+                    // calling close will determine if all min occurs have been met
+                    Selector unsatisfied = layout.close(context);
+                    if (unsatisfied != null) {
+                        if (unsatisfied.isRecordGroup()) {
+                            throw context.newUnsatisfiedGroupException(unsatisfied.getName());
+                        }
+                        else {
+                            throw context.newUnsatisfiedRecordException(unsatisfied.getName());
+                        }
+                    }
+                    return null;
                 }
-                return null;
+                finally {
+                    layout = null;
+                    lineNumber = -1;
+                }
             }
-            finally {
-                layout = null;
-                lineNumber = -1;
+            
+            // update the last line number read
+            lineNumber = context.getLineNumber();
+            
+            try {
+                parser = layout.matchNext(context);
+            }
+            catch (UnexpectedRecordException ex) {
+                // when thrown, 'parser' is null and the error is handled below
+            }
+            
+            if (parser == null && ignoreUnidentifiedRecords) {
+                context.recordSkipped();
+            }
+            else {
+                break;
             }
         }
-        
-        // update the last line number read
-        lineNumber = context.getLineNumber();
-        
-        try {
-            parser = layout.matchNext(context);
-        }
-        catch (UnexpectedRecordException ex) {
-            // when thrown, 'parser' is null and the error is handled below
-        }
+        while (true);
 
         if (parser == null) {
             parser = layout.matchAny(context);
@@ -290,5 +307,13 @@ public class BeanReaderImpl implements BeanReader {
                 throw new BeanReaderException("Exception thrown by error handler", e);
             }
         }
+    }
+
+    /**
+     * Sets whether to ignore unidentified records.  Defaults to false.
+     * @param ignoreUnidentifiedRecords true to ignore unidentified records, false otherwise
+     */
+    public void setIgnoreUnidentifiedRecords(boolean ignoreUnidentifiedRecords) {
+        this.ignoreUnidentifiedRecords = ignoreUnidentifiedRecords;
     }
 }

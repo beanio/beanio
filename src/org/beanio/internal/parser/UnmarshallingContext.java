@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -351,10 +351,21 @@ public abstract class UnmarshallingContext extends ParsingContext {
             "Malformed record at line " + recordReader.getRecordLineNumber() + ": " + cause.getMessage());
     }
 
+    public BeanReaderException newUnsatisfiedGroupException(String groupName) {
+        if (isEOF()) {
+            return new UnexpectedRecordException(recordException(groupName, "unsatisfied"), 
+                "End of stream reached, expected record from group '" + groupName + "'");
+        }
+        else {
+            return new UnexpectedRecordException(recordException(groupName, "unsatisfied"), 
+                "Expected record from group '" + groupName + "' at line " + recordReader.getRecordLineNumber());
+        }        
+    }
+    
     public BeanReaderException newUnsatisfiedRecordException(String recordName) {
         if (isEOF()) {
             return new UnexpectedRecordException(recordException(recordName, "unsatisfied"), 
-                "End of stream reached, expected record '" + recordName + "' at line " + recordReader.getRecordLineNumber());
+                "End of stream reached, expected record '" + recordName + "'");
         }
         else {
             return new UnexpectedRecordException(recordException(recordName, "unsatisfied"), 

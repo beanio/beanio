@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,8 @@ public class StreamConfig extends GroupConfig {
     private String mode;
     private String resourceBundle;
     private boolean strict = false;
-
+    private boolean ignoreUnidentifiedRecords = false;
+    
     private List<TypeHandlerConfig> handlerList = new ArrayList<TypeHandlerConfig>();
     private BeanConfig parserFactory;
 
@@ -166,5 +167,23 @@ public class StreamConfig extends GroupConfig {
      */
     public void setStrict(boolean strict) {
         this.strict = strict;
+    }
+
+    /**
+     * Returns whether to ignore unidentified records.  Defaults to false.
+     * @return true to ignore unidentified records, false otherwise
+     * @since 2.0.4
+     */
+    public boolean isIgnoreUnidentifiedRecords() {
+        return ignoreUnidentifiedRecords;
+    }
+
+    /**
+     * Sets whether to ignore unidentified records.  Defaults to false.
+     * @param ignoreUnidentifiedRecords true to ignore unidentified records, false otherwise
+     * @since 2.0.4
+     */
+    public void setIgnoreUnidentifiedRecords(boolean ignoreUnidentifiedRecords) {
+        this.ignoreUnidentifiedRecords = ignoreUnidentifiedRecords;
     }
 }

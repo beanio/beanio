@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -382,6 +382,8 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         config.setMode(getAttribute(element, "mode"));
         config.setResourceBundle(getAttribute(element, "resourceBundle"));
         config.setStrict(getBooleanAttribute(element, "strict", config.isStrict()));
+        config.setIgnoreUnidentifiedRecords(getBooleanAttribute(element, 
+            "ignoreUnidentifiedRecords", config.isIgnoreUnidentifiedRecords()));
         populatePropertyConfigOccurs(config, element);
         
         config.setXmlName(getAttribute(element, "xmlName"));

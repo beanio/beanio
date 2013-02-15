@@ -429,6 +429,7 @@ public abstract class UnmarshallingContext extends ParsingContext {
             }
         }
         catch (RecordIOException e) {
+            lineNumber = recordReader.getRecordLineNumber();
             throw newMalformedRecordException(e);
         }
         catch (IOException e) {

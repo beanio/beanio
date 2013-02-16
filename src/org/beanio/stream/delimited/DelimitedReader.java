@@ -300,6 +300,9 @@ public class DelimitedReader implements RecordReader {
         }
 
         if (continued) {
+            fieldList = null;
+            recordText = null;
+            recordLineNumber = -1;
             throw new RecordIOException("Unexpected end of stream after line continuation at line " + lineNumber);
         }
 

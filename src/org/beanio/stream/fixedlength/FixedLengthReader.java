@@ -207,19 +207,21 @@ public class FixedLengthReader implements RecordReader {
         if (eol) {
             return record.toString();
         }
+        
+        eof = true;
 
         if (continued) {
+            recordText = null;
+            recordLineNumber = -1;
             throw new RecordIOException("Unexpected end of stream after line continuation at line " + lineNumber);
         }
 
         if (recordText.length() == 0) {
-            eof = true;
             recordText = null;
             recordLineNumber = -1;
             return null;
         }
         else {
-            eof = true;
             return record.toString();
         }
     }

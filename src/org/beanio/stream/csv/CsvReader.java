@@ -369,6 +369,9 @@ public class CsvReader implements RecordReader {
                 fieldList.add(createWhitespace(whitespace));
             break;
         case 1:
+            fieldList = null;
+            recordText = null;
+            recordLineNumber = -1;
             throw new RecordIOException(
                 "Expected end quote before end of line at line " + lineNumber);
         case 2:

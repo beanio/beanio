@@ -195,11 +195,6 @@ public class Preprocessor extends ProcessorSupport {
         }
         
         initializeSegment(record);
-        
-        // bound is not set until initializeSegment is called
-        if (record.isBound() && record.getTarget() != null) {
-            throw new BeanIOConfigurationException("Record target not supported for bound record groups");
-        }
     }
     
     /**
@@ -257,7 +252,8 @@ public class Preprocessor extends ProcessorSupport {
 
             if (segment.getComponentType() == ComponentConfig.RECORD &&
                 segment.isRepeating() &&
-                segment.getType() == null) {
+                segment.getType() == null &&
+                segment.getTarget() == null) {
                 segment.setBound(false);
             }
         }

@@ -445,7 +445,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         Component collection = createRecordAggregation(config, property);
 
         pushParser(collection);
-        if (property != null) {
+        if (property != null || config.getTarget() != null) {
             pushProperty(collection);
         }
     }
@@ -1004,7 +1004,8 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             case Property.AGGREGATION_COLLECTION:
                 return null;
             case Property.MAP:
-                iteration.setAccessor(new MapAccessor(property.getName()));
+                String key = property != null ? property.getName() : iteration.getName();
+                iteration.setAccessor(new MapAccessor(key));
                 return null;
         }
         

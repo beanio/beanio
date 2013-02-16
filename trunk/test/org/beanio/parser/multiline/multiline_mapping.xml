@@ -150,4 +150,16 @@
     </group>
   </stream>
 
+  <stream name="ml7" format="csv" strict="true">
+    <parser>
+      <property name="lineSeparator" value="\n" />
+    </parser>
+    <group name="group" class="map">
+      <record name="record" collection="map" key="name" target="value">
+        <field name="name" />
+        <field name="value" />
+      </record>
+    </group>
+  </stream>
+
 </beanio>

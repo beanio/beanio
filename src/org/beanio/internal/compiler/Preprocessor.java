@@ -88,6 +88,11 @@ public class Preprocessor extends ProcessorSupport {
         if (group.getMaxOccurs() < group.getMinOccurs()) {
             throw new BeanIOConfigurationException("Maximum occurences cannot be less than mininum occurences");
         }
+        
+        // validate both 'class' and 'target' aren't set
+        if (group.getType() != null && group.getTarget() != null) {
+            throw new BeanIOConfigurationException("Cannot set both 'class' and 'value'");
+        }
 
         if (propertyRoot != null) {
             group.setBound(true);
@@ -217,7 +222,7 @@ public class Preprocessor extends ProcessorSupport {
 
         // validate both 'class' and 'target' aren't set
         if (segment.getType() != null && segment.getTarget() != null) {
-            throw new BeanIOConfigurationException("Cannot set both 'class' and 'target'");
+            throw new BeanIOConfigurationException("Cannot set both 'class' and 'value'");
         }
         
         // set default occurrences and validate

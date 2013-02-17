@@ -154,7 +154,7 @@
     <parser>
       <property name="lineSeparator" value="\n" />
     </parser>
-    <group name="group" class="map">
+    <group name="group" value="record">
       <record name="record" collection="map" key="name" target="value">
         <field name="name" />
         <field name="value" />

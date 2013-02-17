@@ -311,10 +311,7 @@ public class MultilineRecordTest extends ParserTest {
             getClass().getResourceAsStream("ml7.txt")));
         
         try {
-            Map group = (Map) in.read();
-            assertNotNull(group);
-            
-            Map record = (Map) group.get("record");
+            Map record = (Map) in.read();
             assertNotNull(record);
             assertEquals(3, record.size());
             assertEquals("value1", record.get("key1"));
@@ -322,7 +319,7 @@ public class MultilineRecordTest extends ParserTest {
             assertEquals("value3", record.get("key3"));
             
             StringWriter text = new StringWriter();
-            factory.createWriter("ml7", text).write(group);
+            factory.createWriter("ml7", text).write(record);
             assertEquals(
                 "key1,value1\n" +
                 "key2,value2\n" +

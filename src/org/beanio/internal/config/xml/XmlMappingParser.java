@@ -431,6 +431,7 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         config.setXmlPrefix(getOptionalAttribute(element, "xmlPrefix"));
         config.setXmlType(getOptionalAttribute(element, "xmlType"));
         config.setType(getAttribute(element, "class"));
+        config.setTarget(getAttribute(element, "value"));
         
         NodeList children = element.getChildNodes();
         for (int i = 0, j = children.getLength(); i < j; i++) {
@@ -461,7 +462,6 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         populatePropertyConfig(segment, element);
         segment.setType(getAttribute(element, "class"));
         segment.setKey(getAttribute(element, "key"));
-        segment.setTarget(getAttribute(element, "target"));
         segment.setOrder(getIntegerAttribute(element, "order"));
         segment.setMinLength(getIntegerAttribute(element, "minLength"));
         segment.setMaxLength(getUnboundedIntegerAttribute(element, "maxLength", Integer.MAX_VALUE));
@@ -470,6 +470,16 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         segment.setXmlPrefix(getOptionalAttribute(element, "xmlPrefix"));
         segment.setJsonName(getAttribute(element, "jsonName"));
         segment.setJsonType(getAttribute(element, "jsonType"));
+        
+        if (hasAttribute(element, "value")) {
+            segment.setTarget(getAttribute(element, "value"));
+            if (hasAttribute(element, "target")) {
+                throw new BeanIOConfigurationException("Only one 'value' or 'target' can be configured");
+            }
+        }
+        else {
+            segment.setTarget(getAttribute(element, "target"));
+        }
         
         Range range = getRangeAttribute(element, "ridLength");
         if (range != null) {
@@ -595,7 +605,6 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         config.setType(getAttribute(element, "class"));
         config.setLazy(getBooleanAttribute(element, "lazy", config.isLazy()));
         config.setKey(getAttribute(element, "key"));
-        config.setTarget(getAttribute(element, "target"));
         config.setXmlName(getAttribute(element, "xmlName"));
         config.setXmlNamespace(getOptionalAttribute(element, "xmlNamespace"));
         config.setXmlPrefix(getOptionalAttribute(element, "xmlPrefix"));
@@ -608,6 +617,17 @@ public class XmlMappingParser implements StringUtil.PropertySource {
             includeTemplate(config, template, 0);
         }
         addProperties(config, element);
+        
+        if (hasAttribute(element, "value")) {
+            config.setTarget(getAttribute(element, "value"));
+            if (hasAttribute(element, "target")) {
+                throw new BeanIOConfigurationException("Only one 'value' or 'target' can be configured");
+            }
+        }
+        else {
+            config.setTarget(getAttribute(element, "target"));
+        }
+        
         return config;
     }
 

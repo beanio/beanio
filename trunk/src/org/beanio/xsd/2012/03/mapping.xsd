@@ -569,7 +569,14 @@
     <attribute name="target" type="xsd:string" use="optional">
       <annotation>
         <documentation>
-          The name of a segment or field descendant to marshal or unmarshal in lieu of an assigned class.
+          The name of a descendant to marshal or unmarshal in lieu of an assigned class.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="value" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The name of a descendant to marshal or unmarshal in lieu of an assigned class.
         </documentation>
       </annotation>
     </attribute>
@@ -649,6 +656,13 @@
       <annotation>
         <documentation>
           The class name or type alias of the bean object bound to this group.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="value" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The name of a descendant to marshal or unmarshal in lieu of an assigned class.
         </documentation>
       </annotation>
     </attribute>
@@ -992,7 +1006,14 @@
     <attribute name="target" type="xsd:string" use="optional">
       <annotation>
         <documentation>
-          The name of a segment or field descendant to marshal or unmarshal in lieu of an assigned class.
+          The name of a descendant to marshal or unmarshal in lieu of an assigned class.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="value" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The name of a descendant to marshal or unmarshal in lieu of an assigned class.
         </documentation>
       </annotation>
     </attribute>

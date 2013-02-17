@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Kevin Seim
+ * Copyright 2010-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ public class GroupConfig extends PropertyConfig implements SelectorConfig {
 
     private Integer order;
     private String key;
+    private String target;
     
     /**
      * Constructs a new <tt>GroupConfig</tt>.
@@ -77,6 +78,23 @@ public class GroupConfig extends PropertyConfig implements SelectorConfig {
      */
     public void setKey(String key) {
         this.key = key;
+    }
+    
+    /**
+     * Returns the name of the target property for this group.
+     * @return the target property name
+     */
+    public String getTarget() {
+        return target;
+    }
+
+    /**
+     * Sets the name of the target property for this group, which can be used
+     * in lieu of <tt>class</tt> to return descendant property types.
+     * @param target the target property name
+     */
+    public void setTarget(String target) {
+        this.target = target;
     }
 
     @Override

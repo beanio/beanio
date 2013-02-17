@@ -372,7 +372,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         Component aggregation = createRecordAggregation(config, property);
 
         pushParser(aggregation);
-        if (property != null) {
+        if (property != null || config.getTarget() != null) {
             pushProperty(aggregation);
         }
     }
@@ -406,7 +406,8 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             popProperty();
         }
         
-        popParser();
+        // pop the record from the parser stack
+        finalizeGroup(config, (Group)popParser());
     }
     
     protected void finalizeGroupIteration(GroupConfig config) {
@@ -417,6 +418,19 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         
         // pop the iteration from the parser stack
         popParser();
+    }
+
+    /**
+     * Invoked by {@link #finalizeGroupMain(GroupConfig)} to allow subclasses to perform
+     * further finalization of the created {@link Group}.
+     * @param config the group configuration
+     * @param group the {@link Group} being finalized
+     */
+    protected void finalizeGroup(GroupConfig config, Group group) { 
+        String target = config.getTarget();
+        if (target != null) {
+            group.setProperty(findTarget(group, target));
+        }
     }
     
     @Override
@@ -533,7 +547,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         }
     }
     
-    private Property findTarget(Segment segment, String name) {
+    private Property findTarget(Component segment, String name) {
         Component c = findDescendant("target", segment, name);
         if (c == null) {
             throw new BeanIOConfigurationException("Descendant target '" + name + "' not found");

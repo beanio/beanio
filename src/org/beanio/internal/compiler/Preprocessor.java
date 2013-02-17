@@ -105,7 +105,7 @@ public class Preprocessor extends ProcessorSupport {
             }            
         }
         
-        if (propertyRoot == null && group.getType() != null) {
+        if (propertyRoot == null && (group.getType() != null || group.getTarget() != null)) {
             propertyRoot = group;
         }
     }

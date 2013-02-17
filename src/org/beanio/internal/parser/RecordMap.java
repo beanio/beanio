@@ -111,6 +111,11 @@ public class RecordMap extends RecordAggregation {
     public int type() {
         return Property.AGGREGATION_MAP;
     }
+    
+    @Override
+    public boolean defines(Object value) {
+        return value != null && Map.class.isAssignableFrom(value.getClass());
+    }
 
     public Property getKey() {
         return key;

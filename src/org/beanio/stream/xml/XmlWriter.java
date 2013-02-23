@@ -79,6 +79,8 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
     private static final String STACK_ELEMENT_KEY = "xml";
     private static final String STACK_NS_MAP_KEY = "nsMap";
     
+    /* The underlying writer */
+    private Writer writer;
     /* The XML stream writer to write to */
     private XMLStreamWriter out;
     /* XML parser configuration */
@@ -118,7 +120,7 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
             throw new IllegalArgumentException("writer is null");
         }
         
-        writer = new FilterWriter(writer) {
+        this.writer = new FilterWriter(writer) {
             @Override
             public void write(int c) throws IOException {
                 if (!suppressOutput) {
@@ -150,7 +152,7 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
         init();
 
         try {
-            out = xmlOutputFactory.createXMLStreamWriter(writer);
+            out = xmlOutputFactory.createXMLStreamWriter(this.writer);
         }
         catch (XMLStreamException e) {
             throw new IllegalArgumentException("Failed to create XMLStreamWriter: " + e.getMessage(), e);
@@ -443,6 +445,11 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
             out.writeEndDocument();
             out.flush();
             out.close();
+            
+            // closing the XMLStreamWriter does not automatically
+            // close the underlying writer
+            writer.flush();
+            writer.close();
         }
         catch (XMLStreamException e) {
             throw (IOException) new IOException(e.getMessage()).initCause(e);

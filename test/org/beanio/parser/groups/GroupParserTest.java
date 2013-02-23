@@ -143,6 +143,11 @@ public class GroupParserTest extends ParserTest {
     public void testMissingGroupEOF() {
         test("g7", "g7_missingGroupEOF.txt");
     }
+
+    @Test
+    public void testRepeatingStream() {
+        test("g8", "g8_repeatingStream.txt");
+    }
     
     /**
      * Fully parses the given file.

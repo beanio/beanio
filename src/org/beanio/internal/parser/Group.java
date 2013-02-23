@@ -228,8 +228,9 @@ public class Group extends ParserComponent implements Selector {
          * If no match is found, there SHOULD be no changes to the state of this node.
          */
         
-        //System.out.println("Group '" + getName() + "' -> " +
-        //    (last == null ? "null" : last.getName()) + ", count=" + count);
+        //Selector last = this.lastMatched.get(context);
+        //System.out.println("Group '" + getName() + "', lastMatched=" +
+        //    (last == null ? "null" : last.getName()) + ", count=" + getCount(context));
         
         Selector match = matchCurrent(context);
         if (match == null && maxOccurs > 1) {
@@ -370,7 +371,17 @@ public class Group extends ParserComponent implements Selector {
 
                 match = matchNext(context, node);
                 if (match != null) {
-                    reset(context);
+                    // this is different than reset() because we reset every node
+                    // except the one that matched...
+                    for (Component c : getChildren()) {
+                        if (c == node) {
+                            continue;
+                        }
+                        Selector sel = (Selector) c;
+                        sel.setCount(context, 0);
+                        sel.reset(context);
+                    }
+                    
                     count.set(context, count.get(context) + 1);
                     node.setCount(context, 1);
                     lastMatched.set(context, node);

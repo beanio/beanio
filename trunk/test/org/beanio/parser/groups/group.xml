@@ -148,5 +148,19 @@
       </record>
     </group>
   </stream>
+  
+  <stream name="g8" format="csv" strict="true" occurs="0+">
+    <group name="group" order="1" occurs="0+">
+      <record name="groupHeader" order="1" occurs="1" class="map">
+        <field name="recordType" rid="true" literal="GH" />
+      </record>
+      <record name="groupTrailer" order="2" occurs="0-1" class="map">
+        <field name="recordType" rid="true" literal="GT" />
+      </record>
+    </group>
+    <record name="fileTrailer" order="3" occurs="0+" class="map">
+      <field name="recordType" rid="true" literal="T" />
+    </record>
+  </stream>  
 
 </beanio>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,10 @@ import org.beanio.internal.parser.format.FieldPadding;
 public abstract class FlatFieldFormatSupport implements FlatFieldFormat {
 
     private String name;
+    // measured in fields / characters from the beginning of the record (starting at 0)
     private int position;
+    // measured in fields / characters from the end of the record
+    private int until = 0; 
     private boolean lazy = false;
     private FieldPadding padding = null;
     
@@ -119,7 +122,15 @@ public abstract class FlatFieldFormatSupport implements FlatFieldFormat {
     public void setPosition(int position) {
         this.position = position;
     }
-    
+   
+    public int getUntil() {
+        return until;
+    }
+
+    public void setUntil(int until) {
+        this.until = until;
+    }
+
     public int getSize() {
         return 1;
     }
@@ -164,6 +175,7 @@ public abstract class FlatFieldFormatSupport implements FlatFieldFormat {
     public String toString() {
         return getClass().getSimpleName() + 
             "[position=" + position +
+            ", until=" + until +
             ", lazy=" + lazy +
             "]";
     }

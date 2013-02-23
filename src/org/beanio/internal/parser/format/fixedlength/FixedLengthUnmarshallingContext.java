@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,20 +53,37 @@ public class FixedLengthUnmarshallingContext extends UnmarshallingContext {
      * @param position the position of the field in the record
      * @param length the field length, or -1 if the field is at the end of the
      *   record and unbounded
+     * @param until the maximum position of the field as an offset
+     *   of the field count, for example -2 to indicate the any position
+     *   except the last two fields in the record
      * @return the field text, or null if the record length is less than
      *   the position of the field
      */
-    public String getFieldText(String name, int position, int length) {
-        position = getAdjustedFieldPosition(position);
-        if (recordLength <= position) {
-            return null;
+    public String getFieldText(String name, int position, int length, int until) {
+        int max = recordLength + until;
+        
+        if (position < 0) {
+            position = recordLength + position;
+            
+            position = getAdjustedFieldPosition(position);
+            if (position < 0) {
+                return null;
+            }
+        }
+        else {
+            position = getAdjustedFieldPosition(position);
+            if (position >= max) {
+                return null;
+            }
         }
         
+        String text;
         if (length < 0) {
-            return record.substring(position);
+            text = record.substring(position, max);
         }
-        
-        String text = record.substring(position, Math.min(recordLength, position + length));
+        else {
+            text = record.substring(position, Math.min(max, position + length));
+        }
         setFieldText(name, text);
         return text;
     }

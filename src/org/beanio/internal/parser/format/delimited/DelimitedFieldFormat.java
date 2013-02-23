@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,6 @@ public class DelimitedFieldFormat extends FlatFieldFormatSupport implements Fiel
     
     @Override
     public String extractFieldText(UnmarshallingContext context, boolean reporting) {
-        return ((DelimitedUnmarshallingContext)context).getFieldText(getName(), getPosition());
+        return ((DelimitedUnmarshallingContext)context).getFieldText(getName(), getPosition(), getUntil());
     }
 }

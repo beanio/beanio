@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import org.beanio.internal.parser.UnmarshallingContext;
 public class DelimitedUnmarshallingContext extends UnmarshallingContext {
 
     private String[] fields;
-
+    
     /**
      * Constructs a new <tt>DelimitedUnmarshallingContext</tt>.
      */
@@ -51,20 +51,33 @@ public class DelimitedUnmarshallingContext extends UnmarshallingContext {
 
     /**
      * Returns the field text at the given position in the record.
-     * @param position the position of the field wihin the record
+     * @param position the position of the field within the record
+     * @param until the maximum position of the field as an offset
+     *   of the field count, for example -2 to indicate the any position
+     *   except the last two fields in the record
      * @return the field text
      */
-    public String getFieldText(String fieldName, int position) {
-        position = getAdjustedFieldPosition(position);
-        
-        if (position < getFieldCount()) {
-            String text = fields[position];
-            setFieldText(fieldName, text);
-            return text;
+    public String getFieldText(String fieldName, int position, int until) {
+        if (position < 0) {
+            position = getFieldCount() + position;
+            
+            position = getAdjustedFieldPosition(position);
+            if (position < 0) {
+                return null;
+            }
         }
         else {
-            return null;
+            until = getFieldCount() + until;
+            
+            position = getAdjustedFieldPosition(position);
+            if (position >= until) {
+                return null;
+            }
         }
+        
+        String text = fields[position];
+        setFieldText(fieldName, text);
+        return text;
     }
     
     @Override

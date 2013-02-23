@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ public abstract class PropertyConfig extends ComponentConfig {
     private boolean identifier;
     
     private Integer position;
+    private Integer until;
     private Integer minOccurs;
     private Integer maxOccurs;
     private String collection;
@@ -143,10 +144,17 @@ public abstract class PropertyConfig extends ComponentConfig {
     }
     
     /**
-     * Returns the position of this component.  For delimited record formats,
+     * Returns the position of this component.  A negative number is
+     * counted from the end of the record (e.g. -1 is the last field
+     * in the record).  
+     * 
+     * <p>For delimited record formats,
      * the position is the index (beginning at 0) of this component in the 
      * record.  For fixed length record formats, the position is the index
      * of the first character in the component.
+     * 
+     * <p>A negative number is counted from the end of the record.
+     * 
      * @return the field position
      */
     public Integer getPosition() {
@@ -154,16 +162,41 @@ public abstract class PropertyConfig extends ComponentConfig {
     }
 
     /**
-     * Sets the position of this component.  For delimited record formats,
+     * Sets the position of this component.  A negative number is counted 
+     * from the end of the record (e.g. -1 is the last field
+     * in the record).  
+     * 
+     * <p>For delimited record formats,
      * the position is the index (beginning at 0) of this component in the 
      * record.  For fixed length record formats, the position is the index
      * of the first character in the component.
+     * 
      * @param position the field position
      */
     public void setPosition(Integer position) {
         this.position = position;
     }
     
+    /**
+     * Returns the excluded maximum position of this component which may be 
+     * specified for components that repeat indefinitely,  A negative
+     * number is counted from the end of the record.
+     * @return the maximum position 
+     */
+    public Integer getUntil() {
+        return until;
+    }
+
+    /**
+     * Sets the excluded maximum position of this component which may be 
+     * specified for components that repeat indefinitely,  A negative
+     * number is counted from the end of the record.
+     * @param until the maximum position
+     */
+    public void setUntil(Integer until) {
+        this.until = until;
+    }
+
     /**
      * Returns the collection type, or <tt>null</tt> if this component
      * is not bound to a collection or array. 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,6 +73,7 @@ public class FixedLengthParserFactory extends FlatParserFactory {
         FixedLengthFieldFormat format = new FixedLengthFieldFormat();
         format.setName(config.getName());
         format.setPosition(config.getPosition());
+        format.setUntil(config.getUntil() == null ? 0 : config.getUntil());
         format.setLazy(config.getMinOccurs().equals(0));
         format.setKeepPadding(config.isKeepPadding());
         

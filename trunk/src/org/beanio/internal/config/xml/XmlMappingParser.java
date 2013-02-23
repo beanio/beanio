@@ -641,10 +641,16 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         populatePropertyConfig(config, element);
         
         // adjust the position by the configured include offset
-        int position = getIntAttribute(element, "position", -1);
-        if (position >= 0) {
-            position += getPositionOffset();
+        Integer position = getIntegerAttribute(element, "position");
+        if (position != null) {
+            if (position >= 0) {
+                position += getPositionOffset();
+            }
             config.setPosition(position);
+        }
+        Integer until = getIntegerAttribute(element, "until");
+        if (until != null) {
+            config.setUntil(until);
         }
         
         config.setMinLength(getIntegerAttribute(element, "minLength"));

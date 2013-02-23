@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ public class FixedLengthFieldFormat extends FlatFieldFormatSupport implements Fi
     @Override
     public String extractFieldText(UnmarshallingContext context, boolean reporting) {
         FixedLengthUnmarshallingContext ctx = ((FixedLengthUnmarshallingContext)context);
-        return ctx.getFieldText(getName(), getPosition(), getSize());
+        return ctx.getFieldText(getName(), getPosition(), getSize(), getUntil());
     }
 
     @Override

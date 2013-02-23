@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,6 +72,7 @@ public class DelimitedParserFactory extends FlatParserFactory {
         //if (config.isBound()) {
             format.setPosition(config.getPosition());
         //}
+        format.setUntil(config.getUntil() == null ? 0 : config.getUntil());
         
         if (config.getLength() != null) {
             FieldPadding padding = new FieldPadding();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package org.beanio.internal.compiler.flat;
+
+import java.util.*;
 
 import org.beanio.BeanIOConfigurationException;
 import org.beanio.internal.compiler.Preprocessor;
@@ -33,6 +35,14 @@ public class FlatPreprocessor extends Preprocessor {
     // position must be set for all fields or for no fields, this attribute
     // is set when the first field is processed and all other fields must adhere to it
     private Boolean positionRequired;
+    
+    // the field or segment that requires a maximum position set on it to test for more occurrences
+    // of an indefinitely repeating field or segment
+    private PropertyConfig unboundedComponent = null;
+    // the component that immediately follows the unbounded component
+    private PropertyConfig unboundedComponentFollower = null;
+    // the list of components at the end of the record following the unbounded component
+    private List<PropertyConfig> endComponents = new ArrayList<PropertyConfig>();
     
     /**
      * Constructs a new <tt>FlatPreprocessor</tt>.
@@ -82,6 +92,25 @@ public class FlatPreprocessor extends Preprocessor {
                     "Maximum record length must be at least " + record.getMinLength());
             }
         }
+        
+        // if there is an unbounded component in the middle of the record, we need to
+        // set the end position on it
+        if (unboundedComponent != null && unboundedComponentFollower != null) {
+            setEndPosition(unboundedComponent, unboundedComponentFollower.getPosition());
+        }
+    }
+    
+    private void setEndPosition(ComponentConfig config, int end) {
+        switch (config.getComponentType()) {
+        case ComponentConfig.SEGMENT:
+            for (ComponentConfig child : ((SegmentConfig)config).getChildren()) {
+                setEndPosition(child, end);
+            }
+            break;
+        case ComponentConfig.FIELD:
+            ((FieldConfig)config).setUntil(end);
+            break;
+        }
     }
     
     @Override
@@ -97,6 +126,16 @@ public class FlatPreprocessor extends Preprocessor {
         // by default, a segment is not constant
         segment.setConstant(false);
         
+        boolean isRecord = segment.getComponentType() == ComponentConfig.RECORD;
+        boolean isVariableSized = 
+            (segment.getMaxOccurs().equals(Integer.MAX_VALUE)) ||
+            (segment.isRepeating() && !segment.getMinOccurs().equals(segment.getMaxOccurs()));
+        
+        if (isVariableSized && !isRecord && defaultPosition == Integer.MAX_VALUE) {
+            throw new BeanIOConfigurationException("A segment of indeterminate size may not " +
+                "follow another component of indeterminate size");
+        }
+        
         // calculate the maximum size and position of the segment
         for (PropertyConfig config : segment.getPropertyList()) {
             if (config.getComponentType() == PropertyConfig.CONSTANT) {
@@ -106,7 +145,7 @@ public class FlatPreprocessor extends Preprocessor {
                 ((SegmentConfig)config).isConstant()) {
                 continue;
             }
-            if (segment.getComponentType() != ComponentConfig.RECORD && 
+            if (!isRecord && 
                 segment.isRepeating() && 
                 config.getMinOccurs().equals(0)) {
                 throw new BeanIOConfigurationException("A repeating segment may not contain " +
@@ -116,10 +155,10 @@ public class FlatPreprocessor extends Preprocessor {
                 maxSize = Integer.MAX_VALUE;
             }
             int n = config.getPosition();
-            if (first == null || n < first.getPosition()) {
+            if (first == null || comparePosition(n, first.getPosition()) < 0) {
                 first = config;
             }
-            if (last == null || n > last.getPosition()) {
+            if (last == null || comparePosition(n, last.getPosition()) > 0) {
                 last = config;
             }
         }
@@ -134,11 +173,17 @@ public class FlatPreprocessor extends Preprocessor {
         }
         else if (maxSize < 0) {
             position = first.getPosition();
-            if (position == Integer.MAX_VALUE) {
-                throw new BeanIOConfigurationException("A variable occurence segment/field " +
-                    "is only allowed at the the end of the record");   
+            if (last.getPosition() < 0 && first.getPosition() >= 0) {
+                if (!isRecord && segment.isRepeating()) {
+                    throw new BeanIOConfigurationException("A repeating segment may not contain " +
+                        "components of indeterminate size");
+                }
+                maxSize = Integer.MAX_VALUE;
+                isVariableSized = true;
             }
-            maxSize = last.getPosition() - first.getPosition() + last.getMaxSize() * last.getMaxOccurs();
+            else {
+                maxSize = Math.abs(last.getPosition() - first.getPosition()) + last.getMaxSize() * last.getMaxOccurs();
+            }
         }
 
         // calculate the minimum size of the segment
@@ -151,19 +196,28 @@ public class FlatPreprocessor extends Preprocessor {
                     continue;
                 }
                 
+                minSize += config.getMinSize() * config.getMinOccurs();
+                
                 int n = config.getPosition();
-                if (first == null || n < first.getPosition()) {
+                if (first == null || comparePosition(n, first.getPosition()) < 0) {
                     first = config;
                 }
                 if (config.getMinOccurs() > 0) {
-                    if (last == null || n > last.getPosition()) {
+                    if (last == null || comparePosition(n, last.getPosition()) > 0) {
                         last = config;
                     }
                 }
             }
+         
+            if (last == null) {
+                last = first;
+            }
             
-            if (last != null) {
-                minSize = last.getPosition() - first.getPosition() + last.getMaxSize() * last.getMinOccurs();
+            if (first.getPosition() >= 0 && last.getPosition() < 0) {
+                // go with counted min size
+            }
+            else {
+                minSize = Math.abs(last.getPosition() - first.getPosition()) + last.getMaxSize() * last.getMinOccurs();
             }
         }
         
@@ -172,15 +226,32 @@ public class FlatPreprocessor extends Preprocessor {
         segment.setMinSize(minSize);
         
         // calculate the next position
-        if (segment.getMaxOccurs().equals(Integer.MAX_VALUE) ||
-            segment.getMaxSize() == Integer.MAX_VALUE) {
-            defaultPosition = Integer.MAX_VALUE;
-        }
-        else if (segment.isRepeating() && !segment.getMinOccurs().equals(segment.getMaxOccurs())) {
-            defaultPosition = Integer.MAX_VALUE;
-        }
-        else {
-            defaultPosition = segment.getPosition() + segment.getMaxSize() * segment.getMaxOccurs();
+        if (!isRecord && Boolean.FALSE.equals(positionRequired)) {
+            if (defaultPosition == Integer.MAX_VALUE) {
+                int offset = 0 - maxSize * (segment.getMaxOccurs() - 1);
+                for (PropertyConfig c : endComponents) {
+                    c.setPosition(c.getPosition() + offset);
+                }
+                segment.setPosition(offset + segment.getPosition());
+                endComponents.add(segment);
+                
+                if (unboundedComponentFollower == null) {
+                    unboundedComponentFollower = segment;
+                }
+            }
+            else if (
+                (segment.isRepeating() && !segment.getMinOccurs().equals(segment.getMaxOccurs())) ||
+                segment.getMaxOccurs().equals(Integer.MAX_VALUE) ||
+                segment.getMaxSize() == Integer.MAX_VALUE) {
+                    
+                if (unboundedComponent == null) {
+                    unboundedComponent = segment;
+                }
+                defaultPosition = Integer.MAX_VALUE;
+            }
+            else {
+                defaultPosition = segment.getPosition() + segment.getMaxSize() * segment.getMaxOccurs();
+            }
         }
         
         // determine the default existence of the segment
@@ -201,6 +272,21 @@ public class FlatPreprocessor extends Preprocessor {
         if (segment.getDefaultExistence() && !segment.getMinOccurs().equals(segment.getMaxOccurs())) {
             throw new BeanIOConfigurationException("Repeating segments without any child " +
                 "field component must have minOccurs=maxOccurs");
+        }
+    }
+    
+    //  1,  0 returns 1 (greater than)
+    // -1, -2 returns 1 (greater than)
+    //  5, -1 returns -1 (less than)
+    private int comparePosition(Integer p1, Integer p2) {
+        if (p1 > 0 && p2 < 0) {
+            return -1;
+        }
+        else if (p1 < 0 && p2 >= 0) {
+            return 1;
+        }
+        else {
+            return p1.compareTo(p2);
         }
     }
     
@@ -258,6 +344,23 @@ public class FlatPreprocessor extends Preprocessor {
         if (field.getPosition() == null) {
             calculateDefaultPosition(field);
         }
+        else if (field.getUntil() != null) {
+            if (!isVariableSized(field)) {
+                throw new BeanIOConfigurationException("until should not be specified for " +
+                    "fields of determinate occurences and length");
+            }
+            if (field.getUntil() >= 0) {
+                throw new BeanIOConfigurationException("until must be less than 0 (i.e. " +
+                    "a position relative to the end of the record)");
+            }
+        }
+    }
+    
+    private boolean isVariableSized(FieldConfig config) {
+        return
+            (config.getMaxOccurs().equals(Integer.MAX_VALUE)) ||
+            (isFixedLength() && config.getMaxSize() == Integer.MAX_VALUE) ||
+            (config.isRepeating() && !config.getMinOccurs().equals(config.getMaxOccurs()));
     }
     
     /**
@@ -266,6 +369,44 @@ public class FlatPreprocessor extends Preprocessor {
      */
     private void calculateDefaultPosition(FieldConfig config) {
         
+        boolean isVariableSized = isVariableSized(config);
+        
+        if (defaultPosition == Integer.MAX_VALUE) {
+            if (isVariableSized)  {
+                String error = "Cannot determine field position, field is preceded by " +
+                    "another component with indeterminate occurrences";
+            
+                if (isFixedLength()) {
+                    error += "or unbounded length";
+                }
+                
+                throw new BeanIOConfigurationException(error);
+            }
+            
+            int offset = 0 - (config.getMaxSize() * config.getMaxOccurs());
+            for (PropertyConfig c : endComponents) {
+                c.setPosition(c.getPosition() + offset);
+            }
+            config.setPosition(offset);
+            endComponents.add(config);
+            
+            if (unboundedComponentFollower == null) {
+                unboundedComponentFollower = config;
+            }
+        }
+        else {
+            config.setPosition(defaultPosition);
+            
+            if (isVariableSized) {
+                defaultPosition = Integer.MAX_VALUE;
+                unboundedComponent = config;
+            }
+            else {
+                defaultPosition = config.getPosition() + config.getMaxSize() * config.getMaxOccurs();
+            }
+        }
+        
+        /*
         if (defaultPosition == Integer.MAX_VALUE) {
             String error = "Cannot determine field position, field is preceded by " +
                 "a component with indeterminate occurences";
@@ -276,7 +417,6 @@ public class FlatPreprocessor extends Preprocessor {
             
             throw new BeanIOConfigurationException(error);
         }
-        config.setPosition(defaultPosition);
         
         // set the next default position to MAX_VALUE if the occurrences of this field is unbounded
         if (config.getMaxOccurs().equals(Integer.MAX_VALUE)) {
@@ -292,6 +432,7 @@ public class FlatPreprocessor extends Preprocessor {
         else {
             defaultPosition = config.getPosition() + config.getMaxSize() * config.getMaxOccurs();
         }
+        */
     }
     
     /**

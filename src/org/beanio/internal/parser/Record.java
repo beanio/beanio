@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -267,5 +267,6 @@ public class Record extends Segment implements Selector {
         s.append(", order=").append(order);
         s.append(", minOccurs=").append(minOccurs);
         s.append(", maxOccurs=").append(maxOccurs);
+        s.append(", format=").append(format);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,8 +65,8 @@ public abstract class FlatParserFactory extends ParserFactorySupport {
             if (component instanceof Field) {
                 p = ((FlatFieldFormat)((Field)component).getFormat()).getPosition();
             }
-            else if (component instanceof CollectionParser) {
-                p = getPosition(((CollectionParser)component).getFirst());
+            else if (component instanceof Aggregation) {
+                p = getPosition(((Aggregation)component).getFirst());
             }
             else if (component instanceof Segment) {
                 int n = Integer.MAX_VALUE;
@@ -74,6 +74,10 @@ public abstract class FlatParserFactory extends ParserFactorySupport {
                     n = Math.min(getPosition(child), n);
                 }
                 p = n;
+            }
+            
+            if (p < 0) {
+                p = Integer.MAX_VALUE + p;
             }
             
             cache.put(component, p);

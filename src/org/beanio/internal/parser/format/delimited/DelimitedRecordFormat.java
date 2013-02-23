@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 package org.beanio.internal.parser.format.delimited;
 
 import org.beanio.internal.parser.*;
-import org.beanio.internal.parser.format.fixedlength.FixedLengthUnmarshallingContext;
 
 /**
  * A {@link RecordFormat} for delimited records.
@@ -127,5 +126,14 @@ public class DelimitedRecordFormat implements RecordFormat {
      */
     public void setMaxMatchLength(int maxMatchLength) {
         this.maxMatchLength = maxMatchLength;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        s.append(getClass().getSimpleName()).append("[");
+        s.append("recordLength=").append(minLength).append('-').append(maxLength);
+        s.append("]");
+        return s.toString();
     }
 }

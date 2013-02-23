@@ -719,7 +719,16 @@
     <attribute name="position" type="xsd:int" use="optional">
       <annotation>
         <documentation>
-          Field position beginning at 0.
+          Field position beginning at 0.  A negative number is relative to
+          the end of the record.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="until" type="xsd:int" use="optional">
+      <annotation>
+        <documentation>
+          Excluded maximum field position.  Must be a negative number to
+          indicate a position relative to the end of the record.
         </documentation>
       </annotation>
     </attribute>

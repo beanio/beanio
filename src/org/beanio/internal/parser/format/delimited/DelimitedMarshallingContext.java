@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,10 @@ public class DelimitedMarshallingContext extends MarshallingContext {
 
     // the index of the last committed field in the record
     private int committed = 0;
-    // the list of fields in the record
+    // the list used to build the final record
     private ArrayList<String> record = new ArrayList<String>();
+    // the list of entries for creating the record (may be unordered)
+    private ArrayList<Entry> entries = new ArrayList<Entry>();
     
     /**
      * Constructs a new <tt>DelimitedMarshallingContext</tt>.
@@ -41,7 +43,7 @@ public class DelimitedMarshallingContext extends MarshallingContext {
     public void clear() {
         super.clear();
         
-        record.clear();
+        entries.clear();
         committed = 0;
     }
     
@@ -54,44 +56,68 @@ public class DelimitedMarshallingContext extends MarshallingContext {
      *   unless a subsequent field is later appended to the record 
      */
     public void setField(int position, String fieldText, boolean commit) {
-        int index = getAdjustedFieldPosition(position);
-        int size = record.size();
         
-        if (index == size) {
-            record.add(fieldText);
-            ++size;
-        }
-        else if (index < size) {
-            record.set(index, fieldText);
-        }
-        else {
-            for (int max=index; size<max; ++size) {
-                record.add("");
-            }
-            record.add(fieldText);
-            ++size;
-        }
+        int index = getAdjustedFieldPosition(position);
+        
+        Entry entry = new Entry(index, fieldText);
+        entries.add(entry);
         
         if (commit) {
-            committed = size;
+            committed = entries.size();
         }
     }
     
     @Override
     public Object getRecordObject() {
-        int size = record.size();
-        if (committed < size) {
-            String [] array = new String[committed];
-            for (int i=0; i<committed; i++) {
-                array[i] = record.get(i);
-            }
-            return array;
+        
+        record.clear();
+        
+        List<Entry> committedEntries;
+        if (committed < entries.size()) {
+            committedEntries = entries.subList(0, committed);
         }
         else {
-            String [] array = new String[record.size()];
-            record.toArray(array);
-            return array;
+            committedEntries = entries;
         }
+        
+        Collections.sort(committedEntries);
+        
+        // the current index to write out
+        int size = 0;
+        // the offset for positions relative to the end of the record
+        int offset = -1;
+        
+        for (Entry entry : committedEntries) {
+            
+            int index = entry.position;
+            if (index < 0) {
+                
+                // the offset is calculated the first time we encounter
+                // a position relative to the end of the record
+                if (offset == -1) {
+                    offset = size + Math.abs(index);
+                    index = size;
+                }
+                else {
+                    index += offset;
+                }
+            }
+            
+            if (index < size) {
+                record.set(index, entry.text);
+            }
+            else {
+                while (index > size) {
+                    record.add("");
+                    ++size;
+                }
+                
+                record.add(entry.text);
+                ++size;
+            }
+        }
+        
+        return record.toArray(new String[0]);
     }
     
     @Override
@@ -102,5 +128,26 @@ public class DelimitedMarshallingContext extends MarshallingContext {
     @Override
     public List<String> toList(Object record) {
         return Arrays.asList((String[])record);
+    }
+    
+    private static class Entry implements Comparable<Entry> {
+        int position;
+        int order;
+        String text;
+        
+        public Entry(int position, String text) {
+            this.position = position;
+            this.order = position < 0 ? position + Integer.MAX_VALUE : position;
+            this.text = text;
+        }
+        
+        public int compareTo(Entry o) {
+            return new Integer(this.order).compareTo(o.order);
+        }
+        
+        @Override
+        public String toString() {
+            return order + ":" + text;
+        }
     }
 }

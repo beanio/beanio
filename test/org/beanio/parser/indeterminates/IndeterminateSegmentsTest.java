@@ -22,13 +22,17 @@ public class IndeterminateSegmentsTest extends ParserTest {
     }
     
     @Test
-    @SuppressWarnings("rawtypes")
     public void testDelimitedIndeterminateFieldBeforeEOR() {
+        testDelimitedIndeterminateFieldBeforeEOR("d1");
+        testDelimitedIndeterminateFieldBeforeEOR("d3");
+    }
+    @SuppressWarnings("rawtypes")
+    private void testDelimitedIndeterminateFieldBeforeEOR(String stream) {
         List list = null;
         String text = "v1,v2.1,v2.2,v3.1,v3.2,v4";
         
         Map map = null;
-        Unmarshaller u = factory.createUnmarshaller("d1");
+        Unmarshaller u = factory.createUnmarshaller(stream);
         map = (Map) u.unmarshal(text);
         
         Assert.assertNotNull(map);
@@ -46,9 +50,10 @@ public class IndeterminateSegmentsTest extends ParserTest {
         Assert.assertEquals("v3.2", list.get(1));        
         Assert.assertEquals("v4", map.get("f4"));
         
-        Marshaller m = factory.createMarshaller("d1");
+        Marshaller m = factory.createMarshaller(stream);
         Assert.assertEquals(text, m.marshal(map).toString());
     }
+    
     
     @Test
     @SuppressWarnings("rawtypes")

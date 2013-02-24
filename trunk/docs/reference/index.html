@@ -11,7 +11,7 @@
 <body>
 
 <div class="title">BeanIO 2.0 Reference Guide</div>
-<p><i>Revision 5</i>, &copy; 2010-2012 Kevin Seim</p>
+<p><i>Revision 6</i>, &copy; 2010-2013 Kevin Seim</p>
 <p style="font-size: 90%"><i>Copies of this document may be made for your own use and for
 distribution to others, provided that you do not charge any fee for such copies and further provided
 that each copy contains this Copyright Notice, whether distributed in print or electronically.</i></p>
@@ -178,7 +178,15 @@ currently supports XML, CSV, delimited and fixed length file formats. BeanIO is 
   <li>Fixed unmarshalling logic that invoked setter methods (with null) for missing
     stream elements under some circumstances</li>
 </ul> 
-
+<p>Since 2.0.4:</p>
+<ul>
+  <li>Added support for segments and fields of indeterminate length in the middle of a record (gc0057)</li>
+  <li>Renamed <tt>target</tt> attributes (now deprecated) to <tt>value</tt> for <tt>record</tt> and <tt>group</tt> definitiions</li>
+  <li>Added support for a group <tt>value</tt> attribute to return a child component</li>
+  <li>Added <tt>ignoreUnidentifiedRecords</tt> attribute to stream configuration (gc0046)</li>
+  <li>Fixed EOF validation for minimum record occurrences (gc0056)</li>
+  <li>Fixed several other issues (see changelog.txt for details)</li>
+</ul> 
 
 <h2><a name="Migration">1.2. Migrating from 1.2.x</a></h2>
 <p>Release 2.0 is not backwards compatible with prior releases.  Sorry.  This section contains the
@@ -1225,6 +1233,10 @@ the number of detail records is unbounded.</p>
 <p>If <tt>minOccurs</tt> and/or <tt>maxOccurs</tt> are not set, the minimum occurrences 
 of a record defaults to 0 and maximum occurrences is unbounded.</p>
 
+<p>Its also possible to identify delimited and fixed length records based on their length.  The 
+<tt>ridLength</tt> record attribute can be used to specify a range of lengths to 
+identify the record.</p>
+
 <h3><a name="RecordOrdering">4.2.2. Record Ordering</a></h3>
 <p>As explained in the previous section, a stream can support multiple record types.  By default,  
 a <tt>BeanReader</tt> will read records in any order.  But if desired, BeanIO can enforce record
@@ -1354,8 +1366,8 @@ to '#N' where N is the position of the argument in the constructor starting at 1
   
 &lt;/beanio&gt;</pre>
 
-<p>Fields found in a stream that do not map to a bean property can be declared,
-but otherwise ignored, using the <tt>ignore</tt> field attribute.  Note that
+<p>Fields found in a stream that do not map to a bean property can be declared
+using the <tt>ignore</tt> field attribute.  Note that
 any configured validation rules are still applied to ignored fields (not shown).</p>
 <pre class="file">
 &lt;beanio&gt;
@@ -1377,7 +1389,9 @@ can be configured for each field.  If a position is declared for one field, a po
 for all other fields in the same record.  For delimited (and CSV) formatted streams, <tt>position</tt>
 should be set to the index of the first occurrence of the field in the record, beginning at 0.  
 For fixed length formatted streams, <tt>position</tt> should be set to the index of the first character
-of the first occurrence of the field in the record, beginning at 0. </p>
+of the first occurrence of the field in the record, beginning at 0.  A negative position can be used
+to specify a field location relative to the end of the record.  For example, a position of -2 indicates
+the second to last field in a delimited record.</p>
 
 <p>The following example shows how the position attribute can be used.  Although the fields are declared
 in a different order, the record definition is identical to the previous example.  When positions are explicitly
@@ -1591,10 +1605,12 @@ a <tt>java.util.Collection</tt> subclass, or to one of the collection type alias
 <p>Repeating fields can declare the number of occurrences of the field
 using the <tt>minOccurs</tt> and <tt>maxOccurs</tt> field attributes.  If not declared, <tt>minOccurs</tt>
 will default to 1, and <tt>maxOccurs</tt> will default to the <tt>minOccurs</tt> value or 1, whichever
-is greater.  If the number of field occurences is variable (i.e. <tt>maxOccurs</tt> is greater than 
-<tt>minOccurs</tt>), the field must be the last field in the record (for csv, delimited and fixed length
-stream formats).
-</p>
+is greater.</p>
+
+<p>Flat file formats (CSV, delimited and fixed length) may only contain one field or segment of indeterminate
+length (i.e. where  <tt>maxOccurs</tt> is greater than <tt>minOccurs</tt>).  The position of components that
+follow are assumed to be relative to the end of the record.</p>
+
 <pre class="file">
 &lt;beanio&gt;
 
@@ -1931,9 +1947,12 @@ subclass, or to one of the collection type aliases below.</p>
 <p>Repeating segments can declare the number of occurrences
 using the <tt>minOccurs</tt> and <tt>maxOccurs</tt> attributes.  If not declared, <tt>minOccurs</tt>
 will default to 1, and <tt>maxOccurs</tt> will default to the <tt>minOccurs</tt> value or 1, whichever
-is greater.  If the number of occurrences is variable (i.e. <tt>maxOccurs</tt> is greater than 
-<tt>minOccurs</tt>), the segment must be the last segment in the record (for CSV, delimited and fixed length
-streams).</p>
+is greater.</p>
+
+<p>Flat file formats (CSV, delimited and fixed length) may only contain one field or segment of indeterminate
+length (i.e. where  <tt>maxOccurs</tt> is greater than <tt>minOccurs</tt>).  The position of components that
+follow are assumed to be relative to the end of the record.</p>
+
 <pre class="file">
 &lt;beanio&gt;
 
@@ -1988,14 +2007,14 @@ attribute is used to set the name of a descendant field to use for the Map key.<
   
 &lt;/beanio&gt;</pre>
 
-<p>If a Map of last names by ID is needed instead, simply replace the <tt>class</tt> attribute with <tt>target</tt>
+<p>If a Map of last names by ID is needed instead, simply replace the <tt>class</tt> attribute with <tt>value</tt>
 and specify the name of the descendant field to use for the Map value.  In this case, first name is effectively ignored.</p>
 <pre class="file">
 &lt;beanio&gt;
 
   &lt;stream name="employeeFile" format="csv"&gt;
     &lt;record name="employee" target="userMap"&gt;
-      &lt;segment name="userMap" collection="map" key="id" <b>target="lastName"</b> 
+      &lt;segment name="userMap" collection="map" key="id" <b>value="lastName"</b> 
           minOccurs="1" maxOccurs="unbounded"&gt;
         &lt;field name="id" /&gt;
         &lt;field name="firstName" /&gt;
@@ -3707,6 +3726,16 @@ The following additional attributes are accepted in this scenario:</p>
   <td>*</td>
 </tr>
 <tr>
+  <td><tt>ignoreUnidentified Records</tt></td>
+  <td>If set to true, BeanIO will skip records that cannot be identified, otherwise
+    an <tt>UnidentifiedRecordException</tt> is thrown.  This feature is not recommended
+    for use with record groups, since a record sequencing error could cause large portions
+    of a stream to go unprocessed without any exception.
+  </td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
   <td><tt>xmlType</tt></td>
   <td>The XML node type mapped to the stream.  
   If not specified or set to <tt>element</tt>, the stream is mapped to the root element of the
@@ -3799,6 +3828,16 @@ the group as a whole.</p>
     may be bound to a group when its marshalled form spans multiple consecutive records.
     <p>During umarshalling, if any record in the group fails validation, an 
     <tt>InvalidRecordGroupException</tt> is thrown.</p>
+  </td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
+  <td><tt>value<br /><del>target</del></tt></td>
+  <td>The name of a child component (typically a record) to return in lieu of an assigned class.
+    <p>There can be only one iteration of the named value.  For example, if a repeating segment
+    bound to a collection contains a repeating field (also bound to a collection), the segment 
+    can be targeted, but the field cannot.</p>
   </td>
   <td>No</td>
   <td>*</td>
@@ -3934,12 +3973,12 @@ the group as a whole.</p>
   <td>*</td>
 </tr>
 <tr>
-  <td><tt>target</tt></td>
-  <td>The name of a segment or field descendant to return in lieu of an assigned class.
-    <p>There can be only one iteration of a named target.  For example, if a repeating segment
+  <td><tt>value<br /><del>target</del></tt></td>
+  <td>The name of a child segment or field to return in lieu of an assigned class.
+    <p>There can be only one iteration of a named value.  For example, if a repeating segment
     bound to a collection contains a repeating field (also bound to a collection), the segment 
     can be targeted, but the field cannot.</p>
-    <p>If neither <tt>class</tt> or <tt>target</tt> is set, a <tt>BeanReader</tt> will fully 
+    <p>If neither <tt>class</tt> or <tt>value</tt> is set, a <tt>BeanReader</tt> will fully 
     validate the record, but no bean object will be returned and the reader will continue reading 
     the next record.</p>
   </td>
@@ -4119,9 +4158,9 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
   <td>*</td>
 </tr>
 <tr>
-  <td><tt>target</tt></td>
-  <td>The name of a descendant field to assign to this segment in lieu of a <tt>class</tt>.
-    If set, all other descendants are not bound to a parent bean property.
+  <td><tt>value</tt><br/><del><tt>target</tt></del></td>
+  <td>The name of a child segment or field to return in lieu of an assigned class.
+    If set, all other descendants are not bound to the parent bean property.
   </td>
   <td>No</td>
   <td>*</td>
@@ -4322,16 +4361,28 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
   <td><tt>position</tt></td>
   <td>For delimited and CSV formatted streams, <tt>position</tt> is the index of the field
     within the record, beginning at 0.  And for fixed length formatted streams, <tt>position</tt>
-    is the index of the first character of the field within the record, beginning at 0.
+    is the index of the first character of the field within the record, beginning at 0.  
+    <p>
+    Negative numbers can be used to indicate the position is relative to the end of the record.  
+    For example, the position -2 indicates the second to last field in a delimited record.</p>
     <p>
     If the field repeats, or the field belongs to a segment that repeats, 
-    <tt>position</tt> should be set based on the first occurrence of the field in a record.
-    </p>
+    <tt>position</tt> should be set based on the first occurrence of the field in a record.</p>
     <p>
     A position must be specified for all fields in a record, or for none at all.  If positions
     are not specified, BeanIO will automatically calculate field positions based on the order
     in which the fields are defined in the mapping file.
     </p>
+  </td>
+  <td>No</td>
+  <td>csv, delimited, fixedlength</td>
+</tr>
+<tr>
+  <td><tt>until</tt></td>
+  <td>The maximum position of the field in the record.  Only applies to fields that repeat
+    where the number of occurrences is indeterminate (i.e. <tt>maxOccurs</tt> is greater 
+    than <tt>minOccurs</tt>).  <tt>until</tt> must always be specified relative to the end
+    of the record, and is therefore always a negative number.
   </td>
   <td>No</td>
   <td>csv, delimited, fixedlength</td>

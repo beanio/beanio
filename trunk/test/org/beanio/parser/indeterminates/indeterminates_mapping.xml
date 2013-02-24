@@ -27,9 +27,9 @@
 
   <stream name="d3" format="csv" strict="true">
     <record name="record" class="map">
+      <field name="f3" collection="list" occurs="2" position="-3" />
       <field name="f1" position="0" />
       <field name="f2" collection="list" occurs="1+" position="1" until="-3" />
-      <field name="f3" collection="list" occurs="2" position="-3" />
       <field name="f4" position = "-1" />
     </record>
   </stream>

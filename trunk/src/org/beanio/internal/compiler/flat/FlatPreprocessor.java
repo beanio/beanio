@@ -58,6 +58,9 @@ public class FlatPreprocessor extends Preprocessor {
         
         defaultPosition = 0;
         positionRequired = null;
+        unboundedComponent = null;
+        unboundedComponentFollower = null;
+        endComponents.clear();
     }
     
     @Override

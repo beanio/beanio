@@ -1,6 +1,21 @@
 Project BeanIO Change Log
 =========================
 
+Changes in version 2.0.4 (2013-03-05)
+-------------------------------------
+* Fixed check for unsatisfied records and groups at EOF (gc0056)
+* Fixed NPE when an exception is ignored (by a custom error handler) when EOF is reached (gc0055)
+* Fixed the line number reported by a RecordContext for malformed records (gc0059)
+* Added ignoreUnidentifiedRecords attribute to stream definition (gc0046)
+* Prevent possible IOException (stream already closed) when the last record in a file is malformed (gc0060)
+* Added support for collection="map" records assigned a key and target (gc0061)
+* Added support for a group 'value' attribute (previously called 'target')
+* Renamed (deprecated) record and segment 'target' attributes to 'value'
+* Fixed xmlWriter.close() to close underlying writer (gc0063)
+* Fixed record matching logic for repeating streams (gc0062)
+* Added support for segments and fields of indeterminate length in the middle of a record (g0057)
+* Added class RecordParserFactorySupport
+
 Changes in version 2.0.3 (2012-12-22)
 -------------------------------------
 * Fixed support for nested groups bound to a non-collection type bean (gc0043)

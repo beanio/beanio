@@ -1,0 +1,23 @@
+<beanio xmlns="http://www.beanio.org/2012/03">
+
+  <stream name="stream1" format="csv">
+    <record name="detail" target="map">
+      <segment name="map" collection="map" key="id" class="org.beanio.beans.Person" occurs="1+">
+        <field name="id" />
+        <field name="firstName" />
+        <field name="lastName" />
+      </segment>
+    </record>
+  </stream>
+
+  <stream name="stream2" format="csv">
+    <record name="detail" target="map">
+      <segment name="map" collection="map" key="id" target="firstName" occurs="1+">
+        <field name="id" ignore="true" />
+        <field name="firstName" />
+        <field name="lastName" />
+      </segment>
+    </record>
+  </stream>
+
+</beanio>

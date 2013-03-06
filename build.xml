@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!-- 
-    Copyright 2010-2012 Kevin Seim
+    Copyright 2010-2013 Kevin Seim
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -111,7 +111,7 @@
     <javadoc sourcepath="src" destdir="${target}/docs/api" windowtitle="BeanIO 2.0 API" access="protected"
       header="BeanIO ${version}" classpathref="classpath.main">
       <doctitle><![CDATA[<h2>BeanIO 2.0 API</h2>]]></doctitle>
-      <bottom><![CDATA[<i>Copyright &copy; 2010-2012 Kevin Seim</i>]]></bottom>
+      <bottom><![CDATA[<i>Copyright &copy; 2010-2013 Kevin Seim</i>]]></bottom>
       <link href="http://download.oracle.com/javase/6/docs/api/" />
       <link href="http://static.springsource.org/spring-batch/apidocs/" />
       <link href="http://static.springsource.org/spring/docs/2.5.x/api/" />

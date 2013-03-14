@@ -21,7 +21,7 @@ import java.io.*;
 import java.util.*;
 
 import org.beanio.*;
-import org.beanio.parser.*;
+import org.beanio.parser.ParserTest;
 import org.junit.*;
 
 /**
@@ -253,5 +253,27 @@ public class FixedLengthParserTest extends ParserTest {
         finally {
             in.close();
         }
+    }
+    
+    @Test
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void testOverlay() {
+        StringWriter output = new StringWriter();
+        BeanWriter out = factory.createWriter("f8", output);
+        
+        Map map = new HashMap();
+        map.put("number", 3);
+        map.put("name", "LAUREN1");
+        out.write("record1", map);
+        
+        map.clear();
+        map.put("number", 5);
+        out.write("record2", map);
+        
+        out.flush();
+        
+        assertEquals(
+            "003LAUREN1\n" +
+            "0005\n", output.toString());
     }
 }

@@ -1,6 +1,10 @@
 Project BeanIO Change Log
 =========================
 
+Changes in version 2.0.5 (2013-03-13)
+-------------------------------------
+* Fixed a critical bug introduced in 2.0.4 that affects the marshalling of fixed length formatted streams (gc0065)
+
 Changes in version 2.0.4 (2013-03-05)
 -------------------------------------
 * Fixed check for unsatisfied records and groups at EOF (gc0056)

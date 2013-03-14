@@ -45,6 +45,7 @@ public class FixedLengthMarshallingContext extends MarshallingContext {
         super.clear();
         
         committed = 0;
+        entries.clear();
     }
     
     /**

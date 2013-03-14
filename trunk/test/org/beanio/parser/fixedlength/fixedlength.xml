@@ -90,5 +90,18 @@
       <field name="lastName" length="10" keepPadding="true" />
     </record>
   </stream>
+  
+  <stream name="f8" format="fixedlength">
+    <parser>
+      <property name="recordTerminator" value="\n" />
+    </parser>
+    <record name="record1" class="map">
+      <field name="number" type="int" length="3" padding="0" justify="right" />
+      <field name="name" length="7" />
+    </record>
+    <record name="record2" class="map">
+      <field name="number" length="4" required="true" padding="0" justify="right" />
+    </record>
+  </stream>
 
 </beanio>

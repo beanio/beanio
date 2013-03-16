@@ -853,6 +853,14 @@
         </documentation>
       </annotation>
     </attribute>
+    <attribute name="lazy" type="xsd:boolean" use="optional">
+      <annotation>
+        <documentation>
+          Set to true if null is returned for a empty collection or a collection
+          of null and/or empty Strings.
+        </documentation>
+      </annotation>
+    </attribute>
     <attribute name="minOccurs" type="xsd:nonNegativeInteger" use="optional">
       <annotation>
         <documentation>
@@ -1008,7 +1016,7 @@
       <annotation>
         <documentation>
           Set to true if the class should not be instantiated if all attributes
-          are null or empty strings.
+          are null or empty strings, or if the collection is empty.
         </documentation>
       </annotation>
     </attribute>

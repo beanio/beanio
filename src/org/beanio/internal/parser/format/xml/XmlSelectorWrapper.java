@@ -439,8 +439,8 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Parser#isLazy()
      */
-    public boolean isLazy() {
-        return getDelegate().isLazy();
+    public boolean isOptional() {
+        return getDelegate().isOptional();
     }
 
     /*

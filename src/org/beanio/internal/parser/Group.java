@@ -650,7 +650,7 @@ public class Group extends ParserComponent implements Selector {
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Parser#isLazy()
      */
-    public boolean isLazy() {
+    public boolean isOptional() {
         return minOccurs == 0;
     }
     

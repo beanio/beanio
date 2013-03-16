@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Kevin Seim
+ * Copyright 2012-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public class JsonWrapper extends DelegatingParser implements JsonNode {
     private int jsonArrayIndex = -1;
     /* whether the segment may be explicitly set to 'null' */
     private boolean nillable;
-    private boolean lazy;
+    private boolean optional;
     
     /**
      * Constructs a new <tt>JsonWrapper</tt>.
@@ -82,7 +82,7 @@ public class JsonWrapper extends DelegatingParser implements JsonNode {
     public boolean marshal(MarshallingContext context) throws IOException {
         boolean contentChecked = false;
         
-        if (lazy ) {
+        if (optional ) {
             if (!hasContent(context)) {
                 return false;
             }
@@ -172,16 +172,16 @@ public class JsonWrapper extends DelegatingParser implements JsonNode {
      * (non-Javadoc)
      * @see org.beanio.internal.parser.DelegatingParser#isLazy()
      */
-    public boolean isLazy() {
-        return lazy;
+    public boolean isOptional() {
+        return optional;
     }
 
     /**
      * 
      * @param lazy
      */
-    public void setLazy(boolean lazy) {
-        this.lazy = lazy;
+    public void setOptional(boolean optional) {
+        this.optional = optional;
     }
 
     @Override
@@ -196,7 +196,7 @@ public class JsonWrapper extends DelegatingParser implements JsonNode {
         if (jsonArrayIndex >= 0) {
             s.append(", jsonArrayIndex=").append(jsonArrayIndex);
         }
-        s.append(", lazy=").append(lazy);
+        s.append(", optional=").append(optional);
         s.append(", nillable=").append(nillable);
     }
 

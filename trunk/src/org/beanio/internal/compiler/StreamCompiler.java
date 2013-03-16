@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Kevin Seim
+ * Copyright 2010-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import java.io.*;
 import java.util.*;
 
 import org.beanio.BeanIOConfigurationException;
+import org.beanio.builder.StreamBuilder;
 import org.beanio.internal.config.*;
 import org.beanio.internal.config.xml.XmlConfigurationLoader;
 import org.beanio.internal.parser.Stream;
@@ -45,6 +46,24 @@ public class StreamCompiler {
     public StreamCompiler(ClassLoader classLoader) {
         this.classLoader = classLoader;
         this.defaultConfigurationLoader = new XmlConfigurationLoader(classLoader);
+    }
+    
+    /**
+     * Creates a new Stream from its configuration.
+     * @param config the {@link StreamConfig}
+     * @return the built {@link Stream} definition
+     * @throws BeanIOConfigurationException
+     * @since 2.0.5
+     */
+    public Stream build(StreamConfig config) throws BeanIOConfigurationException {
+        TypeHandlerFactory typeHandlerFactory = createTypeHandlerFactory(
+            TypeHandlerFactory.getDefault(), config.getHandlerList());
+        
+        ParserFactory factory = createParserFactory(config.getFormat());
+        factory.setClassLoader(classLoader);
+        factory.setTypeHandlerFactory(typeHandlerFactory);
+        
+        return factory.createStream(config);
     }
 
     /**
@@ -185,28 +204,33 @@ public class StreamCompiler {
                 throw new BeanIOConfigurationException(
                     "Type handler must specify either 'type' or 'name'");
 
-            Object bean;
-            try {
-                bean = BeanUtil.createBean(classLoader, hc.getClassName(), hc.getProperties());
-            }
-            catch (BeanIOConfigurationException ex) {
-                if (hc.getName() != null) {
-                    throw new BeanIOConfigurationException(
-                        "Failed to create type handler named '" + hc.getName() + "'", ex);
+            TypeHandler h = hc.getInstance();
+            
+            if (h == null) {
+                Object bean;
+                try {
+                    bean = BeanUtil.createBean(classLoader, hc.getClassName(), hc.getProperties());
                 }
-                else {
-                    throw new BeanIOConfigurationException(
-                        "Failed to create type handler for type '" + hc.getType() + "'", ex);
+                catch (BeanIOConfigurationException ex) {
+                    if (hc.getName() != null) {
+                        throw new BeanIOConfigurationException(
+                            "Failed to create type handler named '" + hc.getName() + "'", ex);
+                    }
+                    else {
+                        throw new BeanIOConfigurationException(
+                            "Failed to create type handler for type '" + hc.getType() + "'", ex);
+                    }
                 }
+    
+                // validate the configured class is assignable to the target class
+                if (!TypeHandler.class.isAssignableFrom(bean.getClass())) {
+                    throw new BeanIOConfigurationException("Type handler class '" + hc.getClassName() +
+                        "' does not implement TypeHandler interface");
+                }
+                
+                h = (TypeHandler) bean;
             }
 
-            // validate the configured class is assignable to the target class
-            if (!TypeHandler.class.isAssignableFrom(bean.getClass())) {
-                throw new BeanIOConfigurationException("Type handler class '" + hc.getClassName() +
-                    "' does not implement TypeHandler interface");
-            }
-
-            TypeHandler h = (TypeHandler) bean;
             if (hc.getName() != null) {
                 factory.registerHandler(hc.getName(), h);
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,9 +92,9 @@ public class Field extends ParserComponent implements Property {
     
     /*
      * (non-Javadoc)
-     * @see org.beanio.parser.Parser#isLazy()
+     * @see org.beanio.internal.parser.Parser#isOptional()
      */
-    public boolean isLazy() {
+    public boolean isOptional() {
         return format.isLazy();
     }
     

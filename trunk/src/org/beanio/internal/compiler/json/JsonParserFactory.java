@@ -59,7 +59,7 @@ public class JsonParserFactory extends ParserFactorySupport {
         wrapper.setJsonType(JsonNode.ARRAY);
         wrapper.setJsonArrayIndex(config.getJsonArrayIndex());
         wrapper.setNillable(true);
-        wrapper.setLazy(config.getMinOccurs().equals(0));
+        wrapper.setOptional(config.getMinOccurs().equals(0));
         pushParser(wrapper);
         maxDepth++;
         
@@ -81,7 +81,7 @@ public class JsonParserFactory extends ParserFactorySupport {
             wrapper.setJsonType(convertJsonType(config.getJsonType()));
             wrapper.setJsonArrayIndex(config.getJsonArrayIndex());
             wrapper.setNillable(true);
-            wrapper.setLazy(config.getMinOccurs().equals(0));
+            wrapper.setOptional(config.getMinOccurs().equals(0));
             pushParser(wrapper);
             maxDepth++;
         }

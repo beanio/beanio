@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,8 +59,8 @@ public abstract class DelegatingParser extends ParserComponent {
         return getParser().getSize();
     }
 
-    public boolean isLazy() {
-        return getParser().isLazy();
+    public boolean isOptional() {
+        return getParser().isOptional();
     }
     
     public boolean isIdentifier() {

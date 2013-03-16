@@ -44,6 +44,9 @@ public class FlatPreprocessor extends Preprocessor {
     // the list of components at the end of the record following the unbounded component
     private List<PropertyConfig> endComponents = new ArrayList<PropertyConfig>();
     
+    /* stack of non-record segments */
+    private LinkedList<SegmentConfig> segmentStack = new LinkedList<SegmentConfig>();
+    
     /**
      * Constructs a new <tt>FlatPreprocessor</tt>.
      * @param stream
@@ -116,6 +119,14 @@ public class FlatPreprocessor extends Preprocessor {
         }
     }
     
+    @Override
+    protected void initializeSegment(SegmentConfig segment) throws BeanIOConfigurationException {
+        if (segment.getComponentType() == ComponentConfig.SEGMENT) {
+            segmentStack.push(segment);
+        }
+        super.initializeSegment(segment);
+    }
+
     @Override
     protected void finalizeSegment(SegmentConfig segment) {
         super.finalizeSegment(segment);
@@ -276,6 +287,10 @@ public class FlatPreprocessor extends Preprocessor {
             throw new BeanIOConfigurationException("Repeating segments without any child " +
                 "field component must have minOccurs=maxOccurs");
         }
+        
+        if (segment.getComponentType() == ComponentConfig.SEGMENT) {
+            segmentStack.pop();
+        }
     }
     
     //  1,  0 returns 1 (greater than)
@@ -344,6 +359,9 @@ public class FlatPreprocessor extends Preprocessor {
                 "in a record, or for none of them (in which case, all fields must be configured in the " +
                 "order they will appear in the stream)");
         }
+        if (field.getPosition() != null) {
+            field.setPosition(field.getPosition() + getSegmentOffset());
+        }
         if (field.getPosition() == null) {
             calculateDefaultPosition(field);
         }
@@ -357,6 +375,16 @@ public class FlatPreprocessor extends Preprocessor {
                     "a position relative to the end of the record)");
             }
         }
+    }
+    
+    private int getSegmentOffset() {
+        int offset = 0;
+        for (SegmentConfig s : segmentStack) {
+            if (s.getPosition() != null) {
+                offset += s.getPosition();
+            }
+        }
+        return offset;
     }
     
     private boolean isVariableSized(FieldConfig config) {

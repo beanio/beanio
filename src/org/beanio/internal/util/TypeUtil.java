@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Kevin Seim
+ * Copyright 2010-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -236,6 +236,29 @@ public class TypeUtil {
         catch (ClassNotFoundException ex) {
             return null;
         }
+    }
+    
+    public static Class<?> toBeanType(ClassLoader classLoader, String type) {
+        // determine the bean class associated with this record
+        Class<?> beanClass = null;
+        if (type != null) {
+            if ("map".equals(type)) {
+                beanClass = LinkedHashMap.class;
+            }
+            else if ("list".equals(type) || "collection".equals(type)) {
+                beanClass = ArrayList.class;
+            }
+            else if ("set".equals(type)) {
+                beanClass = LinkedHashSet.class;
+            }
+            else {
+                try {
+                    beanClass = classLoader.loadClass(type);
+                }
+                catch (ClassNotFoundException ex) { }
+            }
+        }
+        return beanClass;
     }
     
     private static interface ArrayCollection extends Collection<Object> { }

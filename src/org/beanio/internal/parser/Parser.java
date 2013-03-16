@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,5 +106,5 @@ public interface Parser {
      * Returns whether this node must exist during unmarshalling.
      * @return true if this node is optional during unmarshalling, false otherwise
      */
-    public boolean isLazy();
+    public boolean isOptional();
 }

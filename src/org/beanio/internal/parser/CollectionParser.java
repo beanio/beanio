@@ -133,7 +133,7 @@ public class CollectionParser extends Aggregation {
     public boolean unmarshal(UnmarshallingContext context) {
         Parser delegate = getParser();
         
-        Collection<Object> collection = createCollection();
+        Collection<Object> collection = lazy ? null : createCollection();
         
         boolean invalid = false;
         int count = 0;
@@ -156,9 +156,13 @@ public class CollectionParser extends Aggregation {
                 if (fieldValue == Value.INVALID) {
                     invalid = true;
                 }
-                // the field value may still be missing if 'lazy' is true on a child segment
+                // the field value may still be missing if 'optional' is true on a child segment
                 else if (fieldValue != Value.MISSING) {
-                    if (collection != null) {
+                    boolean add = lazy ? fieldValue != null && !"".equals(fieldValue) : true;
+                    if (add) {
+                        if (collection == null) {
+                            collection = createCollection();
+                        }
                         collection.add(fieldValue);
                     }
                 }
@@ -324,12 +328,5 @@ public class CollectionParser extends Aggregation {
     public boolean hasContent(ParsingContext context) {
         Collection<Object> collection = getCollection(context);
         return collection != null && collection.size() > 0; 
-    }
-    
-    @Override
-    protected void toParamString(StringBuilder s) {
-        super.toParamString(s);
-        s.append(", minOccurs=").append(minOccurs);
-        s.append(", maxOccurs=").append(maxOccurs);
     }
 }

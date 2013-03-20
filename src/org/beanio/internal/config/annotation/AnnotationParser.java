@@ -26,18 +26,19 @@ import org.beanio.internal.config.*;
 import org.beanio.internal.util.TypeUtil;
 
 /**
- * This factory class builds component configurations from annotated classes.
+ * Factory class for building component configurations from annotated classes.
  * 
  * @author Kevin Seim
- * @since 2.0.5
+ * @since 2.1.0
  */
 public class AnnotationParser {
 
     /**
-     * 
-     * @param classLoader
-     * @param type
-     * @return
+     * Creates a {@link RecordConfig} from the given type, if the type is annotated
+     * using {@link Record}.
+     * @param classLoader the classloader to load the type
+     * @param type the type name
+     * @return the {@link RecordConfig} or null if the type was not annotated
      */
     public static RecordConfig createRecordConfig(ClassLoader classLoader, String type) {
         Class<?> clazz = TypeUtil.toBeanType(classLoader, type);
@@ -48,9 +49,10 @@ public class AnnotationParser {
     }
     
     /**
-     * 
-     * @param clazz
-     * @return
+     * Creates a {@link RecordConfig} from the given type, if the type is annotated
+     * using {@link Record}.
+     * @param clazz the object {@link Class}
+     * @return the {@link RecordConfig} or null if the class was not annotated
      */
     public static RecordConfig createRecordConfig(Class<?> clazz) {
         Record record = clazz.getAnnotation(Record.class);
@@ -75,7 +77,13 @@ public class AnnotationParser {
         rc.setXmlName(toXmlValue(record.xmlName()));
         rc.setXmlNamespace(toXmlValue(record.xmlNamespace()));
         rc.setXmlPrefix(toXmlValue(record.xmlPrefix()));
-        rc.setNillable(record.nillable());
+        
+        Fields fields = clazz.getAnnotation(Fields.class);
+        if (fields != null) {
+            for (Field field : fields.value()) {
+                rc.add(createField(null, field));
+            }
+        }
         
         addAllChildren(rc, clazz);
         return rc;
@@ -105,15 +113,15 @@ public class AnnotationParser {
     private static void addChildren(ComponentConfig config, Class<?> parent) {
         
         for (java.lang.reflect.Field field : parent.getDeclaredFields()) {
-            
             Field fa = field.getAnnotation(Field.class);
             Segment sa = field.getAnnotation(Segment.class);
             if (fa == null && sa == null) {
                 continue;
             }
             if (fa != null && sa != null) {
-                throw new BeanIOConfigurationException("Cannot be annotated with both " +
-                    "@Field and @Segment");
+                throw new BeanIOConfigurationException("Field '" + field.getName() +
+                    "' on class '" + parent.getName() + "' cannot be annotated with " +
+                    "both @Field and @Segment");
             }
             
             TypeInfo info = new TypeInfo();
@@ -122,14 +130,22 @@ public class AnnotationParser {
             info.genericType = field.getGenericType();
             
             PropertyConfig child;
-            if (fa != null) { // field
-                child = createField(info, fa);
+            try {
+                if (fa != null) { // field
+                    child = createField(info, fa);
+                }
+                else { // segment
+                    child = createSegment(info, sa, field.getAnnotation(Fields.class));
+                }
             }
-            else { // segment
-                child = createSegment(info, sa);
+            catch (IllegalArgumentException ex) {
+                throw new BeanIOConfigurationException("Invalid annotation for field '" +
+                    field.getName() + "' on class '" + parent.getName() + "': " + ex.getMessage(), ex);
             }
+            
             config.add(child);
         }
+
         
         for (Method method : parent.getDeclaredMethods()) {
             Field fa = method.getAnnotation(Field.class);
@@ -138,8 +154,9 @@ public class AnnotationParser {
                 continue;
             }
             if (fa != null && sa != null) {
-                throw new BeanIOConfigurationException("Cannot be annotated with both " +
-                    "@Field and @Segment");
+                throw new BeanIOConfigurationException("Method '" + method.getName() + 
+                    "' on class '" + parent.getName() + "' cannot be annotated with " +
+                    "both @Field and @Segment");
             }
             
             Class<?> clazz;
@@ -174,7 +191,8 @@ public class AnnotationParser {
                 }
             }
             else {
-                throw new BeanIOConfigurationException("Method cannot be annotated");
+                throw new BeanIOConfigurationException("Method '" + method.getName() + 
+                    "' on class '" + parent.getName() + "' is not a valid getter or setter");
             }
             
             name = Introspector.decapitalize(name);
@@ -187,21 +205,28 @@ public class AnnotationParser {
             info.setter = setter;
             
             PropertyConfig child;
-            if (fa != null) { // field
-                child = createField(info, fa);
+            try {
+                if (fa != null) { // field
+                    child = createField(info, fa);
+                }
+                else { // segment
+                    child = createSegment(info, sa, method.getAnnotation(Fields.class));
+                }
             }
-            else { // segment
-                child = createSegment(info, sa);
+            catch (IllegalArgumentException ex) {
+                throw new BeanIOConfigurationException("Invalid annotation for method '" +
+                    method.getName() + "' on class '" + parent.getName() + "': " + ex.getMessage(), ex);
             }
+            
             config.add(child);
         }
     }
     
-    private static SegmentConfig createSegment(TypeInfo info, Segment sa) {
+    private static SegmentConfig createSegment(TypeInfo info, Segment sa, Fields fields) {
         updateTypeInfo(info, sa.type(), sa.collection());
         
         if (info.propertyType == String.class) {
-            throw new BeanIOConfigurationException("Cannot determine class type");
+            throw new IllegalArgumentException("type is undefined");
         }
         
         SegmentConfig sc = new SegmentConfig();
@@ -219,7 +244,7 @@ public class AnnotationParser {
         sc.setPosition(toValue(sa.at()));
         sc.setUntil(toValue(sa.until()));
         sc.setMinOccurs(toValue(sa.minOccurs()));
-        sc.setMaxOccurs(toValue(sa.maxOccurs()));
+        sc.setMaxOccurs(toUnboundedValue(sa.maxOccurs()));
         sc.setLazy(sa.lazy());
         sc.setXmlType(sa.xmlType().toValue());
         sc.setXmlName(toXmlValue(sa.xmlName()));
@@ -227,40 +252,69 @@ public class AnnotationParser {
         sc.setXmlPrefix(toXmlValue(sa.xmlPrefix()));
         sc.setNillable(sa.nillable());
         
+        if (sc.getName() == null) {
+            throw new IllegalArgumentException("name is undefined");
+        }
+        
+        if (fields != null) {
+            for (Field field : fields.value()) {
+                sc.add(createField(null, field));
+            }
+        }
+        
         addAllChildren(sc, info.propertyType);
         
         return sc;
     }
     
+    /**
+     * Creates a new field configuration.
+     * @param info the reflected property information, or null if not bound to a field
+     * @param fa the field annotation
+     * @return the field configuration
+     */
     private static FieldConfig createField(TypeInfo info, Field fa) {
-        updateTypeInfo(info, fa.type(), fa.collection());
-        
         FieldConfig fc = new FieldConfig();
-        fc.setName(info.name);
-        fc.setType(info.propertyName);
-        fc.setCollection(info.collectionName);
-        fc.setBound(true);
+        
+        if (info != null) {
+            updateTypeInfo(info, fa.type(), fa.collection());
+            
+            fc.setName(info.name);
+            fc.setType(info.propertyName);
+            fc.setCollection(info.collectionName);
+            fc.setBound(true);
+            
+            fc.setGetter(toValue(fa.getter()));
+            if (fc.getGetter() == null) {
+                fc.setGetter(info.getter);
+            }
+            
+            fc.setSetter(toValue(fa.setter()));
+            if (fc.getSetter() == null) {
+                fc.setSetter(info.setter);
+            }
+        }
+        else {
+            fc.setName(toValue(fa.name()));
+            fc.setBound(false);
+        }
+        if (fc.getName() == null) {
+            throw new IllegalArgumentException("name is undefined");
+        }
+        
         fc.setLiteral(toValue(fa.literal()));
         fc.setPosition(toValue(fa.at()));
         fc.setUntil(toValue(fa.until()));
         fc.setRegex(toValue(fa.regex()));
         fc.setFormat(toValue(fa.format()));
-        fc.setGetter(toValue(fa.getter()));
-        if (fc.getGetter() == null) {
-            fc.setGetter(info.getter);
-        }
-        fc.setSetter(toValue(fa.setter()));
-        if (fc.getSetter() == null) {
-            fc.setSetter(info.setter);
-        }
         fc.setRequired(fa.required());
         fc.setIdentifier(fa.rid());
         fc.setTrim(fa.trim());
         fc.setLazy(fa.lazy());
         fc.setMinLength(toValue(fa.minLength()));
-        fc.setMaxLength(toValue(fa.maxLength()));
+        fc.setMaxLength(toUnboundedValue(fa.maxLength()));
         fc.setMinOccurs(toValue(fa.minOccurs()));
-        fc.setMaxOccurs(toValue(fa.maxOccurs()));
+        fc.setMaxOccurs(toUnboundedValue(fa.maxOccurs()));
         
         fc.setLength(toValue(fa.length()));
         if (fa.padding() >= Character.MIN_VALUE && fa.padding() <= Character.MAX_VALUE) {
@@ -296,47 +350,66 @@ public class AnnotationParser {
         String setter;
     }
     
+    /**
+     * 
+     * @param info the type information obtained via reflection
+     * @param annotatedType the configured type from the annotation
+     * @param annotatedCollection the configured collectionType from the annotation
+     */
     private static void updateTypeInfo(TypeInfo info, Class<?> annotatedType, Class<?> annotatedCollection) {
 
+        annotatedType = toValue(annotatedType);
+        
         String propertyName = null;
         String collectionName = null;
         Class<?> propertyType = info.type;
         
         if (propertyType.isArray()) {
-            propertyType = propertyType.getComponentType();
-            if (propertyType.isPrimitive()) {
-                propertyType = TypeUtil.toWrapperClass(propertyType);
+            if (annotatedType != null) {
+                propertyType = annotatedType;
+            }
+            else {
+                propertyType = propertyType.getComponentType();
+                if (propertyType.isPrimitive()) {
+                    propertyType = TypeUtil.toWrapperClass(propertyType);
+                }
             }
             collectionName = "array";
         }
         else if (Map.class.isAssignableFrom(propertyType)) {
-            throw new BeanIOConfigurationException("java.util.Map is not currently supported by annotation");
+            throw new IllegalArgumentException("java.util.Map is not currently supported");
         }
         else if (Collection.class.isAssignableFrom(propertyType)) {
             Class<?> collectionType = toValue(annotatedCollection);
             if (collectionType == null) {
                 collectionType = propertyType;
+                propertyType = null;
             }
             
             if (annotatedType != null) {
-                propertyType = toValue(annotatedType);
+                propertyType = annotatedType;
             }
-            if (propertyType == null) {
+            else {
                 if (info.genericType instanceof ParameterizedType) {
                     ParameterizedType pt = (ParameterizedType) info.genericType;
                     if (pt.getActualTypeArguments().length > 0) {
                         propertyType = (Class<?>) pt.getActualTypeArguments()[0];
                     }
                 }
-            }
-            if (propertyType == null) {
-                propertyType = String.class;
+                if (propertyType == null) {
+                    propertyType = String.class;
+                }
             }
             
             collectionName = collectionType.getName();
         }
-        else if (propertyType.isPrimitive()) {
-            propertyType = TypeUtil.toWrapperClass(propertyType);
+        else {
+            if (annotatedType != null) {
+                propertyType = annotatedType;
+            }
+            else if (propertyType.isPrimitive()) {
+                propertyType = TypeUtil.toWrapperClass(propertyType);
+            }
         }
         
         if (propertyName == null) {
@@ -355,7 +428,18 @@ public class AnnotationParser {
     
     private static Integer toValue(int n) {
         return n == Integer.MIN_VALUE ? null : n;
-    }    
+    }
+    
+    private static Integer toUnboundedValue(int n) {
+        Integer val = toValue(n);
+        if (val == null) {
+            return null;
+        }
+        if (val.compareTo(0) < 0) {
+            return Integer.MAX_VALUE;
+        }
+        return val;
+    }
     
     private static String toValue(String s) {
         return "".equals(s) ? null : s;

@@ -165,4 +165,13 @@ public class XmlAttributeField extends XmlFieldFormat {
     public boolean isRepeating() {
         return false;
     }
+    
+    @Override
+    public void toParamString(StringBuilder s) {
+        super.toParamString(s);
+        s.append(", localName=").append(localName);
+        s.append(", xmlns=");
+        s.append(isNamespaceAware() ? namespace : "*");
+        s.append(", prefix=").append(prefix);
+    }
 }

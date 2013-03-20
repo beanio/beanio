@@ -133,7 +133,7 @@ abstract class PropertyBuilderSupport<T extends PropertyBuilderSupport<T>> {
      * @return this
      */
     public T xmlType(XmlType xmlType) {
-        getConfig().setXmlName(xmlType == null ? null : xmlType.toValue());
+        getConfig().setXmlType(xmlType == null ? null : xmlType.toValue());
         return me();
     }
     

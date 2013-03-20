@@ -31,6 +31,12 @@ import org.beanio.types.TypeHandler;
 public @interface Field {
     
     /**
+     * The field name.
+     * @return the field name
+     */
+    String name() default "";
+    
+    /**
      * Sets the position of the field.
      * @return the position
      */

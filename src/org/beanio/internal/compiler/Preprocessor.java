@@ -15,6 +15,8 @@
  */
 package org.beanio.internal.compiler;
 
+import java.util.Comparator;
+
 import org.beanio.BeanIOConfigurationException;
 import org.beanio.internal.config.*;
 import org.beanio.internal.util.Settings;
@@ -30,6 +32,7 @@ import org.beanio.internal.util.Settings;
 public class Preprocessor extends ProcessorSupport {
 
     private static final Settings settings = Settings.getInstance();
+    private static final boolean SORT_XML_COMPONENTS = settings.getBoolean(Settings.SORT_XML_COMPONENTS_BY_POSITION);
     
     protected StreamConfig stream;
     protected PropertyConfig propertyRoot;
@@ -67,6 +70,55 @@ public class Preprocessor extends ProcessorSupport {
      */
     protected void finalizeStream(StreamConfig stream) throws BeanIOConfigurationException { 
         finalizeGroup(stream);
+        
+        boolean sorted = true;
+        if ("xml".equals(stream.getFormat()) && !SORT_XML_COMPONENTS) {
+            sorted = false;
+        }
+        
+        if (sorted) {
+            stream.sort(new Comparator<ComponentConfig>() {
+                public int compare(ComponentConfig c1, ComponentConfig c2) {
+                    Integer p1 = getPosition(c1);
+                    Integer p2 = getPosition(c2);
+                    
+                    if (p1 == null) {
+                        if (p2 == null) {
+                            return 0;
+                        }
+                        else {
+                            return 1;
+                        }
+                    }
+                    else if (p2 == null) {
+                        return -1;
+                    }
+                    else {
+                        return p1.compareTo(p2);
+                    }
+                }
+                
+                private Integer getPosition(ComponentConfig c) {
+                    Integer p = null;
+                    switch (c.getComponentType()) {
+                    case ComponentConfig.FIELD:
+                    case ComponentConfig.SEGMENT:
+                        p = ((PropertyConfig)c).getPosition();
+                        break;
+                    case ComponentConfig.RECORD:
+                        p = ((RecordConfig)c).getOrder();
+                        break;
+                    case ComponentConfig.GROUP:
+                        p = ((GroupConfig)c).getOrder();
+                        break;
+                    }
+                    if (p != null && p.compareTo(0) < 0) {
+                        p = Integer.MAX_VALUE + p;
+                    }
+                    return p;
+                }
+            });
+        }
     }
     
     /**

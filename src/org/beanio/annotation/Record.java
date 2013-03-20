@@ -20,7 +20,8 @@ import java.lang.annotation.*;
 import org.beanio.builder.XmlType;
 
 /**
- * 
+ * Record annotation for classes, and for fields and methods in class
+ * annotated by Group.
  * 
  * @author Kevin Seim
  * @since 2.1.0
@@ -30,8 +31,8 @@ import org.beanio.builder.XmlType;
 public @interface Record {
 
     /**
-     * TODO not currently used
-     * @return
+     * The record name.
+     * @return the record name
      */
     String name() default "";
     
@@ -57,7 +58,7 @@ public @interface Record {
     /**
      * The collection type for repeating records bound to a group class, if
      * it cannot be determined from the annotated field or method declaration.
-     * @return
+     * @return the collection type
      */
     Class<?> collection() default Void.class;
     
@@ -126,10 +127,4 @@ public @interface Record {
      * @return the namespace URI
      */
     String xmlNamespace() default AnnotationConstants.UNDEFINED;
-    
-    /**
-     * Whether the element is nillable.
-     * @return true if nillable, false otherwise
-     */
-    boolean nillable() default false;
 }

@@ -9,7 +9,6 @@ public class AnnotatedRoom {
     private Object light;
     
     @Field(at=5)
-    @Segment(at=6)
     public String name;
     
     private AnnotatedFloor floor;

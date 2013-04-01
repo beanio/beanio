@@ -94,7 +94,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         // calculate the heap size
         stream.init();
         
-        ((TreeNode)stream.getLayout()).print();
+        //((TreeNode)stream.getLayout()).print();
         
         return stream;
     }
@@ -737,6 +737,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         field.setIdentifier(config.isIdentifier());
         field.setRequired(config.isRequired());
         field.setTrim(config.isTrim());
+        field.setNullIfEmpty(config.isNullIfEmpty());
         field.setLiteral(config.getLiteral());
         field.setMinLength(config.getMinLength());
         field.setMaxLength(config.getMaxLength());

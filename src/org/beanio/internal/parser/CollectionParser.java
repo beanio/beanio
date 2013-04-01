@@ -239,14 +239,6 @@ public class CollectionParser extends Aggregation {
     public Class<? extends Collection<Object>> getType() {
         return type;
     }
-    
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Property#getNullValue()
-     */
-    public Object getNullValue() {
-        return createCollection();
-    }
 
     /*
      * (non-Javadoc)

@@ -310,6 +310,7 @@ public class AnnotationParser {
         fc.setRequired(fa.required());
         fc.setIdentifier(fa.rid());
         fc.setTrim(fa.trim());
+        fc.setNullIfEmpty(fa.nullIfEmpty());
         fc.setLazy(fa.lazy());
         fc.setMinLength(toValue(fa.minLength()));
         fc.setMaxLength(toUnboundedValue(fa.maxLength()));

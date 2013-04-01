@@ -40,7 +40,7 @@ public @interface Field {
      * Sets the position of the field.
      * @return the position
      */
-    int at() default Integer.MIN_VALUE;
+    int at();
     
     /**
      * Sets the maximum position of a field that repeats for
@@ -115,6 +115,12 @@ public @interface Field {
      * @return true to trim, false otherwise
      */
     boolean trim() default false;
+    
+    /**
+     * Whether empty strings are converted to null before type conversion.
+     * @return true to convert empty strings to null
+     */
+    boolean nullIfEmpty() default false;
     
     /**
      * Whether the field is used to identify the record.

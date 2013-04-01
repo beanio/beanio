@@ -42,6 +42,7 @@ public class FieldConfig extends SimplePropertyConfig {
     private Integer maxLength; // set to -1 for unbounded
     private boolean trim;
     private boolean required;
+    private boolean nullIfEmpty;
     
     private Integer length;
     private String defaultValue;
@@ -131,6 +132,24 @@ public class FieldConfig extends SimplePropertyConfig {
      */
     public void setTrim(boolean trim) {
         this.trim = trim;
+    }
+    
+    /**
+     * Returns whether empty strings are converted to null before type handling.
+     * @return true if empty strings are converted to null
+     * @since 2.1.0
+     */
+    public boolean isNullIfEmpty() {
+        return nullIfEmpty;
+    }
+
+    /**
+     * Sets whether empty strings are converted to null before type handling.
+     * @param nullIfEmpty true if empty strings are converted to null
+     * @since 2.1.0
+     */
+    public void setNullIfEmpty(boolean nullIfEmpty) {
+        this.nullIfEmpty = nullIfEmpty;
     }
 
     /**

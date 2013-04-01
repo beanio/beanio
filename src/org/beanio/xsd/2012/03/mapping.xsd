@@ -820,6 +820,13 @@
         </documentation>
       </annotation>
     </attribute>
+    <attribute name="nullIfEmpty" type="xsd:boolean" use="optional">
+      <annotation>
+        <documentation>
+          Set to 'true' to convert empty string values to null before type conversion.
+        </documentation>
+      </annotation>
+    </attribute>
     <attribute name="length" type="tns:limit" use="optional">
       <annotation>
         <documentation>

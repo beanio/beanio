@@ -77,11 +77,20 @@ public class FieldBuilder extends PropertyBuilderSupport<FieldBuilder> {
     }
     
     /**
-     * Indicates the field text should be trimmed before validation and type handling.
+     * Indicates the field text should be trimmed before validation and type conversion.
      * @return this {@link FieldBuilder}
      */
     public FieldBuilder trim() {
         config.setTrim(true);
+        return this;
+    }
+    
+    /**
+     * Indicates the empty field text should be converted to null before type conversion.
+     * @return this {@link FieldBuilder}
+     */
+    public FieldBuilder nullIfEmpty() {
+        config.setNullIfEmpty(true);
         return this;
     }
     

@@ -686,6 +686,7 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         config.setDefault(getOptionalAttribute(element, "default"));
         config.setRequired(getBooleanAttribute(element, "required", config.isRequired()));
         config.setTrim(getBooleanAttribute(element, "trim", config.isTrim()));
+        config.setNullIfEmpty(getBooleanAttribute(element, "nullIfEmpty", config.isNullIfEmpty()));
         config.setLazy(getBooleanAttribute(element, "lazy", config.isLazy()));
         config.setIdentifier(getBooleanAttribute(element, "rid", 
             config.isIdentifier()));

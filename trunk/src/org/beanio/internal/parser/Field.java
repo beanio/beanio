@@ -44,6 +44,7 @@ public class Field extends ParserComponent implements Property {
     /* validation settings */
     private boolean trim;
     private boolean required;
+    private boolean nullIfEmpty;
     private int minLength = 0;
     private int maxLength = Integer.MAX_VALUE;
     private String literal = null;
@@ -257,9 +258,14 @@ public class Field extends ParserComponent implements Property {
                 return Value.INVALID;
             }
         }
-        // trim before validation if configured
-        else if (trim) {
-            text = text.trim();
+        else {
+            // trim before validation if configured
+            if (trim) {
+                text = text.trim();     
+            }
+            if (nullIfEmpty && text.length() == 0) {
+                text = null;
+            }
         }
         
         // check if field exists
@@ -272,9 +278,6 @@ public class Field extends ParserComponent implements Property {
             // return the default value if set
             else if (defaultValue != null) {
                 return defaultValue;
-            }
-            else if (text == null) {
-                return Value.MISSING;
             }
         }
         else {
@@ -484,6 +487,14 @@ public class Field extends ParserComponent implements Property {
 
     public void setRequired(boolean required) {
         this.required = required;
+    }
+
+    public boolean isNullIfEmpty() {
+        return nullIfEmpty;
+    }
+
+    public void setNullIfEmpty(boolean nullIfEmpty) {
+        this.nullIfEmpty = nullIfEmpty;
     }
 
     public int getMinLength() {

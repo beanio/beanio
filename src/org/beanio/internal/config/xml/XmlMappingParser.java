@@ -638,7 +638,7 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         if (hasAttribute(element, "value")) {
             config.setTarget(getAttribute(element, "value"));
             if (hasAttribute(element, "target")) {
-                throw new BeanIOConfigurationException("Only one 'value' or 'target' can be configured");
+                throw new BeanIOConfigurationException("Only one of 'value' or 'target' can be configured");
             }
         }
         else {
@@ -658,7 +658,13 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         populatePropertyConfig(config, element);
         
         // adjust the position by the configured include offset
-        Integer position = getIntegerAttribute(element, "position");
+        Integer position = getIntegerAttribute(element, "at");
+        if (position == null) {
+            position = getIntegerAttribute(element, "position");
+        }
+        else if (getIntegerAttribute(element, "position") != null) {
+            throw new BeanIOConfigurationException ("Only one of 'position' or 'at' can be configured");
+        }
         if (position != null) {
             if (position >= 0) {
                 position += getPositionOffset();

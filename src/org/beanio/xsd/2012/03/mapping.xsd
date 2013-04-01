@@ -720,7 +720,15 @@
       <annotation>
         <documentation>
           Field position beginning at 0.  A negative number is relative to
-          the end of the record.
+          the end of the record.  Same as 'at'.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="at" type="xsd:int" use="optional">
+      <annotation>
+        <documentation>
+          Field position beginning at 0.  A negative number is relative to
+          the end of the record.  Same as 'position'.
         </documentation>
       </annotation>
     </attribute>

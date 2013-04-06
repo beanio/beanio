@@ -43,7 +43,6 @@ public abstract class PropertyConfig extends ComponentConfig {
     private String setter;
     private boolean bound;
     private boolean identifier;
-    private boolean lazy;
     
     private Integer position;
     private Integer until;
@@ -145,26 +144,6 @@ public abstract class PropertyConfig extends ComponentConfig {
     }
     
     /**
-     * Returns whether the class assigned to this segment should only be instantiated
-     * if at least one child element is not null or the empty string, or if null should
-     * be returned for an empty collection.
-     * @return whether this component is lazy
-     */
-    public boolean isLazy() {
-        return lazy;
-    }
-
-    /**
-     * Sets whether the property assigned to this segment should only be instantiated
-     * if at least one child element is not null or the empty string, or if null should
-     * be returned instead for an empty collection.
-     * @param lazy the new lazy value
-     */
-    public void setLazy(boolean lazy) {
-        this.lazy = lazy;
-    }
-    
-    /**
      * Returns the position of this component.  A negative number is
      * counted from the end of the record (e.g. -1 is the last field
      * in the record).  
@@ -237,8 +216,6 @@ public abstract class PropertyConfig extends ComponentConfig {
     public void setCollection(String collection) {
         this.collection = collection;
     }
-
-
 
     /**
      * Returns the minimum number of times this component must appear in the stream.
@@ -467,6 +444,10 @@ public abstract class PropertyConfig extends ComponentConfig {
     
     @Override
     protected boolean isSupportedChild(ComponentConfig child) {
+        return false;
+    }
+    
+    public boolean isLazy() {
         return false;
     }
 }

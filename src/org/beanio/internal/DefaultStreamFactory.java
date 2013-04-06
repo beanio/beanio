@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Kevin Seim
+ * Copyright 2010-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.beanio.*;
-import org.beanio.builder.StreamBuilder;
 import org.beanio.internal.compiler.StreamCompiler;
 import org.beanio.internal.parser.Stream;
 
@@ -48,11 +47,6 @@ public class DefaultStreamFactory extends StreamFactory {
         this.compiler = new StreamCompiler(getClassLoader());
     }
 
-    @Override
-    public void define(StreamBuilder builder) {
-        addStream(compiler.build(builder.build()));
-    }
-    
     @Override
     public void load(InputStream in, Properties properties) throws IOException, BeanIOConfigurationException {
         Collection<Stream> streams = compiler.loadMapping(in, properties);

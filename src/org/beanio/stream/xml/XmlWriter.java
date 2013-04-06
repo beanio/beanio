@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2013 Kevin Seim
+ * Copyright 2011-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -225,9 +225,9 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
         
         String name = element.getLocalName();
         String prefix = element.getPrefix();
-        String namespace = element.getNamespaceURI();
         
         boolean ignoreNamespace = false;
+        String namespace = element.getNamespaceURI();
         if (namespace == null) {
             if (Boolean.TRUE.equals(element.getUserData(IS_NAMESPACE_IGNORED))) {
                 prefix = null;
@@ -327,12 +327,6 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
         // write attributes
         Set<String> attPrefixSet = null;
         NamedNodeMap map = element.getAttributes();
-        if (map.getLength() > 0) {
-            if (pendingStackUpdate) {
-                push(namespace, prefix, name);
-                pendingStackUpdate = false;
-            }
-        }
         for (int i=0,j=map.getLength(); i<j; i++) {
             Attr att = (Attr) map.item(i);
             String attName = att.getLocalName();

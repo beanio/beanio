@@ -17,8 +17,6 @@ package org.beanio.internal.config;
 
 import java.util.*;
 
-import org.beanio.stream.RecordParserFactory;
-
 /**
  * A stream is the root (a.k.a top or parent) group of a stream mapping configuration.  
  * As such, it contains other attributes that apply to the entire stream.
@@ -46,7 +44,7 @@ public class StreamConfig extends GroupConfig {
     private boolean ignoreUnidentifiedRecords = false;
     
     private List<TypeHandlerConfig> handlerList = new ArrayList<TypeHandlerConfig>();
-    private BeanConfig<RecordParserFactory> parserFactory;
+    private BeanConfig parserFactory;
 
     /**
      * Constructs a new <tt>StreamConfig</tt>.
@@ -139,7 +137,7 @@ public class StreamConfig extends GroupConfig {
      * Returns the record parser factory configuration bean.
      * @return the record parser factory configuration bean.
      */
-    public BeanConfig<RecordParserFactory> getParserFactory() {
+    public BeanConfig getParserFactory() {
         return parserFactory;
     }
 
@@ -147,7 +145,7 @@ public class StreamConfig extends GroupConfig {
      * Sets the record parser factory configuration bean.
      * @param parserFactory the record parser factory configuration bean
      */
-    public void setParserFactory(BeanConfig<RecordParserFactory> parserFactory) {
+    public void setParserFactory(BeanConfig parserFactory) {
         this.parserFactory = parserFactory;
     }
 

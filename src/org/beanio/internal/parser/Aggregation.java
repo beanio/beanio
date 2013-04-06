@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Kevin Seim
+ * Copyright 2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,6 @@ public abstract class Aggregation extends DelegatingParser implements Property, 
     protected int maxOccurs = Integer.MAX_VALUE;
     // the property accessor, may be null if not bound
     private PropertyAccessor accessor;
-    // true if null should be returned for an empty collection
-    protected boolean lazy;
     
     /**
      * Constructs a new <tt>Aggregation</tt>.
@@ -45,7 +43,7 @@ public abstract class Aggregation extends DelegatingParser implements Property, 
     public abstract boolean isProperty();
     
     @Override
-    public boolean isOptional() {
+    public boolean isLazy() {
         return minOccurs == 0;
     }
     
@@ -96,21 +94,5 @@ public abstract class Aggregation extends DelegatingParser implements Property, 
 
     public void setMaxOccurs(int maxOccurs) {
         this.maxOccurs = maxOccurs;
-    }
-
-    public boolean isLazy() {
-        return lazy;
-    }
-
-    public void setLazy(boolean lazy) {
-        this.lazy = lazy;
-    }
-    
-    @Override
-    protected void toParamString(StringBuilder s) {
-        super.toParamString(s);
-        s.append(", minOccurs=").append(minOccurs);
-        s.append(", maxOccurs=").append(maxOccurs);
-        s.append(", lazy=").append(lazy);
     }
 }

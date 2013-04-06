@@ -720,15 +720,7 @@
       <annotation>
         <documentation>
           Field position beginning at 0.  A negative number is relative to
-          the end of the record.  Same as 'at'.
-        </documentation>
-      </annotation>
-    </attribute>
-    <attribute name="at" type="xsd:int" use="optional">
-      <annotation>
-        <documentation>
-          Field position beginning at 0.  A negative number is relative to
-          the end of the record.  Same as 'position'.
+          the end of the record.
         </documentation>
       </annotation>
     </attribute>
@@ -820,13 +812,6 @@
         </documentation>
       </annotation>
     </attribute>
-    <attribute name="nullIfEmpty" type="xsd:boolean" use="optional">
-      <annotation>
-        <documentation>
-          Set to 'true' to convert empty string values to null before type conversion.
-        </documentation>
-      </annotation>
-    </attribute>
     <attribute name="length" type="tns:limit" use="optional">
       <annotation>
         <documentation>
@@ -865,14 +850,6 @@
           The type of collection for repeating fields.  May be set to any
           collection class name or one of the following: 'array', 'list',
           or 'set'.
-        </documentation>
-      </annotation>
-    </attribute>
-    <attribute name="lazy" type="xsd:boolean" use="optional">
-      <annotation>
-        <documentation>
-          Set to true if null is returned for a empty collection or a collection
-          of null and/or empty Strings.
         </documentation>
       </annotation>
     </attribute>
@@ -1031,7 +1008,7 @@
       <annotation>
         <documentation>
           Set to true if the class should not be instantiated if all attributes
-          are null or empty strings, or if the collection is empty.
+          are null or empty strings.
         </documentation>
       </annotation>
     </attribute>

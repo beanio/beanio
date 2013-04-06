@@ -185,7 +185,7 @@ public class XmlWrapper extends DelegatingParser implements XmlNode {
         this.repeating = repeating;
     }
     
-    public boolean isOptional() {
+    public boolean isLazy() {
         return lazy;
     }
 

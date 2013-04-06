@@ -91,7 +91,6 @@ public abstract class XmlFieldFormat implements FieldFormat, XmlNode {
                 fieldText = padding.unpad(fieldText);
             }
         }
-        
         return fieldText;
     }
     

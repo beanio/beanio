@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2013 Kevin Seim
+ * Copyright 2011-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,6 @@ public class Field extends ParserComponent implements Property {
     /* validation settings */
     private boolean trim;
     private boolean required;
-    private boolean nullIfEmpty;
     private int minLength = 0;
     private int maxLength = Integer.MAX_VALUE;
     private String literal = null;
@@ -93,9 +92,9 @@ public class Field extends ParserComponent implements Property {
     
     /*
      * (non-Javadoc)
-     * @see org.beanio.internal.parser.Parser#isOptional()
+     * @see org.beanio.parser.Parser#isLazy()
      */
-    public boolean isOptional() {
+    public boolean isLazy() {
         return format.isLazy();
     }
     
@@ -258,14 +257,9 @@ public class Field extends ParserComponent implements Property {
                 return Value.INVALID;
             }
         }
-        else {
-            // trim before validation if configured
-            if (trim) {
-                text = text.trim();     
-            }
-            if (nullIfEmpty && text.length() == 0) {
-                text = null;
-            }
+        // trim before validation if configured
+        else if (trim) {
+            text = text.trim();
         }
         
         // check if field exists
@@ -278,6 +272,9 @@ public class Field extends ParserComponent implements Property {
             // return the default value if set
             else if (defaultValue != null) {
                 return defaultValue;
+            }
+            else if (text == null) {
+                return Value.MISSING;
             }
         }
         else {
@@ -487,14 +484,6 @@ public class Field extends ParserComponent implements Property {
 
     public void setRequired(boolean required) {
         this.required = required;
-    }
-
-    public boolean isNullIfEmpty() {
-        return nullIfEmpty;
-    }
-
-    public void setNullIfEmpty(boolean nullIfEmpty) {
-        this.nullIfEmpty = nullIfEmpty;
     }
 
     public int getMinLength() {

@@ -171,20 +171,11 @@ public class XmlPreprocessor extends Preprocessor {
             }
         }
         
-        final boolean isAttribute = XmlTypeConstants.XML_TYPE_ATTRIBUTE.equals(type);
-        
         if (field.getXmlNamespace() == null) {
             ComponentConfig parent = getParent();
-            if (isAttribute) {
-                field.setXmlPrefix(null);
-                field.setXmlNamespace(null);
-                field.setXmlNamespaceAware(false);
-            }
-            else {
-                field.setXmlPrefix(parent.getXmlPrefix());
-                field.setXmlNamespace(parent.getXmlNamespace());
-                field.setXmlNamespaceAware(parent.isXmlNamespaceAware());
-            }
+            field.setXmlPrefix(parent.getXmlPrefix());
+            field.setXmlNamespace(parent.getXmlNamespace());
+            field.setXmlNamespaceAware(parent.isXmlNamespaceAware());
         }
         else if ("*".equals(field.getXmlNamespace())) {
             field.setXmlPrefix(null);
@@ -201,7 +192,7 @@ public class XmlPreprocessor extends Preprocessor {
         }
         
         // default minOccurs for an attribute is 0
-        if (isAttribute) {
+        if (XmlTypeConstants.XML_TYPE_ATTRIBUTE.equals(type)) {
             if (field.getMinOccurs() == null) {
                 field.setMinOccurs(0);
             }

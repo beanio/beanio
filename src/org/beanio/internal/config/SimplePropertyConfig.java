@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2013 Kevin Seim
+ * Copyright 2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import org.beanio.types.TypeHandler;
 public abstract class SimplePropertyConfig extends PropertyConfig {
 
     private String handler;
-    private TypeHandler typeHandlerInstance;
     private String format;
     
     /**
@@ -56,22 +55,6 @@ public abstract class SimplePropertyConfig extends PropertyConfig {
      */
     public void setTypeHandler(String handler) {
         this.handler = handler;
-    }
-
-    /**
-     * Returns the type handler.
-     * @return the {@link TypeHandler}
-     */
-    public TypeHandler getTypeHandlerInstance() {
-        return typeHandlerInstance;
-    }
-
-    /**
-     * Sets the type handler.
-     * @param typeHandlerInstance the {@link TypeHandler}
-     */
-    public void setTypeHandlerInstance(TypeHandler typeHandlerInstance) {
-        this.typeHandlerInstance = typeHandlerInstance;
     }
 
     /**

@@ -333,6 +333,7 @@ public class Bean extends PropertyComponent implements Property {
     @Override
     public void registerLocals(Set<ParserLocal<?>> locals) {
         if (locals.add(bean)) {
+            locals.add(constructorArgs);
             super.registerLocals(locals);
         }
     }

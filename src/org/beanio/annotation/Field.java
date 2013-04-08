@@ -185,6 +185,13 @@ public @interface Field {
     int maxOccurs() default Integer.MIN_VALUE;
     
     /**
+     * The name of a preceding field that governs the number of occurrences 
+     * of this field.  Does not apply to XML formatted streams.
+     * @return the name of the field
+     */
+    String occursRef() default "";
+    
+    /**
      * The XML type of this field.
      * @return the {@link XmlType}
      */

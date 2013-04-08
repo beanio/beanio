@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Kevin Seim
+ * Copyright 2012-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,15 +33,11 @@ public class MapParser extends Aggregation {
     private Property key;
     // the property value
     private ParserLocal<Object> value = new ParserLocal<Object>();    
-    // the current iteration index
-    private ParserLocal<Integer> index = new ParserLocal<Integer>();
     
     /**
      * Constructs a new <tt>MapParser</tt>.
      */
-    public MapParser() {
-        
-    }
+    public MapParser() { }
     
     @Override
     public void clearValue(ParsingContext context) {
@@ -75,31 +71,25 @@ public class MapParser extends Aggregation {
         return true;
     }
     
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.parser2.Marshaller#marshal(org.beanio.parser2.MarshallingContext)
-     */
-    public boolean marshal(MarshallingContext context) throws IOException {
-        Map<Object,Object> map = getMap(context);
-        if (map == null && minOccurs == 0) {
-            return false;
-        }
-        
-        Parser delegate = getParser();
-
+    @Override
+    protected boolean marshal(MarshallingContext context, Parser delegate, int minOccurs, int maxOccurs) throws IOException {
         context.pushIteration(this);
         try {
+            Map<Object,Object> map = getMap(context);
+            if (map == null && minOccurs == 0) {
+                return false;
+            }
+            
             int i = 0;
-            setIterationIndex(context, i);
             
             if (map != null) {
                 for (Map.Entry<Object,Object> entry : map.entrySet()) {
                     if (i < maxOccurs) {
+                        setIterationIndex(context, i);
                         key.setValue(context, entry.getKey());
                         delegate.setValue(context, entry.getValue());
                         delegate.marshal(context);
                         ++i;
-                        setIterationIndex(context, i);
                     }
                     else {
                         return true;
@@ -111,9 +101,9 @@ public class MapParser extends Aggregation {
                 key.setValue(context, null);
                 delegate.setValue(context, null);
                 while (i < minOccurs) {
+                    setIterationIndex(context, i);
                     delegate.marshal(context);
                     ++i;
-                    setIterationIndex(context, i);
                 }
             }
             
@@ -124,13 +114,8 @@ public class MapParser extends Aggregation {
         }
     }
     
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.parser2.Field#unmarshal(org.beanio.parser2.UnmarshallingContext)
-     */
-    public boolean unmarshal(UnmarshallingContext context) {
-        Parser delegate = getParser();
-        
+    @Override
+    protected boolean unmarshal(UnmarshallingContext context, Parser delegate, int minOccurs, int maxOccurs) {
         Map<Object,Object> map = createMap();
         
         boolean invalid = false;
@@ -171,8 +156,8 @@ public class MapParser extends Aggregation {
         Object value;
         
         // validate minimum occurrences have been met
-        if (count < getMinOccurs()) {
-            context.addFieldError(getName(), null, "minOccurs", getMinOccurs(), getMaxOccurs());
+        if (count < minOccurs) {
+            context.addFieldError(getName(), null, "minOccurs", minOccurs, maxOccurs);
             value = Value.INVALID;
         }
         else if (invalid) {
@@ -245,6 +230,8 @@ public class MapParser extends Aggregation {
         }
         
         this.value.set(context, value);
+        
+        super.setValue(context, value);
     }
     
     protected Map<Object,Object> createMap() {
@@ -266,16 +253,10 @@ public class MapParser extends Aggregation {
         }
     }
     
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.internal.parser.Iteration#getIterationIndex(org.beanio.internal.parser.ParsingContext)
-     */
-    public int getIterationIndex(ParsingContext context) {
-        return index.get(context);
-    }
-    
-    private void setIterationIndex(ParsingContext context, int index) {
-        this.index.set(context, index);
+    @Override
+    protected int length(Object value) {
+        Map<?,?> map = (Map<?,?>) value;
+        return map != null ? map.size() : 0;
     }
 
     /*
@@ -301,7 +282,6 @@ public class MapParser extends Aggregation {
         }
         
         if (locals.add(value)) {
-            locals.add(index);
             super.registerLocals(locals);
         }
     }
@@ -323,7 +303,5 @@ public class MapParser extends Aggregation {
     @Override
     protected void toParamString(StringBuilder s) {
         super.toParamString(s);
-        s.append(", minOccurs=").append(minOccurs);
-        s.append(", maxOccurs=").append(maxOccurs);
     }
 }

@@ -49,6 +49,7 @@ public abstract class PropertyConfig extends ComponentConfig {
     private Integer until;
     private Integer minOccurs;
     private Integer maxOccurs;
+    private String occursRef;
     private String collection;
     
     /* attributes specific to xml */
@@ -64,6 +65,8 @@ public abstract class PropertyConfig extends ComponentConfig {
     /* derived attributes */
     private int minSize;
     private int maxSize;
+    private Integer minOccursRef;
+    private Integer maxOccursRef;
     
     /**
      * Constructs a new <tt>PropertyConfig</tt>.
@@ -238,8 +241,6 @@ public abstract class PropertyConfig extends ComponentConfig {
         this.collection = collection;
     }
 
-
-
     /**
      * Returns the minimum number of times this component must appear in the stream.
      * @return the minimum occurrences of this component
@@ -281,6 +282,56 @@ public abstract class PropertyConfig extends ComponentConfig {
         this.maxOccurs = maxOccurs;
     }
     
+    /**
+     * Returns the name of a field in the same record that indicates the number
+     * of occurrences for this component.
+     * @return the field name
+     */
+    public String getOccursRef() {
+        return occursRef;
+    }
+
+    /**
+     * Sets the name of a field in the same record that indicates the number
+     * of occurrences for this component.
+     * @param occursRef the field name
+     */
+    public void setOccursRef(String occursRef) {
+        this.occursRef = occursRef;
+    }
+
+    /**
+     * Returns the minimum required value of the referenced occurs field.
+     * @return the minimum value
+     */
+    public Integer getMinOccursRef() {
+        return minOccursRef;
+    }
+
+    /**
+     * Sets the minimum required value of the referenced occurs field.
+     * @param minOccursRef the minimum value
+     */
+    public void setMinOccursRef(Integer minOccursRef) {
+        this.minOccursRef = minOccursRef;
+    }
+
+    /**
+     * Returns the maximum allowed value of the referenced occurs field.
+     * @return the maximum value
+     */
+    public Integer getMaxOccursRef() {
+        return maxOccursRef;
+    }
+
+    /**
+     * Sets the maximum allowed value of the referenced occurs field.
+     * @param maxOccursRef the maximum value
+     */
+    public void setMaxOccursRef(Integer maxOccursRef) {
+        this.maxOccursRef = maxOccursRef;
+    }
+
     /**
      * Returns the XML node type of this component.
      * @return the XML node type

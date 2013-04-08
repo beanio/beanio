@@ -411,6 +411,9 @@ public abstract class UnmarshallingContext extends ParsingContext {
             return;
         }
         
+        // clear the field offset for the next record
+        super.clear();
+        
         // reset the processed flag
         processed = false;
         

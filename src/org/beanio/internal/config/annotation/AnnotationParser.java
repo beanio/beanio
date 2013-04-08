@@ -245,6 +245,7 @@ public class AnnotationParser {
         sc.setUntil(toValue(sa.until()));
         sc.setMinOccurs(toValue(sa.minOccurs()));
         sc.setMaxOccurs(toUnboundedValue(sa.maxOccurs()));
+        sc.setOccursRef(toValue(sa.occursRef()));
         sc.setLazy(sa.lazy());
         sc.setXmlType(sa.xmlType().toValue());
         sc.setXmlName(toXmlValue(sa.xmlName()));
@@ -316,6 +317,7 @@ public class AnnotationParser {
         fc.setMaxLength(toUnboundedValue(fa.maxLength()));
         fc.setMinOccurs(toValue(fa.minOccurs()));
         fc.setMaxOccurs(toUnboundedValue(fa.maxOccurs()));
+        fc.setOccursRef(toValue(fa.occursRef()));
         
         fc.setLength(toValue(fa.length()));
         if (fa.padding() >= Character.MIN_VALUE && fa.padding() <= Character.MAX_VALUE) {

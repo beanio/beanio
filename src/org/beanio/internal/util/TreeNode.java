@@ -15,6 +15,7 @@
  */
 package org.beanio.internal.util;
 
+import java.io.PrintStream;
 import java.util.*;
 
 /**
@@ -219,13 +220,16 @@ public class TreeNode<T extends TreeNode> implements Replicateable, Iterable<T> 
      * Prints this node and its descendants to standard out.
      */
     public void print() {
-        print("");
+        print(System.out);
     }
-    private void print(String indent) {
-        System.out.println(indent + this);
+    public void print(PrintStream out) {
+        print(out, "");
+    }
+    private void print(PrintStream out, String indent) {
+        out.println(indent + this);
         indent += "  ";
         for (T node : getChildren()) {
-            node.print(indent);
+            node.print(out, indent);
         }
     }
     

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ public abstract class ParsingContext {
     /** Marsalling mode */
     public static final char MARSHALLING = 'M';
     
+    private int fieldOffset = 0;
     private Object[] localHeap;
     private ArrayList<Iteration> iterationStack = new ArrayList<Iteration>();
     
@@ -37,6 +38,10 @@ public abstract class ParsingContext {
      * Constructs a new <tt>ParsingContext</tt>.
      */
     public ParsingContext() { }
+    
+    protected void clear() {
+        fieldOffset = 0;
+    }
     
     /**
      * Returns the parsing mode.
@@ -59,7 +64,11 @@ public abstract class ParsingContext {
      * @see #pushIteration(Iteration)
      */
     public Iteration popIteration() {
-        return iterationStack.remove(iterationStack.size() - 1);
+        Iteration iter = iterationStack.remove(iterationStack.size() - 1);
+        if (iter.isDynamicIteration()) {
+            fieldOffset += iter.getIterationSize() * (iter.getIterationIndex(this));
+        }
+        return iter;
     }
     
     /**
@@ -72,7 +81,7 @@ public abstract class ParsingContext {
         for (Iteration i : iterationStack) {
             position += i.getIterationIndex(this) * i.getIterationSize();
         }
-        return position;
+        return position + fieldOffset;
     }
     
     /**

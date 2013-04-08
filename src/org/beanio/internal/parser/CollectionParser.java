@@ -32,9 +32,7 @@ public class CollectionParser extends Aggregation {
     // the collection type
     private Class<? extends Collection<Object>> type;
     // the property value
-    private ParserLocal<Object> value = new ParserLocal<Object>();    
-    // the current iteration index
-    private ParserLocal<Integer> index = new ParserLocal<Integer>();
+    private ParserLocal<Object> value = new ParserLocal<Object>();  
     
     /**
      * Constructs a new <tt>CollectionParser</tt>.
@@ -78,33 +76,25 @@ public class CollectionParser extends Aggregation {
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.parser2.Marshaller#marshal(org.beanio.parser2.MarshallingContext)
-     */
-    public boolean marshal(MarshallingContext context) throws IOException {
-        Collection<Object> collection = getCollection(context);
-        if (collection == null && minOccurs == 0) {
-            return false;
-        }
-        
-        Parser delegate = getParser();
-
+    @Override
+    protected boolean marshal(MarshallingContext context, Parser delegate, int minOccurs, int maxOccurs) throws IOException {
         context.pushIteration(this);
         try {
-            int i = 0;
-            setIterationIndex(context, i);
+            Collection<Object> collection = getCollection(context);
+            if (collection == null && minOccurs == 0) {
+                return false;
+            }
             
+            int i = 0;
             if (collection != null) {
                 for (Object value : collection) {
                     if (i < maxOccurs) {
+                        setIterationIndex(context, i);
                         delegate.setValue(context, value);
                         delegate.marshal(context);
                         ++i;
-                        setIterationIndex(context, i);
                     }
                     else {
-                        
                         return true;
                     }
                 }
@@ -113,9 +103,9 @@ public class CollectionParser extends Aggregation {
             if (i < minOccurs) {
                 delegate.setValue(context, null);
                 while (i < minOccurs) {
+                    setIterationIndex(context, i);
                     delegate.marshal(context);
                     ++i;
-                    setIterationIndex(context, i);
                 }
             }
             
@@ -126,13 +116,9 @@ public class CollectionParser extends Aggregation {
         }
     }
     
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.parser2.Field#unmarshal(org.beanio.parser2.UnmarshallingContext)
-     */
-    public boolean unmarshal(UnmarshallingContext context) {
-        Parser delegate = getParser();
-        
+    @Override
+    protected boolean unmarshal(UnmarshallingContext context, Parser delegate, int minOccurs, int maxOccurs) {
+
         Collection<Object> collection = lazy ? null : createCollection();
         
         boolean invalid = false;
@@ -178,8 +164,8 @@ public class CollectionParser extends Aggregation {
         Object value;
         
         // validate minimum occurrences have been met
-        if (count < getMinOccurs()) {
-            context.addFieldError(getName(), null, "minOccurs", getMinOccurs(), getMaxOccurs());
+        if (count < minOccurs) {
+            context.addFieldError(getName(), null, "minOccurs", minOccurs, maxOccurs);
             value = Value.INVALID;
         }
         else if (invalid) {
@@ -223,6 +209,12 @@ public class CollectionParser extends Aggregation {
         else {
             return (Collection<Object>) value;
         }
+    }
+    
+    @Override
+    protected int length(Object value) {
+        Collection<?> collection = (Collection<?>) value;
+        return collection != null ? collection.size() : 0;
     }
     
     /**
@@ -274,6 +266,8 @@ public class CollectionParser extends Aggregation {
         }
         
         this.value.set(context, value);
+        
+        super.setValue(context, value);
     }
     
     protected Collection<Object> createCollection() {
@@ -295,23 +289,10 @@ public class CollectionParser extends Aggregation {
     public int getIterationSize() {
         return getSize();
     }
-    
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.parser2.Iteration#getIterationIndex()
-     */
-    public int getIterationIndex(ParsingContext context) {
-        return index.get(context);
-    }
-    
-    private void setIterationIndex(ParsingContext context, int index) {
-        this.index.set(context, index);
-    }
 
     @Override
     public void registerLocals(Set<ParserLocal<? extends Object>> locals) {
         if (locals.add(value)) {
-            locals.add(index);
             super.registerLocals(locals);
         }
     }

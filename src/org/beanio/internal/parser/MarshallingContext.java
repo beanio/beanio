@@ -48,7 +48,7 @@ public abstract class MarshallingContext extends ParsingContext {
     }
     
     /**
-     * Clear is invoked after each record is marshalled.
+     * Clear is invoked after each bean object (record or group) is marshalled.
      */
     public void clear() { 
         this.bean = null;
@@ -62,6 +62,7 @@ public abstract class MarshallingContext extends ParsingContext {
      */
     public void writeRecord() throws IOException {
         recordWriter.write(getRecordObject());
+        super.clear();
     }
     
     /**

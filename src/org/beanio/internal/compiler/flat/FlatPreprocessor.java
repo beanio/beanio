@@ -43,9 +43,10 @@ public class FlatPreprocessor extends Preprocessor {
     private PropertyConfig unboundedComponentFollower = null;
     // the list of components at the end of the record following the unbounded component
     private List<PropertyConfig> endComponents = new ArrayList<PropertyConfig>();
-    
     /* stack of non-record segments */
     private LinkedList<SegmentConfig> segmentStack = new LinkedList<SegmentConfig>();
+    /* list of field components belonging to a record, used for validating dynamic occurrences */
+    private List<FieldConfig> fieldComponents = new ArrayList<FieldConfig>();
     
     /**
      * Constructs a new <tt>FlatPreprocessor</tt>.
@@ -64,6 +65,7 @@ public class FlatPreprocessor extends Preprocessor {
         unboundedComponent = null;
         unboundedComponentFollower = null;
         endComponents.clear();
+        fieldComponents.clear();
     }
     
     @Override
@@ -124,7 +126,18 @@ public class FlatPreprocessor extends Preprocessor {
         if (segment.getComponentType() == ComponentConfig.SEGMENT) {
             segmentStack.push(segment);
         }
+        
         super.initializeSegment(segment);
+        
+        if (segment.getOccursRef() != null) {
+            if (!segment.isCollection()) {
+                throw new BeanIOConfigurationException("Collection required when 'occursRef' is set");
+            }
+            segment.setMinOccursRef(segment.getMinOccurs());
+            segment.setMaxOccursRef(segment.getMaxOccurs());
+            segment.setMinOccurs(1);
+            segment.setMaxOccurs(1);
+        }
     }
 
     @Override
@@ -288,6 +301,8 @@ public class FlatPreprocessor extends Preprocessor {
                 "field component must have minOccurs=maxOccurs");
         }
         
+        handleOccursRef(segment);
+        
         if (segment.getComponentType() == ComponentConfig.SEGMENT) {
             segmentStack.pop();
         }
@@ -311,6 +326,16 @@ public class FlatPreprocessor extends Preprocessor {
     @Override
     protected void handleField(FieldConfig field) {
         super.handleField(field);
+
+        if (field.getOccursRef() != null) {
+            if (!field.isCollection()) {
+                throw new BeanIOConfigurationException("Collection required when 'occursRef' is set");
+            }
+            field.setMinOccursRef(field.getMinOccurs());
+            field.setMaxOccursRef(field.getMaxOccurs());
+            field.setMinOccurs(1);
+            field.setMaxOccurs(1);
+        }
         
         // validate and configure padding
         if (isFixedLength()) {
@@ -374,6 +399,45 @@ public class FlatPreprocessor extends Preprocessor {
                 throw new BeanIOConfigurationException("until must be less than 0 (i.e. " +
                     "a position relative to the end of the record)");
             }
+        }
+        
+        handleOccursRef(field);
+        
+        fieldComponents.add(field);
+    }
+    
+    private void handleOccursRef(PropertyConfig config) {
+        if (config.getOccursRef() != null) {
+            FieldConfig occurs = null;
+            for (FieldConfig fc : fieldComponents) {
+                if (fc.getName().equals(config.getOccursRef())) {
+                    occurs = fc;
+                    break;
+                }
+            }
+            if (occurs == null) {
+                throw new BeanIOConfigurationException("Referenced field '" + config.getOccursRef() +
+                    "' not found");
+            }
+            if (occurs.getCollection() != null) {
+                throw new BeanIOConfigurationException("Referenced field '" + config.getOccursRef() +
+                    "' may not repeat");
+            }
+            if (occurs.getPosition() >= config.getPosition()) {
+                throw new BeanIOConfigurationException("Referenced field '" + config.getOccursRef() +
+                    "' must precede this field");
+            }
+            // default occurs to an Integer if not set...
+            if (occurs.getType() == null && 
+                occurs.getTypeHandler() == null &&
+                occurs.getTypeHandlerInstance() == null) {
+                occurs.setType(Integer.class.getName());
+            }
+            if (occurs.isRef() && !occurs.isBound()) {
+                throw new BeanIOConfigurationException("Unbound field '" + occurs.getName() +
+                    "' cannot be referenced more than once");
+            }
+            occurs.setRef(true);
         }
     }
     

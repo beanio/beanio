@@ -52,6 +52,16 @@ public class SegmentBuilder extends SegmentBuilderSupport<SegmentBuilder> {
     }
     
     /**
+     * Indicates the number of occurrences of this segment is governed by another field.
+     * @param ref the name of the field that governs the occurrences of this segment
+     * @return this
+     */
+    public SegmentBuilder occursRef(String ref) {
+        config.setOccursRef(ref);
+        return this;
+    }
+    
+    /**
      * Indicates the XML element is nillable.
      * @return this
      */

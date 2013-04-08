@@ -135,7 +135,10 @@ public class Group extends ParserComponent implements Selector {
                     break;
                 }
                 
-                child.unmarshal(context);
+                try {
+                    child.unmarshal(context);
+                }
+                catch (AbortRecordUnmarshalligException ex) { }
             }
             
             if (property != null) {

@@ -279,10 +279,10 @@ public class Preprocessor extends ProcessorSupport {
         
         // set default occurrences and validate
         if (segment.getMinOccurs() == null) {
-            segment.setMinOccurs(1);
+            segment.setMinOccurs(segment.getOccursRef() != null ? 0 : 1);
         }
         if (segment.getMaxOccurs() == null) {
-            segment.setMaxOccurs(1);
+            segment.setMaxOccurs(segment.getOccursRef() != null ? Integer.MAX_VALUE : 1);
         }
         if (segment.getMaxOccurs() <= 0) {
             throw new BeanIOConfigurationException("Maximum occurrences must be greater than 0");
@@ -346,11 +346,11 @@ public class Preprocessor extends ProcessorSupport {
         
         // set and validate occurrences
         if (field.getMinOccurs() == null) {
-            field.setMinOccurs(settings.getInt(Settings.DEFAULT_FIELD_MIN_OCCURS + 
+            field.setMinOccurs(field.getOccursRef() != null ? 0 : settings.getInt(Settings.DEFAULT_FIELD_MIN_OCCURS + 
                 "." + stream.getFormat(), 0));
         }
         if (field.getMaxOccurs() == null) {
-            field.setMaxOccurs(Math.max(field.getMinOccurs(), 1));
+            field.setMaxOccurs(field.getOccursRef() != null ? Integer.MAX_VALUE : Math.max(field.getMinOccurs(), 1));
         }
         if (field.getMaxOccurs() <= 0) {
             throw new BeanIOConfigurationException("Maximum occurrences must be greater than 0");

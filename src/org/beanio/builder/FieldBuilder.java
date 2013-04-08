@@ -104,8 +104,17 @@ public class FieldBuilder extends PropertyBuilderSupport<FieldBuilder> {
     }
     
     /**
-     * Indicates null should be returned for a collection of null and/or empty
-     * string values.
+     * Indicates the number of occurrences of this field is governed by another field.
+     * @param ref the name of the field that governs the occurrences of this field
+     * @return this {@link FieldBuilder}
+     */
+    public FieldBuilder occursRef(String ref) {
+        config.setOccursRef(ref);
+        return this;
+    }
+    
+    /**
+     * Indicates null should be returned for a collection of null values.
      * @return this {@link FieldBuilder}
      */
     public FieldBuilder lazy() {

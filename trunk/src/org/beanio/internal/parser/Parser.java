@@ -45,7 +45,7 @@ public interface Parser {
      * @return <tt>true</tt> if this component was present in the unmarshalled record, 
      *   or <tt>false</tt> otherwise
      */
-    public boolean unmarshal(UnmarshallingContext context);
+    public boolean unmarshal(UnmarshallingContext context) throws AbortRecordUnmarshalligException;
     
     /**
      * Marshals a record.

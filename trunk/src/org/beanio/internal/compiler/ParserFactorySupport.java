@@ -548,9 +548,9 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     }
     
     private Property findTarget(Component segment, String name) {
-        Component c = findDescendant("target", segment, name);
+        Component c = findDescendant("value", segment, name);
         if (c == null) {
-            throw new BeanIOConfigurationException("Descendant target '" + name + "' not found");
+            throw new BeanIOConfigurationException("Descendant value '" + name + "' not found");
         }
         
         Property property = null;
@@ -558,7 +558,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             property = (Property) c;
         }
         if (property == null || property.getType() == null) {
-            throw new BeanIOConfigurationException("No class defined for record target '" + name + "'");
+            throw new BeanIOConfigurationException("No class defined for record value '" + name + "'");
         }
         return property;
     }
@@ -572,8 +572,8 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             Component match = findDescendant(type, child, name);
             if (match != null) {
                 if (c instanceof Iteration) {
-                    throw new BeanIOConfigurationException("A " + type + " may not repeat," +
-                        " or belong to a segment that repeats");
+                    throw new BeanIOConfigurationException("Referenced component '" + name + 
+                        "' may not repeat, or belong to a segment that repeats");
                 }
                 
                 return match;
@@ -605,11 +605,16 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      */
     protected void initializeSegmentIteration(SegmentConfig config, Property property) {
         // wrap the segment in an aggregation component
-        Aggregation agg = createAggregation(config, property);
+        Aggregation aggregation = createAggregation(config, property);
         
-        pushParser(agg);
-        if (property != null) {
-            pushProperty(agg);
+        if (config.getOccursRef() != null) {
+            Field occurs = findDynamicOccurs(parserStack.getLast(), config.getOccursRef());
+            aggregation.setOccurs(occurs);
+        }
+        
+        pushParser(aggregation);
+        if (property != null || config.getTarget() != null) {
+            pushProperty(aggregation);
         }
     }
     
@@ -630,7 +635,6 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         segment.setIdentifier(config.isIdentifier());
         segment.setOptional(config.getMinOccurs() < config.getMaxOccurs());
         segment.setRepeating(config.isRepeating());
-        //segment.setLazyMarshalling(bean != null && config.isLazy() /*&& !config.isRepeating()*/);
         segment.setProperty(property);
         segment.setExistencePredetermined(config.getDefaultExistence());
         
@@ -760,11 +764,16 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         }
         
         // whether or not this property is bound to a bean property, Collections targets are not
-        boolean bind = isBound() && config.isBound() && !config.isRepeating();
+        boolean bind = isBound() && (config.isBound() && !config.isRepeating());
         
         Aggregation aggregation = null;
         if (config.isRepeating()) {
             aggregation = createAggregation(config, field);
+            
+            if (config.getOccursRef() != null) {
+                Field occurs = findDynamicOccurs(parserStack.getLast(), config.getOccursRef());
+                aggregation.setOccurs(occurs);
+            }
             
             pushParser(aggregation);
             if (aggregation.isProperty()) {
@@ -800,6 +809,18 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         }
     }
 
+    private Field findDynamicOccurs(Component segment, String name) {
+        Component c = findDescendant("value", segment, name);
+        if (c == null || !(c instanceof Field)) {
+            throw new BeanIOConfigurationException("Referenced field '" + name + "' not found");
+        }
+        Field f = (Field) c;
+        if (!Number.class.isAssignableFrom(f.getType())) {
+            throw new BeanIOConfigurationException("Referenced field '" + name + "' must be assignable to java.lang.Number");
+        }
+        return f;
+    }
+    
     /*
      * (non-Javadoc)
      * @see org.beanio.factory.ConfigurationProcessor#handleConstant(org.beanio.config.ConstantConfig)
@@ -888,8 +909,14 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             aggregation = new CollectionParser();
         }
         aggregation.setName(config.getName());
-        aggregation.setMinOccurs(config.getMinOccurs());
-        aggregation.setMaxOccurs(config.getMaxOccurs());
+        if (config.getOccursRef() != null) {
+            aggregation.setMinOccurs(config.getMinOccursRef());
+            aggregation.setMaxOccurs(config.getMaxOccursRef());
+        }
+        else {
+            aggregation.setMinOccurs(config.getMinOccurs());
+            aggregation.setMaxOccurs(config.getMaxOccurs());
+        }
         aggregation.setLazy(config.isLazy());
         aggregation.setType(collectionType);
         

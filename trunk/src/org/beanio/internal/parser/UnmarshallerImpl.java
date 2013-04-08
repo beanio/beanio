@@ -194,7 +194,10 @@ public class UnmarshallerImpl implements Unmarshaller {
             context.prepare(parser.getName(), false);
             
             // unmarshal the record
-            parser.unmarshal(context);
+            try {
+                parser.unmarshal(context);
+            }
+            catch (AbortRecordUnmarshalligException ex) { }
             
             // this will throw an exception if an invalid record was unmarshalled
             context.validate();

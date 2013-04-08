@@ -15,6 +15,9 @@
  */
 package org.beanio.internal.parser;
 
+import java.io.IOException;
+import java.util.*;
+
 /**
  * Base class for parser components capable of aggregating descendant properties.
  * 
@@ -24,13 +27,18 @@ package org.beanio.internal.parser;
 public abstract class Aggregation extends DelegatingParser implements Property, Iteration {
 
     // minimum occurrences
-    protected int minOccurs = 0;
+    private int minOccurs = 0;
     // maximum occurrences
-    protected int maxOccurs = Integer.MAX_VALUE;
+    private int maxOccurs = Integer.MAX_VALUE;
     // the property accessor, may be null if not bound
     private PropertyAccessor accessor;
     // true if null should be returned for an empty collection
     protected boolean lazy;
+    // the property that dictates the number of occurrences or null if its not dynamic
+    protected Field occurs;
+    
+    // the current iteration index
+    private ParserLocal<Integer> index = new ParserLocal<Integer>();
     
     /**
      * Constructs a new <tt>Aggregation</tt>.
@@ -43,6 +51,81 @@ public abstract class Aggregation extends DelegatingParser implements Property, 
      * @return true if this a property, false otherwise
      */
     public abstract boolean isProperty();
+    
+    /**
+     * Returns the length of aggregation.
+     * @param value the aggregation value
+     * @return the length
+     */
+    protected abstract int length(Object value);
+    
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.parser2.Marshaller#marshal(org.beanio.parser2.MarshallingContext)
+     */
+    public final boolean marshal(MarshallingContext context) throws IOException {
+        
+        int min = minOccurs;
+        int max = maxOccurs;
+        
+        // handle dynamic occurrences
+        if (occurs != null) {
+            min = max = ((Number)occurs.getValue(context)).intValue();
+            setIterationIndex(context, -1);
+        }
+        
+        return marshal(context, getParser(), min, max);
+    }
+    
+    protected abstract boolean marshal(MarshallingContext context, Parser delegate, int minOccurs, int maxOccurs) throws IOException;
+    
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.parser2.Field#unmarshal(org.beanio.parser2.UnmarshallingContext)
+     */
+    public final boolean unmarshal(UnmarshallingContext context) {
+        
+        int min = minOccurs;
+        int max = maxOccurs;
+        
+        // handle dynamic occurrences
+        if (occurs != null) {
+            Object n = occurs.getValue(context);
+            if (n == Value.INVALID) {
+                throw new AbortRecordUnmarshalligException("Invalid occurences");
+            }
+            else if (n == Value.MISSING) {
+                n = 0;
+            }
+            int occursVal = ((Number)n).intValue();
+            if (occursVal < minOccurs) {
+                context.addFieldError(getName(), null, "minOccurs", minOccurs, maxOccurs);
+                // this prevents a duplicate exception being thrown by a parent segment:
+                if (occursVal == 0) {
+                    return true;
+                }
+            }
+            else if (occursVal > maxOccurs) {
+                context.addFieldError(getName(), null, "maxOccurs", minOccurs, maxOccurs);
+            }
+            min = max = occursVal;
+            setIterationIndex(context, -1);
+        }
+        
+        return unmarshal(context, getParser(), min, max);
+    }
+    
+    protected abstract boolean unmarshal(UnmarshallingContext context, Parser delegate, int minOccurs, int maxOccurs);
+    
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.parser2.DelegatingParser#setValue(java.lang.Object)
+     */
+    public void setValue(ParsingContext context, Object value) {
+        if (occurs != null && !occurs.isBound()) {
+            occurs.setValue(context, length(value));
+        }
+    }
     
     @Override
     public boolean isOptional() {
@@ -82,6 +165,18 @@ public abstract class Aggregation extends DelegatingParser implements Property, 
         this.accessor = accessor;
     }
     
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.parser2.Iteration#getIterationIndex()
+     */
+    public final int getIterationIndex(ParsingContext context) {
+        return index.get(context);
+    }
+    
+    protected final void setIterationIndex(ParsingContext context, int index) {
+        this.index.set(context, index);
+    }
+    
     public int getMinOccurs() {
         return minOccurs;
     }
@@ -97,6 +192,14 @@ public abstract class Aggregation extends DelegatingParser implements Property, 
     public void setMaxOccurs(int maxOccurs) {
         this.maxOccurs = maxOccurs;
     }
+    
+    public Field getOccurs() {
+        return occurs;
+    }
+
+    public void setOccurs(Field occurs) {
+        this.occurs = occurs;
+    }
 
     public boolean isLazy() {
         return lazy;
@@ -106,11 +209,32 @@ public abstract class Aggregation extends DelegatingParser implements Property, 
         this.lazy = lazy;
     }
     
+    public boolean isDynamicIteration() {
+        return occurs != null;
+    }
+    
+    @Override
+    public void registerLocals(Set<ParserLocal<? extends Object>> locals) {
+        if (locals.add(index)) {
+            super.registerLocals(locals);
+        }
+    }
+
     @Override
     protected void toParamString(StringBuilder s) {
         super.toParamString(s);
-        s.append(", minOccurs=").append(minOccurs);
-        s.append(", maxOccurs=").append(maxOccurs);
+        if (occurs != null) {
+            s.append(", occurs=$").append(occurs.getName());
+            if (minOccurs > 0) {
+                s.append(", minOccurs=").append(minOccurs);
+            }
+            if (maxOccurs < Integer.MAX_VALUE) {
+                s.append(", maxOccurs=").append(maxOccurs);
+            }
+        }
+        else {
+            s.append(", occurs=").append(minOccurs).append("-").append(maxOccurs);
+        }
         s.append(", lazy=").append(lazy);
     }
 }

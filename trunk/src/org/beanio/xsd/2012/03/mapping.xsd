@@ -899,6 +899,14 @@
         </documentation>
       </annotation>
     </attribute>
+    <attribute name="occursRef" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The name of a field in the same record that dynamically indicates the number
+          of occurrences of this field.
+        </documentation>
+      </annotation>
+    </attribute>
     <attribute name="xmlType" type="xsd:string" use="optional">
       <annotation>
         <documentation>
@@ -1076,6 +1084,14 @@
       <annotation>
         <documentation>
           Shortcut for specifying both minOccurs and maxOccurs.  Examples: '1', '0-3', '2+'.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="occursRef" type="xsd:string" use="optional">
+      <annotation>
+        <documentation>
+          The name of a field in the same record that dynamically indicates the number
+          of occurrences of this segment.
         </documentation>
       </annotation>
     </attribute>

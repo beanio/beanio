@@ -89,6 +89,13 @@ public @interface Segment {
     int maxOccurs() default Integer.MIN_VALUE;
     
     /**
+     * The name of a preceding field that governs the number of occurrences 
+     * of this segment.  Does not apply to XML formatted streams.
+     * @return the name of the field
+     */
+    String occursRef() default "";
+    
+    /**
      * The XML type of this segment.
      * @return the {@link XmlType}
      */

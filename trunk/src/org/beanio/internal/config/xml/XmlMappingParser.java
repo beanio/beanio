@@ -593,8 +593,15 @@ public class XmlMappingParser implements StringUtil.PropertySource {
     }
     
     private void populatePropertyConfigOccurs(PropertyConfig config, Element element) {
-        if (hasAttribute(element, "occurs")) {
-            if (hasAttribute(element, "minOccurs") || hasAttribute(element, "maxOccurs")) {
+        boolean hasRef = hasAttribute(element, "occursRef");
+        if (hasRef) {
+            config.setOccursRef(getAttribute(element, "occursRef"));
+        }
+        
+        boolean hasOccurs = hasAttribute(element, "occurs");
+        boolean hasMinMax = hasAttribute(element, "minOccurs") || hasAttribute(element, "maxOccurs");
+        if (hasOccurs) {
+            if (hasMinMax) {
                 throw new BeanIOConfigurationException("occurs cannot be used with minOccurs or maxOccurs");
             }
             
@@ -688,8 +695,7 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         config.setTrim(getBooleanAttribute(element, "trim", config.isTrim()));
         config.setNullIfEmpty(getBooleanAttribute(element, "nullIfEmpty", config.isNullIfEmpty()));
         config.setLazy(getBooleanAttribute(element, "lazy", config.isLazy()));
-        config.setIdentifier(getBooleanAttribute(element, "rid", 
-            config.isIdentifier()));
+        config.setIdentifier(getBooleanAttribute(element, "rid", config.isIdentifier()));
         config.setBound(!getBooleanAttribute(element, "ignore", false));
         config.setLength(getUnboundedIntegerAttribute(element, "length", -1));
         config.setPadding(getCharacterAttribute(element, "padding"));

@@ -250,7 +250,13 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             int i = 0;
             for (Class<?> type : c.getParameterTypes()) {
                 Property arg = args.get(i);
-                if (!TypeUtil.isAssignable(type, arg.getType())) {
+
+                Class<?> argType = arg.getType();
+                if (argType.isPrimitive()) {
+                    argType = TypeUtil.toWrapperClass(argType);
+                }
+                
+                if (!TypeUtil.isAssignable(type, argType)) {
                     continue CONSTRUCTOR_LOOP;
                 }
                 ++i;

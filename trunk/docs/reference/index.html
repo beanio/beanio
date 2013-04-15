@@ -4,14 +4,14 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<title>BeanIO 2.0 Reference Guide</title>
+<title>BeanIO 2.1 Reference Guide</title>
 <link rel="stylesheet" type="text/css" href="style.css" />
 <link rel="shortcut icon" href="http://www.beanio.org/favicon.ico" />
 </head>
 <body>
 
-<div class="title">BeanIO 2.0 Reference Guide</div>
-<p><i>Revision 6</i>, &copy; 2010-2013 Kevin Seim</p>
+<div class="title">BeanIO 2.1 Reference Guide</div>
+<p><i>Revision 1</i>, &copy; 2010-2013 Kevin Seim</p>
 <p style="font-size: 90%"><i>Copies of this document may be made for your own use and for
 distribution to others, provided that you do not charge any fee for such copies and further provided
 that each copy contains this Copyright Notice, whether distributed in print or electronically.</i></p>
@@ -100,14 +100,14 @@ that each copy contains this Copyright Notice, whether distributed in print or e
     <a href="#XmlWrappedSegments">5.8.2.  Wrapped Segments</a><br />
   </div>
 </div>
-<a href="#SpringBatch">6.0. Spring Batch Integration</a>
+<a href="#SpringBatch">7.0. Spring Batch Integration</a>
 <div class="toc">
-  <a href="#SpringItemReaderWriter">6.1. BeanIO ItemReader/Writer Beans</a><br />
-  <a href="#SpringStreamFactory">6.2. BeanIO StreamFactory Bean</a>
+  <a href="#SpringItemReaderWriter">7.1. BeanIO ItemReader/Writer Beans</a><br />
+  <a href="#SpringStreamFactory">7.2. BeanIO StreamFactory Bean</a>
 </div>
-<a href="#Configuration">7.0. Configuration</a>
+<a href="#Configuration">8.0. Configuration</a>
 <div class="toc">
-  <a href="#ConfigurationSettings">7.1. Settings</a>
+  <a href="#ConfigurationSettings">8.1. Settings</a>
 </div>
 <a href="#A">Appendix A: XML Mapping File Reference</a><br />
 <div class="toc">
@@ -3213,18 +3213,133 @@ of a field, and the effect of <tt>minOccurs</tt> and <tt>nillable</tt> when mars
 </tr>
 </table>
 
+<!-- 
+
+  Annotation and Builder API
+
+ -->
+<h1><a name="Annotation">6.0. Annotations and the Stream Builder API</a></h1>
+<p>Since release 2.1, BeanIO includes support for Java annotations and a stream
+builder API.</p>
+
+<h2><a name="StreamBuilderAPI">6.1. The Stream Builder API</a></h2>
+<p>The stream builder API can be used to programatically create a stream mapping
+without the need for a mapping file.</p>
+
+<pre class="java">
+
+    StreamFactory factory = StreamFactory.newInstance();
+    
+    <span class="comment">// create a new StreamBuilder and define its layout</span>
+    StreamBuilder builder = new StreamBuilder("employeeFile")
+        .format("delimited")
+        .parser(new DelimitedParserBuilder(','))
+        .addRecord(new RecordBuilder("employee")
+            .type(Employee.class)
+            .minOccurs(1)
+            .addField(new FieldBuilder("type").rid().literal("EMP").ignore())
+            .addField(new FieldBuilder("recordType").rid(
+            .addField(new FieldBuilder("firstName"))
+            .addField(new FieldBuilder("lastName"))
+            .addField(new FieldBuilder("title"))
+            .addField(new FieldBuilder("salary"))
+            .addField(new FieldBuilder("hireDate").format("MMddyyyy")));
+
+    <span class="comment">// pass the StreamBuilder to the factory</span>
+    factory.define(builder);
+    
+    BeanReader in = factory.createReader("employeeFile", new File("employee.csv"));
+    <span class="comment">// etc...</span>
+
+</pre>
+
+<p>Like in a mapping file, components are assumed to be ordered as they are added to their parent, unless
+<tt>at</tt> (for fields) or <tt>order</tt> (for records and groups) is explicitly set.  
+For more information, refer to the Javadocs for the <a href="../api/org/beanio/builder/package-summary.html">
+<tt>org.beanio.builder</tt></a> package.</p>
+
+
+<h2><a name="Annotations">6.2. Annotations</a></h2>
+<p>Java classes can also be annotated to augment the use of the stream builder API or mapping file.
+Classes may be annotated with <tt>@Record</tt>, and class attributes or getter/setter methods may be 
+annotated with <tt>@Field</tt>.  Any component annotated with <tt>@Record</tt> or <tt>@Segment</tt>
+may be further annotated using <tt>@Fields</tt> to include fields not bound to a Java property.</p>  
+
+<p>Continuing our previous example, the <tt>example.Employee</tt>
+class could be annotated like so:</p>
+
+
+<pre class="java">
+<span class="highlight">@Record(minOccurs=1}
+@Fields({
+    @Field(name="type", at=0, rid=true, literal="EMP")
+})</span>
+public class Employee {
+    
+    <span class="highlight">@Field(at=1)</span>
+    private String firstName;
+    <span class="highlight">@Field(at=2)</span>
+    private String lastName;
+    <span class="highlight">@Field(at=3)</span>
+    private String title;
+    <span class="highlight">@Field(at=4)</span>
+    private String salary,
+    <span class="highlight">@Field(at=5, format="MMddyyyy")</span>
+    private Date hireDate;
+
+    <span class="comment">// getters and setters...</span>
+}
+</pre>
+
+<p>Using an annotated <tt>Employee</tt> class, the stream builder example can be greatly simplified:</p>
+<pre class="java">
+
+    StreamFactory factory = StreamFactory.newInstance();
+    
+    StreamBuilder builder = new StreamBuilder("employeeFile")
+        .format("delimited")
+        .parser(new DelimitedParserBuilder(','))
+        .addRecord(Employee.class);
+
+    factory.define(builder);
+
+</pre>
+
+<p>As can a mapping file:</p>
+<pre class="file">
+&lt;beanio&gt;
+
+  &lt;stream name="employeeFile" format="delimited"&gt;
+    &lt;parser&gt;
+      &lt;property name="delimiter" value="," /&gt;
+    &lt;/parser&gt;
+    &lt;record name="employee" class="example.Employee" /&gt;
+  &lt;/stream&gt;
+  
+&lt;/beanio&gt;</pre>
+
+<p>When using annotations, it is strongly recommended to explicitly set the position (using <tt>at</tt>)
+for all fields and segments.  BeanIO does not guarrantee the order in which annotated components
+are added to a layout.</p>
+
+<p>Annotation settings are generally named according to their mapping file counterparts and
+follow the same convention as well.  Refer to <a href="#A">Appendix A</a> for a complete 
+explanation of all settings.</p>
+
+<p>Where used, annotated records can not be overridden by mapping file components, and a
+<tt>BeanIOConfigurationException</tt> will be thrown if attempted.</p>
 
 <!-- 
 
 	SPRING BATCH
 
  -->
-<h1><a name="SpringBatch">6.0. Spring Batch Integration</a></h1>
+<h1><a name="SpringBatch">7.0. Spring Batch Integration</a></h1>
 <p>As of release 1.2, BeanIO can be used to read and write flat files with 
 <a href="http://static.springsource.org/spring-batch/">Spring Batch</a> (2.1.x), 
 a batch processing framework by SpringSource.</p>
 
-<h2><a name="SpringItemReaderWriter">6.1. BeanIO ItemReader/Writer Beans</a></h2>
+<h2><a name="SpringItemReaderWriter">7.1. BeanIO ItemReader/Writer Beans</a></h2>
 <p>The class <tt>org.beanio.spring.BeanIOFlatFileItemReader</tt> implements Spring Batch's
 <tt>ItemReader</tt> interface and can be used to read flat files using a BeanIO stream
 mapping file.  The following Spring bean definition shows a BeanIO item reader configuration
@@ -3255,7 +3370,7 @@ called 'out.txt'.</p>
 by the flat file item reader and writer included with Spring Batch.  Please refer to their 
 <a href="http://www.beanio.org/docs/api/index.html">API documentation</a> for details.</p>
 
-<h2><a name="SpringStreamFactory">6.2. BeanIO StreamFactory Bean</a></h2>
+<h2><a name="SpringStreamFactory">7.2. BeanIO StreamFactory Bean</a></h2>
 <p>By default, a BeanIO item reader/writer creates its own stream factory, but
 in cases where this could cause one or more mapping files to be loaded multiple times, it may be preferable 
 to create a shared stream factory instance.  BeanIO's <tt>org.beanio.spring.BeanIOStreamFactory</tt> class
@@ -3283,7 +3398,7 @@ The following Spring beans configuration file illustrates this:</p>
 &lt;/beans&gt;</pre>
 
 
-<h1><a name="Configuration">7.0. Configuration</a></h1>
+<h1><a name="Configuration">8.0. Configuration</a></h1>
 <p>In some cases, BeanIO behavior can be controlled by setting optional property values.  Properties
 can be set using System properties or a property file.  BeanIO will load configuration
 setting in the following order of priority:</p>
@@ -3298,7 +3413,7 @@ be loaded from the file named <tt>config/settings.properties</tt>, first relativ
 working directory, and if not found, then from the root of the application's classpath.</p>
 <pre class="indent">java <span class="highlight">-Dorg.beanio.configuration=config/settings.properties</span> example.Main</pre>
 
-<h2><a name="ConfigurationSettings">7.1. Settings</a></h2>
+<h2><a name="ConfigurationSettings">8.1. Settings</a></h2>
 <p>The following configuration settings are supported by BeanIO:</p>
 <table class="indent">
 <tr>
@@ -4358,8 +4473,8 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
   <td>*</td>
 </tr>
 <tr>
-  <td><tt>position</tt></td>
-  <td>For delimited and CSV formatted streams, <tt>position</tt> is the index of the field
+  <td><tt>at</tt><br /><tt>position</tt></td>
+  <td>For delimited and CSV formatted streams, <tt>position</tt> (or <tt>at</tt>) is the index of the field
     within the record, beginning at 0.  And for fixed length formatted streams, <tt>position</tt>
     is the index of the first character of the field within the record, beginning at 0.  
     <p>
@@ -4373,9 +4488,16 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
     are not specified, BeanIO will automatically calculate field positions based on the order
     in which the fields are defined in the mapping file.
     </p>
+    <p>
+    Position, if defined, is also used in XML formatted streams for ordering fields within
+    their parent record or segment.  This is typically not needed when using a mapping file,
+    but can be useful when using annotations.
+    </p>
+    <p>If a position is configured for a parent segment (with annotations), the positions declared
+    for fields added to the segment are assumed to be relative to their parent.</p>
   </td>
   <td>No</td>
-  <td>csv, delimited, fixedlength</td>
+  <td>csv, delimited, fixedlength, xml</td>
 </tr>
 <tr>
   <td><tt>until</tt></td>
@@ -4395,6 +4517,13 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
   <td>*</td>
 </tr>
 <tr>
+  <td><tt>nullIfEmpty</tt></td>
+  <td>Set to <tt>true</tt> to convert empty field text to null before type
+    conversion.  Defaults to <tt>false</tt>.</td>
+  <td>No</td>
+  <td>*</td>
+</tr>
+<tr>
   <td><tt>required</tt></td>
   <td>Set to <tt>true</tt> if this field is required.  If a field is required and its field 
     text is empty, a <tt>BeanReader</tt> will throw an <tt>InvalidRecordException</tt> when 
@@ -4404,7 +4533,8 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
 </tr>
 <tr>
   <td><tt>minLength</tt></td>
-  <td>The minimum length of the field text before type conversion.  Defaults to 0.</td>
+  <td>The minimum length of the field text before type conversion.  Minimum length is only
+    validated if the field length is greater than 0.  Defaults to 0.</td>
   <td>No</td>
   <td>*</td>
 </tr>

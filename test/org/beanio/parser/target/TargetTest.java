@@ -17,9 +17,11 @@ package org.beanio.parser.target;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.StringReader;
 import java.util.List;
 
 import org.beanio.*;
+import org.beanio.beans.Person;
 import org.beanio.parser.ParserTest;
 import org.junit.*;
 
@@ -53,6 +55,24 @@ public class TargetTest extends ParserTest {
         Integer age = (Integer) unmarshaller.unmarshal("A,jen,28");
         assertEquals(new Integer(28), age);
         assertEquals("A,unknown,28", marshaller.marshal(age).toString());
+    }
+    
+    @Test
+    public void testSegmentTarget() {
+    	Unmarshaller u = factory.createUnmarshaller("t2");
+    	Marshaller m = factory.createMarshaller("t2");
+    	
+    	Person person = (Person) u.unmarshal("john,smith");
+    	assertEquals("smith", person.getLastName());
+    	
+    	assertEquals(",smith", m.marshal(person).toString());
+    }
+    
+    @Test
+    public void testRecordTarget() {
+    	BeanReader in = factory.createReader("t3", new StringReader("john,smith"));
+    	Person person = (Person) in.read();
+    	assertEquals("smith", person.getLastName());
     }
     
     @Test(expected=BeanIOConfigurationException.class)

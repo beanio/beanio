@@ -52,6 +52,8 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     private static final boolean asmEnabled = "asm".equalsIgnoreCase(
         Settings.getInstance().getProperty(Settings.PROPERTY_ACCESSOR_METHOD));
     
+    private static final Component unbound = new Component() {{ setName("unbound"); }};
+    
     private Stream stream;
     private String streamFormat;
     private boolean readEnabled = true;
@@ -89,7 +91,15 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             accessorFactory = new ReflectionAccessorFactory();
         }
         
-        process(config);
+        try {
+        	process(config);
+        }
+        catch (BeanIOConfigurationException ex) {
+        	throw ex;
+        }
+        catch (RuntimeException ex) {
+        	throw new BeanIOConfigurationException("Failed to compile stream '" + config.getName() + "'", ex);
+        }
         
         // calculate the heap size
         stream.init();
@@ -156,7 +166,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      * @param component the component to add
      */
     protected void pushProperty(Component component) {
-        if (isBound()) {            
+        if (isBound() && component != unbound) {            
             // add properties to their parent bean or Map
             Component parent = propertyStack.getLast();
             switch (((Property)parent).type()) {
@@ -181,24 +191,38 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      * @return the removed component
      */
     protected Property popProperty() {
-        Property last = (Property) propertyStack.removeLast();
-        if (propertyStack.isEmpty()) {
-            // if we popped the last property, initialize the entire tree by calling clearValue 
-            //TODO is this still needed? last.clearValue(null);
-        }
-        else {
-            if (last.isIdentifier()) {
-                ((Property)propertyStack.getLast()).setIdentifier(true);
-            }
-        }
+    	Component c = propertyStack.removeLast();
+    	if (c == unbound) {
+    		return null;
+    	}
+        Property last = (Property) c;
         
-        // check for constructor arguments
-        if (last.type() == Property.COMPLEX) {
-            updateConstructor((Bean)last);
+        if (!propertyStack.isEmpty()) {
+            if (last.isIdentifier()) {
+            	for (int i=propertyStack.size() - 1; i>=0; i--) {
+            		if (propertyStack.get(i) == unbound) {
+            			continue;
+            		}
+            		else {
+            			((Property)propertyStack.getLast()).setIdentifier(true);
+            			break;
+            		}
+            	}
+            }
         }
         
         return last;
     }
+    
+    /**
+     * Returns true if a property has been pushed onto the property stack, indicating
+     * that further properties will be bound to a parent property.
+     * @return true if a property is currently bound to a parent bean object
+     */
+    protected boolean isBound() {
+        return !propertyStack.isEmpty() && propertyStack.getLast() != unbound;
+    }
+    
     
     /**
      * Updates a {@link Bean}'s constructor if one or more of its properties are 
@@ -267,15 +291,6 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         }
         
         bean.setConstructor(constructor);
-    }
-    
-    /**
-     * Returns true if a property has been pushed onto the property stack, indicating
-     * that further properties will be bound to a parent property.
-     * @return true if a property is currently bound to a parent bean object
-     */
-    protected boolean isBound() {
-        return !propertyStack.isEmpty();
     }
     
     @Override
@@ -351,17 +366,9 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         // determine and validate the bean class
         Property bean = createProperty(config, propertyStack.isEmpty());
         
-        // handle groups bound to a parent bean object assigned to a group
-        if (config.isBound()) {
-            // handle repeating groups mapped to a collection
-            if (config.isRepeating()) {
-                initializeGroupIteration(config, bean);
-                reflectPropertyType(config, bean);
-            }
-            // or a group mapped to a property of its parent
-            else if (bean != null) {
-                reflectPropertyType(config, bean);
-            }
+        // handle bound repeating groups
+        if (config.isBound() && config.isRepeating()) {
+        	initializeGroupIteration(config, bean);
         }
         
         initializeGroupMain(config, bean);
@@ -393,32 +400,38 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
 
     @Override
     protected void finalizeGroup(GroupConfig config) throws BeanIOConfigurationException {
-        finalizeGroupMain(config);
+        Property property = finalizeGroupMain(config);
         
         if (config.isBound() && config.isRepeating()) {
-            finalizeGroupIteration(config);
+            finalizeGroupIteration(config, property);
         }
     }
     
-    protected void finalizeGroupMain(GroupConfig config) {
+    protected Property finalizeGroupMain(GroupConfig config) {
+    	Property property = null;
+    	
         // pop the group bean from the property stack
         if (config.getType() != null) {
-            popProperty();
+        	property = popProperty();
+            reflectPropertyType(config, property);
         }
-        
         // pop the record from the parser stack
         finalizeGroup(config, (Group)popParser());
+        
+        return property;
     }
     
-    protected void finalizeGroupIteration(GroupConfig config) {
+    protected void finalizeGroupIteration(GroupConfig config, Property property) {
+        // pop the iteration from the parser stack
+    	RecordAggregation aggregation = (RecordAggregation) popParser();
+    	
         // pop the collection from the property stack
         if (config.getType() != null) {
-            popProperty();
+        	popProperty();
+        	reflectRecordAggregationType(config, aggregation, property);
         }
-        
-        // pop the iteration from the parser stack
-        popParser();
     }
+    
 
     /**
      * Invoked by {@link #finalizeGroupMain(GroupConfig)} to allow subclasses to perform
@@ -438,17 +451,9 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         // determine and validate the bean class
         Property bean = createProperty(config, propertyStack.isEmpty());
 
-        // handle records bound to a parent bean object assigned to a group
-        if (config.isBound()) {
-            // handle repeating records mapped to a collection
-            if (config.isRepeating()) {
-                initializeRecordIteration(config, bean);
-                reflectPropertyType(config, bean);
-            }
-            // or a record mapped to a property of its parent
-            else if (bean != null) {
-                reflectPropertyType(config, bean);
-            }
+        // handle bound repeating records
+        if (config.isBound() && config.isRepeating()) {
+        	initializeRecordIteration(config, bean);
         }
         
         initializeRecordMain(config, bean);
@@ -477,10 +482,14 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         record.setIdentifier(config.isIdentifier());
         record.setProperty(property);
         
-        pushParser(record);
         if (property != null) {
             pushProperty((Component)property);
         }
+        else if (config.getTarget() != null) {
+        	pushProperty(unbound);
+        }
+        
+        pushParser(record);
     }
 
     /*
@@ -489,30 +498,50 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      */
     @Override
     protected void finalizeRecord(RecordConfig config) throws BeanIOConfigurationException {
-        finalizeRecordMain(config);
+        Property property = finalizeRecordMain(config);
         
         if (config.isBound() && config.isRepeating()) {
-            finalizeRecordIteration(config);
+            finalizeRecordIteration(config, property);
         }
     }
     
-    protected void finalizeRecordMain(RecordConfig config) {
+    protected Property finalizeRecordMain(RecordConfig config) {
+    	Property property = null;
+    	Record record = (Record) popParser();
+    	
         // pop the record bean from the property stack
-        if (config.getType() != null) {
-            popProperty();
-        }
-        // pop the record from the parser stack
-        finalizeRecord(config, (Record)popParser());
-    }
-    
-    protected void finalizeRecordIteration(RecordConfig config) {
-        // pop the collection from the property stack
-        if (config.getType() != null) {
-            popProperty();
+        if (config.getType() != null || config.getTarget() != null) {
+            property = popProperty(); // could be null if 'target' was set
+            
+            String target = config.getTarget();
+            if (target != null) {
+            	property = findTarget(record, target);
+            	pushProperty((Component)property);
+            	popProperty();
+            	record.setProperty(property);
+            }
+            
+            if (property != null) {
+            	reflectPropertyType(config, property);
+            }
         }
         
+        // pop the record from the parser stack
+        finalizeRecord(config, record);
+        
+        return property;
+    }
+    
+    protected void finalizeRecordIteration(RecordConfig config, Property property) {
         // pop the iteration from the parser stack
         RecordAggregation aggregation = (RecordAggregation) popParser();
+        
+        // pop the collection from the property stack
+        if (config.getType() != null || config.getTarget() != null) {
+            popProperty();
+            
+            reflectRecordAggregationType(config, aggregation, property);
+        }
         
         // assumes key is not null only for map aggregation
         String key = config.getKey();
@@ -523,14 +552,14 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
                 throw new BeanIOConfigurationException("Key '" + key + "' not found");
             }
             
-            Property property = null;
+            Property keyProperty = null;
             if (c instanceof Property) {
-                property = (Property) c;
+            	keyProperty = (Property) c;
             }
-            if (property == null || property.getType() == null) {
+            if (keyProperty == null || keyProperty.getType() == null) {
                 throw new BeanIOConfigurationException("Key '" + key + "' is not a property");
             }
-            ((RecordMap)aggregation).setKey(property);
+            ((RecordMap)aggregation).setKey(keyProperty);
         }
     }
     
@@ -541,16 +570,13 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      * @param record the {@link Record} being finalized
      */
     protected void finalizeRecord(RecordConfig config, Record record) { 
-        String target = config.getTarget();
-        if (target != null) {
-            record.setProperty(findTarget(record, target));
-        }
+
     }
     
     private Property findTarget(Component segment, String name) {
         Component c = findDescendant("target", segment, name);
         if (c == null) {
-            throw new BeanIOConfigurationException("Descendant target '" + name + "' not found");
+            throw new BeanIOConfigurationException("Descendant value '" + name + "' not found");
         }
         
         Property property = null;
@@ -558,7 +584,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             property = (Property) c;
         }
         if (property == null || property.getType() == null) {
-            throw new BeanIOConfigurationException("No class defined for record target '" + name + "'");
+            throw new BeanIOConfigurationException("No class defined for value '" + name + "'");
         }
         return property;
     }
@@ -589,12 +615,12 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      */
     @Override
     protected final void initializeSegment(SegmentConfig config) throws BeanIOConfigurationException {
-
         Property bean = createProperty(config, config.getMinOccurs() > 0 && !config.isNillable());
         
         if (config.isRepeating()) {
             initializeSegmentIteration(config, bean);
         }
+        
         initializeSegmentMain(config, bean);
     }
     
@@ -608,7 +634,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         Aggregation agg = createAggregation(config, property);
         
         pushParser(agg);
-        if (property != null) {
+        if (property != null || config.getTarget() != null) {
             pushProperty(agg);
         }
     }
@@ -630,27 +656,22 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         segment.setIdentifier(config.isIdentifier());
         segment.setLazy(config.getMinOccurs() < config.getMaxOccurs());
         segment.setRepeating(config.isRepeating());
-        //segment.setLazyMarshalling(bean != null && config.isLazy() /*&& !config.isRepeating()*/);
         segment.setProperty(property);
         segment.setExistencePredetermined(config.getDefaultExistence());
         
-        if (!config.isRepeating() && property != null) {
-            reflectPropertyType(config, property);
+        if (isSegmentRequired(config)) {
+            pushParser(segment);
         }
-    
+        
         if (property != null) {
             pushProperty((Component)property);
         }
-        if (isSegmentRequired(config)) {
-            pushParser(segment);
+        else if (config.getTarget() != null) {
+        	pushProperty(unbound);
         }
     }
 
     protected boolean isSegmentRequired(SegmentConfig config) {
-        /*
-        if (config.isConstant()) {
-            return true;
-        }*/
         return (config.getType() != null || config.getTarget() != null);
     }
     
@@ -660,9 +681,9 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      */
     @Override
     protected final void finalizeSegment(SegmentConfig config) throws BeanIOConfigurationException {
-        finalizeSegmentMain(config);
+        Property property = finalizeSegmentMain(config);
         if (config.isRepeating()) {
-            finalizeSegmentIteration(config);
+            finalizeSegmentIteration(config, property);
         }
     }
     
@@ -670,10 +691,11 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      * Called by {@link #finalizeSegment(SegmentConfig)} to finalize segment iteration.
      * @param config the segment configuration
      */
-    protected void finalizeSegmentIteration(SegmentConfig config) {
+    protected void finalizeSegmentIteration(SegmentConfig config, Property property) {
         Aggregation aggregation = (Aggregation) popParser();
-        if (config.getType() != null) {
-            popProperty(); // pop the iteration
+        if (config.getType() != null || config.getTarget() != null) {
+        	popProperty(); // pop the iteration
+            reflectAggregationType(config, aggregation, property);
         }
         
         // assumes key is not null only for map aggregation
@@ -685,14 +707,14 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
                 throw new BeanIOConfigurationException("Key '" + key + "' not found");
             }
             
-            Property property = null;
+            Property keyProperty = null;
             if (c instanceof Property) {
-                property = (Property) c;
+                keyProperty = (Property) c;
             }
-            if (property == null || property.getType() == null) {
+            if (keyProperty == null || keyProperty.getType() == null) {
                 throw new BeanIOConfigurationException("Key '" + key + "' is not a property");
             }
-            ((MapParser)aggregation).setKey(property);
+            ((MapParser)aggregation).setKey(keyProperty);
         }
     }
     
@@ -700,13 +722,32 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      * Called by {@link #finalizeSegment(SegmentConfig)} to finalize the segment component.
      * @param config the segment configuration
      */
-    protected void finalizeSegmentMain(SegmentConfig config) {
+    protected Property finalizeSegmentMain(SegmentConfig config) {
+    	Property property = null;
+    	Segment segment = null;
+    	
         if (isSegmentRequired(config)) {
-            finalizeSegment(config, (Segment)popParser());  // pop the segment
-        }   
-        if (config.getType() != null) {     
-            popProperty(); // pop the bean property
-        }  
+        	segment = (Segment) popParser();
+            finalizeSegment(config, segment);
+        }
+        
+        if (config.getType() != null || config.getTarget() != null) {
+            property = popProperty(); // could be null if 'target' was set
+            
+            String target = config.getTarget();
+            if (target != null) {
+            	property = findTarget(segment, target);
+            	pushProperty((Component)property);
+            	popProperty();
+                segment.setProperty(property);
+            }
+            
+            if (property != null) {
+            	reflectPropertyType(config, property);
+            }
+        }
+        
+        return property;
     }
     
     /**
@@ -716,10 +757,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      * @param segment the new {@link Segment}
      */
     protected void finalizeSegment(SegmentConfig config, Segment segment) {
-        String target = config.getTarget();
-        if (target != null) {
-            segment.setProperty(findTarget(segment, target));
-        }
+
     }
 
     /*
@@ -796,6 +834,8 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             if (aggregation.isProperty()) {
                 popProperty();
             }
+            
+            reflectAggregationType(config, aggregation, field);
         }
     }
 
@@ -890,7 +930,23 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         aggregation.setMinOccurs(config.getMinOccurs());
         aggregation.setMaxOccurs(config.getMaxOccurs());
         aggregation.setType(collectionType);
-        
+        return aggregation;
+    }
+    
+    /**
+     * 
+     * @param config
+     * @param aggregation
+     * @param property
+     * @throws BeanIOConfigurationException
+     */
+    protected void reflectAggregationType(
+		PropertyConfig config, 
+		Aggregation aggregation,
+		Property property) throws BeanIOConfigurationException {
+    	
+    	Class<?> collectionType = aggregation.getType();
+
         // if collection was set, then this is a property of its parent
         if (collectionType != null) {
             Class<?> reflectedType = reflectCollectionType(aggregation, property, 
@@ -916,8 +972,6 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
                 ((ArrayParser)aggregation).setArrayType(arrayType);
             }
         }
-        
-        return aggregation;
     }
 
     /**
@@ -964,7 +1018,16 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         }
         aggregation.setName(config.getName());
         aggregation.setType(collectionType);
-        
+        return aggregation;
+    }
+   
+    protected void reflectRecordAggregationType(
+		PropertyConfig config, 
+		RecordAggregation aggregation,
+		Property property) throws BeanIOConfigurationException {
+    	
+    	Class<?> collectionType = aggregation.getType();
+    	
         // if collection was set, then this is a property of its parent
         if (collectionType != null) {
             Class<?> reflectedType = reflectCollectionType(aggregation, property, 
@@ -990,10 +1053,8 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
                 ((RecordArray)aggregation).setArrayType(arrayType);
             }
         }
-        
-        return aggregation;
     }
-   
+    
     /**
      * 
      * @param iteration
@@ -1005,7 +1066,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      */
     protected Class<?> reflectCollectionType(Property iteration, Property property, 
         String getter, String setter) throws BeanIOConfigurationException {
-        if (propertyStack.isEmpty()) {
+        if (!isBound()) {
             return null;
         }
         
@@ -1016,6 +1077,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             case Property.COLLECTION:
             case Property.AGGREGATION_ARRAY:
             case Property.AGGREGATION_COLLECTION:
+            case Property.AGGREGATION_MAP:
                 return null;
             case Property.MAP:
                 String key = property != null ? property.getName() : iteration.getName();
@@ -1042,7 +1104,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         Class<?> reflectedType;
         try {
             // set the property descriptor on the field
-            PropertyDescriptor descriptor = getPropertyDescriptor(property.getName(),
+            PropertyDescriptor descriptor = getPropertyDescriptor(iteration.getName(),
                 getter, setter, construtorArgumentIndex >= 0);
             reflectedType = descriptor.getPropertyType();
             
@@ -1051,7 +1113,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         }
         catch (BeanIOConfigurationException ex) {
             // if a method accessor is not found, attempt to find a public field
-            java.lang.reflect.Field field = getField(property.getName());
+            java.lang.reflect.Field field = getField(iteration.getName());
             if (field == null) {
                 // give up and rethrow the exception
                 throw ex;    
@@ -1111,10 +1173,16 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      *   to the type determined through introspection
      */
     protected void reflectPropertyType(PropertyConfig config, Property property) throws BeanIOConfigurationException {
-        if (propertyStack.isEmpty()) {
+
+    	// check for constructor arguments
+        if (property.type() == Property.COMPLEX) {
+            updateConstructor((Bean)property);
+        }
+        
+        if (!isBound()) {
             return;
         }
-
+        
         Property parent = (Property) propertyStack.getLast();
         switch (parent.type()) {
             case Property.SIMPLE:
@@ -1152,7 +1220,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         Class<?> reflectedType;
         try {
             // set the property descriptor on the field
-            PropertyDescriptor descriptor = getPropertyDescriptor(property.getName(), 
+            PropertyDescriptor descriptor = getPropertyDescriptor(config.getName(), 
                 getter, setter, construtorArgumentIndex >= 0);
             reflectedType = descriptor.getPropertyType();
             
@@ -1161,7 +1229,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         }
         catch (BeanIOConfigurationException ex) {
             // if a method accessor is not found, attempt to find a public field
-            java.lang.reflect.Field field = getField(property.getName());
+            java.lang.reflect.Field field = getField(config.getName());
             if (field == null) {
                 // give up and rethrow the exception
                 throw ex;    
@@ -1552,4 +1620,6 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     public void setClassLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
     }
+    
+    
 }

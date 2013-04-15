@@ -20,4 +20,24 @@
     </record>
   </stream>
 
+  <stream name="stream3" format="csv">
+    <record name="detail" class="org.beanio.parser.inlinemaps.Job">
+      <field name="recordType" rid="true" literal="J" ignore="true" />
+      <field name="id" />
+      <segment name="codes" collection="map" key="code" value="status" occurs="2">
+        <field name="code" />
+        <field name="status" />
+      </segment>
+    </record>
+  </stream>
+
+  <stream name="stream4" format="csv">
+    <group name="group" class="org.beanio.parser.inlinemaps.Job">
+      <record name="codes" collection="map" key="code" value="status">
+        <field name="code" />
+        <field name="status" />
+      </record>
+   </group>
+  </stream>
+
 </beanio>

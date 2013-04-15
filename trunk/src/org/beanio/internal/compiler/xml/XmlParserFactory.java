@@ -73,12 +73,13 @@ public class XmlParserFactory extends ParserFactorySupport {
     }
     
     @Override
-    protected void finalizeGroupMain(GroupConfig config) throws BeanIOConfigurationException {
-        super.finalizeGroupMain(config);
+    protected Property finalizeGroupMain(GroupConfig config) throws BeanIOConfigurationException {
+        Property property = super.finalizeGroupMain(config);
         if (!XmlTypeConstants.XML_TYPE_NONE.equals(config.getXmlType())) {
             popParser();
             --groupDepth;
         }
+        return property;
     }
 
     @Override
@@ -99,9 +100,10 @@ public class XmlParserFactory extends ParserFactorySupport {
     }
     
     @Override
-    protected void finalizeRecordMain(RecordConfig config) throws BeanIOConfigurationException {
-        super.finalizeRecordMain(config);
+    protected Property finalizeRecordMain(RecordConfig config) throws BeanIOConfigurationException {
+        Property property = super.finalizeRecordMain(config);
         popParser();
+        return property;
     }
     
     @Override
@@ -145,11 +147,12 @@ public class XmlParserFactory extends ParserFactorySupport {
     }
     
     @Override
-    protected void finalizeSegmentMain(SegmentConfig config) throws BeanIOConfigurationException {
-        super.finalizeSegmentMain(config);
+    protected Property finalizeSegmentMain(SegmentConfig config) throws BeanIOConfigurationException {
+        Property property = super.finalizeSegmentMain(config);
         if (isWrappingRequired(config)) {
             popParser(); // pop the wrapper
         }
+        return property;
     }
     private boolean isWrappingRequired(SegmentConfig config) {
         return XmlTypeConstants.XML_TYPE_ELEMENT.equals(config.getXmlType()) && !config.isConstant();

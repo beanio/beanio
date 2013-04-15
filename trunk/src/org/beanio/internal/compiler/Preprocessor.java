@@ -301,10 +301,13 @@ public class Preprocessor extends ProcessorSupport {
         if (propertyRoot == null || propertyRoot != segment) {
             segment.setBound(true);
             
-            if (segment.getType() != null && 
-                segment.getMaxOccurs() > 1 &&
-                segment.getCollection() == null) {
-                throw new BeanIOConfigurationException("Collection required when maxOccurs is greater 1 and class is set");
+            if (segment.getMaxOccurs() > 1 && segment.getCollection() == null) {
+            	if (segment.getType() != null) {
+            		throw new BeanIOConfigurationException("Collection required when maxOccurs is greater than 1 and class is set");
+            	}
+            	if (segment.getTarget() != null) {
+            		throw new BeanIOConfigurationException("Collection required when maxOccurs is greater than 1 and value is set");
+            	}
             }
 
             if (segment.getComponentType() == ComponentConfig.RECORD &&

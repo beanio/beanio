@@ -1,5 +1,6 @@
 package org.beanio.parser.inlinemaps;
 
+import java.io.StringReader;
 import java.util.Map;
 
 import org.beanio.*;
@@ -65,5 +66,31 @@ public class InlineMapParserTest extends ParserTest {
         Assert.assertEquals("Bob", map.get("bm"));   
         
         Assert.assertEquals("js,Joe,,bm,Bob,", m.marshal(map).toString());
+    }
+    
+    @Test
+    public void testRecordBoundMap() {
+    	Unmarshaller u = factory.createUnmarshaller("stream3");
+    	Marshaller m = factory.createMarshaller("stream3");
+    	
+    	String text = "J,1,key1,value1,key2,value2";
+    	Job job = (Job) u.unmarshal(text);
+    	Assert.assertEquals("1", job.getId());
+    	Map map = job.getCodes();
+    	Assert.assertEquals("value1", map.get("key1"));
+    	Assert.assertEquals("value2", map.get("key2"));
+    	
+    	Assert.assertEquals(text, m.marshal(job).toString());
+    }
+    
+    @Test
+    public void testGroupBoundMap() {
+    	String text = "key1,value1\nkey2,value2";
+    	BeanReader in = factory.createReader("stream4", new StringReader(text));
+    	
+    	Job job = (Job) in.read();
+    	Map map = job.getCodes();
+    	Assert.assertEquals("value1", map.get("key1"));
+    	Assert.assertEquals("value2", map.get("key2"));
     }
 }

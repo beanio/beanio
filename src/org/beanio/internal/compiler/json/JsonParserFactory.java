@@ -67,8 +67,8 @@ public class JsonParserFactory extends ParserFactorySupport {
     }
 
     @Override
-    protected void finalizeSegmentIteration(SegmentConfig config) { 
-        super.finalizeSegmentIteration(config);
+    protected void finalizeSegmentIteration(SegmentConfig config, Property property) { 
+        super.finalizeSegmentIteration(config, property);
         popParser(); // pop the wrapper
     }
 
@@ -89,11 +89,12 @@ public class JsonParserFactory extends ParserFactorySupport {
     }
     
     @Override
-    protected void finalizeSegmentMain(SegmentConfig config) throws BeanIOConfigurationException {
-        super.finalizeSegmentMain(config);
+    protected Property finalizeSegmentMain(SegmentConfig config) throws BeanIOConfigurationException {
+        Property property = super.finalizeSegmentMain(config);
         if (isWrappingRequired(config)) {
             popParser(); // pop the wrapper
         }
+        return property;
     }
     private boolean isWrappingRequired(SegmentConfig config) {
         return !PropertyConfig.JSON_TYPE_NONE.equals(config.getJsonType());

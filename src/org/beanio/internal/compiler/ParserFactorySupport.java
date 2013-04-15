@@ -1116,8 +1116,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             case Property.AGGREGATION_MAP:
                 return null;
             case Property.MAP:
-                String key = property != null ? property.getName() : iteration.getName();
-                iteration.setAccessor(new MapAccessor(key));
+                iteration.setAccessor(new MapAccessor(iteration.getName()));
                 return null;
         }
         
@@ -1229,7 +1228,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             case Property.AGGREGATION_MAP:
                 return;
             case Property.MAP:
-                property.setAccessor(new MapAccessor(property.getName()));
+                property.setAccessor(new MapAccessor(config.getName()));
                 return;
         }
         

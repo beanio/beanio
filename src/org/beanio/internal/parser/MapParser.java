@@ -18,6 +18,8 @@ package org.beanio.internal.parser;
 import java.io.IOException;
 import java.util.*;
 
+import org.beanio.internal.util.StringUtil;
+
 /**
  * A {@link Parser} component for aggregating inline {@link Map} objects.
  * For example: <tt>key1,field1,key2,field2</tt>.
@@ -116,7 +118,7 @@ public class MapParser extends Aggregation {
     
     @Override
     protected boolean unmarshal(UnmarshallingContext context, Parser delegate, int minOccurs, int maxOccurs) {
-        Map<Object,Object> map = createMap();
+        Map<Object,Object> map = lazy ? null : createMap();
         
         boolean invalid = false;
         int count = 0;
@@ -139,10 +141,14 @@ public class MapParser extends Aggregation {
                 if (fieldValue == Value.INVALID) {
                     invalid = true;
                 }
-                else {
-                    if (map != null) {
-                        map.put(key.getValue(context), fieldValue);
-                    }
+                else if (fieldValue != Value.MISSING) {
+                	Object mapKey = key.getValue(context);
+                	if (!lazy || StringUtil.hasValue(mapKey) || StringUtil.hasValue(fieldValue)) {
+                		if (map == null) {
+                			map = createMap();
+                		}
+                		map.put(mapKey, fieldValue);
+                	}
                 }
                 
                 delegate.clearValue(context);

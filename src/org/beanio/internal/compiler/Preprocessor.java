@@ -249,6 +249,10 @@ public class Preprocessor extends ProcessorSupport {
         
         if (propertyRoot == null) {
             propertyRoot = record;
+            
+            if (record.isLazy()) {
+            	throw new BeanIOConfigurationException("Lazy cannot be true for unbound records");
+            }
         }
         
         initializeSegment(record);

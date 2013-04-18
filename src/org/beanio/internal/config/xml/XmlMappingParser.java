@@ -469,9 +469,6 @@ public class XmlMappingParser implements StringUtil.PropertySource {
             segment = new RecordConfig();
             segment.setType(type);
         }
-        else {
-            
-        }
         populatePropertyConfig(segment, element);
         segment.setKey(getAttribute(element, "key"));
         segment.setOrder(getIntegerAttribute(element, "order"));
@@ -482,6 +479,7 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         segment.setXmlPrefix(getOptionalAttribute(element, "xmlPrefix"));
         segment.setJsonName(getAttribute(element, "jsonName"));
         segment.setJsonType(getAttribute(element, "jsonType"));
+        segment.setLazy(getBooleanAttribute(element, "lazy", segment.isLazy()));
         
         if (hasAttribute(element, "value")) {
             segment.setTarget(getAttribute(element, "value"));

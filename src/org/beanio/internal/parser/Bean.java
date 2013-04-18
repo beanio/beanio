@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Kevin Seim
+ * Copyright 2011-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 
 import org.beanio.*;
+import org.beanio.internal.util.StringUtil;
 
 /**
  * A component used to aggregate {@link Property}'s into a bean object, which
@@ -106,6 +107,8 @@ public class Bean extends PropertyComponent implements Property {
     public Object createValue(ParsingContext context) {
         Object b = null;
         
+        boolean hasProperties = false;
+        
         // populate constructor arguments first
         if (constructor != null) {
             // lazily create...
@@ -132,7 +135,8 @@ public class Bean extends PropertyComponent implements Property {
                     value = createMissingBeans ? property.createValue(context) : null;
                 }
                 else {
-                    create = create || !lazy || hasValue(value);
+                    hasProperties = true;
+                    create = create || !lazy || StringUtil.hasValue(value);
                 }
                 
                 cargs[accessor.getConstructorArgumentIndex()] = value;
@@ -160,9 +164,11 @@ public class Bean extends PropertyComponent implements Property {
             }
             // explicitly null values must still be set on the bean...
             else if (value != Value.MISSING) {
+                hasProperties = true;
+                
                 if (b == null) {
                     if (lazy) {
-                        if (!hasValue(value)) {
+                        if (!StringUtil.hasValue(value)) {
                             continue;
                         }
                         
@@ -184,8 +190,17 @@ public class Bean extends PropertyComponent implements Property {
             }
         }
 
+        
         if (b == null) {
-            b = isRequired() ? newInstance(context) : Value.MISSING;
+            if (isRequired()) {
+                b = newInstance(context);
+            }
+            else if (hasProperties) {
+                b = null;
+            }
+            else {
+                b = Value.MISSING;
+            }
         }
         
         bean.set(context, b);
@@ -221,10 +236,6 @@ public class Bean extends PropertyComponent implements Property {
                     "' on bean '" + getName() + "'", ex);
             }
         }
-    }
-    
-    private boolean hasValue(Object value) {
-        return value != null && !"".equals(value);
     }
     
     /*

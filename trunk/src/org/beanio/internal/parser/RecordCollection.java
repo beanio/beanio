@@ -18,6 +18,8 @@ package org.beanio.internal.parser;
 import java.io.IOException;
 import java.util.Collection;
 
+import org.beanio.internal.util.StringUtil;
+
 /**
  * A {@link Parser} tree component for parsing a collection of bean objects, where
  * a bean object is mapped to a {@link Record} or {@link Group}.
@@ -41,11 +43,16 @@ public class RecordCollection extends RecordAggregation {
         
         Object aggregatedValue = getSelector().getValue(context);
         if (aggregatedValue != Value.INVALID) {
-            if (value.get(context) == Value.MISSING) {
-                value.set(context, createAggregationType());
-            }
-            
-            getCollection(context).add(getSelector().getValue(context));
+        	if (!lazy || StringUtil.hasValue(aggregatedValue)) {
+        		Object aggregation = value.get(context);
+        		if (aggregation == null || aggregation == Value.MISSING) {
+        			aggregation = createAggregationType();
+        			value.set(context, aggregation);
+        		}
+
+        		Collection<Object> collection = (Collection<Object>) aggregation;
+        		collection.add(aggregatedValue);
+        	}
         }
         
         getParser().clearValue(context);

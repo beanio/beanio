@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Kevin Seim
+ * Copyright 2012-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ public abstract class RecordAggregation extends DelegatingParser implements Sele
     protected ParserLocal<Object> value = new ParserLocal<Object>(Value.MISSING);
     // the collection type
     private Class<?> type;
+    // true if null should be returned for an empty collection
+    protected boolean lazy;
     
     /**
      * Constructs a new <tt>RecordAggregation</tt>.
@@ -204,6 +206,14 @@ public abstract class RecordAggregation extends DelegatingParser implements Sele
      */
     public int getMaxOccurs() {
         return getSelector().getMaxOccurs();
+    }
+    
+    public boolean isLazy() {
+        return lazy;
+    }
+
+    public void setLazy(boolean lazy) {
+        this.lazy = lazy;
     }
     
     @Override

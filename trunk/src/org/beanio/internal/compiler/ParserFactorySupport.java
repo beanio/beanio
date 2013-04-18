@@ -1054,6 +1054,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         }
         aggregation.setName(config.getName());
         aggregation.setType(collectionType);
+        aggregation.setLazy(config.isLazy());
         return aggregation;
     }
    

@@ -18,6 +18,8 @@ package org.beanio.internal.parser;
 import java.io.IOException;
 import java.util.*;
 
+import org.beanio.internal.util.StringUtil;
+
 /**
  * A <tt>CollectionParser</tt> provides iteration support for a {@link Segment} or {@link Field},
  * and is optionally bound to a {@link Collection} type property value.
@@ -144,8 +146,7 @@ public class CollectionParser extends Aggregation {
                 }
                 // the field value may still be missing if 'optional' is true on a child segment
                 else if (fieldValue != Value.MISSING) {
-                    boolean add = lazy ? fieldValue != null && !"".equals(fieldValue) : true;
-                    if (add) {
+                    if (!lazy || StringUtil.hasValue(fieldValue)) {
                         if (collection == null) {
                             collection = createCollection();
                         }

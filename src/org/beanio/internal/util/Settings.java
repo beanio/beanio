@@ -97,17 +97,18 @@ public class Settings {
      * for missing fields and records during unmarshalling.  This behavior is not recommended.
      */
     public static final String CREATE_MISSING_BEANS = "org.beanio.createMissingBeans";
+    /** Whether objects are lazily instantiated if Strings are empty, rather than just null.  */
+    public static final String LAZY_IF_EMPTY = "org.beanio.lazyIfEmpty";
     /**
      * Whether XML components should be sorted by position.  Helpful for use with annotations
      * where fields and methods may not be ordered by their position in the stream.
      * @since 2.1.0
      */
     public static final String SORT_XML_COMPONENTS_BY_POSITION = "org.beanio.xml.sorted";
-    
+
     private static final String DEFAULT_CONFIGURATION_PATH = "org/beanio/internal/config/beanio.properties";
     private static final String DEFAULT_CONFIGURATION_FILENAME = "beanio.properties";
     private static final String CONFIGURATION_PROPERTY = "org.beanio.configuration";
-
     
     private Properties properties;
     private static Settings settings;

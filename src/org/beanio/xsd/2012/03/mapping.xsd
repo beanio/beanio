@@ -603,6 +603,14 @@
         </documentation>
       </annotation>
     </attribute>
+    <attribute name="lazy" type="xsd:boolean" use="optional">
+      <annotation>
+        <documentation>
+          Set to true if null is returned for a empty collection or a collection
+          of null and/or empty Strings.
+        </documentation>
+      </annotation>
+    </attribute>
     <attribute name="template" type="xsd:string" use="optional">
       <annotation>
         <documentation>

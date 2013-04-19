@@ -56,7 +56,10 @@ public class ArrayParser extends CollectionParser {
         int index = 0;
         Object array = Array.newInstance(arrayType, collection.size());
         for (Object obj : collection) {
-            Array.set(array, index++, obj);
+            if (obj != null || !arrayType.isPrimitive()) {
+                Array.set(array, index, obj);
+            }
+            index++;
         }
         return array;
     }

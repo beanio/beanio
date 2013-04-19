@@ -93,6 +93,8 @@ public class TypeHandlerFactory {
                 return DateFormat.getTimeInstance();
             }
         });
+        defaultFactory.registerHandlerFor(Calendar.class, new CalendarTypeHandler(
+           settings.getProperty(Settings.DEFAULT_CALENDAR_FORMAT)));
         
         // xml specific formats...
         defaultFactory.registerHandlerFor(TypeUtil.DATE_ALIAS, new XmlDateTypeHandler(), "xml");

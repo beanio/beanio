@@ -181,7 +181,9 @@ public class Bean extends PropertyComponent implements Property {
                 }
 
                 try {
-                    property.getAccessor().setValue(b, value);
+                    if (value != null || !property.getType().isPrimitive()) {
+                        property.getAccessor().setValue(b, value);
+                    }
                 }
                 catch (Exception ex) {
                     throw new BeanIOException("Failed to set property '" + property.getName() + 

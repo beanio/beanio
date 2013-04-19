@@ -220,8 +220,8 @@ public class TypesParserTest extends ParserTest {
     @Test
     public void testNullPrimitive() throws Exception {
         BeanReader in = factory.createReader("t6", new StringReader("\n"));
-        assertFieldError(in, 1, "record", "intValue", "", 
-            "Type conversion error: Primitive property values cannot be null");
+        PrimitiveRecord record = (PrimitiveRecord) in.read();
+        assertEquals(0, record.getIntValue());
     }
     
     @Test

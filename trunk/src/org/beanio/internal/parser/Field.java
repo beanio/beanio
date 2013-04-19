@@ -33,8 +33,11 @@ import org.beanio.types.*;
  */
 public class Field extends ParserComponent implements Property {
 
-    private static final boolean marshalDefault = "true".equalsIgnoreCase(
-        Settings.getInstance().getProperty(Settings.DEFAULT_MARSHALLING_ENABLED));
+    private static final boolean ERROR_IF_NULL_PRIMITIVE = 
+        Settings.getInstance().getBoolean(Settings.ERROR_IF_NULL_PRIMITIVE);
+    
+    private static final boolean marshalDefault = 
+        Settings.getInstance().getBoolean(Settings.DEFAULT_MARSHALLING_ENABLED);
     
     private ParserLocal<Object> value = new ParserLocal<Object>(Value.MISSING);
     
@@ -314,7 +317,7 @@ public class Field extends ParserComponent implements Property {
             Object value = (handler == null) ? text : handler.parse(text);
             
             // validate primitive values are not null
-            if (value == null && propertyType != null && propertyType.isPrimitive()) {
+            if (value == null && ERROR_IF_NULL_PRIMITIVE && propertyType != null && propertyType.isPrimitive()) {
                 context.addFieldError(getName(), fieldText, "type",
                     "Primitive property values cannot be null");
                 return Value.INVALID;

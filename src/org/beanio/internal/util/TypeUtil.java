@@ -110,6 +110,7 @@ public class TypeUtil {
      * <tr><td>date</td><td>java.util.Date</td></tr>
      * <tr><td>time</td><td>java.util.Date</td></tr>
      * <tr><td>datetime</td><td>java.util.Date</td></tr></tr>
+     * <tr><td>calendar</td><td>java.util.Calendar</td></tr></tr>
      * </table>
      * 
      * @param classLoader the {@link ClassLoader} for loading classes
@@ -145,12 +146,12 @@ public class TypeUtil {
             return BigDecimal.class;
         else if ("biginteger".equalsIgnoreCase(type))
             return BigInteger.class;
-        else if ("uuid".equalsIgnoreCase(type)) {
+        else if ("uuid".equalsIgnoreCase(type))
             return UUID.class;
-        }
-        else if ("url".equalsIgnoreCase(type)) {
+        else if ("url".equalsIgnoreCase(type))
             return URL.class;
-        }
+        else if ("calendar".equalsIgnoreCase(type))
+            return Calendar.class;
         else if (
             DATE_ALIAS.equalsIgnoreCase(type) ||
             TIME_ALIAS.equalsIgnoreCase(type) ||

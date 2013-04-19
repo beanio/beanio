@@ -47,6 +47,9 @@ public class Settings {
     public static final String DEFAULT_DATETIME_FORMAT = "org.beanio.defaultDateTimeFormat";
     /** The default date format pattern for fields assigned type alias <tt>Time</tt> */
     public static final String DEFAULT_TIME_FORMAT = "org.beanio.defaultTimeFormat";
+    /** The default date format pattern for fields assigned type alias <tt>Calendar</tt> */
+    public static final String DEFAULT_CALENDAR_FORMAT = "org.beanio.defaultCalendarFormat";
+    
     /** 
      * Whether property values support the following escape sequences:  
      * <ul>

@@ -38,6 +38,7 @@ public abstract class PropertyConfig extends ComponentConfig {
     public static final String JSON_TYPE_NUMBER = "number";
     public static final String JSON_TYPE_STRING = "string";
     
+    private String label;
     private String type;
     private String getter;
     private String setter;
@@ -73,6 +74,23 @@ public abstract class PropertyConfig extends ComponentConfig {
      */
     public PropertyConfig() { }
 
+    /**
+     * Returns the component name used for identification in error handling.
+     * Defaults to getName() if not set.
+     * @return the component name
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * Sets the component name used for identification in error handling.
+     * @param label the component name
+     */
+    public void setLabel(String label) {
+        this.label = label;
+    }
+    
     /**
      * Returns the fully qualified class name or type alias of this property.
      * By default, <tt>null</tt> is returned and the property value type

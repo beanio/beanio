@@ -59,7 +59,7 @@ public class FieldConfig extends SimplePropertyConfig {
     public char getComponentType() { 
         return FIELD;
     }
-    
+
     /**
      * Returns the textual representation of the default value for
      * this field when the field is not present or empty during unmarshalling.

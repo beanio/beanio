@@ -270,6 +270,7 @@ public class AnnotationParser {
         
         SegmentConfig sc = new SegmentConfig();
         sc.setName(info.name);
+        sc.setLabel(toValue(sa.name()));
         sc.setType(info.propertyName);
         sc.setCollection(info.collectionName);
         sc.setGetter(toValue(sa.getter()));
@@ -327,6 +328,7 @@ public class AnnotationParser {
             updateTypeInfo(info, fa.type(), fa.collection());
             
             fc.setName(info.name);
+            fc.setLabel(toValue(fa.name()));
             fc.setType(info.propertyName);
             fc.setCollection(info.collectionName);
             fc.setBound(true);
@@ -340,7 +342,7 @@ public class AnnotationParser {
             if (info.carg != null) {
                 fc.setSetter("#" + info.carg);
                 if (setter != null) {
-                    throw new BeanIOConfigurationException("Setter not allowed");
+                    throw new BeanIOConfigurationException("setter not allowed");
                 }
             }
             else {
@@ -352,6 +354,7 @@ public class AnnotationParser {
         }
         else {
             fc.setName(toValue(fa.name()));
+            fc.setLabel(fc.getName());
             fc.setBound(false);
         }
         if (fc.getName() == null) {

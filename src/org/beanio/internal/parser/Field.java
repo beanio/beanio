@@ -36,6 +36,9 @@ public class Field extends ParserComponent implements Property {
     private static final boolean ERROR_IF_NULL_PRIMITIVE = 
         Settings.getInstance().getBoolean(Settings.ERROR_IF_NULL_PRIMITIVE);
     
+    private static final boolean USE_DEFAULT_IF_MISSING = 
+        Settings.getInstance().getBoolean(Settings.USE_DEFAULT_IF_MISSING);
+    
     private static final boolean marshalDefault = 
         Settings.getInstance().getBoolean(Settings.DEFAULT_MARSHALLING_ENABLED);
     
@@ -211,7 +214,11 @@ public class Field extends ParserComponent implements Property {
         String text = format.extract(context, true);
         if (text == null) {
             // minOccurs is validated at the segment level
-            setValue(context, Value.MISSING);
+            Object value = Value.MISSING;
+            if (USE_DEFAULT_IF_MISSING && defaultValue != null) {
+                value = defaultValue;
+            }
+            setValue(context, value);
             return false;
         }
         

@@ -9,6 +9,9 @@ class Bean {
     // simple properties
 	String type;
 	String text;
+    String field1;
+    String field2;
+    String field3;
     
     // collection properties
 	Map map;

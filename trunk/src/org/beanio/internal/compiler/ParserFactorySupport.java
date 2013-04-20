@@ -786,7 +786,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         field.setIdentifier(config.isIdentifier());
         field.setRequired(config.isRequired());
         field.setTrim(config.isTrim());
-        field.setNullIfEmpty(config.isNullIfEmpty());
+        field.setLazy(config.isLazy());
         field.setLiteral(config.getLiteral());
         field.setMinLength(config.getMinLength());
         field.setMaxLength(config.getMaxLength());

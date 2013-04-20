@@ -1,7 +1,10 @@
 package org.beanio.parser.lazy
 
+import java.util.Map;
+
 import org.beanio.*;
 import org.beanio.parser.AbstractParserTest;
+import org.junit.Assert;
 import org.junit.Test
 import groovy.xml.MarkupBuilder
 
@@ -137,5 +140,31 @@ class LazyMapTest extends AbstractParserTest {
         obj = r.read()
         assert obj
         assert !obj.map
+    }
+    
+    @Test
+    void testLazyStringField() {
+        StreamFactory factory = createFactory("""
+          <stream name="n1" format="csv">
+            <record name="record" class="map">
+              <field name="field1" lazy="true" />
+              <field name="field2" />
+              <field name="field3" lazy="true" trim="true" minOccurs="0" />
+            </record>  
+          </stream>""");
+      
+        Unmarshaller u = factory.createUnmarshaller("n1");
+
+        Map map = u.unmarshal(",");
+        assert map.containsKey("field1")
+        assert !map.field1
+        assert map.field2 == ""
+        assert !map.containsKey("field3")
+        
+        map = u.unmarshal(" ,, ");
+        assert map.field1 == " "
+        assert map.field2 == ""
+        assert map.containsKey("field3")
+        assert !map.field3
     }
 }

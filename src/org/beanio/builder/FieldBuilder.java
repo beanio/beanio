@@ -86,15 +86,6 @@ public class FieldBuilder extends PropertyBuilderSupport<FieldBuilder> {
     }
     
     /**
-     * Indicates the empty field text should be converted to null before type conversion.
-     * @return this {@link FieldBuilder}
-     */
-    public FieldBuilder nullIfEmpty() {
-        config.setNullIfEmpty(true);
-        return this;
-    }
-    
-    /**
      * Indicates this field is required and must contain at least one character.
      * @return this {@link FieldBuilder}
      */

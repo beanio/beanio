@@ -117,12 +117,6 @@ public @interface Field {
     boolean trim() default false;
     
     /**
-     * Whether empty strings are converted to null before type conversion.
-     * @return true to convert empty strings to null
-     */
-    boolean nullIfEmpty() default false;
-    
-    /**
      * Whether the field is used to identify the record.
      * @return true if it identifies the record, false otherwise
      */
@@ -167,7 +161,8 @@ public @interface Field {
     Class<?> collection() default Void.class;
     
     /**
-     * Whether null should be returned for an empty collection.
+     * Whether an empty string should be converted to null, or null
+     * returned for an empty collection.
      * @return whether the field collection is lazily created
      */
     boolean lazy() default false;

@@ -391,6 +391,10 @@ public class Preprocessor extends ProcessorSupport {
                 "used as identifiers");   
         }
         
+        if (field.isBound() && field.isRepeating() && field.getCollection() == null) {
+            throw new BeanIOConfigurationException("collection not set");
+        }
+        
         if (field.isIdentifier()) {
             validateRecordIdentifyingCriteria(field);
         }

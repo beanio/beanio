@@ -100,10 +100,21 @@ public class Settings {
      * for missing fields and records during unmarshalling.  This behavior is not recommended.
      */
     public static final String CREATE_MISSING_BEANS = "org.beanio.createMissingBeans";
-    /** Whether objects are lazily instantiated if Strings are empty, rather than just null.  */
+    /** 
+     * Whether objects are lazily instantiated if Strings are empty, rather than just null.
+     * @since 2.1.0  
+     */
     public static final String LAZY_IF_EMPTY = "org.beanio.lazyIfEmpty";
-    /** Whether null field values should throw an exception if bound to a primitive */
+    /**
+     * Whether null field values should throw an exception if bound to a primitive
+     * @since 2.1.0 
+     */
     public static final String ERROR_IF_NULL_PRIMITIVE = "org.beanio.errorIfNullPrimitive";
+    /** 
+     * Whether default field values apply to missing fields
+     * @since 2.1.0 
+     */
+    public static final String USE_DEFAULT_IF_MISSING = "org.beanio.useDefaultIfMissing";
     /**
      * Whether XML components should be sorted by position.  Helpful for use with annotations
      * where fields and methods may not be ordered by their position in the stream.

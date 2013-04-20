@@ -40,7 +40,7 @@ public @interface Field {
      * Sets the position of the field.
      * @return the position
      */
-    int at();
+    int at() default Integer.MIN_VALUE;
     
     /**
      * Sets the maximum position of a field that repeats for

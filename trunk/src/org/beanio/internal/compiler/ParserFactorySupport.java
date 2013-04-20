@@ -782,7 +782,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         }
         
         Field field = new Field();
-        field.setName(config.getName());
+        field.setName(config.getLabel());
         field.setIdentifier(config.isIdentifier());
         field.setRequired(config.isRequired());
         field.setTrim(config.isTrim());
@@ -955,7 +955,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         else {
             aggregation = new CollectionParser();
         }
-        aggregation.setName(config.getName());
+        aggregation.setName(config.getLabel());
         if (config.getOccursRef() != null) {
             aggregation.setMinOccurs(config.getMinOccursRef());
             aggregation.setMaxOccurs(config.getMaxOccursRef());

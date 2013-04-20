@@ -30,6 +30,12 @@ import org.beanio.builder.XmlType;
 public @interface Segment {
 
     /**
+     * The segment name.
+     * @return the segment name
+     */
+    String name() default "";
+    
+    /**
      * The position of the segment.
      * @return the position
      */

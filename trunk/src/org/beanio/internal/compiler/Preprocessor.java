@@ -276,6 +276,13 @@ public class Preprocessor extends ProcessorSupport {
      */
     protected void initializeSegment(SegmentConfig segment) throws BeanIOConfigurationException {
 
+        if (segment.getName() == null) {
+            throw new BeanIOConfigurationException("name must be set");
+        }
+        if (segment.getLabel() == null) {
+            segment.setLabel(segment.getName());
+        }
+        
         // validate both 'class' and 'target' aren't set
         if (segment.getType() != null && segment.getTarget() != null) {
             throw new BeanIOConfigurationException("Cannot set both 'class' and 'value'");
@@ -349,6 +356,13 @@ public class Preprocessor extends ProcessorSupport {
         // ignore fields that belong to ignored records
         if (recordIgnored) {
             field.setBound(false);
+        }
+        
+        if (field.getName() == null) {
+            throw new BeanIOConfigurationException("name is required");
+        }
+        if (field.getLabel() == null) {
+            field.setLabel(field.getName());
         }
         
         // set and validate occurrences

@@ -16,6 +16,7 @@
 package org.beanio.internal.config.annotation;
 
 import java.beans.Introspector;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 
@@ -85,6 +86,7 @@ public class AnnotationParser {
             }
         }
         
+        handleConstructor(rc, clazz);
         addAllChildren(rc, clazz);
         return rc;
     }
@@ -103,6 +105,43 @@ public class AnnotationParser {
             addAllChildren(config, intf);
         }
         addChildren(config, clazz);
+    }
+    
+    private static void handleConstructor(ComponentConfig config, Class<?> clazz) {
+        try {
+            
+            for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
+                
+                Class<?>[] parameters = constructor.getParameterTypes();
+                Type[] parameterTypes = constructor.getGenericParameterTypes();
+                Annotation[][] annotations = constructor.getParameterAnnotations();
+                
+                for (int i=0; i<annotations.length; i++) {
+                    Field fa = null; 
+                    
+                    for (int j=0; j<annotations[i].length; j++) {
+                        if (annotations[i][j].annotationType() == Field.class) {
+                            fa = (Field) annotations[i][j];
+                            break;
+                        }
+                    }
+                    
+                    if (fa != null) {
+                        TypeInfo info = new TypeInfo();
+                        info.carg = i + 1;
+                        info.name = toValue(fa.name());
+                        info.type = parameters[i];
+                        info.genericType = parameterTypes[i];
+                        
+                        config.add(createField(info, fa));
+                    }
+                }
+            }
+        }
+        catch (IllegalArgumentException ex) {
+            throw new BeanIOConfigurationException("Invalid @Field annotation on a " +
+                "constructor parameter in class '" + clazz.getName() + "': " + ex.getMessage(), ex);
+        }
     }
     
     /**
@@ -262,7 +301,14 @@ public class AnnotationParser {
                 sc.add(createField(null, field));
             }
         }
+        fields = info.propertyType.getAnnotation(Fields.class);
+        if (fields != null) {
+            for (Field field : fields.value()) {
+                sc.add(createField(null, field));
+            }
+        }
         
+        handleConstructor(sc, info.propertyType);
         addAllChildren(sc, info.propertyType);
         
         return sc;
@@ -290,9 +336,18 @@ public class AnnotationParser {
                 fc.setGetter(info.getter);
             }
             
-            fc.setSetter(toValue(fa.setter()));
-            if (fc.getSetter() == null) {
-                fc.setSetter(info.setter);
+            String setter = toValue(fa.setter());
+            if (info.carg != null) {
+                fc.setSetter("#" + info.carg);
+                if (setter != null) {
+                    throw new BeanIOConfigurationException("Setter not allowed");
+                }
+            }
+            else {
+                fc.setSetter(setter);
+                if (fc.getSetter() == null) {
+                    fc.setSetter(info.setter);
+                }
             }
         }
         else {
@@ -300,7 +355,7 @@ public class AnnotationParser {
             fc.setBound(false);
         }
         if (fc.getName() == null) {
-            throw new IllegalArgumentException("name is undefined");
+            throw new IllegalArgumentException("name is required");
         }
         
         fc.setLiteral(toValue(fa.literal()));
@@ -341,6 +396,7 @@ public class AnnotationParser {
     }
     
     private static class TypeInfo {
+        Integer carg;
         String name;
         Class<?> type;
         Type genericType;

@@ -22,9 +22,6 @@ public class AnnotatedRoom {
     }
 
     @Segment(at=6)
-    @Fields({
-        @Field(at=0, name="floor", literal="hardwood")
-    })
     public AnnotatedFloor getFlooring() {
         return floor;
     }

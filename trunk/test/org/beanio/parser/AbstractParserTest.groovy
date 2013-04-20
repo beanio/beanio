@@ -1,7 +1,8 @@
 package org.beanio.parser
 
-import org.beanio.BeanReader;
-import org.beanio.StreamFactory;
+import org.beanio.BeanReader
+import org.beanio.StreamFactory
+import org.beanio.builder.StreamBuilder
 
 abstract class AbstractParserTest {
 
@@ -17,5 +18,13 @@ abstract class AbstractParserTest {
 		}
 		return factory
 	}
+    
+    protected StreamFactory createFactory(StreamBuilder builder) {
+        StreamFactory factory = StreamFactory.newInstance();
+        if (builder != null) {
+            factory.define(builder)
+        }
+        return factory;
+    }
 	
 }

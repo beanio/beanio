@@ -27,7 +27,7 @@ import org.beanio.types.TypeHandler;
  * @since 2.1.0
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.METHOD})
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
 public @interface Field {
     
     /**

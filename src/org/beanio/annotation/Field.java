@@ -21,7 +21,7 @@ import org.beanio.builder.*;
 import org.beanio.types.TypeHandler;
 
 /**
- * Field annotation applied to class members or methods.
+ * Field annotation applied to class attributes, methods or constructor parameters.
  * 
  * @author Kevin Seim
  * @since 2.1.0

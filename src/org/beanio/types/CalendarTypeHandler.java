@@ -32,7 +32,7 @@ import java.util.Properties;
  * @see DateFormat
  * @see SimpleDateFormat
  */
-public class CalendarTypeHandler extends AbstractDateTypeHandler {
+public class CalendarTypeHandler extends DateTypeHandlerSupport implements ConfigurableTypeHandler {
 
     /**
      * Constructs a new CalendarTypeHandler.
@@ -54,7 +54,7 @@ public class CalendarTypeHandler extends AbstractDateTypeHandler {
      * @see org.beanio.types.TypeHandler#parse(java.lang.String)
      */
     public Calendar parse(String text) throws TypeConversionException {
-        Date date = super.parseDate(text);
+        Date date = parseDate(text);
         if (date == null) {
             return null;
         }
@@ -68,7 +68,7 @@ public class CalendarTypeHandler extends AbstractDateTypeHandler {
      * @see org.beanio.types.AbstractDateTypeHandler#format(java.lang.Object)
      */
     public String format(Object value) {
-        return super.formatDate(value != null ? ((Calendar)value).getTime() : null);
+        return formatDate(value != null ? ((Calendar)value).getTime() : null);
     }
 
     /*
@@ -87,6 +87,7 @@ public class CalendarTypeHandler extends AbstractDateTypeHandler {
         CalendarTypeHandler handler = new CalendarTypeHandler();
         handler.setPattern(pattern);
         handler.setLenient(isLenient());
+        handler.timeZone = this.timeZone;
         return handler;
     }
     

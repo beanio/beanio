@@ -29,7 +29,7 @@ import java.util.*;
  * @see DateFormat
  * @see SimpleDateFormat
  */
-public class DateTypeHandler extends AbstractDateTypeHandler {
+public class DateTypeHandler extends DateTypeHandlerSupport implements ConfigurableTypeHandler {
 
     /**
      * Constructs a new <tt>DateTypeHandler</tt>.
@@ -76,6 +76,7 @@ public class DateTypeHandler extends AbstractDateTypeHandler {
         DateTypeHandler handler = new DateTypeHandler();
         handler.setPattern(pattern);
         handler.setLenient(isLenient());
+        handler.timeZone = this.timeZone;
         return handler;
     }
     

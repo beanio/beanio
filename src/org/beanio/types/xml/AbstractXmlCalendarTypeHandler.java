@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2013 Kevin Seim
+ * Copyright 2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,13 @@ import javax.xml.namespace.QName;
 import org.beanio.types.*;
 
 /**
- * Base class for <tt>java.util.Date</tt> type handlers based on the W3C XML Schema 
+ * Base class for {@link Calendar} type handlers based on the W3C XML Schema 
  * datatype specification.
  * 
  * @author Kevin Seim
- * @since 1.1
+ * @since 2.1.0
  */
-public abstract class AbstractXmlDateTypeHandler extends DateTypeHandler {
+public abstract class AbstractXmlCalendarTypeHandler extends CalendarTypeHandler {
 
     protected static final DatatypeFactory dataTypeFactory;
     static {
@@ -47,14 +47,14 @@ public abstract class AbstractXmlDateTypeHandler extends DateTypeHandler {
     /**
      * Constructs a new <tt>AbstractXmlDateTypeHandler</tt>.
      */
-    public AbstractXmlDateTypeHandler() { }
+    public AbstractXmlCalendarTypeHandler() { }
     
     /*
      * (non-Javadoc)
      * @see org.beanio.types.TypeHandler#parse(java.lang.String)
      */
     @Override
-    public Date parse(String text) throws TypeConversionException {
+    public Calendar parse(String text) throws TypeConversionException {
         if ("".equals(text)) {
             return null;
         }
@@ -73,7 +73,7 @@ public abstract class AbstractXmlDateTypeHandler extends DateTypeHandler {
                     ", time zone not allowed");
             }
             
-            return xcal.toGregorianCalendar().getTime();
+            return xcal.toGregorianCalendar();
         }
         catch (IllegalArgumentException ex) {
             String typeName = type == null ? "dateTime" : type.getLocalPart();

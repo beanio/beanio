@@ -16,6 +16,7 @@
 package org.beanio.annotation;
 
 import java.lang.annotation.*;
+import java.util.Map;
 
 import org.beanio.builder.XmlType;
 
@@ -100,6 +101,20 @@ public @interface Segment {
      * @return the name of the field
      */
     String occursRef() default "";
+    
+    /**
+     * The name of a child component to use for the key value if this segment
+     * is bound to a {@link Map}.
+     * @return the component name of the key
+     */
+    String key() default "";
+    
+    /**
+     * The name of a child component to use for the value of this segment in
+     * lieu of a type.
+     * @return the component name of the value
+     */
+    String value() default "";
     
     /**
      * The XML type of this segment.

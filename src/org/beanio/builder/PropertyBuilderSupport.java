@@ -102,7 +102,7 @@ abstract class PropertyBuilderSupport<T extends PropertyBuilderSupport<T>> {
      * @param type the {@link Collection} or {@link Map} class or subclass
      * @return this
      */
-    public T collectionType(Class<?> type) {
+    public T collection(Class<?> type) {
         getConfig().setCollection(type.getName());
         return me();
     }
@@ -124,6 +124,16 @@ abstract class PropertyBuilderSupport<T extends PropertyBuilderSupport<T>> {
      */
     public T setter(String setter) {
         getConfig().setGetter(setter);
+        return me();
+    }
+    
+    /**
+     * Indicates this component should not be instantiated if this component
+     * or all of its children are null or the empty String.
+     * @return this
+     */
+    public T lazy() {
+        getConfig().setLazy(true);
         return me();
     }
     

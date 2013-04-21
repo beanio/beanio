@@ -34,6 +34,7 @@ public class FieldBuilder extends PropertyBuilderSupport<FieldBuilder> {
      */
     public FieldBuilder(String name) {
         config.setName(name);
+        config.setBound(true);
     }
     
     @Override
@@ -101,15 +102,6 @@ public class FieldBuilder extends PropertyBuilderSupport<FieldBuilder> {
      */
     public FieldBuilder occursRef(String ref) {
         config.setOccursRef(ref);
-        return this;
-    }
-    
-    /**
-     * Indicates null should be returned for a collection of null values.
-     * @return this {@link FieldBuilder}
-     */
-    public FieldBuilder lazy() {
-        config.setLazy(true);
         return this;
     }
     

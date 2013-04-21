@@ -208,6 +208,9 @@ public class FlatPreprocessor extends Preprocessor {
                 maxSize = Integer.MAX_VALUE;
                 isVariableSized = true;
             }
+            else if (last.getMaxOccurs() == Integer.MAX_VALUE) {
+                maxSize = Integer.MAX_VALUE;
+            }
             else {
                 maxSize = Math.abs(last.getPosition() - first.getPosition()) + last.getMaxSize() * last.getMaxOccurs();
             }

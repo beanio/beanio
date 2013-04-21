@@ -142,8 +142,8 @@ public class StreamBuilder extends GroupBuilderSupport<StreamBuilder> {
      * Not supported.
      */
     @Override
-    public StreamBuilder collectionType(Class<?> type) {
-        throw new BeanIOConfigurationException("collectionType not supported by StreamBuilder");
+    public StreamBuilder collection(Class<?> type) {
+        throw new BeanIOConfigurationException("collection not supported by StreamBuilder");
     }
     
     /**

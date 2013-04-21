@@ -61,19 +61,26 @@ public class AnnotationParser {
             return null;
         }
         
+        String target = toValue(record.value());
+        
         RecordConfig rc = new RecordConfig();
         rc.setName(toValue(record.name()));
         if (rc.getName() == null) {
             rc.setName(Introspector.decapitalize(clazz.getSimpleName()));
         }
-        rc.setType(clazz.getName());
+        if (target == null) {
+            rc.setType(clazz.getName());
+        }
+        else {
+            rc.setTarget(target);
+        }
         rc.setOrder(toValue(record.order()));
         rc.setMinOccurs(toValue(record.minOccurs()));
-        rc.setMaxOccurs(toValue(record.maxOccurs()));
+        rc.setMaxOccurs(toUnboundedValue(record.maxOccurs()));
         rc.setMinLength(toValue(record.minLength()));
-        rc.setMaxLength(toValue(record.maxLength()));
+        rc.setMaxLength(toUnboundedValue(record.maxLength()));
         rc.setMinMatchLength(toValue(record.minRidLength()));
-        rc.setMaxMatchLength(toValue(record.maxRidLength()));
+        rc.setMaxMatchLength(toUnboundedValue(record.maxRidLength()));
         rc.setXmlType(record.xmlType().toValue());
         rc.setXmlName(toXmlValue(record.xmlName()));
         rc.setXmlNamespace(toXmlValue(record.xmlNamespace()));
@@ -268,10 +275,17 @@ public class AnnotationParser {
             throw new IllegalArgumentException("type is undefined");
         }
         
+        String target = toValue(sa.value());
+        
         SegmentConfig sc = new SegmentConfig();
         sc.setName(info.name);
         sc.setLabel(toValue(sa.name()));
-        sc.setType(info.propertyName);
+        if (target == null) {
+            sc.setType(info.propertyName);
+        }
+        else {
+            sc.setTarget(target);
+        }
         sc.setCollection(info.collectionName);
         sc.setGetter(toValue(sa.getter()));
         if (sc.getGetter() == null) {
@@ -286,6 +300,7 @@ public class AnnotationParser {
         sc.setMinOccurs(toValue(sa.minOccurs()));
         sc.setMaxOccurs(toUnboundedValue(sa.maxOccurs()));
         sc.setOccursRef(toValue(sa.occursRef()));
+        sc.setKey(toValue(sa.key()));
         sc.setLazy(sa.lazy());
         sc.setXmlType(sa.xmlType().toValue());
         sc.setXmlName(toXmlValue(sa.xmlName()));
@@ -438,7 +453,27 @@ public class AnnotationParser {
             collectionName = "array";
         }
         else if (Map.class.isAssignableFrom(propertyType)) {
-            throw new IllegalArgumentException("java.util.Map is not currently supported");
+            Class<?> collectionType = toValue(annotatedCollection);
+            if (collectionType == null) {
+                collectionType = propertyType;
+                propertyType = null;
+            }
+            
+            if (annotatedType != null) {
+                propertyType = annotatedType;
+            }
+            else {
+                if (info.genericType instanceof ParameterizedType) {
+                    ParameterizedType pt = (ParameterizedType) info.genericType;
+                    if (pt.getActualTypeArguments().length > 1) {
+                        propertyType = (Class<?>) pt.getActualTypeArguments()[1];
+                    }
+                }
+                if (propertyType == null) {
+                    propertyType = String.class;
+                }
+            }
+            collectionName = collectionType.getName();
         }
         else if (Collection.class.isAssignableFrom(propertyType)) {
             Class<?> collectionType = toValue(annotatedCollection);
@@ -496,7 +531,7 @@ public class AnnotationParser {
         if (val == null) {
             return null;
         }
-        if (val.compareTo(0) < 0) {
+        if (val.compareTo(new Integer(0)) < 0) {
             return Integer.MAX_VALUE;
         }
         return val;

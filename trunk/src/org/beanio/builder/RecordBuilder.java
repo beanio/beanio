@@ -32,7 +32,7 @@ public class RecordBuilder extends SegmentBuilderSupport<RecordBuilder> {
      * @param name the record name
      */
     public RecordBuilder(String name) {
-        this(null, null);
+        this(name, null);
     }
 
     /**

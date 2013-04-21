@@ -28,6 +28,28 @@ abstract class SegmentBuilderSupport<T extends SegmentBuilderSupport<T>> extends
     protected abstract SegmentConfig getConfig();
 
     /**
+     * Sets the name of a child component to use as the key for an
+     * inline map bound to this record or segment.
+     * @param name the component name
+     * @return this
+     */
+    public T key(String name) {
+        getConfig().setKey(name);
+        return me();
+    }
+    
+    /**
+     * Sets the name of a child component to return as the value for this
+     * record or segment in lieu of a bound class.
+     * @param name the component name
+     * @return this
+     */
+    public T value(String name) {
+        getConfig().setTarget(name);
+        return me();
+    }
+    
+    /**
      * Adds a segment to this component.
      * @param segment the segment to add
      * @return this

@@ -105,6 +105,13 @@ public @interface Record {
     int order() default Integer.MIN_VALUE;
     
     /**
+     * The name of child component to use for the value of this record in
+     * lieu of a type.
+     * @return the component name of the value
+     */
+    String value() default "";
+    
+    /**
      * The XML type of this record.
      * @return the {@link XmlType}
      */

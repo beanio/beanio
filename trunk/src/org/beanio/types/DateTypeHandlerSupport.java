@@ -19,6 +19,7 @@ import java.text.DateFormat;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * This abstract type handler uses a <tt>SimpleDateFormat</tt> class to parse and format 
@@ -31,21 +32,22 @@ import java.util.Date;
  * @see DateFormat
  * @see SimpleDateFormat
  */
-public abstract class AbstractDateTypeHandler implements ConfigurableTypeHandler {
+public abstract class DateTypeHandlerSupport {
 
-    private String pattern = null;
-    private boolean lenient = false;
+    protected String pattern = null;
+    protected TimeZone timeZone = null;
+    protected boolean lenient = false;
 
     /**
      * Constructs a new AbstractDateTypeHandler.
      */
-    public AbstractDateTypeHandler() { }
+    public DateTypeHandlerSupport() { }
 
     /**
      * Constructs a new AbstractDateTypeHandler.
      * @param pattern the {@link SimpleDateFormat} pattern
      */
-    public AbstractDateTypeHandler(String pattern) {
+    public DateTypeHandlerSupport(String pattern) {
         this.pattern = pattern;
     }
     
@@ -125,6 +127,39 @@ public abstract class AbstractDateTypeHandler implements ConfigurableTypeHandler
         }
         
         this.pattern = pattern;
+    }
+    
+    /**
+     * Sets the time zone for interpreting dates.  If not set, the system default 
+     * time zone is used.
+     * @param name the time zone ID
+     * @see TimeZone
+     */
+    public void setTimeZoneId(String name) {
+        if (name == null || "".equals(name)) {
+            timeZone = null;
+        }
+        else {
+            timeZone = TimeZone.getTimeZone(name);
+        }
+    }
+    
+    /**
+     * Returns the time zone used to interpret dates, or <tt>null</tt> if the default
+     * time zone will be used.
+     * @return the time zone ID
+     * @see TimeZone
+     */
+    public String getTimeZoneId() {
+        return timeZone == null ? null : timeZone.getID();
+    }
+    
+    /**
+     * Returns the configured {@link TimeZone} or null if not set.
+     * @return the {@link TimeZone}
+     */
+    public TimeZone getTimeZone() {
+        return timeZone;
     }
 
     /**

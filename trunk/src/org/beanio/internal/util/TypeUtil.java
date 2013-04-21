@@ -35,8 +35,18 @@ public class TypeUtil {
     public static final String DATETIME_ALIAS = "datetime";
     /** Alias for the <tt>java.util.Date</tt> class that includes only date information */
     public static final String DATE_ALIAS = "date";
-    /** Alias for a <tt>java.util.Date</tt> that only includes only time information */
+    /** Alias for a <tt>java.util.Date</tt> that includes only time information */
     public static final String TIME_ALIAS = "time";
+    /** 
+     * Alias for a <tt>java.util.Calendar</tt> that includes both date and time information. 
+     * If a type handler is registered using this alias, the registered type handler will
+     * become the default type handler for all {@link Calendar} classes.
+     */
+    public static final String CALENDAR_DATETIME_ALIAS = "calendar-datetime";
+    /** Alias for a <tt>java.util.Calendar</tt> that includes only time information */
+    public static final String CALENDAR_TIME_ALIAS = "calendar-time";
+    /** Alias for a <tt>java.util.Calendar</tt> that includes only date information */
+    public static final String CALENDAR_DATE_ALIAS = "calendar-date";
     
     /** Class type used to indicate a Java array */
     public static final Class<? extends Collection<Object>> ARRAY_TYPE = ArrayCollection.class;
@@ -150,7 +160,10 @@ public class TypeUtil {
             return UUID.class;
         else if ("url".equalsIgnoreCase(type))
             return URL.class;
-        else if ("calendar".equalsIgnoreCase(type))
+        else if ("calendar".equalsIgnoreCase(type) ||
+            CALENDAR_DATE_ALIAS.equalsIgnoreCase(type) ||
+            CALENDAR_TIME_ALIAS.equalsIgnoreCase(type) ||
+            CALENDAR_DATETIME_ALIAS.equalsIgnoreCase(type))
             return Calendar.class;
         else if (
             DATE_ALIAS.equalsIgnoreCase(type) ||
@@ -173,7 +186,10 @@ public class TypeUtil {
      * @return <tt>true</tt> if the type alias is only an alias
      */
     public static boolean isAliasOnly(String alias) {
-        return DATE_ALIAS.equalsIgnoreCase(alias) || TIME_ALIAS.equalsIgnoreCase(alias);
+        return DATE_ALIAS.equalsIgnoreCase(alias) || 
+            TIME_ALIAS.equalsIgnoreCase(alias) ||
+            CALENDAR_DATE_ALIAS.equalsIgnoreCase(alias) ||
+            CALENDAR_TIME_ALIAS.equalsIgnoreCase(alias);
     }
     
     /**

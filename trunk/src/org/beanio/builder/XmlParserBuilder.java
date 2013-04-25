@@ -29,6 +29,11 @@ public class XmlParserBuilder extends ParserBuilder {
 
     private XmlRecordParserFactory parser = new XmlRecordParserFactory();
     
+    /**
+     * Constructs a new <tt>XmlParserBuilder</tt>.
+     */
+    public XmlParserBuilder() { }
+    
     public XmlParserBuilder suppressHeader() {
         parser.setSuppressHeader(true);
         return this;

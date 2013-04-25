@@ -42,16 +42,6 @@ public class SegmentBuilder extends SegmentBuilderSupport<SegmentBuilder> {
     }
     
     /**
-     * Indicates the class bound to this segment should not be created if
-     * all child attributes are null or empty string.
-     * @return this
-     */
-    public SegmentBuilder lazy() {
-        config.setLazy(true);
-        return this;
-    }
-    
-    /**
      * Indicates the number of occurrences of this segment is governed by another field.
      * @param ref the name of the field that governs the occurrences of this segment
      * @return this

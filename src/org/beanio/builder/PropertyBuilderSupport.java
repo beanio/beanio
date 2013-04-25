@@ -123,7 +123,7 @@ abstract class PropertyBuilderSupport<T extends PropertyBuilderSupport<T>> {
      * @return this
      */
     public T setter(String setter) {
-        getConfig().setGetter(setter);
+        getConfig().setSetter(setter);
         return me();
     }
     

@@ -32,10 +32,6 @@ public class CsvParserBuilder extends ParserBuilder {
     
     public CsvParserBuilder() { }
     
-    public CsvParserBuilder(char delimiter) {
-        parser.setDelimiter(delimiter);
-    }
-    
     public CsvParserBuilder delimiter(char delimiter) {
         parser.setDelimiter(delimiter);
         return this;

@@ -16,6 +16,7 @@
 package org.beanio.internal.parser.format.delimited;
 
 import org.beanio.internal.parser.*;
+import org.beanio.internal.util.DebugUtil;
 
 /**
  * A {@link RecordFormat} for delimited records.
@@ -132,7 +133,8 @@ public class DelimitedRecordFormat implements RecordFormat {
     public String toString() {
         StringBuilder s = new StringBuilder();
         s.append(getClass().getSimpleName()).append("[");
-        s.append("recordLength=").append(minLength).append('-').append(maxLength);
+        s.append("length=").append(DebugUtil.formatRange(minLength, maxLength));
+        s.append(", ridLength=").append(DebugUtil.formatRange(minMatchLength, maxMatchLength));
         s.append("]");
         return s.toString();
     }

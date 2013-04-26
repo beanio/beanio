@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Kevin Seim
+ * Copyright 2012-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package org.beanio;
 
 import java.util.List;
 
+import org.beanio.internal.util.Debuggable;
 import org.w3c.dom.Node;
 
 /**
@@ -37,7 +38,7 @@ import org.w3c.dom.Node;
  * @author Kevin Seim
  * @since 2.0
  */
-public interface Unmarshaller {
+public interface Unmarshaller extends Debuggable {
 
     /**
      * Unmarshals a bean object from the given record text.  This method is supported

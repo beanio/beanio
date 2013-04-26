@@ -15,10 +15,11 @@
  */
 package org.beanio.internal.parser;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 
 import org.beanio.*;
+import org.beanio.internal.util.DebugUtil;
 import org.beanio.stream.*;
 import org.w3c.dom.Node;
 
@@ -226,5 +227,12 @@ public class UnmarshallerImpl implements Unmarshaller {
      */
     public RecordContext getRecordContext() {
         return context.getRecordContext(0);
+    }
+    
+    public void debug() {
+        debug(System.out);
+    }
+    public void debug(PrintStream out) {
+        ((Component)layout).print(out);
     }
 }

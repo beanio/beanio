@@ -18,6 +18,8 @@ package org.beanio.internal.parser;
 import java.io.IOException;
 import java.util.*;
 
+import org.beanio.internal.util.DebugUtil;
+
 /**
  * 
  * @author Kevin Seim
@@ -263,10 +265,9 @@ public class Record extends Segment implements Selector {
     
     @Override
     protected void toParamString(StringBuilder s) {
-        super.toParamString(s);
         s.append(", order=").append(order);
-        s.append(", minOccurs=").append(minOccurs);
-        s.append(", maxOccurs=").append(maxOccurs);
+        s.append(", occurs=").append(DebugUtil.formatRange(minOccurs, maxOccurs));
+        super.toParamString(s);
         s.append(", format=").append(format);
     }
 }

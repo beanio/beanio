@@ -17,6 +17,8 @@ package org.beanio.internal.parser;
 
 import java.util.*;
 
+import org.beanio.internal.util.DebugUtil;
+
 /**
  * 
  * @author Kevin Seim
@@ -288,5 +290,14 @@ public abstract class RecordAggregation extends DelegatingParser implements Sele
      */
     public boolean isRecordGroup() {
         return false;
+    }
+    
+    @Override
+    protected void toParamString(StringBuilder s) {
+        super.toParamString(s);
+        if (type != null) {
+            s.append(", type=").append(type.getSimpleName());
+        }
+        s.append(", ").append(DebugUtil.formatOption("lazy", lazy));
     }
 }

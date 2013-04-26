@@ -569,6 +569,21 @@ public class Field extends ParserComponent implements Property {
         super.toParamString(s);
         s.append(", type=").append(propertyType != null ? propertyType.getSimpleName() : null);
         s.append(", size=").append(Integer.toString(getSize()));
+        s.append(", length=").append(DebugUtil.formatRange(minLength, maxLength));
+        s.append(", ").append(DebugUtil.formatOption("bound", bound));
+        s.append(", ").append(DebugUtil.formatOption("rid", identifier));
+        s.append(", ").append(DebugUtil.formatOption("required", required));
+        s.append(", ").append(DebugUtil.formatOption("lazy", lazy));
+        s.append(", ").append(DebugUtil.formatOption("trim", trim));
+        if (literal != null) {
+            s.append(", literal=").append(literal);
+        }
+        if (regex != null) {
+            s.append(", regex=").append(regex.toString());
+        }
+        if (defaultValue != null) {
+            s.append(", default=").append(defaultValue);
+        }
         s.append(", format=").append(format);
     }
 

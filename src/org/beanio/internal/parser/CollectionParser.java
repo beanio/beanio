@@ -303,4 +303,12 @@ public class CollectionParser extends Aggregation {
         Collection<Object> collection = getCollection(context);
         return collection != null && collection.size() > 0; 
     }
+    
+    @Override
+    protected void toParamString(StringBuilder s) {
+        super.toParamString(s);
+        if (type != null) {
+            s.append(", type=").append(type.getSimpleName());
+        }
+    }
 }

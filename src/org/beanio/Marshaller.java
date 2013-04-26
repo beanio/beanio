@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Kevin Seim
+ * Copyright 2012-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package org.beanio;
 
 import java.util.List;
 
+import org.beanio.internal.util.Debuggable;
 import org.w3c.dom.*;
 
 /**
@@ -43,7 +44,7 @@ import org.w3c.dom.*;
  * @author Kevin Seim
  * @since 2.0
  */
-public interface Marshaller {
+public interface Marshaller extends Debuggable {
 
     /**
      * Marshals a single bean object.

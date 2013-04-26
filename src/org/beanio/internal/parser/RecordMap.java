@@ -35,7 +35,6 @@ public class RecordMap extends RecordAggregation {
      */
     public RecordMap() { }
     
-    
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     public boolean unmarshal(UnmarshallingContext context) {
@@ -147,5 +146,13 @@ public class RecordMap extends RecordAggregation {
 
     public void setKey(Property key) {
         this.key = key;
+    }
+    
+    @Override
+    protected void toParamString(StringBuilder s) {
+        super.toParamString(s);
+        if (key != null) {
+            s.append(", key=$").append(key.getName());
+        }
     }
 }

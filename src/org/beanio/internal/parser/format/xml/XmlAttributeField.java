@@ -170,8 +170,11 @@ public class XmlAttributeField extends XmlFieldFormat {
     public void toParamString(StringBuilder s) {
         super.toParamString(s);
         s.append(", localName=").append(localName);
-        s.append(", xmlns=");
-        s.append(isNamespaceAware() ? namespace : "*");
-        s.append(", prefix=").append(prefix);
+        if (prefix != null) {
+            s.append(", prefix=").append(prefix);    
+        }
+        if (namespace != null) {
+            s.append(", xmlns=").append(isNamespaceAware() ? namespace : "*");
+        }
     }
 }

@@ -309,5 +309,11 @@ public class MapParser extends Aggregation {
     @Override
     protected void toParamString(StringBuilder s) {
         super.toParamString(s);
+        if (key != null) {
+            s.append(", key=$").append(key.getName());
+        }
+        if (type != null) {
+            s.append(", type=").append(type.getSimpleName());
+        }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Kevin Seim
+ * Copyright 2010-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@ package org.beanio;
 
 import java.io.IOException;
 
+import org.beanio.internal.util.Debuggable;
+
 /**
  * Interface for marshalling bean objects to an output stream.
  * 
@@ -27,7 +29,7 @@ import java.io.IOException;
  * @since 1.0
  * @see StreamFactory
  */
-public interface BeanWriter {
+public interface BeanWriter extends Debuggable {
 
     /**
      * Writes a bean object to this output stream.

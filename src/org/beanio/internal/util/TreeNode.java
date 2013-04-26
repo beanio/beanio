@@ -237,6 +237,7 @@ public class TreeNode<T extends TreeNode> implements Replicateable, Iterable<T> 
     public String toString() {
         StringBuilder s = new StringBuilder();
         s.append(getClass().getSimpleName()).append("[");
+        s.append("name=").append(name);
         toParamString(s);
         s.append("]");
         return s.toString();
@@ -247,6 +248,6 @@ public class TreeNode<T extends TreeNode> implements Replicateable, Iterable<T> 
      * @param s the output to append
      */
     protected void toParamString(StringBuilder s) {
-        s.append("name=").append(name);
+        
     }
 }

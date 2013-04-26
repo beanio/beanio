@@ -18,6 +18,8 @@ package org.beanio.internal.parser;
 import java.io.IOException;
 import java.util.*;
 
+import org.beanio.internal.util.DebugUtil;
+
 /**
  * A segment is used aggregate other {@link Parser} components, such as fields
  * and other segments.
@@ -260,9 +262,17 @@ public class Segment extends ParserComponent {
     @Override
     protected void toParamString(StringBuilder s) {
         super.toParamString(s);
-        s.append(", size=").append(Integer.toString(getSize()));
-        s.append(", optional=").append(isOptional());
-        s.append(", property=").append(property);
-        s.append(", identifier=").append(identifier);
+        s.append(", size=").append(size == Integer.MAX_VALUE ? "unbounded" : Integer.toString(getSize()));
+        s.append(", ").append(DebugUtil.formatOption("rid", identifier));
+        s.append(", ").append(DebugUtil.formatOption("repeating", repeating));
+        s.append(", ").append(DebugUtil.formatOption("optional", isOptional()));
+        if (property != null) {
+            if (property instanceof Field) {
+                s.append(", property=$").append(property.getName());
+            }
+            else {
+                s.append(", property=").append(property);
+            }
+        }
     }
 }

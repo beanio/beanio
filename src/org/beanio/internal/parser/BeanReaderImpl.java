@@ -15,9 +15,10 @@
  */
 package org.beanio.internal.parser;
 
-import java.io.IOException;
+import java.io.*;
 
 import org.beanio.*;
+import org.beanio.internal.util.DebugUtil;
 
 /**
  * A {@link BeanReader} implementation.
@@ -318,5 +319,12 @@ public class BeanReaderImpl implements BeanReader {
      */
     public void setIgnoreUnidentifiedRecords(boolean ignoreUnidentifiedRecords) {
         this.ignoreUnidentifiedRecords = ignoreUnidentifiedRecords;
+    }
+    
+    public void debug() {
+        debug(System.out);
+    }
+    public void debug(PrintStream out) {
+        ((Component)layout).print(out);
     }
 }

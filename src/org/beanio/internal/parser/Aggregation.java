@@ -18,6 +18,8 @@ package org.beanio.internal.parser;
 import java.io.IOException;
 import java.util.*;
 
+import org.beanio.internal.util.DebugUtil;
+
 /**
  * Base class for parser components capable of aggregating descendant properties.
  * 
@@ -224,17 +226,9 @@ public abstract class Aggregation extends DelegatingParser implements Property, 
     protected void toParamString(StringBuilder s) {
         super.toParamString(s);
         if (occurs != null) {
-            s.append(", occurs=$").append(occurs.getName());
-            if (minOccurs > 0) {
-                s.append(", minOccurs=").append(minOccurs);
-            }
-            if (maxOccurs < Integer.MAX_VALUE) {
-                s.append(", maxOccurs=").append(maxOccurs);
-            }
+            s.append("occursRef=$").append(occurs.getName());
         }
-        else {
-            s.append(", occurs=").append(minOccurs).append("-").append(maxOccurs);
-        }
-        s.append(", lazy=").append(lazy);
+        s.append(", occurs=").append(DebugUtil.formatRange(minOccurs, maxOccurs));
+        s.append(", ").append(DebugUtil.formatOption("lazy", lazy));
     }
 }

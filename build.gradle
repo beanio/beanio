@@ -21,9 +21,10 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 apply from: 'https://raw.github.com/breskeby/gradleplugins/master/emmaPlugin/emma.gradle'
 
-group = "org.beanio"
-ext.artifactId = "beanio"
 version = "2.1.0.M1"
+
+ext.artifactId = "beanio"
+group = "org.beanio"
 sourceCompatibility = 1.5
 targetCompatibility = 1.5
 
@@ -168,6 +169,23 @@ task zip(type: Zip, dependsOn: [javadoc, jar] ) {
         include "*.xml"
         include "*.properties"
         include "build.gradle"
+    }
+}
+
+task site(type: Tar, dependsOn: javadoc) {
+    baseName = "$artifactId"
+    classifier "site"
+    version ""
+    compression Compression.GZIP
+    from(javadoc.destinationDir) {
+        into "2.1/docs/api"
+    }
+    from ("$projectDir/docs") {
+        into "2.1/docs"
+    }
+    from("$projectDir/site")
+    from("$projectDir/src/org/beanio/xsd") {
+        include "2012/**"
     }
 }
 

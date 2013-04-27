@@ -27,7 +27,13 @@
 	  <div class="item"><a href="http://groups.google.com/group/beanio">forum</a></div>
     </div>
     <br />
-    <h1>2.x Documentation</h1>
+    <h1>2.1 Documentation</h1>
+    <div style="font-size: 90%;" class="submenu">
+	  <div class="item"><a href="2.1/docs/api/index.html">javadocs</a></div>
+	  <div class="item"><a href="2.1/docs/reference/index.html">reference guide</a></div>
+    </div>
+    <br />
+    <h1>2.0 Documentation</h1>
     <div style="font-size: 90%;" class="submenu">
 	  <div class="item"><a href="2.0/docs/api/index.html">javadocs</a></div>
 	  <div class="item"><a href="2.0/docs/reference/index.html">reference guide</a></div>
@@ -42,17 +48,17 @@
 
   <div class="content">
     <p><b>BeanIO</b> is an open source Java framework for marshalling and unmarshalling Java beans
-    from a large flat file, stream, or simple <tt>String</tt> object.  BeanIO is configured using an XML
-    mapping file, and currently supports XML, CSV, delimited, and fixed length file formats. 
+    from a flat file, stream, or simple <tt>String</tt> object.
     </p>
     
     <div class="features"><b>Features:</b>
 	  <ul style="margin-top: 3px">
 	    <li>Support for XML, CSV, delimited and fixed length stream formats</li>
-	    <li>Common field validation rules with customizable error messages</li>
+	    <li>XML, Java annotations or builder API based field mapping</li>
 	    <li>Configurable record ordering and grouping rules</li>
-	    <li>Record identification by field(s) or length</li>
-	    <li>XML based field mapping</li>
+	    <li>Object binding that spans multiple records</li>
+	    <li>Record identification by one or more field values, or by record length</li>
+	    <li>Common field validation rules with customizable error messages</li>
 	    <li>Extensible stream parsing and type handling</li>
 	    <li>Integration with <a href="http://static.springsource.org/spring-batch/">Spring Batch</a></li>
         <li>OSGi compatible</li>
@@ -238,7 +244,34 @@ public class ExampleMain {
   &lt;/stream&gt;
 &lt;/beanio&gt;</pre>        
       
-      <p>Need to support XML instead?  Simply change the stream <tt>format</tt> to 'xml', remove
+      <p>Prefer to annotate the <tt>Contact</tt> class instead?</p>
+<pre class="java">
+package example;
+
+<span class="highlight">@Record(minOccurs=0, maxOccurs=-1)
+@Fields({
+    @Field(at=0, name="recordType", rid=true, literal="D")
+})</span>
+public class Contact {
+
+    <span class="highlight">@Field(at=1, maxLength=20)</span>
+    String firstName;	
+    <span class="highlight">@Field(at=2, required=true, maxLength=30)</span>
+    String lastName;
+    <span class="highlight">@Field(at=3, maxLength=30)</span>
+    String street;
+    <span class="highlight">@Field(at=4, maxLength=25)</span>
+    String city;
+    <span class="highlight">@Field(at=5, minLength=2, maxLength=2)</span>
+    String state;
+    <span class="highlight">@Field(at=6, regex="\d{5}")</span>
+    String zip;
+    
+    <span class="comment">// getters and setters not shown...</span>
+}</pre>
+      
+      
+      <p>Need to support XML?  Simply change the stream <tt>format</tt> to 'xml', remove
         the <tt>recordType</tt> fields, and presto!  You can now read and write documents
         like the following:</p>
       

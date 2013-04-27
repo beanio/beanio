@@ -6,7 +6,7 @@
   elementFormDefault="qualified" 
   targetNamespace="http://www.beanio.org/2012/03"
   xml:lang="en"
-  version="2.0.3">
+  version="2.1.0">
 
   <annotation>
     <documentation>
@@ -855,8 +855,16 @@
     <attribute name="justify" type="tns:justification" use="optional">
       <annotation>
         <documentation>
-          The justification of the field text when padded- 'left' or 'right'.
-          Defaults to 'left'.
+          Synonym for 'align'.  The justification of the field text when 
+          padded- 'left' or 'right'.  Defaults to 'left'.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="align" type="tns:justification" use="optional">
+      <annotation>
+        <documentation>
+          Synonym for 'justify'  The justification of the field text 
+          when padded- 'left' or 'right'.  Defaults to 'left'.
         </documentation>
       </annotation>
     </attribute>

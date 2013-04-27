@@ -697,7 +697,15 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         config.setLength(getUnboundedIntegerAttribute(element, "length", -1));
         config.setPadding(getCharacterAttribute(element, "padding"));
         config.setKeepPadding(getBooleanAttribute(element, "keepPadding", config.isKeepPadding()));
-        config.setJustify(getAttribute(element, "justify"));
+        if (hasAttribute(element, "justify")) {
+            if (hasAttribute(element, "align")) {
+                throw new BeanIOConfigurationException("Only one of 'align' or 'justify' can be configured");
+            }
+            config.setJustify(getAttribute(element, "justify"));            
+        }
+        else {
+            config.setJustify(getAttribute(element, "align"));
+        }
         config.setXmlType(getAttribute(element, "xmlType"));
         config.setXmlName(getAttribute(element, "xmlName"));
         config.setXmlNamespace(getOptionalAttribute(element, "xmlNamespace"));

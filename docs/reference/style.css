@@ -5,6 +5,7 @@ body {
   font-size: 85%;
 }
 
+.wrapping li { margin-top: 6px }
 tt { font-size: 10pt;	}
 pre { font-size: 9pt; }
 .toc { margin-left: 3%; }

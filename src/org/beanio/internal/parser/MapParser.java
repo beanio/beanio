@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 Kevin Seim
+ * Copyright 2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package org.beanio.internal.parser;
 import java.io.IOException;
 import java.util.*;
 
-import org.beanio.internal.util.StringUtil;
-
 /**
  * A {@link Parser} component for aggregating inline {@link Map} objects.
  * For example: <tt>key1,field1,key2,field2</tt>.
@@ -35,11 +33,15 @@ public class MapParser extends Aggregation {
     private Property key;
     // the property value
     private ParserLocal<Object> value = new ParserLocal<Object>();    
+    // the current iteration index
+    private ParserLocal<Integer> index = new ParserLocal<Integer>();
     
     /**
      * Constructs a new <tt>MapParser</tt>.
      */
-    public MapParser() { }
+    public MapParser() {
+        
+    }
     
     @Override
     public void clearValue(ParsingContext context) {
@@ -73,25 +75,31 @@ public class MapParser extends Aggregation {
         return true;
     }
     
-    @Override
-    protected boolean marshal(MarshallingContext context, Parser delegate, int minOccurs, int maxOccurs) throws IOException {
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.parser2.Marshaller#marshal(org.beanio.parser2.MarshallingContext)
+     */
+    public boolean marshal(MarshallingContext context) throws IOException {
+        Map<Object,Object> map = getMap(context);
+        if (map == null && minOccurs == 0) {
+            return false;
+        }
+        
+        Parser delegate = getParser();
+
         context.pushIteration(this);
         try {
-            Map<Object,Object> map = getMap(context);
-            if (map == null && minOccurs == 0) {
-                return false;
-            }
-            
             int i = 0;
+            setIterationIndex(context, i);
             
             if (map != null) {
                 for (Map.Entry<Object,Object> entry : map.entrySet()) {
                     if (i < maxOccurs) {
-                        setIterationIndex(context, i);
                         key.setValue(context, entry.getKey());
                         delegate.setValue(context, entry.getValue());
                         delegate.marshal(context);
                         ++i;
+                        setIterationIndex(context, i);
                     }
                     else {
                         return true;
@@ -103,9 +111,9 @@ public class MapParser extends Aggregation {
                 key.setValue(context, null);
                 delegate.setValue(context, null);
                 while (i < minOccurs) {
-                    setIterationIndex(context, i);
                     delegate.marshal(context);
                     ++i;
+                    setIterationIndex(context, i);
                 }
             }
             
@@ -116,9 +124,14 @@ public class MapParser extends Aggregation {
         }
     }
     
-    @Override
-    protected boolean unmarshal(UnmarshallingContext context, Parser delegate, int minOccurs, int maxOccurs) {
-        Map<Object,Object> map = lazy ? null : createMap();
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.parser2.Field#unmarshal(org.beanio.parser2.UnmarshallingContext)
+     */
+    public boolean unmarshal(UnmarshallingContext context) {
+        Parser delegate = getParser();
+        
+        Map<Object,Object> map = createMap();
         
         boolean invalid = false;
         int count = 0;
@@ -141,14 +154,10 @@ public class MapParser extends Aggregation {
                 if (fieldValue == Value.INVALID) {
                     invalid = true;
                 }
-                else if (fieldValue != Value.MISSING) {
-                	Object mapKey = key.getValue(context);
-                	if (!lazy || StringUtil.hasValue(mapKey) || StringUtil.hasValue(fieldValue)) {
-                		if (map == null) {
-                			map = createMap();
-                		}
-                		map.put(mapKey, fieldValue);
-                	}
+                else {
+                    if (map != null) {
+                        map.put(key.getValue(context), fieldValue);
+                    }
                 }
                 
                 delegate.clearValue(context);
@@ -162,8 +171,8 @@ public class MapParser extends Aggregation {
         Object value;
         
         // validate minimum occurrences have been met
-        if (count < minOccurs) {
-            context.addFieldError(getName(), null, "minOccurs", minOccurs, maxOccurs);
+        if (count < getMinOccurs()) {
+            context.addFieldError(getName(), null, "minOccurs", getMinOccurs(), getMaxOccurs());
             value = Value.INVALID;
         }
         else if (invalid) {
@@ -236,8 +245,6 @@ public class MapParser extends Aggregation {
         }
         
         this.value.set(context, value);
-        
-        super.setValue(context, value);
     }
     
     protected Map<Object,Object> createMap() {
@@ -259,10 +266,16 @@ public class MapParser extends Aggregation {
         }
     }
     
-    @Override
-    protected int length(Object value) {
-        Map<?,?> map = (Map<?,?>) value;
-        return map != null ? map.size() : 0;
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.internal.parser.Iteration#getIterationIndex(org.beanio.internal.parser.ParsingContext)
+     */
+    public int getIterationIndex(ParsingContext context) {
+        return index.get(context);
+    }
+    
+    private void setIterationIndex(ParsingContext context, int index) {
+        this.index.set(context, index);
     }
 
     /*
@@ -288,6 +301,7 @@ public class MapParser extends Aggregation {
         }
         
         if (locals.add(value)) {
+            locals.add(index);
             super.registerLocals(locals);
         }
     }
@@ -309,11 +323,7 @@ public class MapParser extends Aggregation {
     @Override
     protected void toParamString(StringBuilder s) {
         super.toParamString(s);
-        if (key != null) {
-            s.append(", key=$").append(key.getName());
-        }
-        if (type != null) {
-            s.append(", type=").append(type.getSimpleName());
-        }
+        s.append(", minOccurs=").append(minOccurs);
+        s.append(", maxOccurs=").append(maxOccurs);
     }
 }

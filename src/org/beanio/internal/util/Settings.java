@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,6 @@ public class Settings {
     public static final String DEFAULT_DATETIME_FORMAT = "org.beanio.defaultDateTimeFormat";
     /** The default date format pattern for fields assigned type alias <tt>Time</tt> */
     public static final String DEFAULT_TIME_FORMAT = "org.beanio.defaultTimeFormat";
-    
     /** 
      * Whether property values support the following escape sequences:  
      * <ul>
@@ -98,32 +97,11 @@ public class Settings {
      * for missing fields and records during unmarshalling.  This behavior is not recommended.
      */
     public static final String CREATE_MISSING_BEANS = "org.beanio.createMissingBeans";
-    /** 
-     * Whether objects are lazily instantiated if Strings are empty, rather than just null.
-     * @since 2.1.0  
-     */
-    public static final String LAZY_IF_EMPTY = "org.beanio.lazyIfEmpty";
-    /**
-     * Whether null field values should throw an exception if bound to a primitive
-     * @since 2.1.0 
-     */
-    public static final String ERROR_IF_NULL_PRIMITIVE = "org.beanio.errorIfNullPrimitive";
-    /** 
-     * Whether default field values apply to missing fields
-     * @since 2.1.0 
-     */
-    public static final String USE_DEFAULT_IF_MISSING = "org.beanio.useDefaultIfMissing";
-    /**
-     * Whether XML components should be sorted by position.  Helpful for use with annotations
-     * where fields and methods may not be ordered by their position in the stream.
-     * @since 2.1.0
-     */
-    public static final String SORT_XML_COMPONENTS_BY_POSITION = "org.beanio.xml.sorted";
-
+    
     private static final String DEFAULT_CONFIGURATION_PATH = "org/beanio/internal/config/beanio.properties";
     private static final String DEFAULT_CONFIGURATION_FILENAME = "beanio.properties";
     private static final String CONFIGURATION_PROPERTY = "org.beanio.configuration";
-    
+
     private Properties properties;
     private static Settings settings;
 

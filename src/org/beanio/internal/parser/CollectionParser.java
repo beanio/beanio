@@ -18,8 +18,6 @@ package org.beanio.internal.parser;
 import java.io.IOException;
 import java.util.*;
 
-import org.beanio.internal.util.StringUtil;
-
 /**
  * A <tt>CollectionParser</tt> provides iteration support for a {@link Segment} or {@link Field},
  * and is optionally bound to a {@link Collection} type property value.
@@ -34,7 +32,9 @@ public class CollectionParser extends Aggregation {
     // the collection type
     private Class<? extends Collection<Object>> type;
     // the property value
-    private ParserLocal<Object> value = new ParserLocal<Object>();  
+    private ParserLocal<Object> value = new ParserLocal<Object>();    
+    // the current iteration index
+    private ParserLocal<Integer> index = new ParserLocal<Integer>();
     
     /**
      * Constructs a new <tt>CollectionParser</tt>.
@@ -78,25 +78,33 @@ public class CollectionParser extends Aggregation {
         return true;
     }
 
-    @Override
-    protected boolean marshal(MarshallingContext context, Parser delegate, int minOccurs, int maxOccurs) throws IOException {
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.parser2.Marshaller#marshal(org.beanio.parser2.MarshallingContext)
+     */
+    public boolean marshal(MarshallingContext context) throws IOException {
+        Collection<Object> collection = getCollection(context);
+        if (collection == null && minOccurs == 0) {
+            return false;
+        }
+        
+        Parser delegate = getParser();
+
         context.pushIteration(this);
         try {
-            Collection<Object> collection = getCollection(context);
-            if (collection == null && minOccurs == 0) {
-                return false;
-            }
-            
             int i = 0;
+            setIterationIndex(context, i);
+            
             if (collection != null) {
                 for (Object value : collection) {
                     if (i < maxOccurs) {
-                        setIterationIndex(context, i);
                         delegate.setValue(context, value);
                         delegate.marshal(context);
                         ++i;
+                        setIterationIndex(context, i);
                     }
                     else {
+                        
                         return true;
                     }
                 }
@@ -105,9 +113,9 @@ public class CollectionParser extends Aggregation {
             if (i < minOccurs) {
                 delegate.setValue(context, null);
                 while (i < minOccurs) {
-                    setIterationIndex(context, i);
                     delegate.marshal(context);
                     ++i;
+                    setIterationIndex(context, i);
                 }
             }
             
@@ -118,10 +126,14 @@ public class CollectionParser extends Aggregation {
         }
     }
     
-    @Override
-    protected boolean unmarshal(UnmarshallingContext context, Parser delegate, int minOccurs, int maxOccurs) {
-
-        Collection<Object> collection = lazy ? null : createCollection();
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.parser2.Field#unmarshal(org.beanio.parser2.UnmarshallingContext)
+     */
+    public boolean unmarshal(UnmarshallingContext context) {
+        Parser delegate = getParser();
+        
+        Collection<Object> collection = createCollection();
         
         boolean invalid = false;
         int count = 0;
@@ -144,12 +156,9 @@ public class CollectionParser extends Aggregation {
                 if (fieldValue == Value.INVALID) {
                     invalid = true;
                 }
-                // the field value may still be missing if 'optional' is true on a child segment
+                // the field value may still be missing if 'lazy' is true on a child segment
                 else if (fieldValue != Value.MISSING) {
-                    if (!lazy || StringUtil.hasValue(fieldValue)) {
-                        if (collection == null) {
-                            collection = createCollection();
-                        }
+                    if (collection != null) {
                         collection.add(fieldValue);
                     }
                 }
@@ -165,8 +174,8 @@ public class CollectionParser extends Aggregation {
         Object value;
         
         // validate minimum occurrences have been met
-        if (count < minOccurs) {
-            context.addFieldError(getName(), null, "minOccurs", minOccurs, maxOccurs);
+        if (count < getMinOccurs()) {
+            context.addFieldError(getName(), null, "minOccurs", getMinOccurs(), getMaxOccurs());
             value = Value.INVALID;
         }
         else if (invalid) {
@@ -212,12 +221,6 @@ public class CollectionParser extends Aggregation {
         }
     }
     
-    @Override
-    protected int length(Object value) {
-        Collection<?> collection = (Collection<?>) value;
-        return collection != null ? collection.size() : 0;
-    }
-    
     /**
      * 
      */
@@ -231,6 +234,14 @@ public class CollectionParser extends Aggregation {
      */
     public Class<? extends Collection<Object>> getType() {
         return type;
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.internal.parser.Property#getNullValue()
+     */
+    public Object getNullValue() {
+        return createCollection();
     }
 
     /*
@@ -267,8 +278,6 @@ public class CollectionParser extends Aggregation {
         }
         
         this.value.set(context, value);
-        
-        super.setValue(context, value);
     }
     
     protected Collection<Object> createCollection() {
@@ -290,10 +299,23 @@ public class CollectionParser extends Aggregation {
     public int getIterationSize() {
         return getSize();
     }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.parser2.Iteration#getIterationIndex()
+     */
+    public int getIterationIndex(ParsingContext context) {
+        return index.get(context);
+    }
+    
+    private void setIterationIndex(ParsingContext context, int index) {
+        this.index.set(context, index);
+    }
 
     @Override
     public void registerLocals(Set<ParserLocal<? extends Object>> locals) {
         if (locals.add(value)) {
+            locals.add(index);
             super.registerLocals(locals);
         }
     }
@@ -307,8 +329,7 @@ public class CollectionParser extends Aggregation {
     @Override
     protected void toParamString(StringBuilder s) {
         super.toParamString(s);
-        if (type != null) {
-            s.append(", type=").append(type.getSimpleName());
-        }
+        s.append(", minOccurs=").append(minOccurs);
+        s.append(", maxOccurs=").append(maxOccurs);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2013 Kevin Seim
+ * Copyright 2011-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@ package org.beanio.internal.parser;
 
 import java.io.IOException;
 import java.util.*;
-
-import org.beanio.internal.util.DebugUtil;
 
 /**
  * A segment is used aggregate other {@link Parser} components, such as fields
@@ -39,7 +37,7 @@ public class Segment extends ParserComponent {
     // the size of one occurence of the segment
     private int size;
     // true if the segment is optional during unmarshalling
-    private boolean optional;
+    private boolean lazy;
     // true if existence is known to be true when unmarshall is called
     private boolean existencePredetermined;
     // true if any descendant is used to identify the record
@@ -102,14 +100,14 @@ public class Segment extends ParserComponent {
             if (parser.unmarshal(context)) {
                 exists = true;
             }
-            else if (!parser.isOptional()) {
+            else if (!parser.isLazy()) {
                 missing.add(parser);
             }
         }
         
         // validate all required children are present if either the segment
         // exists or the segment itself is required
-        if (exists || !optional) {
+        if (exists || !lazy) {
             // validate there are no missing children
             if (missing.isEmpty()) {
                 // if the segment valid and bound to a property, create the property value
@@ -137,7 +135,7 @@ public class Segment extends ParserComponent {
     public boolean marshal(MarshallingContext context) throws IOException {
         // since we allow Collections containing a null reference to force
         // output of a bean, we also check that we are not repeating
-        if (optional && !repeating) {
+        if (lazy && !repeating) {
             if (!hasContent(context)) {
                 return false;
             }
@@ -204,12 +202,12 @@ public class Segment extends ParserComponent {
      * (non-Javadoc)
      * @see org.beanio.parser.Parser#isLazy()
      */
-    public boolean isOptional() {
-        return optional;
+    public boolean isLazy() {
+        return lazy;
     }
 
-    public void setOptional(boolean optional) {
-        this.optional = optional;
+    public void setLazy(boolean lazy) {
+        this.lazy = lazy;
     }
 
     public void setSize(int size) {
@@ -262,17 +260,9 @@ public class Segment extends ParserComponent {
     @Override
     protected void toParamString(StringBuilder s) {
         super.toParamString(s);
-        s.append(", size=").append(size == Integer.MAX_VALUE ? "unbounded" : Integer.toString(getSize()));
-        s.append(", ").append(DebugUtil.formatOption("rid", identifier));
-        s.append(", ").append(DebugUtil.formatOption("repeating", repeating));
-        s.append(", ").append(DebugUtil.formatOption("optional", isOptional()));
-        if (property != null) {
-            if (property instanceof Field) {
-                s.append(", property=$").append(property.getName());
-            }
-            else {
-                s.append(", property=").append(property);
-            }
-        }
+        s.append(", size=").append(Integer.toString(getSize()));
+        s.append(", lazy=").append(isLazy());
+        s.append(", property=").append(property);
+        s.append(", identifier=").append(identifier);
     }
 }

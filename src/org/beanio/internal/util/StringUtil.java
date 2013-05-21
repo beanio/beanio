@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 Kevin Seim
+ * Copyright 2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,27 +25,10 @@ import java.util.Properties;
  */
 public final class StringUtil {
 
-	protected final static boolean LAZY_IF_EMPTY = Settings.getInstance().getBoolean(Settings.LAZY_IF_EMPTY);
-	
     /**
      * Cannot instantiate.
      */
     private StringUtil() { }
-    
-    /**
-     * Returns whether the given object has a value.
-     * @param obj the object to test
-     * @return true if the object is not null (and not the empty string based on configuration)
-     */
-    public static boolean hasValue(Object obj) {
-    	if (obj == null) {
-    		return false;
-    	}
-    	if (LAZY_IF_EMPTY && "".equals(obj)) {
-    		return false;
-    	}
-    	return true;
-    }
     
     /**
      * Substitutes <tt>${key,default}</tt> place holders with their property values.

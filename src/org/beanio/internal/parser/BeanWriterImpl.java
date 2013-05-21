@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2013 Kevin Seim
+ * Copyright 2011-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,11 @@
  */
 package org.beanio.internal.parser;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.Map;
 
 import org.beanio.*;
-import org.beanio.internal.util.*;
+import org.beanio.internal.util.StatefulWriter;
 import org.beanio.stream.RecordWriter;
 
 /**
@@ -166,12 +166,5 @@ public class BeanWriterImpl implements BeanWriter, StatefulWriter {
         if (writer instanceof StatefulWriter) {
             ((StatefulWriter)writer).restoreState(namespace + ".w", state);
         }
-    }
-    
-    public void debug() {
-        debug(System.out);
-    }
-    public void debug(PrintStream out) {
-        ((Component)layout).print(out);
     }
 }

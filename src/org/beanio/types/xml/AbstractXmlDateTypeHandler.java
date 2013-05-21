@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2013 Kevin Seim
+ * Copyright 2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ public abstract class AbstractXmlDateTypeHandler extends DateTypeHandler {
         } 
     }
     
+    private TimeZone timeZone = null;
     private boolean timeZoneAllowed = true;
     private boolean lenientDatatype = false;
     
@@ -51,7 +52,7 @@ public abstract class AbstractXmlDateTypeHandler extends DateTypeHandler {
     
     /*
      * (non-Javadoc)
-     * @see org.beanio.types.TypeHandler#parse(java.lang.String)
+     * @see org.beanio.types.DateTypeHandler#parse(java.lang.String)
      */
     @Override
     public Date parse(String text) throws TypeConversionException {
@@ -83,7 +84,7 @@ public abstract class AbstractXmlDateTypeHandler extends DateTypeHandler {
 
     /*
      * (non-Javadoc)
-     * @see org.beanio.types.TypeHandler#format(java.lang.Object)
+     * @see org.beanio.types.DateTypeHandler#format(java.lang.Object)
      */
     @Override
     public abstract String format(Object value);
@@ -115,6 +116,31 @@ public abstract class AbstractXmlDateTypeHandler extends DateTypeHandler {
         else {
             return timeZone.getOffset(date.getTime()) / 60000;
         }
+    }
+
+    /**
+     * Sets the time zone for interpreting dates.  If not set, the system default 
+     * time zone is used.
+     * @param name the time zone ID
+     * @see TimeZone
+     */
+    public void setTimeZoneId(String name) {
+        if (name == null || "".equals(name)) {
+            timeZone = null;
+        }
+        else {
+            timeZone = TimeZone.getTimeZone(name);
+        }
+    }
+    
+    /**
+     * Returns the time zone used to interpret dates, or <tt>null</tt> if the default
+     * time zone will be used.
+     * @return the time zone ID
+     * @see TimeZone
+     */
+    public String getTimeZoneId() {
+        return timeZone == null ? null : timeZone.getID();
     }
 
     /**

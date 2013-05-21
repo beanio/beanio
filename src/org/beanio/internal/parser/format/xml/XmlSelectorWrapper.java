@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2013 Kevin Seim
+ * Copyright 2011-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.*;
 
 import org.beanio.internal.parser.*;
-import org.beanio.internal.util.*;
+import org.beanio.internal.util.DomUtil;
 import org.beanio.stream.xml.*;
 import org.w3c.dom.*;
 
@@ -439,8 +439,8 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Parser#isLazy()
      */
-    public boolean isOptional() {
-        return getDelegate().isOptional();
+    public boolean isLazy() {
+        return getDelegate().isLazy();
     }
 
     /*
@@ -573,12 +573,12 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
         super.toParamString(s);
         s.append(", depth=").append(depth);
         s.append(", group=").append(group);
-        s.append(", localName=").append(localName);
-        if (prefix != null) {
-            s.append(", prefix=").append(prefix);
+        s.append(", element=").append(getLocalName());
+        if (isNamespaceAware()) {
+            s.append(", xmlns=").append(getNamespace());
         }
-        if (namespace != null) {
-            s.append(", xmlns=").append(isNamespaceAware() ? namespace : "*");
+        else {
+            s.append(", xmlns=*");
         }
     }
 }

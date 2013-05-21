@@ -15,7 +15,7 @@
  */
 package org.beanio.internal.parser;
 
-import org.beanio.internal.util.*;
+import org.beanio.internal.util.Settings;
 
 /**
  * Base class for {@link Property} implementations that hold other properties (e.g. a bean object or collection).
@@ -118,10 +118,8 @@ public abstract class PropertyComponent extends Component implements Property {
     @Override
     protected void toParamString(StringBuilder s) {
         super.toParamString(s);
-        if (type != null) {
-            s.append(", type=").append(type.getName());
-        }
-        s.append(", ").append(DebugUtil.formatOption("rid", identifier));
-        s.append(", ").append(DebugUtil.formatOption("required", required));
+        s.append(", type=").append(type);
+        s.append(", required=").append(required);
+        s.append(", identifier=").append(identifier);
     }
 }

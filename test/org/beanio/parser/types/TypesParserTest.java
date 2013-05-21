@@ -51,10 +51,6 @@ public class TypesParserTest extends ParserTest {
         StringWriter text;
         BeanReader in = factory.createReader("t1", new InputStreamReader(
                 getClass().getResourceAsStream("t1_valid.txt")));
-        
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new SimpleDateFormat("MMddyyyy").parse("04052013"));
-        
         try {
             ObjectRecord record;
             record = (ObjectRecord) in.read();
@@ -72,14 +68,13 @@ public class TypesParserTest extends ParserTest {
             assertEquals(new BigDecimal("10"), record.getBigDecimalValue());
             assertEquals(UUID.fromString("fbd9d2be-35dc-41fb-abc9-f4b4c8757eb5"), record.getId());
             assertEquals(new URL("http://www.google.com"), record.getUrl());
-            assertEquals(cal, record.getCalendar());
             assertEquals(TypeEnum.ONE, record.getEnum1());
             assertEquals(TypeEnum.TWO, record.getEnum2());
             
             text = new StringWriter();
             factory.createWriter("t1", text).write(record);
-            assertEquals("10,10,-10,10,10.1,-10.1,A,ABC,010170,true,10,10,4-5-2013," + 
-                "fbd9d2be-35dc-41fb-abc9-f4b4c8757eb5,http://www.google.com,ONE,two" + lineSep, text.toString());
+            assertEquals("10,10,-10,10,10.1,-10.1,A,ABC,010170,true,10,10" + 
+                ",fbd9d2be-35dc-41fb-abc9-f4b4c8757eb5,http://www.google.com,ONE,two" + lineSep, text.toString());
 
             record = (ObjectRecord) in.read();
             assertNull(record.getByteValue());
@@ -94,7 +89,6 @@ public class TypesParserTest extends ParserTest {
             assertNull(record.getBooleanValue());
             assertNull(record.getBigIntegerValue());
             assertNull(record.getBigDecimalValue());
-            assertNull(record.getCalendar());
             assertNull(record.getId());
             assertNull(record.getUrl());
             assertNull(record.getEnum1());
@@ -102,7 +96,7 @@ public class TypesParserTest extends ParserTest {
             
             text = new StringWriter();
             factory.createWriter("t1", text).write(record);
-            assertEquals(",,,,,,,,,,,,,,,," + lineSep, text.toString());
+            assertEquals(",,,,,,,,,,,,,,," + lineSep, text.toString());
         }
         finally {
             in.close();
@@ -226,8 +220,8 @@ public class TypesParserTest extends ParserTest {
     @Test
     public void testNullPrimitive() throws Exception {
         BeanReader in = factory.createReader("t6", new StringReader("\n"));
-        PrimitiveRecord record = (PrimitiveRecord) in.read();
-        assertEquals(0, record.getIntValue());
+        assertFieldError(in, 1, "record", "intValue", "", 
+            "Type conversion error: Primitive property values cannot be null");
     }
     
     @Test

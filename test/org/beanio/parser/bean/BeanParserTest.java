@@ -111,10 +111,7 @@ public class BeanParserTest extends ParserTest {
             factory.createWriter("w3", text).write(w);
             assertEquals(" 1name1mode1 2name2mode2 3           4name4     " + lineSeparator, text.toString());
             
-            w = (Widget) in.read();
-            text = new StringWriter();
-            factory.createWriter("w3", text).write(w);
-            assertEquals(" 1name1mode1 2name2mode2 0           4name4mode4" + lineSeparator, text.toString());
+            assertFieldError(in, 3, "record1", "id", 1, "  ", "Type conversion error: Primitive property values cannot be null");
         }
         finally {
             in.close();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,6 @@ public class FieldConfig extends SimplePropertyConfig {
     private Integer maxLength; // set to -1 for unbounded
     private boolean trim;
     private boolean required;
-    private boolean ref; // derived during pre-processing
     
     private Integer length;
     private String defaultValue;
@@ -59,7 +58,7 @@ public class FieldConfig extends SimplePropertyConfig {
     public char getComponentType() { 
         return FIELD;
     }
-
+    
     /**
      * Returns the textual representation of the default value for
      * this field when the field is not present or empty during unmarshalling.
@@ -268,21 +267,5 @@ public class FieldConfig extends SimplePropertyConfig {
      */
     public void setKeepPadding(boolean keepPadding) {
         this.keepPadding = keepPadding;
-    }
-    
-    /**
-     * Returns true if this field is referenced by another component. 
-     * @return true if referenced
-     */
-    public boolean isRef() {
-        return ref;
-    }
-
-    /**
-     * Sets whether this field is referenced by another component.
-     * @param ref true if referenced
-     */
-    public void setRef(boolean ref) {
-        this.ref = ref;
     }
 }

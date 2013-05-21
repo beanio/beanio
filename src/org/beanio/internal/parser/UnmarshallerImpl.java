@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Kevin Seim
+ * Copyright 2012-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,10 @@
  */
 package org.beanio.internal.parser;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.List;
 
 import org.beanio.*;
-import org.beanio.internal.util.DebugUtil;
 import org.beanio.stream.*;
 import org.w3c.dom.Node;
 
@@ -50,17 +49,11 @@ public class UnmarshallerImpl implements Unmarshaller {
         
         this.context.setRecordReader(new RecordReader() {
             public Object read() throws RecordIOException {
-                try {
-                    Object value = recordValue;
-                    if (recordText != null) {
-                        value = recordUnmarshaller.unmarshal(recordText);
-                    }
-                    return value;
+                Object value = recordValue;
+                if (recordText != null) {
+                    value = recordUnmarshaller.unmarshal(recordText);
                 }
-                finally {
-                    recordText = null;
-                    recordValue = null;
-                }
+                return value;
             }
             public int getRecordLineNumber() {
                 return 0;
@@ -79,11 +72,12 @@ public class UnmarshallerImpl implements Unmarshaller {
     public Object unmarshal(String text) throws MalformedRecordException, UnidentifiedRecordException,
         UnexpectedRecordException, InvalidRecordException {
         
+        clear();
+        
         if (text == null) {
             throw new NullPointerException("null text");
         }
         
-        this.recordName = null;
         this.recordText = text;
         
         return unmarshal();
@@ -96,13 +90,13 @@ public class UnmarshallerImpl implements Unmarshaller {
     public Object unmarshal(List<String> list) throws BeanReaderException, UnidentifiedRecordException,
         UnexpectedRecordException, InvalidRecordException {
         
+        clear();
+        
         if (list == null) {
             throw new NullPointerException("null list");
         }
         
-        this.recordName = null;
         this.recordValue = context.toRecordValue(list);
-        
         if (recordValue == null) {
             throw new BeanReaderException("unmarshal(List) not supported by stream format");
         }
@@ -117,13 +111,13 @@ public class UnmarshallerImpl implements Unmarshaller {
     public Object unmarshal(String[] array) throws BeanReaderException, UnidentifiedRecordException,
         UnexpectedRecordException, InvalidRecordException {
         
+        clear();
+        
         if (array == null) {
             throw new NullPointerException("null array");
         }
         
-        this.recordName = null;
         this.recordValue = context.toRecordValue(array);
-        
         if (recordValue == null) {
             throw new BeanReaderException("unmarshal(String[]) not supported by stream format");
         }
@@ -138,13 +132,13 @@ public class UnmarshallerImpl implements Unmarshaller {
     public Object unmarshal(Node node) throws BeanReaderException, UnidentifiedRecordException,
         UnexpectedRecordException, InvalidRecordException {
         
+        clear();
+        
         if (node == null) {
             throw new NullPointerException("null node");
         }
         
-        this.recordName = null;
         this.recordValue = context.toRecordValue(node);
-        
         if (recordValue == null) {
             throw new BeanReaderException("unmarshal(Node) not supported by stream format");
         }
@@ -153,11 +147,19 @@ public class UnmarshallerImpl implements Unmarshaller {
     }
     
     /**
+     * Clears state information from a previous call to unmarshal.
+     */
+    private void clear() {
+        this.recordName = null;
+        this.recordText = null;
+        this.recordValue = null;
+    }
+    
+    /**
      * Internal unmarshal method.
      * @return the unmarshalled object
      */
     private Object unmarshal() {
-        
         // allow the context to parse the next record value
         context.nextRecord();
         
@@ -195,10 +197,7 @@ public class UnmarshallerImpl implements Unmarshaller {
             context.prepare(parser.getName(), false);
             
             // unmarshal the record
-            try {
-                parser.unmarshal(context);
-            }
-            catch (AbortRecordUnmarshalligException ex) { }
+            parser.unmarshal(context);
             
             // this will throw an exception if an invalid record was unmarshalled
             context.validate();
@@ -227,12 +226,5 @@ public class UnmarshallerImpl implements Unmarshaller {
      */
     public RecordContext getRecordContext() {
         return context.getRecordContext(0);
-    }
-    
-    public void debug() {
-        debug(System.out);
-    }
-    public void debug(PrintStream out) {
-        ((Component)layout).print(out);
     }
 }

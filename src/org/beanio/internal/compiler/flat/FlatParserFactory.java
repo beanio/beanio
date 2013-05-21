@@ -41,10 +41,9 @@ public abstract class FlatParserFactory extends ParserFactorySupport {
         super.finalizeRecord(config, record);
         
         // sort nodes according to their position in the record
-        //record.sort(new NodeComparator());
+        record.sort(new NodeComparator());
     }
     
-    @SuppressWarnings("unused")
     private static class NodeComparator implements Comparator<Component> {
 
         private IdentityHashMap<Component, Integer> cache = new IdentityHashMap<Component, Integer>();

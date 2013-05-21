@@ -74,8 +74,7 @@ public class CollectionFieldParserTest extends ParserTest {
             getClass().getResourceAsStream("dc2_nullPrimitive.txt")));
         
         try {
-            CollectionBean bean = (CollectionBean) in.read();
-            assertArrayEquals(new int[] { 1, 0, 3 }, bean.getArray());
+            assertFieldError(in, 1, "record1", "array", 1, "", "Type conversion error: Primitive property values cannot be null");
             
             StringWriter text = new StringWriter();
             factory.createWriter("dc2", text).write(new CollectionBean());

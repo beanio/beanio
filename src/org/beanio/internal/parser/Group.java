@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.*;
 
 import org.beanio.*;
-import org.beanio.internal.util.DebugUtil;
 
 /**
  * A Group holds child nodes including records and other groups.
@@ -136,10 +135,7 @@ public class Group extends ParserComponent implements Selector {
                     break;
                 }
                 
-                try {
-                    child.unmarshal(context);
-                }
-                catch (AbortRecordUnmarshalligException ex) { }
+                child.unmarshal(context);
             }
             
             if (property != null) {
@@ -654,7 +650,7 @@ public class Group extends ParserComponent implements Selector {
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Parser#isLazy()
      */
-    public boolean isOptional() {
+    public boolean isLazy() {
         return minOccurs == 0;
     }
     
@@ -706,10 +702,9 @@ public class Group extends ParserComponent implements Selector {
     protected void toParamString(StringBuilder s) {
         super.toParamString(s);
         s.append(", order=").append(order);
-        s.append(", occurs=").append(DebugUtil.formatRange(minOccurs, maxOccurs));
-        if (property != null) {
-            s.append(", property=").append(property);
-        }
+        s.append(", minOccurs=").append(minOccurs);
+        s.append(", maxOccurs=").append(maxOccurs);
+        s.append(", property=").append(property);
     }
 
     @SuppressWarnings("serial")

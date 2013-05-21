@@ -4,14 +4,14 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<title>BeanIO 2.1 Reference Guide</title>
+<title>BeanIO 2.0 Reference Guide</title>
 <link rel="stylesheet" type="text/css" href="style.css" />
 <link rel="shortcut icon" href="http://www.beanio.org/favicon.ico" />
 </head>
 <body>
 
-<div class="title">BeanIO 2.1 Reference Guide</div>
-<p><i>Revision 1</i>, &copy; 2010-2013 Kevin Seim</p>
+<div class="title">BeanIO 2.0 Reference Guide</div>
+<p><i>Revision 6</i>, &copy; 2010-2013 Kevin Seim</p>
 <p style="font-size: 90%"><i>Copies of this document may be made for your own use and for
 distribution to others, provided that you do not charge any fee for such copies and further provided
 that each copy contains this Copyright Notice, whether distributed in print or electronically.</i></p>
@@ -20,9 +20,8 @@ that each copy contains this Copyright Notice, whether distributed in print or e
 <div class="toc">
 <a href="#Introduction">1.0. Introduction</a><br />
 <div class="toc">
-  <a href="#WhatsNew">1.1. What's new in 2.1?</a><br />
-  <a href="#Migration">1.2. Migrating from 2.0.x to 2.1</a><br />
-  <a href="#Migration">1.3. Migrating from 1.2.x to 2.0</a><br />
+  <a href="#WhatsNew">1.1. What's new in 2.0?</a><br />
+ <a href="#Migration">1.2. Migrating From 1.2.x</a><br />
 </div>
 <a href="#GettingStarted">2.0. Getting Started</a><br />
 <div class="toc"><a href="#MyFirstStream">2.1. My First Stream</a></div>
@@ -39,7 +38,7 @@ that each copy contains this Copyright Notice, whether distributed in print or e
   	<a href="#BeanReaderErrorHandler">3.7.1. BeanReaderErrorHandler</a><br />
   </div>
 </div>
-<a href="#StreamComponents">4.0. Stream Components</a>
+<a href="#TheMappingFile">4.0. The Mapping File</a>
 <div class="toc">
   <a href="#Streams">4.1. Streams</a><br />
   <div class="toc">
@@ -101,14 +100,14 @@ that each copy contains this Copyright Notice, whether distributed in print or e
     <a href="#XmlWrappedSegments">5.8.2.  Wrapped Segments</a><br />
   </div>
 </div>
-<a href="#SpringBatch">7.0. Spring Batch Integration</a>
+<a href="#SpringBatch">6.0. Spring Batch Integration</a>
 <div class="toc">
-  <a href="#SpringItemReaderWriter">7.1. BeanIO ItemReader/Writer Beans</a><br />
-  <a href="#SpringStreamFactory">7.2. BeanIO StreamFactory Bean</a>
+  <a href="#SpringItemReaderWriter">6.1. BeanIO ItemReader/Writer Beans</a><br />
+  <a href="#SpringStreamFactory">6.2. BeanIO StreamFactory Bean</a>
 </div>
-<a href="#Configuration">8.0. Configuration</a>
+<a href="#Configuration">7.0. Configuration</a>
 <div class="toc">
-  <a href="#ConfigurationSettings">8.1. Settings</a>
+  <a href="#ConfigurationSettings">7.1. Settings</a>
 </div>
 <a href="#A">Appendix A: XML Mapping File Reference</a><br />
 <div class="toc">
@@ -130,45 +129,66 @@ that each copy contains this Copyright Notice, whether distributed in print or e
 </div>
 
 <h1><a name="Introduction">1.0. Introduction</a></h1>
-<p>BeanIO is an open source Java framework for reading and writing Java 
-objects from a flat file, stream, or any String input.  BeanIO is well suited for batch processing, and
+<p>BeanIO is an open source Java framework for reading and writing Java beans or plain old java
+objects (POJO's) from a flat file or stream.  BeanIO is ideally suited for batch processing, and
 currently supports XML, CSV, delimited and fixed length file formats. BeanIO is licensed under the <a
   href="http://www.apache.org/licenses/LICENSE-2.0">Apache 2.0 License</a>.</p>
 
-<h2><a name="WhatsNew">1.1. What's new in 2.1?</a></h2>
-<p>BeanIO 2.1 includes the following significant enhancements:</p>
+<h2><a name="WhatsNew">1.1. What's new in 2.0?</a></h2>
+<p>BeanIO 2.0 includes an entirely new parsing engine that supports the following enhancements:</p>
 <ul>
-  <li>Stream builder API for programmatically  configuring a stream mapping</li>
-  <li><tt>@Record</tt> and <tt>@Field</tt> annotations (<tt>@Group</tt> coming soon)</li>
-  <li>Dynamic field occurrences based on a preceding field in the same record</li>
-  <li>Lazy collections</li>
-  <li><tt>java.util.Calendar</tt> type handlers</li>
+  <li>Support for mapping bean objects that span multiple records</li>
+  <li>New <tt>Marshaller</tt> and <tt>Unmarshaller</tt> interfaces for marshalling and unmarshalling single records</li>
+  <li>Support for constructor arguments and direct access to public attributes of a bean object</li>
+  <li>The <tt>BeanWriter</tt> is now stateful for all stream formats (based on configured <tt>group</tt> and <tt>record</tt> occurrences)</li>
+  <li>A more versatile <tt>segment</tt> mapping element replaces the <tt>bean</tt> element and <tt>xmlWrapper</tt> attribute</li>
+  <li>OSGi support, including a user specified <tt>ClassLoader</tt> per <tt>StreamFactory</tt>.</li>
+  <li>More lenient/sensible defaults.</li>
+  <li>Consolidated <tt>reader</tt> and <tt>writer</tt> elements (see <a href="#parser"><tt>parser</tt></a>).</li>
+  <li>Support for unmarshalling a subset of a record using a record <tt>target</tt> attribute</li>
+  <li>Mapping file property substitution support using the syntax <tt>${propertyName}</tt> or <tt>${propertyName,default}</tt>.</li>
+  <li>A new <tt>occurs</tt> attribute for specifying both <tt>minOccurs</tt> and <tt>maxOccurs</tt>.  Examples: '0-1', '1+', '3'.</li>
 </ul>
-
-<h2><a name="Migration">1.2. Migrating from 2.0.x to 2.1</a></h2>
-<p>Release 2.1 is "mostly" backwards compatible with prior 2.0.x releases.  A few
-behavior changes are noted below that will hopefully improve your experience with BeanIO.  Where
-noted, legacy behavior can be restored using <tt>beanio.properties</tt> configuration settings.</p>
-<ul class="wrapping">
-  <li>Prior to 2.1, repeating segments designated <tt>lazy="true"</tt> were unmarshalled
-    as an empty collection.  Going forward, a collection will no longer be
-    created if designated lazy and all items are null or the empty String.</li>
-    
-  <li>XML components assigned a position will now be sorted by that position for determining 
-    the order to marshal the components in.  If need be, this can be 
-    disabled using the configuration setting <tt>org.beanio.xml.sorted=false</tt>.</li>    
-  
-  <li>If a null value is unmarshalled for a field bound to a primitive value, the value will
-    be ignored instead of throwing an error.  The configuration setting
-    <tt>org.beanio.errorIfNullPrimitive=true</tt> can be used to restore legacy behavior.</li>
-    
-  <li>Fields assigned a default field value will now return the default value if missing 
-    from the input stream during unmarshalling.  The configuration setting
-    <tt>org.beanio.useDefaultIfMissing=false</tt> can be used to restore legacy behavior.</li>
+<p>Since 2.0.1:</p>
+<ul>
+  <li>Default type handling for Enums. See section <a href="#FieldTypeConversion">4.3.1. Field Type Conversion</a>.</li>
+  <li>Support for binding a repeating segment or record to a Map collection.  See section <a href="#InlineMaps">4.5.2.1 Inline Maps</a>.</li>
+  <li>Optional property invocation using ASM bytecode generation.  See section <a href="#Configuration">7.0. Configuration</a>. </li>
 </ul>
+<p>Since 2.0.2:</p>
+<ul>
+  <li>Field <tt>trim</tt> logic fixed (gc0038).</li>
+  <li>Fixed OSGi class loading issues that may result in a <tt>NullPointerException</tt> (gc0042)</li>
+  <li>Segments now support a <tt>lazy</tt> attribute to prevent class instantiation during unmarshalling
+    for segments found in the stream that contain all null or empty string attributes. </li>
+  <li>Collections wrapped by a nillable segment will be unmarshalled as null (instead of an empty
+    collection) in XML streams.</li>
+  <li>The last field in a fixed length record may be of variable length (and unpadded) by setting
+    the field <tt>length</tt> to <tt>unbounded</tt>.</li>
+  <li>The null character can be escaped in property values using <tt>\0</tt>.</li>
+  <li>Added a <tt>keepPadding</tt> field attribute to instruct BeanIO not to unpad a fixed
+    length field during unmarshalling.</li>
+</ul> 
+<p>Since 2.0.3:</p>
+<ul>
+  <li>Support for record identification based on record length (gc0046)</li>
+  <li>Fixed a bug introduced in 2.0.2 that unmarshalled nested groups bound to 
+    non-collection bean objects as null (gc0043)</li>
+  <li>Fixed property substitution for <tt>property</tt> configuration elements (gc0045)</li>
+  <li>Fixed unmarshalling logic that invoked setter methods (with null) for missing
+    stream elements under some circumstances</li>
+</ul> 
+<p>Since 2.0.4:</p>
+<ul>
+  <li>Added support for segments and fields of indeterminate length in the middle of a record (gc0057)</li>
+  <li>Renamed <tt>target</tt> attributes (now deprecated) to <tt>value</tt> for <tt>record</tt> and <tt>group</tt> definitiions</li>
+  <li>Added support for a group <tt>value</tt> attribute to return a child component</li>
+  <li>Added <tt>ignoreUnidentifiedRecords</tt> attribute to stream configuration (gc0046)</li>
+  <li>Fixed EOF validation for minimum record occurrences (gc0056)</li>
+  <li>Fixed several other issues (see changelog.txt for details)</li>
+</ul> 
 
-
-<h2><a name="Migration">1.3. Migrating from 1.2.x to 2.0</a></h2>
+<h2><a name="Migration">1.2. Migrating from 1.2.x</a></h2>
 <p>Release 2.0 is not backwards compatible with prior releases.  Sorry.  This section contains the
 steps you'll need to follow to update your code and mapping files.</p>
 
@@ -260,7 +280,7 @@ in JDK 1.6, is available from <a href="http://sjsxp.java.net/">Project SJSXP</a>
     &lt;dependency&gt;
       &lt;groupId&gt;org.beanio&lt;/groupId&gt;
       &lt;artifactId&gt;beanio&lt;/artifactId&gt;
-      &lt;version&gt;2.1.0&lt;/version&gt;
+      &lt;version&gt;2.0.0&lt;/version&gt;
     &lt;/dependency&gt;
 
     &lt;!-- StAX dependencies for JDK 1.5 users --&gt;
@@ -710,11 +730,8 @@ will bubble up to the calling method.</p>
 
 
 
-<h1><a name="StreamComponents">4.0. Stream Components</a></h1>
-<p>This section covers the basic components used by BeanIO to map an input stream or String
-to Java objects.  All examples are shown using a mapping file, but the concepts (and most attributes) 
-are the same whether using the stream builder API, mapping file, Java annotations, or any 
-combination thereof.</p>
+<h1><a name="TheMappingFile">4.0. The Mapping File</a></h1>
+<p>An XML mapping file is used to configure a stream layout.</p>
 
 <h2><a name="Streams">4.1. Streams</a></h2>
 <p>A typical mapping file contains one or more stream layouts.  A <tt>stream</tt>
@@ -1424,27 +1441,15 @@ or alias <tt>integer</tt> or <tt>int</tt>.</p>
     <tt>time</tt>
   </td>
 </tr>
-<tr><td>java.util.Calendar<sup>2</sup></td><td>-</td>
-  <td>
-    <tt>calendar</tt><br />
-    <tt>calendar-datetime</tt><br />
-    <tt>calendar-date</tt><br />
-    <tt>calendar-time</tt>
-  </td>
-</tr>
 <tr><td>java.util.UUID</td><td>-</td><td><tt>uuid</tt></td></tr>
 <tr><td>java.net.URL</td><td>-</td><td><tt>url</tt></td></tr>
-<tr><td>java.lang.Enum<sup>3</sup></td><td>-</td><td><tt>-</tt></td></tr>
+<tr><td>java.lang.Enum<sup>2</sup></td><td>-</td><td><tt>-</tt></td></tr>
 </table>
 <p class="indent"><sup>1</sup> By default, the <tt>date</tt> alias is used for <tt>java.util.Date</tt> types that 
 contain date information only, and the <tt>time</tt> alias is used for <tt>java.util.Date</tt> types that contain 
 only time information.  Only the <tt>datetime</tt> alias can be used to replace the default type handler 
 for the <tt>java.util.Date</tt> class.</p>
-<p class="indent"><sup>2</sup> By default, the <tt>calendar-date</tt> alias is used for <tt>java.util.Calendar</tt> types that 
-contain date information only, and the <tt>calendar-time</tt> alias is used for <tt>java.util.Date</tt> types that contain 
-only time information.   Only the <tt>calendar-datetime</tt> and <tt>calendar</tt> aliases can be used to replace the default type handler 
-for the <tt>java.util.Calendar</tt> class.</p>
-<p class="indent"><sup>3</sup> By default, enums are converted using <tt>Enum.valueOf(Class, String)</tt>.
+<p class="indent"><sup>2</sup> By default, enums are converted using <tt>Enum.valueOf(Class, String)</tt>.
 If <tt>format="toString"</tt>, the enum will be converted using values computed by calling <tt>toString()</tt>
 for each enum value.  In either case, conversion is case sensitive.  As with other types, a custom type handler
 can also be used for enums. </p>
@@ -1601,6 +1606,11 @@ a <tt>java.util.Collection</tt> subclass, or to one of the collection type alias
 using the <tt>minOccurs</tt> and <tt>maxOccurs</tt> field attributes.  If not declared, <tt>minOccurs</tt>
 will default to 1, and <tt>maxOccurs</tt> will default to the <tt>minOccurs</tt> value or 1, whichever
 is greater.</p>
+
+<p>Flat file formats (CSV, delimited and fixed length) may only contain one field or segment of indeterminate
+length (i.e. where  <tt>maxOccurs</tt> is greater than <tt>minOccurs</tt>).  The position of components that
+follow are assumed to be relative to the end of the record.</p>
+
 <pre class="file">
 &lt;beanio&gt;
 
@@ -1616,36 +1626,7 @@ is greater.</p>
   &lt;/stream&gt;
   
 &lt;/beanio&gt;</pre>
-
-<p>Flat file formats (CSV, delimited and fixed length) may only contain one field or segment of indeterminate
-length (i.e. where  <tt>maxOccurs</tt> is greater than <tt>minOccurs</tt>).  The position of components that
-follow are assumed to be relative to the end of the record.</p>
-
-<p>If a field repeats a fixed number of times based on a preceding field in the same record, the <tt>occursRef</tt> attribute 
-can be used to identify the name of the controlling field.  If the controlling field is not bound to a separate property of
-its parent bean object, be sure to specify <tt>ignore="true"</tt>.  The following mapping file shows how to configure the
-<i>accounts</i> field occurrences to be dependent on the <i>numberOfAccounts</i> field.  If desired, <tt>minOccurs</tt>
-and <tt>maxOccurs</tt> may still be specified to validate the referenced field occurrences value.</p>
-<pre class="file">
-&lt;beanio&gt;
-
-  &lt;stream name="employeeFile" format="csv"&gt;
-    &lt;record name="employee" class="example.Employee"&gt;
-      &lt;field name="firstName" /&gt;
-      &lt;field name="lastName" /&gt;
-      &lt;field name="title" /&gt;
-      &lt;field name="salary" /&gt;
-      &lt;field name="hireDate" format="MMddyyyy" /&gt;
-      <span class="highlight">&lt;field name="numberOfAccounts" ignore="true" /&gt;</span>
-      &lt;field name="accounts" type="int" collection="list" <span class="highlight">occursRef="numberOfAccounts"</span> /&gt;
-    &lt;/record&gt; 
-  &lt;/stream&gt;
-  
-&lt;/beanio&gt;</pre>
-
 <p>Note that a repeating field can not be used for record identification.</p>
-
-
 
 <h3><a name="FixedLengthFields">4.3.4. Fixed Length Fields</a></h3>
 <p>Fixed length fields require a little extra configuration than their delimited counterparts.  Let's
@@ -1967,10 +1948,6 @@ subclass, or to one of the collection type aliases below.</p>
 using the <tt>minOccurs</tt> and <tt>maxOccurs</tt> attributes.  If not declared, <tt>minOccurs</tt>
 will default to 1, and <tt>maxOccurs</tt> will default to the <tt>minOccurs</tt> value or 1, whichever
 is greater.</p>
-
-<p>Just like repeating fields, if the number of occurrences of a segment is dependent on a preceding field in
-the same record,  the <tt>occursRef</tt> attribute can be set to the name of the field that controls the number of occurrences.</p>
-
 
 <p>Flat file formats (CSV, delimited and fixed length) may only contain one field or segment of indeterminate
 length (i.e. where  <tt>maxOccurs</tt> is greater than <tt>minOccurs</tt>).  The position of components that
@@ -2806,17 +2783,17 @@ The following table summarizes overriden type handlers:</p>
   <th>Example</th>
 </tr>
 <tr>
-  <td><tt>date<br />calendar-date</tt></td>
+  <td><tt>date</tt></td>
   <td><a href="http://www.w3.org/TR/xmlschema-2/#date">date</a></td>
   <td><tt>2011-01-01</tt></td>
 </tr>
 <tr>
-  <td><tt>datetime<br />java.util.Date<br />calendar<br />calendar-datetime<br />java.util.Calendar</tt></td>
+  <td><tt>datetime</tt> or java.util.Date</td>
   <td><a href="http://www.w3.org/TR/xmlschema-2/#dateTime">dateTime</a></td>
   <td><tt>2011-01-01T15:14:13</tt></td>
 </tr>
 <tr>
-  <td><tt>time<br />calendar-time</tt></td>
+  <td><tt>time</tt></td>
   <td><a href="http://www.w3.org/TR/xmlschema-2/#time">time</a></td>
   <td><tt>15:14:13</tt></td>
 </tr>
@@ -3236,133 +3213,18 @@ of a field, and the effect of <tt>minOccurs</tt> and <tt>nillable</tt> when mars
 </tr>
 </table>
 
-<!-- 
-
-  Annotation and Builder API
-
- -->
-<h1><a name="Annotation">6.0. Annotations and the Stream Builder API</a></h1>
-<p>Since release 2.1, BeanIO includes support for Java annotations and a stream
-builder API.</p>
-
-<h2><a name="StreamBuilderAPI">6.1. The Stream Builder API</a></h2>
-<p>The stream builder API can be used to programatically create a stream mapping
-without the need for a mapping file.</p>
-
-<pre class="java">
-
-    StreamFactory factory = StreamFactory.newInstance();
-    
-    <span class="comment">// create a new StreamBuilder and define its layout</span>
-    StreamBuilder builder = new StreamBuilder("employeeFile")
-        .format("delimited")
-        .parser(new DelimitedParserBuilder(','))
-        .addRecord(new RecordBuilder("employee")
-            .type(Employee.class)
-            .minOccurs(1)
-            .addField(new FieldBuilder("type").rid().literal("EMP").ignore())
-            .addField(new FieldBuilder("recordType").rid(
-            .addField(new FieldBuilder("firstName"))
-            .addField(new FieldBuilder("lastName"))
-            .addField(new FieldBuilder("title"))
-            .addField(new FieldBuilder("salary"))
-            .addField(new FieldBuilder("hireDate").format("MMddyyyy")));
-
-    <span class="comment">// pass the StreamBuilder to the factory</span>
-    factory.define(builder);
-    
-    BeanReader in = factory.createReader("employeeFile", new File("employee.csv"));
-    <span class="comment">// etc...</span>
-
-</pre>
-
-<p>Like in a mapping file, components are assumed to be ordered as they are added to their parent, unless
-<tt>at</tt> (for fields) or <tt>order</tt> (for records and groups) is explicitly set.  
-For more information, refer to the Javadocs for the <a href="../api/org/beanio/builder/package-summary.html">
-<tt>org.beanio.builder</tt></a> package.</p>
-
-
-<h2><a name="Annotations">6.2. Annotations</a></h2>
-<p>Java classes can also be annotated to augment the use of the stream builder API or mapping file.
-Classes may be annotated with <tt>@Record</tt>, and class attributes or getter/setter methods may be 
-annotated with <tt>@Field</tt>.  Any component annotated with <tt>@Record</tt> or <tt>@Segment</tt>
-may be further annotated using <tt>@Fields</tt> to include fields not bound to a Java property.</p>  
-
-<p>Continuing our previous example, the <tt>example.Employee</tt>
-class could be annotated like so:</p>
-
-
-<pre class="java">
-<span class="highlight">@Record(minOccurs=1}
-@Fields({
-    @Field(name="type", at=0, rid=true, literal="EMP")
-})</span>
-public class Employee {
-    
-    <span class="highlight">@Field(at=1)</span>
-    private String firstName;
-    <span class="highlight">@Field(at=2)</span>
-    private String lastName;
-    <span class="highlight">@Field(at=3)</span>
-    private String title;
-    <span class="highlight">@Field(at=4)</span>
-    private String salary,
-    <span class="highlight">@Field(at=5, format="MMddyyyy")</span>
-    private Date hireDate;
-
-    <span class="comment">// getters and setters...</span>
-}
-</pre>
-
-<p>Using an annotated <tt>Employee</tt> class, the stream builder example can be greatly simplified:</p>
-<pre class="java">
-
-    StreamFactory factory = StreamFactory.newInstance();
-    
-    StreamBuilder builder = new StreamBuilder("employeeFile")
-        .format("delimited")
-        .parser(new DelimitedParserBuilder(','))
-        .addRecord(Employee.class);
-
-    factory.define(builder);
-
-</pre>
-
-<p>As can a mapping file:</p>
-<pre class="file">
-&lt;beanio&gt;
-
-  &lt;stream name="employeeFile" format="delimited"&gt;
-    &lt;parser&gt;
-      &lt;property name="delimiter" value="," /&gt;
-    &lt;/parser&gt;
-    &lt;record name="employee" class="example.Employee" /&gt;
-  &lt;/stream&gt;
-  
-&lt;/beanio&gt;</pre>
-
-<p>When using annotations, it is strongly recommended to explicitly set the position (using <tt>at</tt>)
-for all fields and segments.  BeanIO does not guarrantee the order in which annotated components
-are added to a layout.</p>
-
-<p>Annotation settings are generally named according to their mapping file counterparts and
-follow the same convention as well.  Refer to <a href="#A">Appendix A</a> for a complete 
-explanation of all settings.</p>
-
-<p>Where used, annotated records can not be overridden by mapping file components, and a
-<tt>BeanIOConfigurationException</tt> will be thrown if attempted.</p>
 
 <!-- 
 
 	SPRING BATCH
 
  -->
-<h1><a name="SpringBatch">7.0. Spring Batch Integration</a></h1>
+<h1><a name="SpringBatch">6.0. Spring Batch Integration</a></h1>
 <p>As of release 1.2, BeanIO can be used to read and write flat files with 
 <a href="http://static.springsource.org/spring-batch/">Spring Batch</a> (2.1.x), 
 a batch processing framework by SpringSource.</p>
 
-<h2><a name="SpringItemReaderWriter">7.1. BeanIO ItemReader/Writer Beans</a></h2>
+<h2><a name="SpringItemReaderWriter">6.1. BeanIO ItemReader/Writer Beans</a></h2>
 <p>The class <tt>org.beanio.spring.BeanIOFlatFileItemReader</tt> implements Spring Batch's
 <tt>ItemReader</tt> interface and can be used to read flat files using a BeanIO stream
 mapping file.  The following Spring bean definition shows a BeanIO item reader configuration
@@ -3393,7 +3255,7 @@ called 'out.txt'.</p>
 by the flat file item reader and writer included with Spring Batch.  Please refer to their 
 <a href="http://www.beanio.org/docs/api/index.html">API documentation</a> for details.</p>
 
-<h2><a name="SpringStreamFactory">7.2. BeanIO StreamFactory Bean</a></h2>
+<h2><a name="SpringStreamFactory">6.2. BeanIO StreamFactory Bean</a></h2>
 <p>By default, a BeanIO item reader/writer creates its own stream factory, but
 in cases where this could cause one or more mapping files to be loaded multiple times, it may be preferable 
 to create a shared stream factory instance.  BeanIO's <tt>org.beanio.spring.BeanIOStreamFactory</tt> class
@@ -3421,7 +3283,7 @@ The following Spring beans configuration file illustrates this:</p>
 &lt;/beans&gt;</pre>
 
 
-<h1><a name="Configuration">8.0. Configuration</a></h1>
+<h1><a name="Configuration">7.0. Configuration</a></h1>
 <p>In some cases, BeanIO behavior can be controlled by setting optional property values.  Properties
 can be set using System properties or a property file.  BeanIO will load configuration
 setting in the following order of priority:</p>
@@ -3436,28 +3298,13 @@ be loaded from the file named <tt>config/settings.properties</tt>, first relativ
 working directory, and if not found, then from the root of the application's classpath.</p>
 <pre class="indent">java <span class="highlight">-Dorg.beanio.configuration=config/settings.properties</span> example.Main</pre>
 
-<h2><a name="ConfigurationSettings">8.1. Settings</a></h2>
+<h2><a name="ConfigurationSettings">7.1. Settings</a></h2>
 <p>The following configuration settings are supported by BeanIO:</p>
 <table class="indent">
 <tr>
   <th>Property</th>
   <th>Description</th>
   <th>Default</th>
-</tr>
-<tr>
-  <td><tt>org.beanio.lazyIfEmpty</tt></td>
-  <td>Whether objects are lazily instantiated if String properties are empty (and not just null).</td>
-  <td><tt>true</tt></td>
-</tr>
-<tr>
-  <td><tt>org.beanio.errorIfNullPrimitive</tt></td>
-  <td>Whether null field values will cause an exception if bound to a primitive property.</td>
-  <td><tt>false</tt></td>
-</tr>
-<tr>
-  <td><tt>org.beanio.useDefaultIfMissing</tt></td>
-  <td>Whether default values apply to fields missing from the stream.</td>
-  <td><tt>true</tt></td>
 </tr>
 <tr>
   <td><tt>org.beanio.propertyEscapingEnabled</tt></td>
@@ -3481,22 +3328,19 @@ working directory, and if not found, then from the root of the application's cla
 </tr>
 <tr>
   <td><tt>org.beanio.defaultDateFormat</tt></td>
-  <td>Sets the default <tt>SimpleDateFormat</tt> pattern for <tt>date</tt> and
-    <tt>calendar-date</tt> type fields in
+  <td>Sets the default <tt>SimpleDateFormat</tt> pattern for <tt>date</tt> type fields in
     CSV, delimited and fixed length file formats.</td>
   <td><tt>DateFormat. getDateInstance()</tt></td>
 </tr>
 <tr>
   <td><tt>org.beanio.defaultDateTimeFormat</tt></td>
-  <td>Sets the default <tt>SimpleDateFormat</tt> pattern for <tt>datetime</tt>,
-    <tt>calendar-datetime</tt> and <tt>calendar</tt> type fields in
+  <td>Sets the default <tt>SimpleDateFormat</tt> pattern for <tt>datetime</tt> type fields in
     CSV, delimited and fixed length file formats..</td>
   <td><tt>DateFormat. getDateTimeInstance()</tt></td>
 </tr>
 <tr>
   <td><tt>org.beanio.defaultTimeFormat</tt></td>
-  <td>Sets the default <tt>SimpleDateFormat</tt> pattern for <tt>time</tt> and 
-    <tt>calendar-time</tt> type fields in
+  <td>Sets the default <tt>SimpleDateFormat</tt> pattern for <tt>time</tt> type fields in
     CSV, delimited and fixed length file formats..</td>
   <td><tt>DateFormat. getTimeInstance()</tt></td>
 </tr>
@@ -3536,11 +3380,6 @@ working directory, and if not found, then from the root of the application's cla
   <td><tt>org.beanio.xml.xsiNamespacePrefix</tt></td>
   <td>Sets the default prefix for the namespace <tt>http://www.w3.org/2001/XMLSchema-instance</tt>.</td>
   <td><tt>xsi</tt></td>
-</tr>
-<tr>
-  <td><tt>org.beanio.xml.sorted</tt></td>
-  <td>Whether XML fields are sorted by position (if assigned).</td>
-  <td><tt>true</tt></td>
 </tr>
 </table>
 
@@ -4219,16 +4058,6 @@ the group as a whole.</p>
   <td>*</td>
 </tr>
 <tr>
-  <td><tt>lazy</tt></td>
-  <td>If set to <tt>true</tt>, the class or collection bound to this record will only be 
-    instantiated if at least one child attribute is not null or the empty String.
-    Defaults to <tt>false</tt>.  [Only applies if this record is bound to an attribute
-    of a parent group.]
-  </td>
-  <td>No</td>
-  <td>*</td>
-</tr>
-<tr>
   <td><tt>template</tt></td>
   <td>The name of the template to include.  The template is added to the record layout 
     before any child of this record.
@@ -4418,19 +4247,9 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
   <td>*</td>
 </tr>
 <tr>
-  <td><tt>occursRef</tt></td>
-  <td>The name of a preceding field in the same record that controls the number
-    of occurrences of this segment.  If the controlling field is not bound to a
-    separate property (i.e. <tt>ignore="true"</tt>), its automatically set based on the 
-    size of the segment collection during marshalling.
-  </td>
-  <td>No</td>
-  <td>csv, delimited, fixedlength</td>
-</tr>
-<tr>
   <td><tt>lazy</tt></td>
-  <td>If set to <tt>true</tt>, the class or collection bound to this segment will only be 
-    instantiated if at least one child attribute is not null or the empty String.
+  <td>If set to <tt>true</tt>, the class assigned to this segment will only be 
+    instantiated if at least one child attribute is not null (or the empty string).
     Defaults to <tt>false</tt>.  This functionality differs from <tt>minOccurs</tt> 
     in that the fields may still exist in the input stream.
   </td>
@@ -4539,8 +4358,8 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
   <td>*</td>
 </tr>
 <tr>
-  <td><tt>at</tt><br /><tt>position</tt></td>
-  <td>For delimited and CSV formatted streams, <tt>position</tt> (or <tt>at</tt>) is the index of the field
+  <td><tt>position</tt></td>
+  <td>For delimited and CSV formatted streams, <tt>position</tt> is the index of the field
     within the record, beginning at 0.  And for fixed length formatted streams, <tt>position</tt>
     is the index of the first character of the field within the record, beginning at 0.  
     <p>
@@ -4554,16 +4373,9 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
     are not specified, BeanIO will automatically calculate field positions based on the order
     in which the fields are defined in the mapping file.
     </p>
-    <p>
-    Position, if defined, is also used in XML formatted streams for ordering fields within
-    their parent record or segment.  This is typically not needed when using a mapping file,
-    but can be useful when using annotations.
-    </p>
-    <p>If a position is configured for a parent segment (with annotations), the positions declared
-    for fields added to the segment are assumed to be relative to their parent.</p>
   </td>
   <td>No</td>
-  <td>*</td>
+  <td>csv, delimited, fixedlength</td>
 </tr>
 <tr>
   <td><tt>until</tt></td>
@@ -4583,15 +4395,6 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
   <td>*</td>
 </tr>
 <tr>
-  <td><tt>lazy</tt></td>
-  <td>Set to true to convert empty field text to null before type conversion.  For repeating
-    fields bound to a collection, the collection will not be created if all field values 
-    are null or the empty String.  Defaults to false.
-  </td>
-  <td>No</td>
-  <td>*</td>
-</tr>
-<tr>
   <td><tt>required</tt></td>
   <td>Set to <tt>true</tt> if this field is required.  If a field is required and its field 
     text is empty, a <tt>BeanReader</tt> will throw an <tt>InvalidRecordException</tt> when 
@@ -4601,8 +4404,7 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
 </tr>
 <tr>
   <td><tt>minLength</tt></td>
-  <td>The minimum length of the field text before type conversion.  Minimum length is only
-    validated if the field length is greater than 0.  Defaults to 0.</td>
+  <td>The minimum length of the field text before type conversion.  Defaults to 0.</td>
   <td>No</td>
   <td>*</td>
 </tr>
@@ -4694,16 +4496,6 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
   <td>*</td>
 </tr>
 <tr>
-  <td><tt>occursRef</tt></td>
-  <td>The name of a preceding field in the same record that controls the number
-    of occurrences of this field.  If the controlling field is not bound to a
-    separate property (i.e. <tt>ignore="true"</tt>), its automatically set based on the 
-    size of the field collection during marshalling.
-  </td>
-  <td>No</td>
-  <td>csv, delimited, fixedlength</td>
-</tr>
-<tr>
   <td><tt>format</tt></td>
   <td>The decimal format pattern for <tt>java.lang.Number</tt> field values, or the simple
     date format pattern for <tt>java.util.Date</tt> field properties.
@@ -4775,7 +4567,7 @@ repeating groups of fields, or in an XML formatted stream, to wrap one or more f
   <td>fixedlength</td>
 </tr>
 <tr>
-  <td><tt>justify<br />align</tt></td>
+  <td><tt>justify</tt></td>
   <td>The justification (i.e. alignment) of the field text within its padding.  Either
     <tt>left</tt> or <tt>right</tt>.  Defaults to <tt>left</tt>.</td>
   <td>No</td>

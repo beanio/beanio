@@ -55,7 +55,7 @@
     </record>
     <record name="record" class="map">
       <field name="type" rid="true" literal="CHA" />
-      <field name="character" type="char" collection="list" length="1" align="right" padding=" " maxOccurs="unbounded" />
+      <field name="character" type="char" collection="list" length="1" justify="right" padding=" " maxOccurs="unbounded" />
     </record>
     <record name="record" class="map">
       <field name="type" rid="true" literal="STL" />

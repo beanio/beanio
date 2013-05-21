@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2013 Kevin Seim
+ * Copyright 2011-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,11 +35,4 @@ public interface Iteration {
      * @return the iteration size
      */
     public int getIterationSize();
-    
-    /**
-     * Returns whether the iteration size is variable based on another field
-     * in the record.
-     * @return true if variable, false otherwise
-     */
-    public boolean isDynamicIteration();
 }

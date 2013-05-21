@@ -21,7 +21,6 @@ import java.util.*;
 
 import org.beanio.BeanIOConfigurationException;
 import org.beanio.internal.config.*;
-import org.beanio.internal.config.annotation.AnnotationParser;
 import org.beanio.internal.util.*;
 import org.w3c.dom.*;
 
@@ -51,8 +50,6 @@ public class XmlMappingParser implements StringUtil.PropertySource {
     private ClassLoader classLoader;
     /* custom Properties provided by the client for property expansion */
     private Properties properties;
-    /* whether the current record class was annotated */
-    private transient boolean annotatedRecord = false;
     
     private LinkedList<Include> includeStack = new LinkedList<Include>();
 
@@ -333,7 +330,6 @@ public class XmlMappingParser implements StringUtil.PropertySource {
      * @param element the DOM element to parse
      * @return the new <tt>Bean</tt>
      */
-    @SuppressWarnings("rawtypes")
     protected BeanConfig createBeanFactory(Element element) {
         BeanConfig config = new BeanConfig();
         config.setClassName(getAttribute(element, "class"));
@@ -379,7 +375,6 @@ public class XmlMappingParser implements StringUtil.PropertySource {
      * @param element the <tt>stream</tt> DOM element to parse
      * @return the new <tt>StreamConfig</tt>
      */
-    @SuppressWarnings("unchecked")
     protected StreamConfig createStreamConfig(Element element) {
         StreamConfig config = new StreamConfig();
         config.setName(getAttribute(element, "name"));
@@ -463,13 +458,9 @@ public class XmlMappingParser implements StringUtil.PropertySource {
      * @return the parsed record configuration
      */
     protected RecordConfig createRecordConfig(Element element) {
-        String type = getAttribute(element, "class");
-        RecordConfig segment = AnnotationParser.createRecordConfig(classLoader, type);
-        if (segment == null) {
-            segment = new RecordConfig();
-            segment.setType(type);
-        }
+        RecordConfig segment = new RecordConfig();
         populatePropertyConfig(segment, element);
+        segment.setType(getAttribute(element, "class"));
         segment.setKey(getAttribute(element, "key"));
         segment.setOrder(getIntegerAttribute(element, "order"));
         segment.setMinLength(getIntegerAttribute(element, "minLength"));
@@ -479,7 +470,6 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         segment.setXmlPrefix(getOptionalAttribute(element, "xmlPrefix"));
         segment.setJsonName(getAttribute(element, "jsonName"));
         segment.setJsonType(getAttribute(element, "jsonType"));
-        segment.setLazy(getBooleanAttribute(element, "lazy", segment.isLazy()));
         
         if (hasAttribute(element, "value")) {
             segment.setTarget(getAttribute(element, "value"));
@@ -518,11 +508,6 @@ public class XmlMappingParser implements StringUtil.PropertySource {
             if (node.getNodeType() != Node.ELEMENT_NODE)
                 continue;
 
-            if (annotatedRecord && config.getComponentType() == ComponentConfig.RECORD) {
-                throw new BeanIOConfigurationException("Annotated classes may not contain " + 
-                    "child componennts in a mapping file");
-            }
-            
             Element child = (Element) node;
             String name = child.getTagName();
             if ("field".equals(name)) {
@@ -591,15 +576,8 @@ public class XmlMappingParser implements StringUtil.PropertySource {
     }
     
     private void populatePropertyConfigOccurs(PropertyConfig config, Element element) {
-        boolean hasRef = hasAttribute(element, "occursRef");
-        if (hasRef) {
-            config.setOccursRef(getAttribute(element, "occursRef"));
-        }
-        
-        boolean hasOccurs = hasAttribute(element, "occurs");
-        boolean hasMinMax = hasAttribute(element, "minOccurs") || hasAttribute(element, "maxOccurs");
-        if (hasOccurs) {
-            if (hasMinMax) {
+        if (hasAttribute(element, "occurs")) {
+            if (hasAttribute(element, "minOccurs") || hasAttribute(element, "maxOccurs")) {
                 throw new BeanIOConfigurationException("occurs cannot be used with minOccurs or maxOccurs");
             }
             
@@ -643,7 +621,7 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         if (hasAttribute(element, "value")) {
             config.setTarget(getAttribute(element, "value"));
             if (hasAttribute(element, "target")) {
-                throw new BeanIOConfigurationException("Only one of 'value' or 'target' can be configured");
+                throw new BeanIOConfigurationException("Only one 'value' or 'target' can be configured");
             }
         }
         else {
@@ -663,13 +641,7 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         populatePropertyConfig(config, element);
         
         // adjust the position by the configured include offset
-        Integer position = getIntegerAttribute(element, "at");
-        if (position == null) {
-            position = getIntegerAttribute(element, "position");
-        }
-        else if (getIntegerAttribute(element, "position") != null) {
-            throw new BeanIOConfigurationException ("Only one of 'position' or 'at' can be configured");
-        }
+        Integer position = getIntegerAttribute(element, "position");
         if (position != null) {
             if (position >= 0) {
                 position += getPositionOffset();
@@ -691,21 +663,13 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         config.setDefault(getOptionalAttribute(element, "default"));
         config.setRequired(getBooleanAttribute(element, "required", config.isRequired()));
         config.setTrim(getBooleanAttribute(element, "trim", config.isTrim()));
-        config.setLazy(getBooleanAttribute(element, "lazy", config.isLazy()));
-        config.setIdentifier(getBooleanAttribute(element, "rid", config.isIdentifier()));
+        config.setIdentifier(getBooleanAttribute(element, "rid", 
+            config.isIdentifier()));
         config.setBound(!getBooleanAttribute(element, "ignore", false));
         config.setLength(getUnboundedIntegerAttribute(element, "length", -1));
         config.setPadding(getCharacterAttribute(element, "padding"));
         config.setKeepPadding(getBooleanAttribute(element, "keepPadding", config.isKeepPadding()));
-        if (hasAttribute(element, "justify")) {
-            if (hasAttribute(element, "align")) {
-                throw new BeanIOConfigurationException("Only one of 'align' or 'justify' can be configured");
-            }
-            config.setJustify(getAttribute(element, "justify"));            
-        }
-        else {
-            config.setJustify(getAttribute(element, "align"));
-        }
+        config.setJustify(getAttribute(element, "justify"));
         config.setXmlType(getAttribute(element, "xmlType"));
         config.setXmlName(getAttribute(element, "xmlName"));
         config.setXmlNamespace(getOptionalAttribute(element, "xmlNamespace"));
@@ -832,14 +796,11 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         return Integer.parseInt(text);
     }
 
-    private Boolean getBooleanAttribute(Element element, String name) {
-        String text = getAttribute(element, name);
-        return text == null ? null : "true".equals(text) || "1".equals(text);
-    }
-    
     private boolean getBooleanAttribute(Element element, String name, boolean defaultValue) {
-        Boolean b = getBooleanAttribute(element, name);
-        return b == null ? defaultValue : b.booleanValue();
+        String text = getAttribute(element, name);
+        if (text == null)
+            return defaultValue;
+        return "true".equals(text) || "1".equals(text);
     }
     
     private Range getRangeAttribute(Element element, String name) {

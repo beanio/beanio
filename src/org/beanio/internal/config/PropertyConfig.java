@@ -38,19 +38,16 @@ public abstract class PropertyConfig extends ComponentConfig {
     public static final String JSON_TYPE_NUMBER = "number";
     public static final String JSON_TYPE_STRING = "string";
     
-    private String label;
     private String type;
     private String getter;
     private String setter;
     private boolean bound;
     private boolean identifier;
-    private boolean lazy;
     
     private Integer position;
     private Integer until;
     private Integer minOccurs;
     private Integer maxOccurs;
-    private String occursRef;
     private String collection;
     
     /* attributes specific to xml */
@@ -66,31 +63,12 @@ public abstract class PropertyConfig extends ComponentConfig {
     /* derived attributes */
     private int minSize;
     private int maxSize;
-    private Integer minOccursRef;
-    private Integer maxOccursRef;
     
     /**
      * Constructs a new <tt>PropertyConfig</tt>.
      */
     public PropertyConfig() { }
 
-    /**
-     * Returns the component name used for identification in error handling.
-     * Defaults to getName() if not set.
-     * @return the component name
-     */
-    public String getLabel() {
-        return label;
-    }
-
-    /**
-     * Sets the component name used for identification in error handling.
-     * @param label the component name
-     */
-    public void setLabel(String label) {
-        this.label = label;
-    }
-    
     /**
      * Returns the fully qualified class name or type alias of this property.
      * By default, <tt>null</tt> is returned and the property value type
@@ -163,26 +141,6 @@ public abstract class PropertyConfig extends ComponentConfig {
      */
     public void setBound(boolean bound) {
         this.bound = bound;
-    }
-    
-    /**
-     * Returns whether the class assigned to this segment should only be instantiated
-     * if at least one child element is not null or the empty string, or if null should
-     * be returned for an empty collection.
-     * @return whether this component is lazy
-     */
-    public boolean isLazy() {
-        return lazy;
-    }
-
-    /**
-     * Sets whether the property assigned to this segment should only be instantiated
-     * if at least one child element is not null or the empty string, or if null should
-     * be returned instead for an empty collection.
-     * @param lazy the new lazy value
-     */
-    public void setLazy(boolean lazy) {
-        this.lazy = lazy;
     }
     
     /**
@@ -300,56 +258,6 @@ public abstract class PropertyConfig extends ComponentConfig {
         this.maxOccurs = maxOccurs;
     }
     
-    /**
-     * Returns the name of a field in the same record that indicates the number
-     * of occurrences for this component.
-     * @return the field name
-     */
-    public String getOccursRef() {
-        return occursRef;
-    }
-
-    /**
-     * Sets the name of a field in the same record that indicates the number
-     * of occurrences for this component.
-     * @param occursRef the field name
-     */
-    public void setOccursRef(String occursRef) {
-        this.occursRef = occursRef;
-    }
-
-    /**
-     * Returns the minimum required value of the referenced occurs field.
-     * @return the minimum value
-     */
-    public Integer getMinOccursRef() {
-        return minOccursRef;
-    }
-
-    /**
-     * Sets the minimum required value of the referenced occurs field.
-     * @param minOccursRef the minimum value
-     */
-    public void setMinOccursRef(Integer minOccursRef) {
-        this.minOccursRef = minOccursRef;
-    }
-
-    /**
-     * Returns the maximum allowed value of the referenced occurs field.
-     * @return the maximum value
-     */
-    public Integer getMaxOccursRef() {
-        return maxOccursRef;
-    }
-
-    /**
-     * Sets the maximum allowed value of the referenced occurs field.
-     * @param maxOccursRef the maximum value
-     */
-    public void setMaxOccursRef(Integer maxOccursRef) {
-        this.maxOccursRef = maxOccursRef;
-    }
-
     /**
      * Returns the XML node type of this component.
      * @return the XML node type
@@ -536,6 +444,10 @@ public abstract class PropertyConfig extends ComponentConfig {
     
     @Override
     protected boolean isSupportedChild(ComponentConfig child) {
+        return false;
+    }
+    
+    public boolean isLazy() {
         return false;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,12 +25,11 @@ import java.util.Properties;
  * @author Kevin Seim
  * @since 1.0
  */
-public class BeanConfig<T> {
+public class BeanConfig {
 
     private String className;
     private Properties properties;
-    private T instance;
-    
+
     /**
      * Returns the fully qualified class name of the bean.
      * @return the bean class name
@@ -62,21 +61,4 @@ public class BeanConfig<T> {
     public void setProperties(Properties properties) {
         this.properties = properties;
     }
-
-    /**
-     * Returns the configured instance of this bean.
-     * @return the instance
-     */
-    public T getInstance() {
-        return instance;
-    }
-
-    /**
-     * Sets the configured instance of this bean.
-     * @param instance the bean
-     */
-    public void setInstance(T instance) {
-        this.instance = instance;
-    }
 }
-

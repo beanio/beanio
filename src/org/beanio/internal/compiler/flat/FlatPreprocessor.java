@@ -43,10 +43,6 @@ public class FlatPreprocessor extends Preprocessor {
     private PropertyConfig unboundedComponentFollower = null;
     // the list of components at the end of the record following the unbounded component
     private List<PropertyConfig> endComponents = new ArrayList<PropertyConfig>();
-    /* stack of non-record segments */
-    private LinkedList<SegmentConfig> segmentStack = new LinkedList<SegmentConfig>();
-    /* list of field components belonging to a record, used for validating dynamic occurrences */
-    private List<FieldConfig> fieldComponents = new ArrayList<FieldConfig>();
     
     /**
      * Constructs a new <tt>FlatPreprocessor</tt>.
@@ -65,7 +61,6 @@ public class FlatPreprocessor extends Preprocessor {
         unboundedComponent = null;
         unboundedComponentFollower = null;
         endComponents.clear();
-        fieldComponents.clear();
     }
     
     @Override
@@ -121,25 +116,6 @@ public class FlatPreprocessor extends Preprocessor {
         }
     }
     
-    @Override
-    protected void initializeSegment(SegmentConfig segment) throws BeanIOConfigurationException {
-        if (segment.getComponentType() == ComponentConfig.SEGMENT) {
-            segmentStack.push(segment);
-        }
-        
-        super.initializeSegment(segment);
-        
-        if (segment.getOccursRef() != null) {
-            if (!segment.isCollection()) {
-                throw new BeanIOConfigurationException("Collection required when 'occursRef' is set");
-            }
-            segment.setMinOccursRef(segment.getMinOccurs());
-            segment.setMaxOccursRef(segment.getMaxOccurs());
-            segment.setMinOccurs(1);
-            segment.setMaxOccurs(1);
-        }
-    }
-
     @Override
     protected void finalizeSegment(SegmentConfig segment) {
         super.finalizeSegment(segment);
@@ -207,9 +183,6 @@ public class FlatPreprocessor extends Preprocessor {
                 }
                 maxSize = Integer.MAX_VALUE;
                 isVariableSized = true;
-            }
-            else if (last.getMaxOccurs() == Integer.MAX_VALUE) {
-                maxSize = Integer.MAX_VALUE;
             }
             else {
                 maxSize = Math.abs(last.getPosition() - first.getPosition()) + last.getMaxSize() * last.getMaxOccurs();
@@ -303,12 +276,6 @@ public class FlatPreprocessor extends Preprocessor {
             throw new BeanIOConfigurationException("Repeating segments without any child " +
                 "field component must have minOccurs=maxOccurs");
         }
-        
-        handleOccursRef(segment);
-        
-        if (segment.getComponentType() == ComponentConfig.SEGMENT) {
-            segmentStack.pop();
-        }
     }
     
     //  1,  0 returns 1 (greater than)
@@ -329,16 +296,6 @@ public class FlatPreprocessor extends Preprocessor {
     @Override
     protected void handleField(FieldConfig field) {
         super.handleField(field);
-
-        if (field.getOccursRef() != null) {
-            if (!field.isCollection()) {
-                throw new BeanIOConfigurationException("Collection required when 'occursRef' is set");
-            }
-            field.setMinOccursRef(field.getMinOccurs());
-            field.setMaxOccursRef(field.getMaxOccurs());
-            field.setMinOccurs(1);
-            field.setMaxOccurs(1);
-        }
         
         // validate and configure padding
         if (isFixedLength()) {
@@ -387,9 +344,6 @@ public class FlatPreprocessor extends Preprocessor {
                 "in a record, or for none of them (in which case, all fields must be configured in the " +
                 "order they will appear in the stream)");
         }
-        if (field.getPosition() != null) {
-            field.setPosition(field.getPosition() + getSegmentOffset());
-        }
         if (field.getPosition() == null) {
             calculateDefaultPosition(field);
         }
@@ -403,55 +357,6 @@ public class FlatPreprocessor extends Preprocessor {
                     "a position relative to the end of the record)");
             }
         }
-        
-        handleOccursRef(field);
-        
-        fieldComponents.add(field);
-    }
-    
-    private void handleOccursRef(PropertyConfig config) {
-        if (config.getOccursRef() != null) {
-            FieldConfig occurs = null;
-            for (FieldConfig fc : fieldComponents) {
-                if (fc.getName().equals(config.getOccursRef())) {
-                    occurs = fc;
-                    break;
-                }
-            }
-            if (occurs == null) {
-                throw new BeanIOConfigurationException("Referenced field '" + config.getOccursRef() +
-                    "' not found");
-            }
-            if (occurs.getCollection() != null) {
-                throw new BeanIOConfigurationException("Referenced field '" + config.getOccursRef() +
-                    "' may not repeat");
-            }
-            if (occurs.getPosition() >= config.getPosition()) {
-                throw new BeanIOConfigurationException("Referenced field '" + config.getOccursRef() +
-                    "' must precede this field");
-            }
-            // default occurs to an Integer if not set...
-            if (occurs.getType() == null && 
-                occurs.getTypeHandler() == null &&
-                occurs.getTypeHandlerInstance() == null) {
-                occurs.setType(Integer.class.getName());
-            }
-            if (occurs.isRef() && !occurs.isBound()) {
-                throw new BeanIOConfigurationException("Unbound field '" + occurs.getName() +
-                    "' cannot be referenced more than once");
-            }
-            occurs.setRef(true);
-        }
-    }
-    
-    private int getSegmentOffset() {
-        int offset = 0;
-        for (SegmentConfig s : segmentStack) {
-            if (s.getPosition() != null) {
-                offset += s.getPosition();
-            }
-        }
-        return offset;
     }
     
     private boolean isVariableSized(FieldConfig config) {

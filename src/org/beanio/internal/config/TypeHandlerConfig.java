@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import org.beanio.types.TypeHandler;
  * @since 1.0
  * @see TypeHandler
  */
-public class TypeHandlerConfig extends BeanConfig<TypeHandler> {
+public class TypeHandlerConfig extends BeanConfig {
 
     private String name;
     private String type;

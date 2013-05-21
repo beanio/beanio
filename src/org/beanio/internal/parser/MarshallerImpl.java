@@ -15,11 +15,10 @@
  */
 package org.beanio.internal.parser;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.List;
 
 import org.beanio.*;
-import org.beanio.internal.util.DebugUtil;
 import org.beanio.stream.*;
 import org.w3c.dom.*;
 
@@ -164,12 +163,5 @@ public class MarshallerImpl implements Marshaller {
      */
     protected Object getRecordValue() {
         return recordValue;
-    }
-    
-    public void debug() {
-        debug(System.out);
-    }
-    public void debug(PrintStream out) {
-        ((Component)layout).print(out);
     }
 }

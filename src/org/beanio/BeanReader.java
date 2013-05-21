@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Kevin Seim
+ * Copyright 2010-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@ package org.beanio;
 
 import java.io.IOException;
 
-import org.beanio.internal.util.Debuggable;
-
 /**
  * Interface for unmarshalling bean objects from an input stream.
  * 
@@ -28,7 +26,7 @@ import org.beanio.internal.util.Debuggable;
  * @since 1.0
  * @see StreamFactory
  */
-public interface BeanReader extends Debuggable {
+public interface BeanReader {
 
 	/**
 	 * Reads a single bean from the input stream.  If the end of the stream is

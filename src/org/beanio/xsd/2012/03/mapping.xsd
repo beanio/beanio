@@ -6,7 +6,7 @@
   elementFormDefault="qualified" 
   targetNamespace="http://www.beanio.org/2012/03"
   xml:lang="en"
-  version="2.1.0">
+  version="2.0.3">
 
   <annotation>
     <documentation>
@@ -603,14 +603,6 @@
         </documentation>
       </annotation>
     </attribute>
-    <attribute name="lazy" type="xsd:boolean" use="optional">
-      <annotation>
-        <documentation>
-          Set to true if null is returned for a empty collection or a collection
-          of null and/or empty Strings.
-        </documentation>
-      </annotation>
-    </attribute>
     <attribute name="template" type="xsd:string" use="optional">
       <annotation>
         <documentation>
@@ -728,15 +720,7 @@
       <annotation>
         <documentation>
           Field position beginning at 0.  A negative number is relative to
-          the end of the record.  Same as 'at'.
-        </documentation>
-      </annotation>
-    </attribute>
-    <attribute name="at" type="xsd:int" use="optional">
-      <annotation>
-        <documentation>
-          Field position beginning at 0.  A negative number is relative to
-          the end of the record.  Same as 'position'.
+          the end of the record.
         </documentation>
       </annotation>
     </attribute>
@@ -855,16 +839,8 @@
     <attribute name="justify" type="tns:justification" use="optional">
       <annotation>
         <documentation>
-          Synonym for 'align'.  The justification of the field text when 
-          padded- 'left' or 'right'.  Defaults to 'left'.
-        </documentation>
-      </annotation>
-    </attribute>
-    <attribute name="align" type="tns:justification" use="optional">
-      <annotation>
-        <documentation>
-          Synonym for 'justify'  The justification of the field text 
-          when padded- 'left' or 'right'.  Defaults to 'left'.
+          The justification of the field text when padded- 'left' or 'right'.
+          Defaults to 'left'.
         </documentation>
       </annotation>
     </attribute>
@@ -874,14 +850,6 @@
           The type of collection for repeating fields.  May be set to any
           collection class name or one of the following: 'array', 'list',
           or 'set'.
-        </documentation>
-      </annotation>
-    </attribute>
-    <attribute name="lazy" type="xsd:boolean" use="optional">
-      <annotation>
-        <documentation>
-          Set to true if null is returned for a empty collection or a collection
-          of null and/or empty Strings.
         </documentation>
       </annotation>
     </attribute>
@@ -905,14 +873,6 @@
       <annotation>
         <documentation>
           Shortcut for specifying both minOccurs and maxOccurs.  Examples: '1', '0-3', '2+'.
-        </documentation>
-      </annotation>
-    </attribute>
-    <attribute name="occursRef" type="xsd:string" use="optional">
-      <annotation>
-        <documentation>
-          The name of a field in the same record that dynamically indicates the number
-          of occurrences of this field.
         </documentation>
       </annotation>
     </attribute>
@@ -1048,7 +1008,7 @@
       <annotation>
         <documentation>
           Set to true if the class should not be instantiated if all attributes
-          are null or empty strings, or if the collection is empty.
+          are null or empty strings.
         </documentation>
       </annotation>
     </attribute>
@@ -1093,14 +1053,6 @@
       <annotation>
         <documentation>
           Shortcut for specifying both minOccurs and maxOccurs.  Examples: '1', '0-3', '2+'.
-        </documentation>
-      </annotation>
-    </attribute>
-    <attribute name="occursRef" type="xsd:string" use="optional">
-      <annotation>
-        <documentation>
-          The name of a field in the same record that dynamically indicates the number
-          of occurrences of this segment.
         </documentation>
       </annotation>
     </attribute>

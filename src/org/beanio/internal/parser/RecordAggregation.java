@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 Kevin Seim
+ * Copyright 2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@ package org.beanio.internal.parser;
 
 import java.util.*;
 
-import org.beanio.internal.util.DebugUtil;
-
 /**
  * 
  * @author Kevin Seim
@@ -32,8 +30,6 @@ public abstract class RecordAggregation extends DelegatingParser implements Sele
     protected ParserLocal<Object> value = new ParserLocal<Object>(Value.MISSING);
     // the collection type
     private Class<?> type;
-    // true if null should be returned for an empty collection
-    protected boolean lazy;
     
     /**
      * Constructs a new <tt>RecordAggregation</tt>.
@@ -210,14 +206,6 @@ public abstract class RecordAggregation extends DelegatingParser implements Sele
         return getSelector().getMaxOccurs();
     }
     
-    public boolean isLazy() {
-        return lazy;
-    }
-
-    public void setLazy(boolean lazy) {
-        this.lazy = lazy;
-    }
-    
     @Override
     protected boolean isSupportedChild(Component child) {
         return child instanceof Selector;
@@ -290,14 +278,5 @@ public abstract class RecordAggregation extends DelegatingParser implements Sele
      */
     public boolean isRecordGroup() {
         return false;
-    }
-    
-    @Override
-    protected void toParamString(StringBuilder s) {
-        super.toParamString(s);
-        if (type != null) {
-            s.append(", type=").append(type.getSimpleName());
-        }
-        s.append(", ").append(DebugUtil.formatOption("lazy", lazy));
     }
 }

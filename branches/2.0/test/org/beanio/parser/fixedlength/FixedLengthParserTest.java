@@ -106,7 +106,7 @@ public class FixedLengthParserTest extends ParserTest {
             StringWriter text = new StringWriter();
             BeanWriter out = factory.createWriter("f2", text);
             out.write(map);
-            assertEquals("1234512345\n\r", text.toString());
+            assertEquals("1234512345\r\n", text.toString());
         }
         finally {
             in.close();

@@ -21,7 +21,7 @@
 
   <stream name="f2" format="fixedlength" resourceBundle="org.beanio.parser.fixedlength.f2_messages">
     <parser>
-      <property name="recordTerminator" value="\n\r" />
+      <property name="recordTerminator" value="\r\n" />
     </parser>
     <record name="record" class="map" minLength="10" maxLength="20">
       <field name="field1" length="5" />

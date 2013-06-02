@@ -26,8 +26,10 @@ import org.beanio.internal.config.annotation.AnnotationParser;
  * @since 2.1.0
  * @param <T> the GroupBuilder subclass
  */
-abstract class GroupBuilderSupport<T extends GroupBuilderSupport<T>> extends PropertyBuilderSupport<T> {
+public abstract class GroupBuilderSupport<T extends GroupBuilderSupport<T>> extends PropertyBuilderSupport<T> {
 
+    GroupBuilderSupport() { }
+    
     @Override
     protected abstract GroupConfig getConfig();
     

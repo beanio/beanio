@@ -30,8 +30,10 @@ import org.beanio.internal.config.*;
  * @since 2.1.0
  * @param <T> the builder subclass
  */
-abstract class PropertyBuilderSupport<T extends PropertyBuilderSupport<T>> {
+public abstract class PropertyBuilderSupport<T extends PropertyBuilderSupport<T>> {
 
+    PropertyBuilderSupport() { }
+    
     /**
      * Returns this.
      * @return this

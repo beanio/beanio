@@ -23,10 +23,12 @@ import org.beanio.internal.config.*;
  * @author Kevin Seim
  * @since 2.1.0
  */
-abstract class SegmentBuilderSupport<T extends SegmentBuilderSupport<T>> extends PropertyBuilderSupport<T> {
+public abstract class SegmentBuilderSupport<T extends SegmentBuilderSupport<T>> extends PropertyBuilderSupport<T> {
 
+    SegmentBuilderSupport() { }
+    
     protected abstract SegmentConfig getConfig();
-
+    
     /**
      * Sets the name of a child component to use as the key for an
      * inline map bound to this record or segment.

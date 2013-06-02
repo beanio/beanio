@@ -56,14 +56,14 @@ class BuilderTest {
             enableEscape "\\" as char
             enableLineContinuation "&" as char
             enableComments(["#","!"] as String[])
-            recordTerminator('\n' as char)
+            recordTerminator("\n")
         }
         p = b.build().instance
         assert p.delimiter == "," as char
         assert p.escape == "\\" as char
         assert p.lineContinuationCharacter == "&" as char
         assert p.comments == ["#","!"]
-        assert p.recordTerminator == "\n" as char
+        assert p.recordTerminator == "\n"
         
         b = new DelimitedParserBuilder("|" as char)
         p = b.build().instance
@@ -81,12 +81,12 @@ class BuilderTest {
         b = new FixedLengthParserBuilder().with {
             enableLineContinuation("\\" as char)
             enableComments(["#","!"] as String[])
-            recordTerminator('\n' as char)
+            recordTerminator("\r\n")
         }
         p = b.build().instance
         assert p.lineContinuationCharacter == "\\" as char
         assert p.comments == ["#","!"]
-        assert p.recordTerminator == "\n" as char
+        assert p.recordTerminator == "\r\n"
     }
     
     @Test
@@ -112,7 +112,7 @@ class BuilderTest {
             allowUnquotedQuotes()
             allowUnquotedWhitespace()
             enableComments(["#","!"] as String[])
-            recordTerminator('\n' as char)
+            recordTerminator("\r")
         }
         p = b.build().instance
         assert p.delimiter == '|' as char
@@ -123,7 +123,7 @@ class BuilderTest {
         assert p.whitespaceAllowed
         assert p.unquotedQuotesAllowed
         assert p.comments == ["#","!"]
-        assert p.recordTerminator == "\n" as char
+        assert p.recordTerminator == "\r"
     }
     
     @Test

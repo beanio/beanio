@@ -22,8 +22,10 @@ import org.beanio.stream.RecordParserFactory;
  * @author Kevin Seim
  * @since 2.1.0
  */
-abstract class ParserBuilder {
+public abstract class ParserBuilder {
 
+    ParserBuilder() { }
+    
     public abstract BeanConfig<RecordParserFactory> build();
     
 }

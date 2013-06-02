@@ -74,7 +74,7 @@ public class FixedLengthReader implements RecordReader {
         
         if (config.getRecordTerminator() != null) {
             String s = config.getRecordTerminator();
-            if ("\n\r".equals(s)) {
+            if ("\r\n".equals(s)) {
                 // use default
             }
             else if (s.length() == 1) {

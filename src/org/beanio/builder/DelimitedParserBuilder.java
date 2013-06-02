@@ -40,8 +40,8 @@ public class DelimitedParserBuilder extends ParserBuilder {
         return this;
     }
     
-    public DelimitedParserBuilder recordTerminator(char terminator) {
-        parser.setRecordTerminator(Character.toString(terminator));
+    public DelimitedParserBuilder recordTerminator(String terminator) {
+        parser.setRecordTerminator(terminator);
         return this;
     }
     

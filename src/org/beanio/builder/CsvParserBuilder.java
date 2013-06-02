@@ -47,8 +47,8 @@ public class CsvParserBuilder extends ParserBuilder {
         return this;
     }    
 
-    public CsvParserBuilder recordTerminator(char terminator) {
-        parser.setRecordTerminator(Character.toString(terminator));
+    public CsvParserBuilder recordTerminator(String terminator) {
+        parser.setRecordTerminator(terminator);
         return this;
     }
 

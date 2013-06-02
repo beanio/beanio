@@ -39,8 +39,8 @@ public class FixedLengthParserBuilder extends ParserBuilder {
      * @param terminator the record termination character
      * @return this
      */
-    public FixedLengthParserBuilder recordTerminator(char terminator) {
-        parser.setRecordTerminator(Character.toString(terminator));
+    public FixedLengthParserBuilder recordTerminator(String terminator) {
+        parser.setRecordTerminator(terminator);
         return this;
     }
     

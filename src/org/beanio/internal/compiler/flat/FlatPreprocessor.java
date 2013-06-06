@@ -411,8 +411,11 @@ public class FlatPreprocessor extends Preprocessor {
     
     private void handleOccursRef(PropertyConfig config) {
         if (config.getOccursRef() != null) {
+            // search in reverse to find the most recent field in case multiple
+            // fields share the same name (gc0080)
             FieldConfig occurs = null;
-            for (FieldConfig fc : fieldComponents) {
+            for (int i = fieldComponents.size() - 1; i >= 0; i--) {
+                FieldConfig fc = fieldComponents.get(i);
                 if (fc.getName().equals(config.getOccursRef())) {
                     occurs = fc;
                     break;

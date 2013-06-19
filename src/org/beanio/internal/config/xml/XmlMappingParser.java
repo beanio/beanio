@@ -274,6 +274,7 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         // check to see if the mapping file has already been loaded
         XmlMapping m = mappings.get(key);
         if (m != null) {
+            mapping.addImport(m);
             return m;
         }
         

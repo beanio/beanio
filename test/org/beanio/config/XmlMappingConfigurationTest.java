@@ -32,6 +32,18 @@ import org.junit.Test;
 public class XmlMappingConfigurationTest extends ParserTest {
 
     @Test
+    public void testTemplateImport() throws IOException {
+        StreamFactory factory = StreamFactory.newInstance();
+        InputStream in = getClass().getResourceAsStream("ab.xml");
+        try {
+            factory.load(in);
+        }
+        finally {
+            IOUtil.closeQuietly(in);
+        }
+    }
+    
+    @Test
     public void testImport() throws IOException {
         StreamFactory factory = StreamFactory.newInstance();
         InputStream in = getClass().getResourceAsStream("import.xml");

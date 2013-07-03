@@ -161,5 +161,18 @@
       </record>
     </group>
   </stream>
+  
+  <stream name="ml8" format="fixedlength">
+    <group name="group" class="org.beanio.beans.Order" occurs="1">
+      <record name="customer" occurs="1" order="1" class="org.beanio.beans.Person">
+        <field name="id" rid="true" literal="CUST" />
+        <field name="firstName" length="unbounded" />
+      </record>
+      <record name="shipper" occurs="0-1" order="2" class="org.beanio.beans.Person">
+        <field name="id" rid="true" literal="SHIP" />
+        <field name="firstName" length="unbounded" />
+      </record>
+    </group>
+  </stream>
 
 </beanio>

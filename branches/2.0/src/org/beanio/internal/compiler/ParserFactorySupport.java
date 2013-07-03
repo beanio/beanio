@@ -447,9 +447,9 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     }
     
     @Override
-    protected void initializeRecord(RecordConfig config) throws BeanIOConfigurationException {
+    protected void initializeRecord(RecordConfig config) throws BeanIOConfigurationException {        
         // determine and validate the bean class
-        Property bean = createProperty(config, propertyStack.isEmpty());
+        Property bean = createProperty(config, propertyStack.isEmpty() || config.getMinOccurs() > 0);
 
         // handle bound repeating records
         if (config.isBound() && config.isRepeating()) {

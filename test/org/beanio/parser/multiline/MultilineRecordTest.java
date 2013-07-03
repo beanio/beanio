@@ -329,4 +329,19 @@ public class MultilineRecordTest extends ParserTest {
             in.close();
         }
     }
+    
+    @Test
+    public void testOptionalRecord() {
+        String text = "CUSTGeorge\n"; 
+        
+        BeanReader in = factory.createReader("ml8", new StringReader(text));
+        Order order = (Order) in.read();
+        assertEquals(order.getCustomer().getId(), "CUST");
+        assertEquals(order.getCustomer().getFirstName(), "George");
+        assertNull(order.getShipper());   
+        
+        StringWriter output = new StringWriter();
+        factory.createWriter("ml8", output).write(order);
+        assertEquals(text, output.toString());
+    }
 }

@@ -147,8 +147,11 @@ public class CollectionBean extends PropertyComponent implements Property {
      * @see org.beanio.internal.parser.PropertyComponent#defines(java.lang.Object)
      */
     public boolean defines(Object value) {
-        if (value == null || getType() == null) {
+        if (getType() == null) {
             return false;
+        }
+        if (value == null) {
+            return isMatchNull();
         }
         if (!getType().isAssignableFrom(value.getClass())) {
             return false;

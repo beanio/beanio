@@ -75,13 +75,14 @@ public class Bean extends PropertyComponent implements Property {
         
         if (bean == null) {
             // allow beans that are not top level to still match if minOccurs=0
-            return !isRequired();
+            return isMatchNull();
         }
         
         if (!getType().isAssignableFrom(bean.getClass())) {
             return false;
         }
         
+        // 'identifier' indicates the value of a child component must match 
         if (!isIdentifier()) {
             return true;
         }

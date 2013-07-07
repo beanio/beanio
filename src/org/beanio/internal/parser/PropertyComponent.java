@@ -34,6 +34,8 @@ public abstract class PropertyComponent extends Component implements Property {
     private Class<?> type;
     // indicates whether the bean is always instantiated
     private boolean required;
+    // indicates whether the bean can still be used to identify a record if null
+    private boolean matchNull;
     // whether any of this bean's children are used to identify an object for marshalling
     private boolean identifier;
     // the accessor for setting this bean on its parent, may be null
@@ -108,6 +110,22 @@ public abstract class PropertyComponent extends Component implements Property {
      */
     public void setRequired(boolean required) {
         this.required = required;
+    }
+    
+    /**
+     * Returns whether this bean can still identify a record if null.
+     * @return true if null allowed for record identification, false otherwise
+     */
+    public boolean isMatchNull() {
+        return matchNull;
+    }
+
+    /**
+     * Sets whether this bean can still identify a record if null.
+     * @param matchNull true if null allowed for record identification, false otherwise
+     */
+    public void setMatchNull(boolean matchNull) {
+        this.matchNull = matchNull;
     }
 
     @Override

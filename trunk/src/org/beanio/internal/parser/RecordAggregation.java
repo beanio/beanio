@@ -183,7 +183,7 @@ public abstract class RecordAggregation extends DelegatingParser implements Sele
      * @see org.beanio.internal.util.StatefulWriter#updateState(java.lang.String, java.util.Map)
      */
     public void updateState(ParsingContext context, String namespace, Map<String, Object> state) {
-        getSelector().updateState(null, namespace, state);
+        getSelector().updateState(context, namespace, state);
     }
 
     /*
@@ -191,7 +191,7 @@ public abstract class RecordAggregation extends DelegatingParser implements Sele
      * @see org.beanio.internal.util.StatefulWriter#restoreState(java.lang.String, java.util.Map)
      */
     public void restoreState(ParsingContext context, String namespace, Map<String, Object> state) throws IllegalStateException {
-        getSelector().restoreState(null, namespace, state);
+        getSelector().restoreState(context, namespace, state);
     }
 
     /*

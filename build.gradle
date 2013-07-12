@@ -21,7 +21,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 apply from: 'https://raw.github.com/breskeby/gradleplugins/master/emmaPlugin/emma.gradle'
 
-version = "2.1.0.M1"
+version = "2.1.0.SNAPSHOT"
 
 ext.artifactId = "beanio"
 group = "org.beanio"
@@ -213,7 +213,7 @@ uploadArchives {
             }
             pom.project {
                name 'BeanIO'
-               artifactId '$artifactId'
+               artifactId "$artifactId"
                packaging 'jar'
                description 'A Java un/marshalling library for CSV, XML, delimited and fixed length stream formats.'
                url 'http://beanio.org/'
@@ -236,6 +236,11 @@ uploadArchives {
                    }
                }
            }
+           pom.whenConfigured {
+                dependencies.find { dep -> dep.artifactId == 'asm' }.scope = "provided"
+                dependencies.find { dep -> dep.artifactId == 'spring-batch-core' }.optional = true
+                dependencies.find { dep -> dep.artifactId == 'commons-logging' }.optional = true
+            }
         }
     }
 }

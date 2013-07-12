@@ -69,15 +69,21 @@ public class Bean extends PropertyComponent implements Property {
      * (non-Javadoc)
      * @see org.beanio.parser2.Property#defines(java.lang.Object)
      */
-    public boolean defines(Object bean) {    
-        if (bean == null || getType() == null) {
+    public boolean defines(Object bean) {   
+        if (getType() == null) {
             return false;
+        }
+        
+        if (bean == null) {
+            // allow beans that are not top level to still match if minOccurs=0
+            return isMatchNull();
         }
         
         if (!getType().isAssignableFrom(bean.getClass())) {
             return false;
         }
         
+        // 'identifier' indicates the value of a child component must match 
         if (!isIdentifier()) {
             return true;
         }

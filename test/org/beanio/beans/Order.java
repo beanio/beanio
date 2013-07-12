@@ -23,6 +23,7 @@ public class Order {
     private Date date;
     private String paymentMethod;
     private Person customer;
+    private Person shipper;
     private List<OrderItem> items;
     private Map<String,OrderItem> itemMap;
     
@@ -49,6 +50,12 @@ public class Order {
     }
     public void setCustomer(Person buyer) {
         this.customer = buyer;
+    }
+    public Person getShipper() {
+        return shipper;
+    }
+    public void setShipper(Person shipper) {
+        this.shipper = shipper;
     }
     public List<OrderItem> getItems() {
         return items;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Kevin Seim
+ * Copyright 2010-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -144,7 +144,7 @@ public abstract class NumberTypeHandler implements ConfigurableTypeHandler, Clon
         else if (pattern == null)
             return ((Number) value).toString();
         else
-            return new DecimalFormat(pattern).format(value);
+            return createDecimalFormat().format(value);
     }
 
     /**

@@ -370,7 +370,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         }
         
         // determine and validate the bean class
-        Property bean = createProperty(config, propertyStack.isEmpty());
+        Property bean = createProperty(config);
         
         // handle bound repeating groups
         if (config.isBound() && config.isRepeating()) {
@@ -453,9 +453,9 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     }
     
     @Override
-    protected void initializeRecord(RecordConfig config) throws BeanIOConfigurationException {
+    protected void initializeRecord(RecordConfig config) throws BeanIOConfigurationException {        
         // determine and validate the bean class
-        Property bean = createProperty(config, propertyStack.isEmpty());
+        Property bean = createProperty(config);
 
         // handle bound repeating records
         if (config.isBound() && config.isRepeating()) {
@@ -621,7 +621,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      */
     @Override
     protected final void initializeSegment(SegmentConfig config) throws BeanIOConfigurationException {
-        Property bean = createProperty(config, config.getMinOccurs() > 0 && !config.isNillable());
+        Property bean = createProperty(config);
         
         if (config.isRepeating()) {
             initializeSegmentIteration(config, bean);
@@ -1465,11 +1465,10 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     /**
      * Creates a property for holding other properties.
      * @param config the {@link PropertyConfig}
-     * @param required whether the property is required and should always be instantiated
      * @return the created {@link Property} or null if the {@link PropertyConfig} was not 
      *   bound to a bean class 
      */
-    protected Property createProperty(PropertyConfig config, boolean required) {
+    protected Property createProperty(PropertyConfig config) {
         Class<?> beanClass = getBeanClass(config);
         if (beanClass == null) {
             return null;
@@ -1477,18 +1476,29 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         
         Property property = null;
         if (Collection.class.isAssignableFrom(beanClass)) {
+            boolean required = propertyStack.isEmpty();
+            if (config.getComponentType() == ComponentConfig.SEGMENT) {
+                required = config.getMinOccurs() > 0 && !config.isNillable();
+            }
+            boolean matchNull = !required && new Integer(0).equals(config.getMinOccurs());
+            
             CollectionBean collection = new CollectionBean();
             collection.setName(config.getName());
             collection.setType(beanClass);
             collection.setRequired(required);
+            collection.setMatchNull(matchNull);
             property = collection;
         }
         else {
+            boolean required = propertyStack.isEmpty();
+            boolean matchNull = !required && new Integer(0).equals(config.getMinOccurs());
+            
             Bean bean = new Bean();
             bean.setName(config.getName());
             bean.setType(beanClass);
             bean.setLazy(config.isLazy());
-            bean.setRequired(propertyStack.isEmpty());
+            bean.setRequired(required);
+            bean.setMatchNull(matchNull);
             property = bean;
         }
         

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Kevin Seim
+ * Copyright 2012-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -179,7 +179,7 @@ public abstract class RecordAggregation extends DelegatingParser implements Sele
      * @see org.beanio.internal.util.StatefulWriter#updateState(java.lang.String, java.util.Map)
      */
     public void updateState(ParsingContext context, String namespace, Map<String, Object> state) {
-        getSelector().updateState(null, namespace, state);
+        getSelector().updateState(context, namespace, state);
     }
 
     /*
@@ -187,7 +187,7 @@ public abstract class RecordAggregation extends DelegatingParser implements Sele
      * @see org.beanio.internal.util.StatefulWriter#restoreState(java.lang.String, java.util.Map)
      */
     public void restoreState(ParsingContext context, String namespace, Map<String, Object> state) throws IllegalStateException {
-        getSelector().restoreState(null, namespace, state);
+        getSelector().restoreState(context, namespace, state);
     }
 
     /*

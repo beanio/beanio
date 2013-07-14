@@ -225,7 +225,7 @@ public class TreeNode<T extends TreeNode> implements Replicateable, Iterable<T> 
     public void print(PrintStream out) {
         print(out, "");
     }
-    private void print(PrintStream out, String indent) {
+    void print(PrintStream out, String indent) {
         out.println(indent + this);
         indent += "  ";
         for (T node : getChildren()) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Kevin Seim
+ * Copyright 2012-2013 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,8 @@ import java.io.*;
 import java.util.List;
 
 import org.beanio.*;
-import org.beanio.internal.util.DebugUtil;
 import org.beanio.stream.*;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
 
 /**
  * Default {@link Marshaller} implementation.
@@ -72,8 +71,9 @@ public class MarshallerImpl implements Marshaller {
     public Marshaller marshal(String recordName, Object bean) throws BeanWriterException {
         recordValue = null;
         
-        if (bean == null) {
-            throw new NullPointerException("null bean object");
+        if (recordName == null && bean == null) {
+            throw new BeanWriterException("Bean identification failed: a record " +
+                "name or bean object must be provided");
         }
         
         try {
@@ -85,8 +85,16 @@ public class MarshallerImpl implements Marshaller {
             // find the parser in the layout that defines the given bean
             Selector matched = layout.matchNext(context);
             if (matched == null) {
-                throw new BeanWriterException("Bean identification failed: No record or group mapping for class '"
-                    + bean.getClass() + "' at the current stream position");                
+                if (recordName != null) {
+                    throw new BeanWriterException("Bean identification failed: " +
+                        "record name '" + recordName + "' not matched at the current position" +
+                        (bean != null ? " for bean class '" + bean.getClass() + "'" : ""));
+                }
+                else {
+                    throw new BeanWriterException("Bean identification failed: " +
+                        "no record or group mapping for bean class '" + bean.getClass() + 
+                        "' at the current position");                    
+                }             
             }
             if (matched.isRecordGroup()) {
                 throw new BeanWriterException("Record groups not supported by Marshaller");

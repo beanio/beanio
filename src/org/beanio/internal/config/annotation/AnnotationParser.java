@@ -397,6 +397,7 @@ public class AnnotationParser {
         }
         fc.setJustify(fa.align().toString().toLowerCase());
         fc.setKeepPadding(fa.keepPadding());
+        fc.setLenientPadding(fa.lenientPadding());
         
         fc.setTypeHandler(toValue(fa.handlerName()));
         Class<?> handler = toValue(fa.handlerClass());

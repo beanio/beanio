@@ -852,6 +852,14 @@
         </documentation>
       </annotation>
     </attribute>
+    <attribute name="lenientPadding" type="xsd:boolean" use="optional">
+      <annotation>
+        <documentation>
+          Whether to disable enforcement of the padding length for a fixed length field.
+          Defaults to 'false'.
+        </documentation>
+      </annotation>
+    </attribute>
     <attribute name="justify" type="tns:justification" use="optional">
       <annotation>
         <documentation>

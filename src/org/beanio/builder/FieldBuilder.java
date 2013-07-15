@@ -200,6 +200,16 @@ public class FieldBuilder extends PropertyBuilderSupport<FieldBuilder> {
     }
     
     /**
+     * Indicates the padding length should not be enforced for this field.  Only
+     * applies to fixed length formatted streams.
+     * @return this {@link FieldBuilder}
+     */
+    public FieldBuilder lenientPadding() {
+        config.setLenientPadding(true);
+        return this;
+    }
+    
+    /**
      * Sets the alignment or justification of this field if padded.
      * @param align the alignment
      * @return this {@link FieldBuilder}

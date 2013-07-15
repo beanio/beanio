@@ -62,10 +62,18 @@ public @interface Field {
     int padding() default Integer.MIN_VALUE;
     
     /**
-     * Whether to keep the field padding during unmarshalling.
+     * Whether to keep the field padding during unmarshalling.  Only
+     * applies to fixed length formatted streams.
      * @return true to keep padding, false otherwise
      */
     boolean keepPadding() default false;
+    
+    /**
+     * Whether to enforce the padding length during unmarshalling.  Only
+     * applies to fixed length formatted streams.
+     * @return true if not enforced, false otherwise
+     */
+    boolean lenientPadding() default false;
     
     /**
      * The alignment of a padded field.

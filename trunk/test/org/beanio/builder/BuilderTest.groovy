@@ -317,6 +317,7 @@ class BuilderTest {
         assert c.justify == "left"
         assert !c.padding
         assert !c.keepPadding
+        assert !c.lenientPadding
         assert !c.regex
         assert !c.nillable
         assert !c.xmlType
@@ -347,6 +348,7 @@ class BuilderTest {
         b.align(Align.RIGHT)
         b.padding('X' as char)
         b.keepPadding()
+        b.lenientPadding()
         b.regex(".*")
         b.nillable()
         b.xmlType(XmlType.ATTRIBUTE)
@@ -379,6 +381,7 @@ class BuilderTest {
         assert c.justify == "right"
         assert c.padding == 'X'
         assert c.keepPadding
+        assert c.lenientPadding
         assert c.regex == ".*"
         assert c.nillable
         assert c.xmlType == "attribute"

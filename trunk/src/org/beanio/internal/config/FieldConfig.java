@@ -49,6 +49,7 @@ public class FieldConfig extends SimplePropertyConfig {
     private Character padding;
     private String justify = LEFT;
     private boolean keepPadding;
+    private boolean lenientPadding;
     
     /**
      * Constructs a new <tt>FieldConfig</tt>.
@@ -268,6 +269,24 @@ public class FieldConfig extends SimplePropertyConfig {
      */
     public void setKeepPadding(boolean keepPadding) {
         this.keepPadding = keepPadding;
+    }
+    
+    /**
+     * Sets whether padding length is enforced for fixed length formatted streams.
+     * @return true if not enforced, false otherwise
+     * @since 2.1.0
+     */
+    public boolean isLenientPadding() {
+        return lenientPadding;
+    }
+
+    /**
+     * Sets whether the padding length is enforced for fixed length formatted streams.
+     * @param lenientPadding true if not enforced, false otherwise
+     * @since 2.1.0
+     */
+    public void setLenientPadding(boolean lenientPadding) {
+        this.lenientPadding = lenientPadding;
     }
     
     /**

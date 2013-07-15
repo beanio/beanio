@@ -76,6 +76,7 @@ public class FixedLengthParserFactory extends FlatParserFactory {
         format.setUntil(config.getUntil() == null ? 0 : config.getUntil());
         format.setLazy(config.getMinOccurs().equals(0));
         format.setKeepPadding(config.isKeepPadding());
+        format.setLenientPadding(config.isLenientPadding());
         
         FieldPadding padding = new FixedLengthFieldPadding();
         padding.setLength(config.getLength());

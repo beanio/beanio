@@ -231,15 +231,19 @@ public class FlatPreprocessor extends Preprocessor {
         // calculate the next position
         if (!isRecord && Boolean.FALSE.equals(positionRequired)) {
             if (defaultPosition == Integer.MAX_VALUE) {
-                int offset = 0 - maxSize * (segment.getMaxOccurs() - 1);
-                for (PropertyConfig c : endComponents) {
-                    c.setPosition(c.getPosition() + offset);
-                }
-                segment.setPosition(offset + segment.getPosition());
-                endComponents.add(segment);
-                
-                if (unboundedComponentFollower == null) {
-                    unboundedComponentFollower = segment;
+                // if the unbound component is a descendant of this segment, it should
+                // not affect the next default position
+                if (!segment.isDescendant(unboundedComponent)) {
+                    int offset = 0 - maxSize * (segment.getMaxOccurs() - 1);
+                    for (PropertyConfig c : endComponents) {
+                        c.setPosition(c.getPosition() + offset);
+                    }
+                    segment.setPosition(offset + segment.getPosition());
+                    endComponents.add(segment);
+                    
+                    if (unboundedComponentFollower == null) {
+                        unboundedComponentFollower = segment;
+                    }
                 }
             }
             else if (

@@ -17,7 +17,6 @@ package org.beanio.internal.parser.format.flat;
 
 import org.beanio.internal.parser.*;
 import org.beanio.internal.parser.format.FieldPadding;
-import org.beanio.internal.util.DebugUtil;
 
 /**
  * Base class for {@link FlatFieldFormat} implementations.
@@ -175,10 +174,9 @@ public abstract class FlatFieldFormatSupport implements FlatFieldFormat {
     @Override
     public String toString() {
         return getClass().getSimpleName() + 
-            "[at=" + position +
-            (until != 0 ? ", until=" + until : "")  +
-            ", " + DebugUtil.formatOption("optional", lazy) +
-            DebugUtil.formatPadding(padding) +
+            "[position=" + position +
+            ", until=" + until +
+            ", lazy=" + lazy +
             "]";
     }
 }

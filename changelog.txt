@@ -1,25 +1,20 @@
 Project BeanIO Change Log
 =========================
 
-Changes in version 2.0.6 (TBD)
+Changes in version 2.0.7 (2013-09-07)
+-------------------------------------
+* Fixed record termination configuration for Windows/DOS operating systems (gc0077)
+* Fixed import of the same mapping file multiple times (gc0084)
+* Fixed NumberTypeHandler.format() to call createDecimalFormat() (gc0085)
+* Fixed bean identification for optional components (group/record/segment) that contain a record identifying field (gc0087)
+* Fixed state maintenance (for Spring batch) for multiline records bound to a collection or map (gc0089)
+* Fixed handling of nested segments with indeterminate length (gc0090)
+
+Changes in version 2.0.6 (2013-05-20)
 ------------------------------------
 * Fixed constructor argument logic, registered constructorArg parser local (gc0068)
 * Fixed the unmarshaling of records and segments where a value/target is configured (gc0072)
-
-Changes in version 2.1.0.M1 (2013-04-27)
-----------------------------------------
-* Added annotation and builder API's (gc0047)
-* Exposed some metadata from the underlying BeanReader on the BeanIOFlatFileItemReader (gc0067)
-* Added 'lazy' attribute to record/field components and applied logic to record/segment/field collections (gc0066)
-* Allow 'lazy' to convert empty Strings to null when applied to a non-collection field
-* Added support for dynamic field and segment occurrences based on the value of another field using 'occursRef' (gc0069)
-* Fixed handling of XML attribute fields with no namespace
-* Changed unmarshalling behavior to ignore null field values bound to a primitive property
-* Default field values are now unmarshalled for fields missing from the input stream
-* Added java.util.Calendar type handlers
-* Converted build process from Ant to Gradle
-* Fixed constructor argument logic, registered constructorArg parser local (gc0068)
-* Fixed the unmarshaling of records and segments where a value/target is configured (gc0072)
+* Fixed UnmarshallerImpl to make record text available (if known) on the RecordContext (gc0075)
 
 Changes in version 2.0.5 (2013-03-13)
 -------------------------------------

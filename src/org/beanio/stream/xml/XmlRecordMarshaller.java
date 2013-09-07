@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 Kevin Seim
+ * Copyright 2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,11 +32,19 @@ import org.w3c.dom.*;
  * @since 2.0
  */
 public class XmlRecordMarshaller implements RecordMarshaller {
+
+    /**
+     * The DOM user data key to indicate whether the namespace of a DOM element
+     * should be ignored when writing to the output stream.  The value must be 
+     * of type <tt>java.lang.Boolean</tt>. 
+     */
+    public static final String IS_NAMESPACE_IGNORED = "isNamespaceIgnored";
     
     private static final String DEFAULT_LINE_SEPARATOR = System.getProperty("line.separator");
     private static final XMLOutputFactory xmlOutputFactory;
     static {
         xmlOutputFactory = XMLOutputFactory.newInstance();
+        xmlOutputFactory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, true);
     }
     
     /* XML parser settings */
@@ -137,6 +145,7 @@ public class XmlRecordMarshaller implements RecordMarshaller {
             if (config.isIndentationEnabled()) {
                 out.writeCharacters(config.getLineSeparator());
             }
+            outputHeader = false;
         }
         
         write(out, document.getDocumentElement(), config.isIndentationEnabled());
@@ -155,22 +164,15 @@ public class XmlRecordMarshaller implements RecordMarshaller {
         
         String name = element.getLocalName();
         String prefix = element.getPrefix();
-        String namespace = element.getNamespaceURI();
         
         boolean ignoreNamespace = false;
+        String namespace = element.getNamespaceURI();
         if (namespace == null) {
-            if (Boolean.TRUE.equals(element.getUserData(XmlWriter.IS_NAMESPACE_IGNORED))) {
+            if (Boolean.TRUE.equals(element.getUserData(IS_NAMESPACE_IGNORED))) {
                 prefix = null;
                 ignoreNamespace = true;
             }
             namespace = "";
-        }
-        
-        boolean setDefaultNamespace = false;
-        if (prefix == null && !ignoreNamespace) {
-            if (Boolean.TRUE.equals(element.getUserData(XmlWriter.IS_DEFAULT_NAMESPACE))) {
-                setDefaultNamespace = true;
-            }
         }
         
         // flag indicating if the element is empty or not
@@ -185,7 +187,6 @@ public class XmlRecordMarshaller implements RecordMarshaller {
             }
             else if (prefix != null) {
                 out.writeStartElement(prefix, name, namespace);
-                out.writeNamespace(prefix, namespace);
             }
             else {
                 out.writeStartElement(name);
@@ -218,14 +219,8 @@ public class XmlRecordMarshaller implements RecordMarshaller {
                 prefix = null;
             }
             else {
-                String p = elementStack.findPrefix(namespace);
-                
-                boolean declareNamespace = false;
-                if (p == null) {
-                    declareNamespace = true;
-                }
-                else if (prefix == null && !setDefaultNamespace) {
-                    prefix = p;
+                if (prefix == null) {
+                    prefix = elementStack.findPrefix(namespace);
                 }
                 
                 if (prefix == null) {
@@ -235,6 +230,7 @@ public class XmlRecordMarshaller implements RecordMarshaller {
                     else {
                         out.writeStartElement(name);
                     }
+                    out.writeDefaultNamespace(namespace);
                 }
                 else {
                     if (empty) {
@@ -244,63 +240,33 @@ public class XmlRecordMarshaller implements RecordMarshaller {
                         out.writeStartElement(prefix, name, namespace);
                     }
                 }
-                
-                if (setDefaultNamespace) {
-                    out.writeDefaultNamespace(namespace);
-                }
-                else if (declareNamespace) {
-                    out.writeNamespace(prefix, namespace);
-                }
             }
         }
         
         // write attributes
-        Set<String> attPrefixSet = null;
         NamedNodeMap map = element.getAttributes();
-        if (map.getLength() > 0) {
-            if (pendingStackUpdate) {
-                push(namespace, prefix, name);
-                pendingStackUpdate = false;
-            }
-        }
         for (int i=0,j=map.getLength(); i<j; i++) {
             Attr att = (Attr) map.item(i);
             String attName = att.getLocalName();
             String attNamespace = att.getNamespaceURI();
             String attPrefix = att.getPrefix();
-            
             if (attNamespace == null) {
                 out.writeAttribute(attName, att.getValue());
             }
             else {
-                String p = elementStack.findPrefix(attNamespace);
-                
-                boolean declareNamespace = false;
-                if (p == null) {
+                if (attPrefix == null) {
+                    attPrefix = elementStack.findPrefix(attNamespace);
+                }
+                if (attPrefix == null) {
+                    attPrefix = namespaceMap.get(attNamespace);
                     if (attPrefix == null) {
-                        attPrefix = namespaceMap.get(attNamespace);
-                        if (attPrefix == null) {
-                            attPrefix = createNamespace(attNamespace);
-                        }
-                    }    
-                    
-                    if (attPrefixSet == null || !attPrefixSet.contains(attPrefix)) {
-                        declareNamespace = true;
+                        attPrefix = createNamespace(attNamespace);
                     }
+                    out.writeAttribute(attPrefix, attNamespace, attName, att.getValue());
                 }
-                else if (attPrefix == null) {
-                    attPrefix = p;
+                else {
+                    out.writeAttribute(attPrefix, attNamespace, attName, att.getValue());
                 }
-                
-                if (declareNamespace) {
-                    out.writeNamespace(attPrefix, attNamespace);
-                    if (attPrefixSet == null) {
-                        attPrefixSet = new HashSet<String>();
-                    }
-                    attPrefixSet.add(attPrefix);
-                }
-                
-                out.writeAttribute(attPrefix, attNamespace, attName, att.getValue());
             }
         }
         

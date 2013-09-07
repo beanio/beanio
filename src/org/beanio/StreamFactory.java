@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Kevin Seim
+ * Copyright 2010-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.beanio;
 import java.io.*;
 import java.util.*;
 
-import org.beanio.builder.StreamBuilder;
 import org.beanio.internal.util.*;
 
 /**
@@ -179,14 +178,6 @@ public abstract class StreamFactory {
      *   if the stream mapping mode does not support marshalling
      */
     public abstract Marshaller createMarshaller(String name) throws IllegalArgumentException;
-    
-    /**
-     * Defines a new stream mapping.
-     * @param builder the {@link StreamBuilder}
-     * @throws BeanIOConfigurationException if the stream builder is not valid
-     * @since 2.1.0
-     */
-    public abstract void define(StreamBuilder builder) throws BeanIOConfigurationException;
     
     /**
      * Loads a BeanIO mapping file from the application's classpath.

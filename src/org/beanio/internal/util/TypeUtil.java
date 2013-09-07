@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,18 +35,8 @@ public class TypeUtil {
     public static final String DATETIME_ALIAS = "datetime";
     /** Alias for the <tt>java.util.Date</tt> class that includes only date information */
     public static final String DATE_ALIAS = "date";
-    /** Alias for a <tt>java.util.Date</tt> that includes only time information */
+    /** Alias for a <tt>java.util.Date</tt> that only includes only time information */
     public static final String TIME_ALIAS = "time";
-    /** 
-     * Alias for a <tt>java.util.Calendar</tt> that includes both date and time information. 
-     * If a type handler is registered using this alias, the registered type handler will
-     * become the default type handler for all {@link Calendar} classes.
-     */
-    public static final String CALENDAR_DATETIME_ALIAS = "calendar-datetime";
-    /** Alias for a <tt>java.util.Calendar</tt> that includes only time information */
-    public static final String CALENDAR_TIME_ALIAS = "calendar-time";
-    /** Alias for a <tt>java.util.Calendar</tt> that includes only date information */
-    public static final String CALENDAR_DATE_ALIAS = "calendar-date";
     
     /** Class type used to indicate a Java array */
     public static final Class<? extends Collection<Object>> ARRAY_TYPE = ArrayCollection.class;
@@ -120,7 +110,6 @@ public class TypeUtil {
      * <tr><td>date</td><td>java.util.Date</td></tr>
      * <tr><td>time</td><td>java.util.Date</td></tr>
      * <tr><td>datetime</td><td>java.util.Date</td></tr></tr>
-     * <tr><td>calendar</td><td>java.util.Calendar</td></tr></tr>
      * </table>
      * 
      * @param classLoader the {@link ClassLoader} for loading classes
@@ -156,15 +145,12 @@ public class TypeUtil {
             return BigDecimal.class;
         else if ("biginteger".equalsIgnoreCase(type))
             return BigInteger.class;
-        else if ("uuid".equalsIgnoreCase(type))
+        else if ("uuid".equalsIgnoreCase(type)) {
             return UUID.class;
-        else if ("url".equalsIgnoreCase(type))
+        }
+        else if ("url".equalsIgnoreCase(type)) {
             return URL.class;
-        else if ("calendar".equalsIgnoreCase(type) ||
-            CALENDAR_DATE_ALIAS.equalsIgnoreCase(type) ||
-            CALENDAR_TIME_ALIAS.equalsIgnoreCase(type) ||
-            CALENDAR_DATETIME_ALIAS.equalsIgnoreCase(type))
-            return Calendar.class;
+        }
         else if (
             DATE_ALIAS.equalsIgnoreCase(type) ||
             TIME_ALIAS.equalsIgnoreCase(type) ||
@@ -186,10 +172,7 @@ public class TypeUtil {
      * @return <tt>true</tt> if the type alias is only an alias
      */
     public static boolean isAliasOnly(String alias) {
-        return DATE_ALIAS.equalsIgnoreCase(alias) || 
-            TIME_ALIAS.equalsIgnoreCase(alias) ||
-            CALENDAR_DATE_ALIAS.equalsIgnoreCase(alias) ||
-            CALENDAR_TIME_ALIAS.equalsIgnoreCase(alias);
+        return DATE_ALIAS.equalsIgnoreCase(alias) || TIME_ALIAS.equalsIgnoreCase(alias);
     }
     
     /**
@@ -253,29 +236,6 @@ public class TypeUtil {
         catch (ClassNotFoundException ex) {
             return null;
         }
-    }
-    
-    public static Class<?> toBeanType(ClassLoader classLoader, String type) {
-        // determine the bean class associated with this record
-        Class<?> beanClass = null;
-        if (type != null) {
-            if ("map".equals(type)) {
-                beanClass = LinkedHashMap.class;
-            }
-            else if ("list".equals(type) || "collection".equals(type)) {
-                beanClass = ArrayList.class;
-            }
-            else if ("set".equals(type)) {
-                beanClass = LinkedHashSet.class;
-            }
-            else {
-                try {
-                    beanClass = classLoader.loadClass(type);
-                }
-                catch (ClassNotFoundException ex) { }
-            }
-        }
-        return beanClass;
     }
     
     private static interface ArrayCollection extends Collection<Object> { }

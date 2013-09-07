@@ -54,7 +54,6 @@ public class IndeterminateSegmentsTest extends ParserTest {
         Assert.assertEquals(text, m.marshal(map).toString());
     }
     
-    
     @Test
     @SuppressWarnings("rawtypes")
     public void testDelimitedIndeterminateSegmentBeforeEOR() {
@@ -99,6 +98,33 @@ public class IndeterminateSegmentsTest extends ParserTest {
         Assert.assertEquals("v7", map.get("f7"));
         
         Marshaller m = factory.createMarshaller("d2");
+        Assert.assertEquals(text, m.marshal(map).toString());
+    }
+    
+    @Test
+    @SuppressWarnings("rawtypes")
+    public void testNestedSegment() {
+        String text = "v1,v2.1,v3.1,v2.2,v3.2";
+        
+        Map map, submap = null;
+        List list = null;
+        
+        Unmarshaller u = factory.createUnmarshaller("d4");
+        map = (Map) u.unmarshal(text);
+        Assert.assertEquals("v1", map.get("f1"));
+        submap = (Map) map.get("rs1");
+        Assert.assertNotNull(submap);
+        list = (List) submap.get("rs2");
+        Assert.assertNotNull(list);
+        Assert.assertEquals(2, list.size());
+        submap = (Map) list.get(0);
+        Assert.assertEquals("v2.1", submap.get("f2"));
+        Assert.assertEquals("v3.1", submap.get("f3"));
+        submap = (Map) list.get(1);
+        Assert.assertEquals("v2.2", submap.get("f2"));
+        Assert.assertEquals("v3.2", submap.get("f3"));
+        
+        Marshaller m = factory.createMarshaller("d4");
         Assert.assertEquals(text, m.marshal(map).toString());
     }
     

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2013 Kevin Seim
+ * Copyright 2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -183,62 +183,6 @@ public class BeanIOFlatFileItemReader<T> extends AbstractItemCountingItemStreamI
         if (!streamFactory.isMapped(streamName)) {
             throw new IllegalStateException("No mapping configuration for stream '" + streamName + "'");
         }
-    }
-    
-    /**
-     * Returns the record or group name of the most recent bean object
-     * read from this reader, or null if the end of the stream was reached.
-     * @return the record or group name, or null if the stream is closed
-     * @since 2.0.6
-     */
-    public String getRecordName() {
-        return reader != null ? reader.getRecordName() : null;
-    }
-    
-    /**
-     * Returns the starting line number of the first record for the most recent bean
-     * object read from this reader, or -1 when the end of the stream is reached.  
-     * The line number may be zero if new lines are not used to separate characters.  
-     * @return the line number, or -1 if the stream is closed
-     * @since 2.0.6
-     */
-    public int getLineNumber() {
-        return reader != null ? reader.getLineNumber() : -1;
-    }
-    
-    /**
-     * Returns the number of records read from the underlying input stream for the
-     * most recent bean object read from this reader.  This typically returns 1
-     * unless a bean object was mapped to a record group which may span
-     * multiple records.
-     * @return the record count, or -1 if the stream is closed
-     * @since 2.0.6
-     */
-    public int getRecordCount() {
-        return reader != null ? reader.getRecordCount() : -1;
-    }
-    
-    /**
-     * Returns record information for the most recent bean object read from this reader.
-     * If a bean object can span multiple records, {@link #getRecordCount()} can be used
-     * to determine how many records were read from the stream.
-     * @param index the index of the record, starting at 0
-     * @return the {@link RecordContext}, or null if the stream is closed
-     * @throws IndexOutOfBoundsException if there is no record for the given index
-     * @see #getRecordCount()
-     * @since 2.0.6
-     */
-    public RecordContext getRecordContext(int index) throws IndexOutOfBoundsException {
-        return reader != null ? reader.getRecordContext(index) : null;
-    }
-    
-    /**
-     * Returns the underlying {@link BeanReader}.
-     * @return the {@link BeanReader}, or null if the stream is closed
-     * @since 2.0.6
-     */
-    protected BeanReader getBeanReader() {
-        return reader;
     }
     
     /*

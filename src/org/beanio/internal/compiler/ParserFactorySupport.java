@@ -274,13 +274,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             int i = 0;
             for (Class<?> type : c.getParameterTypes()) {
                 Property arg = args.get(i);
-
-                Class<?> argType = arg.getType();
-                if (argType.isPrimitive()) {
-                    argType = TypeUtil.toWrapperClass(argType);
-                }
-                
-                if (!TypeUtil.isAssignable(type, argType)) {
+                if (!TypeUtil.isAssignable(type, arg.getType())) {
                     continue CONSTRUCTOR_LOOP;
                 }
                 ++i;
@@ -480,7 +474,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         record.setName(config.getName());
         record.setMinOccurs(config.getMinOccurs());
         record.setMaxOccurs(config.getMaxOccurs());    
-        record.setOptional(config.getMinOccurs() < config.getMaxOccurs());
+        record.setLazy(config.getMinOccurs() < config.getMaxOccurs());
         record.setRepeating(config.isRepeating());
         record.setSize(config.getMaxSize());
         record.setFormat(createRecordFormat(config));
@@ -580,7 +574,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     }
     
     private Property findTarget(Component segment, String name) {
-        Component c = findDescendant("value", segment, name);
+        Component c = findDescendant("target", segment, name);
         if (c == null) {
             throw new BeanIOConfigurationException("Descendant value '" + name + "' not found");
         }
@@ -604,8 +598,8 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             Component match = findDescendant(type, child, name);
             if (match != null) {
                 if (c instanceof Iteration) {
-                    throw new BeanIOConfigurationException("Referenced component '" + name + 
-                        "' may not repeat, or belong to a segment that repeats");
+                    throw new BeanIOConfigurationException("A " + type + " may not repeat," +
+                        " or belong to a segment that repeats");
                 }
                 
                 return match;
@@ -637,16 +631,11 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      */
     protected void initializeSegmentIteration(SegmentConfig config, Property property) {
         // wrap the segment in an aggregation component
-        Aggregation aggregation = createAggregation(config, property);
+        Aggregation agg = createAggregation(config, property);
         
-        if (config.getOccursRef() != null) {
-            Field occurs = findDynamicOccurs(parserStack.getLast(), config.getOccursRef());
-            aggregation.setOccurs(occurs);
-        }
-        
-        pushParser(aggregation);
+        pushParser(agg);
         if (property != null || config.getTarget() != null) {
-            pushProperty(aggregation);
+            pushProperty(agg);
         }
     }
     
@@ -665,7 +654,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         segment.setName(config.getName());
         segment.setSize(config.getMaxSize());
         segment.setIdentifier(config.isIdentifier());
-        segment.setOptional(config.getMinOccurs() < config.getMaxOccurs());
+        segment.setLazy(config.getMinOccurs() < config.getMaxOccurs());
         segment.setRepeating(config.isRepeating());
         segment.setProperty(property);
         segment.setExistencePredetermined(config.getDefaultExistence());
@@ -782,11 +771,10 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         }
         
         Field field = new Field();
-        field.setName(config.getLabel());
+        field.setName(config.getName());
         field.setIdentifier(config.isIdentifier());
         field.setRequired(config.isRequired());
         field.setTrim(config.isTrim());
-        field.setLazy(config.isLazy());
         field.setLiteral(config.getLiteral());
         field.setMinLength(config.getMinLength());
         field.setMaxLength(config.getMaxLength());
@@ -809,16 +797,11 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         }
         
         // whether or not this property is bound to a bean property, Collections targets are not
-        boolean bind = isBound() && (config.isBound() && !config.isRepeating());
+        boolean bind = isBound() && config.isBound() && !config.isRepeating();
         
         Aggregation aggregation = null;
         if (config.isRepeating()) {
             aggregation = createAggregation(config, field);
-            
-            if (config.getOccursRef() != null) {
-                Field occurs = findDynamicOccurs(parserStack.getLast(), config.getOccursRef());
-                aggregation.setOccurs(occurs);
-            }
             
             pushParser(aggregation);
             if (aggregation.isProperty()) {
@@ -856,18 +839,6 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         }
     }
 
-    private Field findDynamicOccurs(Component segment, String name) {
-        Component c = findDescendant("value", segment, name);
-        if (c == null || !(c instanceof Field)) {
-            throw new BeanIOConfigurationException("Referenced field '" + name + "' not found");
-        }
-        Field f = (Field) c;
-        if (!Number.class.isAssignableFrom(f.getType())) {
-            throw new BeanIOConfigurationException("Referenced field '" + name + "' must be assignable to java.lang.Number");
-        }
-        return f;
-    }
-    
     /*
      * (non-Javadoc)
      * @see org.beanio.factory.ConfigurationProcessor#handleConstant(org.beanio.config.ConstantConfig)
@@ -955,16 +926,9 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         else {
             aggregation = new CollectionParser();
         }
-        aggregation.setName(config.getLabel());
-        if (config.getOccursRef() != null) {
-            aggregation.setMinOccurs(config.getMinOccursRef());
-            aggregation.setMaxOccurs(config.getMaxOccursRef());
-        }
-        else {
-            aggregation.setMinOccurs(config.getMinOccurs());
-            aggregation.setMaxOccurs(config.getMaxOccurs());
-        }
-        aggregation.setLazy(config.isLazy());
+        aggregation.setName(config.getName());
+        aggregation.setMinOccurs(config.getMinOccurs());
+        aggregation.setMaxOccurs(config.getMaxOccurs());
         aggregation.setType(collectionType);
         return aggregation;
     }
@@ -1054,7 +1018,6 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         }
         aggregation.setName(config.getName());
         aggregation.setType(collectionType);
-        aggregation.setLazy(config.isLazy());
         return aggregation;
     }
    
@@ -1287,9 +1250,6 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
                 config.getType() + "' is not assignable to bean property " +
                 "type '" + reflectedType.getName() + "'");
         }
-        else if (reflectedType.isPrimitive()) {
-            property.setType(reflectedType);
-        }
     }
         
     /**
@@ -1409,18 +1369,13 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
 
         // determine the type handler based on the named handler or the field class
         TypeHandler handler = null;
-        if (config.getTypeHandlerInstance() != null) {
-            handler = config.getTypeHandlerInstance();
-        }
-        else if (config.getTypeHandler() != null) {
+        if (config.getTypeHandler() != null) {
             handler = typeHandlerFactory.getTypeHandler(config.getTypeHandler(), typeHandlerProperties);
             if (handler == null) {
                 throw new BeanIOConfigurationException("No configured type handler named '" +
                     config.getTypeHandler() + "'");
             }
-        }
 
-        if (handler != null) {
             // if the property type was not already determine, use the type from the type handler
             if (propertyType == null) {
                 propertyType = handler.getType();
@@ -1638,12 +1593,9 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         RecordParserFactory factory;
         
         // configure the record writer factory
-        BeanConfig<RecordParserFactory> parserFactoryBean = config.getParserFactory();
+        BeanConfig parserFactoryBean = config.getParserFactory();
         if (parserFactoryBean == null) {
             factory = getDefaultRecordParserFactory();
-        }
-        else if (parserFactoryBean.getInstance() != null) {
-            factory = parserFactoryBean.getInstance();
         }
         else {
             if (parserFactoryBean.getClassName() == null) {

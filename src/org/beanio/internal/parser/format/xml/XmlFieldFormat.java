@@ -17,7 +17,6 @@ package org.beanio.internal.parser.format.xml;
 
 import org.beanio.internal.parser.*;
 import org.beanio.internal.parser.format.FieldPadding;
-import org.beanio.internal.util.DebugUtil;
 
 /**
  * Base class for XML {@link FieldFormat} implementations.
@@ -92,7 +91,6 @@ public abstract class XmlFieldFormat implements FieldFormat, XmlNode {
                 fieldText = padding.unpad(fieldText);
             }
         }
-        
         return fieldText;
     }
     
@@ -160,7 +158,7 @@ public abstract class XmlFieldFormat implements FieldFormat, XmlNode {
      * @param s the text to append
      */
     protected void toParamString(StringBuilder s) {
-        s.append(DebugUtil.formatOption("optional", lazy));
+        s.append("lazy=").append(lazy);
     }
     
     @Override

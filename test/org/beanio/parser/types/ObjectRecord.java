@@ -41,7 +41,6 @@ public class ObjectRecord {
 	private BigDecimal bigDecimalValue;
 	private UUID id;
 	private URL url;
-	private Calendar calendar;
 	private TypeEnum enum1;
 	private TypeEnum enum2;
 	
@@ -128,12 +127,6 @@ public class ObjectRecord {
     }
     public void setUrl(URL url) {
         this.url = url;
-    }
-    public Calendar getCalendar() {
-        return calendar;
-    }
-    public void setCalendar(Calendar calendar) {
-        this.calendar = calendar;
     }
     public TypeEnum getEnum1() {
         return enum1;

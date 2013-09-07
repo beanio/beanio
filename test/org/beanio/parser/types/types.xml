@@ -9,9 +9,6 @@
   <typeHandler type="java.util.Date" format="csv" class="org.beanio.types.DateTypeHandler">
     <property name="pattern" value="MMddyy" />
   </typeHandler>
-  <typeHandler type="calendar" format="csv" class="org.beanio.types.CalendarTypeHandler">
-    <property name="pattern" value="M-d-yyyy" />
-  </typeHandler>
   <typeHandler name="time" class="org.beanio.types.DateTypeHandler">
     <property name="pattern" value="hh:mm:ss" />
   </typeHandler>
@@ -30,7 +27,6 @@
       <field name="booleanValue" />
       <field name="bigIntegerValue" />
       <field name="bigDecimalValue" />
-      <field name="calendar" />
       <field name="id" />
       <field name="url" />
       <field name="enum1" />

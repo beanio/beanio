@@ -20,7 +20,6 @@ import java.io.IOException;
 import javax.xml.XMLConstants;
 
 import org.beanio.internal.parser.*;
-import org.beanio.internal.util.DebugUtil;
 import org.beanio.stream.xml.XmlWriter;
 import org.w3c.dom.*;
 
@@ -186,7 +185,7 @@ public class XmlWrapper extends DelegatingParser implements XmlNode {
         this.repeating = repeating;
     }
     
-    public boolean isOptional() {
+    public boolean isLazy() {
         return lazy;
     }
 
@@ -199,14 +198,8 @@ public class XmlWrapper extends DelegatingParser implements XmlNode {
         super.toParamString(s);
         
         s.append(", element=").append(localName);
-        if (prefix != null) {
-            s.append(", prefix=").append(prefix);
-        }
-        if (namespace != null) {
-            s.append(", xmlns=").append(isNamespaceAware() ? namespace : "*");
-        }
-        s.append(", ").append(DebugUtil.formatOption("lazy", lazy));
-        s.append(", ").append(DebugUtil.formatOption("nillable", nillable));
-        s.append(", ").append(DebugUtil.formatOption("repeating", repeating));
+        s.append(", lazy=").append(lazy);
+        s.append(", nillable=").append(nillable);
+        s.append(", repeating=").append(repeating);
     }
 }

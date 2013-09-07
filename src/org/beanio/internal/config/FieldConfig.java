@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,14 +42,12 @@ public class FieldConfig extends SimplePropertyConfig {
     private Integer maxLength; // set to -1 for unbounded
     private boolean trim;
     private boolean required;
-    private boolean ref; // derived during pre-processing
     
     private Integer length;
     private String defaultValue;
     private Character padding;
     private String justify = LEFT;
     private boolean keepPadding;
-    private boolean lenientPadding;
     
     /**
      * Constructs a new <tt>FieldConfig</tt>.
@@ -60,7 +58,7 @@ public class FieldConfig extends SimplePropertyConfig {
     public char getComponentType() { 
         return FIELD;
     }
-
+    
     /**
      * Returns the textual representation of the default value for
      * this field when the field is not present or empty during unmarshalling.
@@ -269,39 +267,5 @@ public class FieldConfig extends SimplePropertyConfig {
      */
     public void setKeepPadding(boolean keepPadding) {
         this.keepPadding = keepPadding;
-    }
-    
-    /**
-     * Sets whether padding length is enforced for fixed length formatted streams.
-     * @return true if not enforced, false otherwise
-     * @since 2.1.0
-     */
-    public boolean isLenientPadding() {
-        return lenientPadding;
-    }
-
-    /**
-     * Sets whether the padding length is enforced for fixed length formatted streams.
-     * @param lenientPadding true if not enforced, false otherwise
-     * @since 2.1.0
-     */
-    public void setLenientPadding(boolean lenientPadding) {
-        this.lenientPadding = lenientPadding;
-    }
-    
-    /**
-     * Returns true if this field is referenced by another component. 
-     * @return true if referenced
-     */
-    public boolean isRef() {
-        return ref;
-    }
-
-    /**
-     * Sets whether this field is referenced by another component.
-     * @param ref true if referenced
-     */
-    public void setRef(boolean ref) {
-        this.ref = ref;
     }
 }

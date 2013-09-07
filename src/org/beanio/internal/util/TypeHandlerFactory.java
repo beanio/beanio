@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Kevin Seim
+ * Copyright 2010-2012 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,28 +94,10 @@ public class TypeHandlerFactory {
             }
         });
         
-        defaultFactory.registerHandlerFor(TypeUtil.CALENDAR_DATETIME_ALIAS, new CalendarTypeHandler(
-            settings.getProperty(Settings.DEFAULT_DATETIME_FORMAT)));
-        defaultFactory.registerHandlerFor(TypeUtil.CALENDAR_DATE_ALIAS, new CalendarTypeHandler(
-            settings.getProperty(Settings.DEFAULT_DATE_FORMAT)) {
-            protected DateFormat createDefaultDateFormat() {
-                return DateFormat.getDateInstance();
-            }
-        });
-        defaultFactory.registerHandlerFor(TypeUtil.CALENDAR_TIME_ALIAS, new CalendarTypeHandler(
-            settings.getProperty(Settings.DEFAULT_TIME_FORMAT)) {
-            protected DateFormat createDefaultDateFormat() {
-                return DateFormat.getTimeInstance();
-            }
-        });
-        
         // xml specific formats...
         defaultFactory.registerHandlerFor(TypeUtil.DATE_ALIAS, new XmlDateTypeHandler(), "xml");
         defaultFactory.registerHandlerFor(TypeUtil.DATETIME_ALIAS, new XmlDateTimeTypeHandler(), "xml");
         defaultFactory.registerHandlerFor(TypeUtil.TIME_ALIAS, new XmlTimeTypeHandler(), "xml");
-        defaultFactory.registerHandlerFor(TypeUtil.CALENDAR_DATE_ALIAS, new XmlCalendarDateTypeHandler(), "xml");
-        defaultFactory.registerHandlerFor(TypeUtil.CALENDAR_DATETIME_ALIAS, new XmlCalendarDateTimeTypeHandler(), "xml");
-        defaultFactory.registerHandlerFor(TypeUtil.CALENDAR_TIME_ALIAS, new XmlCalendarTimeTypeHandler(), "xml");
         defaultFactory.registerHandlerFor(Boolean.class, new XmlBooleanTypeHandler(), "xml");
     }
 

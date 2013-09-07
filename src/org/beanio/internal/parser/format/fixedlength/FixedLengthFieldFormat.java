@@ -28,7 +28,6 @@ import org.beanio.internal.parser.format.flat.FlatFieldFormatSupport;
 public class FixedLengthFieldFormat extends FlatFieldFormatSupport implements FieldFormat {
     
     private boolean keepPadding;
-    private boolean lenientPadding;
     
     /**
      * Constructs a new <tt>FixedLengthFieldFormat</tt>.
@@ -43,7 +42,7 @@ public class FixedLengthFieldFormat extends FlatFieldFormatSupport implements Fi
         }
         
         FieldPadding padding = getPadding();
-        if (padding.getLength() >= 0 && text.length() != padding.getLength() && !lenientPadding) {
+        if (padding.getLength() >= 0 && text.length() != padding.getLength()) {
             if (reportErrors) {
                 context.addFieldError(getName(), text, "length", padding.getLength());
             }
@@ -89,14 +88,5 @@ public class FixedLengthFieldFormat extends FlatFieldFormatSupport implements Fi
      */
     public void setKeepPadding(boolean keepPadding) {
         this.keepPadding = keepPadding;
-    }
-    
-    /**
-     * Sets whether the padding length is enforced.
-     * @param lenientPadding true if not enforced, false otherwise
-     * @since 2.1.0
-     */
-    public void setLenientPadding(boolean lenientPadding) {
-        this.lenientPadding = lenientPadding;
     }
 }

@@ -164,7 +164,7 @@ public class XmlParserFactory extends ParserFactorySupport {
         
         // if the segment is wrapped, laziness is checked by the wrapper
         if (XmlTypeConstants.XML_TYPE_ELEMENT.equals(config.getXmlType())) {
-            segment.setOptional(false);
+            segment.setLazy(false);
         }
         
         segment.setExistencePredetermined(true);

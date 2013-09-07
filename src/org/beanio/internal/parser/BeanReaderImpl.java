@@ -15,10 +15,9 @@
  */
 package org.beanio.internal.parser;
 
-import java.io.*;
+import java.io.IOException;
 
 import org.beanio.*;
-import org.beanio.internal.util.DebugUtil;
 
 /**
  * A {@link BeanReader} implementation.
@@ -102,10 +101,7 @@ public class BeanReaderImpl implements BeanReader {
             context.prepare(parser.getName(), parser.isRecordGroup());
             
             // unmarshal the record
-            try {
-                parser.unmarshal(context);
-            }
-            catch (AbortRecordUnmarshalligException ex) { }
+            parser.unmarshal(context);
             
             // this will throw an exception if an invalid record was unmarshalled
             context.validate();
@@ -319,12 +315,5 @@ public class BeanReaderImpl implements BeanReader {
      */
     public void setIgnoreUnidentifiedRecords(boolean ignoreUnidentifiedRecords) {
         this.ignoreUnidentifiedRecords = ignoreUnidentifiedRecords;
-    }
-    
-    public void debug() {
-        debug(System.out);
-    }
-    public void debug(PrintStream out) {
-        ((Component)layout).print(out);
     }
 }

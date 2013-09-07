@@ -151,17 +151,14 @@ public class MiscParserTest extends ParserTest {
         BeanWriter out = factory.createWriter("stream6", text);
         out.write("header", null);
         
-        Map map = new HashMap();
-        map.put("d1", "value1");
+        Map m = new HashMap();
+        m.put("d1", "value1");
         
-        out.write(map);
+        out.write(m);
         out.flush();
         
         assertEquals(
             "Header1,Header2,Header3" + lineSeparator +
             "value1,," + lineSeparator, text.toString());
-        
-        Marshaller m = factory.createMarshaller("stream6");
-        assertEquals("Header1,Header2,Header3", m.marshal("header", null).toString());
     }
 }

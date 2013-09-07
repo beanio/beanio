@@ -15,14 +15,11 @@
  */
 package org.beanio.beans;
 
-import java.util.List;
-
 public class Person {
     
     private String id;
     private String firstName;
     private String lastName;
-    private List<Integer> numbers;
     
     public String getId() {
         return id;
@@ -42,13 +39,8 @@ public class Person {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
+    
     public String toString() {
         return firstName + " " + lastName;
-    }
-    public List<Integer> getNumbers() {
-        return numbers;
-    }
-    public void setNumbers(List<Integer> numbers) {
-        this.numbers = numbers;
     }
 }

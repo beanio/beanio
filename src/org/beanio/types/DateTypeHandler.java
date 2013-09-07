@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Kevin Seim
+ * Copyright 2010-2011 Kevin Seim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,10 @@ import java.util.*;
  * @see DateFormat
  * @see SimpleDateFormat
  */
-public class DateTypeHandler extends DateTypeHandlerSupport implements ConfigurableTypeHandler {
+public class DateTypeHandler implements ConfigurableTypeHandler {
+
+    private String pattern = null;
+    private boolean lenient = false;
 
     /**
      * Constructs a new <tt>DateTypeHandler</tt>.
@@ -41,7 +44,7 @@ public class DateTypeHandler extends DateTypeHandlerSupport implements Configura
      * @param pattern the <tt>SimpleDateFormat</tt> pattern
      */
     public DateTypeHandler(String pattern) {
-        super(pattern);
+        this.pattern = pattern;
     }
     
     /*
@@ -49,42 +52,119 @@ public class DateTypeHandler extends DateTypeHandlerSupport implements Configura
      * @see org.beanio.types.TypeHandler#parse(java.lang.String)
      */
     public Date parse(String text) throws TypeConversionException {
-        return super.parseDate(text);
+        if ("".equals(text))
+            return null;
+
+        DateFormat dateFormat = createDateFormat();
+        dateFormat.setLenient(lenient);
+        
+        ParsePosition pp = new ParsePosition(0);
+        Date date = dateFormat.parse(text, pp);
+        if (pp.getErrorIndex() >= 0 || pp.getIndex() != text.length()) {
+            throw new TypeConversionException("Invalid date");
+        }
+        return date;
     }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.types.TypeHandler#format(java.lang.Object)
      */
     public String format(Object value) {
-        return super.formatDate((Date)value);
+        if (value == null)
+            return null;
+        else
+            return createDateFormat().format(value);
     }
     
     /*
      * (non-Javadoc)
-     * @see org.beanio.types.AbstractDateTypeHandler#newInstance(java.util.Properties)
+     * @see org.beanio.types.ConfigurableTypeHandler#newInstance(java.util.Properties)
      */
     public DateTypeHandler newInstance(Properties properties) throws IllegalArgumentException {
         String pattern = properties.getProperty(FORMAT_SETTING);
         if (pattern == null || "".equals(pattern)) {
             return this;
         }
-        if (pattern.equals(getPattern())) {
+        if (pattern.equals(this.pattern)) {
             return this;
         }
                 
         DateTypeHandler handler = new DateTypeHandler();
         handler.setPattern(pattern);
-        handler.setLenient(isLenient());
-        handler.timeZone = this.timeZone;
+        handler.setLenient(lenient);
         return handler;
     }
     
+    /**
+     * Creates the <tt>DateFormat</tt> to use to parse and format the field value.
+     * @return the <tt>DateFormat</tt> for type conversion
+     */
+    protected DateFormat createDateFormat() {
+        if (pattern == null) {
+            return createDefaultDateFormat();
+        }
+        else {
+            return new SimpleDateFormat(pattern);
+        }
+    }
+    
+    /**
+     * Creates a default date format when no pattern is set.
+     * @return the default date format
+     */
+    protected DateFormat createDefaultDateFormat() {
+        return DateFormat.getDateTimeInstance();
+    }
+
     /*
      * (non-Javadoc)
      * @see org.beanio.types.TypeHandler#getType()
      */
     public Class<?> getType() {
         return Date.class;
+    }
+
+    /**
+     * Returns the date pattern used by the <tt>SimpleDateFormat</tt>.
+     * @return the date pattern
+     */
+    public String getPattern() {
+        return pattern;
+    }
+
+    /**
+     * Sets the date pattern used by the <tt>SimpleDateFormat</tt>.
+     * @param pattern the date pattern
+     * @throws IllegalArgumentException if the date pattern is invalid
+     */
+    public void setPattern(String pattern) throws IllegalArgumentException {
+        // validate the pattern
+        try {
+            if (pattern != null) {
+                new SimpleDateFormat(pattern);
+            }
+        }
+        catch (IllegalArgumentException ex) {
+            throw new IllegalArgumentException("Invalid date format pattern '" + pattern + "': " + ex.getMessage());
+        }
+        
+        this.pattern = pattern;
+    }
+
+    /**
+     * Returns whether the <tt>SimpleDateFormat</tt> is lenient.
+     * @return <tt>true</tt> if lenient, <tt>false</tt> otherwise
+     */
+    public boolean isLenient() {
+        return lenient;
+    }
+
+    /**
+     * Sets whether the <tt>SimpleDateFormat</tt> is lenient.
+     * @param lenient <tt>true</tt> if lenient, <tt>false</tt> otherwise
+     */
+    public void setLenient(boolean lenient) {
+        this.lenient = lenient;
     }
 }

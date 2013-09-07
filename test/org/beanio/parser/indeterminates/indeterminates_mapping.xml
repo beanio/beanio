@@ -34,6 +34,18 @@
     </record>
   </stream>
   
+  <stream name="d4" format="csv" strict="true">
+    <record name="record" class="map">
+      <field name="f1" />
+      <segment name="rs1" class="map" occurs="1">
+        <segment name="rs2" collection="list" class="map" occurs="0-2">
+          <field name="f2" />
+          <field name="f3" />
+        </segment>
+      </segment>
+    </record>
+  </stream>
+  
   <stream name="fl1" format="fixedlength" strict="true">
     <record name="record" class="map">
       <field name="f1" length="2" />

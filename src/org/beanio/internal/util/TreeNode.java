@@ -15,7 +15,6 @@
  */
 package org.beanio.internal.util;
 
-import java.io.PrintStream;
 import java.util.*;
 
 /**
@@ -97,6 +96,27 @@ public class TreeNode<T extends TreeNode> implements Replicateable, Iterable<T> 
             }
         }
         return null;
+    }
+    
+    /**
+     * Returns whether the given node is a descendant of this node or recursively
+     * one of its children.
+     * @param node the TreeNode to test
+     * @return true if the given node is a descendant, false otherwise
+     */
+    @SuppressWarnings("unchecked")
+    public boolean isDescendant(T node) {
+        if (node == this) {
+            return true;
+        }
+        if (children != null) {
+            for (T n : children) {
+                if (n.isDescendant(node)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     /**
@@ -220,16 +240,13 @@ public class TreeNode<T extends TreeNode> implements Replicateable, Iterable<T> 
      * Prints this node and its descendants to standard out.
      */
     public void print() {
-        print(System.out);
+        print("");
     }
-    public void print(PrintStream out) {
-        print(out, "");
-    }
-    void print(PrintStream out, String indent) {
-        out.println(indent + this);
+    private void print(String indent) {
+        System.out.println(indent + this);
         indent += "  ";
         for (T node : getChildren()) {
-            node.print(out, indent);
+            node.print(indent);
         }
     }
     
@@ -237,7 +254,6 @@ public class TreeNode<T extends TreeNode> implements Replicateable, Iterable<T> 
     public String toString() {
         StringBuilder s = new StringBuilder();
         s.append(getClass().getSimpleName()).append("[");
-        s.append("name=").append(name);
         toParamString(s);
         s.append("]");
         return s.toString();
@@ -248,6 +264,6 @@ public class TreeNode<T extends TreeNode> implements Replicateable, Iterable<T> 
      * @param s the output to append
      */
     protected void toParamString(StringBuilder s) {
-        
+        s.append("name=").append(name);
     }
 }

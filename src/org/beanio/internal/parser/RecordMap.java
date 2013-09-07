@@ -18,8 +18,6 @@ package org.beanio.internal.parser;
 import java.io.IOException;
 import java.util.*;
 
-import org.beanio.internal.util.StringUtil;
-
 /**
  * 
  * @author Kevin Seim
@@ -36,25 +34,19 @@ public class RecordMap extends RecordAggregation {
     public RecordMap() { }
     
     @Override
-    @SuppressWarnings({"rawtypes", "unchecked"})
     public boolean unmarshal(UnmarshallingContext context) {
         // allow the delegate to unmarshal itself
         boolean result = super.unmarshal(context);
         
         Object aggregatedValue = getSelector().getValue(context);
         if (aggregatedValue != Value.INVALID) {
+            if (value.get(context) == Value.MISSING) {
+                value.set(context, createAggregationType());
+            }
+            
             Object keyValue = key.getValue(context);
             
-            if (!lazy || StringUtil.hasValue(keyValue) || StringUtil.hasValue(aggregatedValue)) {
-                Object aggregation = value.get(context);
-                if (aggregation == null || aggregation == Value.MISSING) {
-                    aggregation = createAggregationType();
-                    value.set(context, aggregation);
-                }
-                
-                Map map = (Map) aggregation;
-                map.put(keyValue, aggregatedValue);
-            }
+            getMap(context).put(keyValue, aggregatedValue);
         }
         
         getParser().clearValue(context);
@@ -146,13 +138,5 @@ public class RecordMap extends RecordAggregation {
 
     public void setKey(Property key) {
         this.key = key;
-    }
-    
-    @Override
-    protected void toParamString(StringBuilder s) {
-        super.toParamString(s);
-        if (key != null) {
-            s.append(", key=$").append(key.getName());
-        }
     }
 }

@@ -15,8 +15,6 @@
  */
 package org.beanio.internal.compiler;
 
-import java.util.Comparator;
-
 import org.beanio.BeanIOConfigurationException;
 import org.beanio.internal.config.*;
 import org.beanio.internal.util.Settings;
@@ -32,7 +30,6 @@ import org.beanio.internal.util.Settings;
 public class Preprocessor extends ProcessorSupport {
 
     private static final Settings settings = Settings.getInstance();
-    private static final boolean SORT_XML_COMPONENTS = settings.getBoolean(Settings.SORT_XML_COMPONENTS_BY_POSITION);
     
     protected StreamConfig stream;
     protected PropertyConfig propertyRoot;
@@ -70,55 +67,6 @@ public class Preprocessor extends ProcessorSupport {
      */
     protected void finalizeStream(StreamConfig stream) throws BeanIOConfigurationException { 
         finalizeGroup(stream);
-        
-        boolean sorted = true;
-        if ("xml".equals(stream.getFormat()) && !SORT_XML_COMPONENTS) {
-            sorted = false;
-        }
-        
-        if (sorted) {
-            stream.sort(new Comparator<ComponentConfig>() {
-                public int compare(ComponentConfig c1, ComponentConfig c2) {
-                    Integer p1 = getPosition(c1);
-                    Integer p2 = getPosition(c2);
-                    
-                    if (p1 == null) {
-                        if (p2 == null) {
-                            return 0;
-                        }
-                        else {
-                            return 1;
-                        }
-                    }
-                    else if (p2 == null) {
-                        return -1;
-                    }
-                    else {
-                        return p1.compareTo(p2);
-                    }
-                }
-                
-                private Integer getPosition(ComponentConfig c) {
-                    Integer p = null;
-                    switch (c.getComponentType()) {
-                    case ComponentConfig.FIELD:
-                    case ComponentConfig.SEGMENT:
-                        p = ((PropertyConfig)c).getPosition();
-                        break;
-                    case ComponentConfig.RECORD:
-                        p = ((RecordConfig)c).getOrder();
-                        break;
-                    case ComponentConfig.GROUP:
-                        p = ((GroupConfig)c).getOrder();
-                        break;
-                    }
-                    if (p != null && p.compareTo(0) < 0) {
-                        p = Integer.MAX_VALUE + p;
-                    }
-                    return p;
-                }
-            });
-        }
     }
     
     /**
@@ -249,10 +197,6 @@ public class Preprocessor extends ProcessorSupport {
         
         if (propertyRoot == null) {
             propertyRoot = record;
-            
-            if (record.isLazy()) {
-            	throw new BeanIOConfigurationException("Lazy cannot be true for unbound records");
-            }
         }
         
         initializeSegment(record);
@@ -276,13 +220,6 @@ public class Preprocessor extends ProcessorSupport {
      */
     protected void initializeSegment(SegmentConfig segment) throws BeanIOConfigurationException {
 
-        if (segment.getName() == null) {
-            throw new BeanIOConfigurationException("name must be set");
-        }
-        if (segment.getLabel() == null) {
-            segment.setLabel(segment.getName());
-        }
-        
         // validate both 'class' and 'target' aren't set
         if (segment.getType() != null && segment.getTarget() != null) {
             throw new BeanIOConfigurationException("Cannot set both 'class' and 'value'");
@@ -290,10 +227,10 @@ public class Preprocessor extends ProcessorSupport {
         
         // set default occurrences and validate
         if (segment.getMinOccurs() == null) {
-            segment.setMinOccurs(segment.getOccursRef() != null ? 0 : 1);
+            segment.setMinOccurs(1);
         }
         if (segment.getMaxOccurs() == null) {
-            segment.setMaxOccurs(segment.getOccursRef() != null ? Integer.MAX_VALUE : 1);
+            segment.setMaxOccurs(1);
         }
         if (segment.getMaxOccurs() <= 0) {
             throw new BeanIOConfigurationException("Maximum occurrences must be greater than 0");
@@ -358,20 +295,13 @@ public class Preprocessor extends ProcessorSupport {
             field.setBound(false);
         }
         
-        if (field.getName() == null) {
-            throw new BeanIOConfigurationException("name is required");
-        }
-        if (field.getLabel() == null) {
-            field.setLabel(field.getName());
-        }
-        
         // set and validate occurrences
         if (field.getMinOccurs() == null) {
-            field.setMinOccurs(field.getOccursRef() != null ? 0 : settings.getInt(Settings.DEFAULT_FIELD_MIN_OCCURS + 
+            field.setMinOccurs(settings.getInt(Settings.DEFAULT_FIELD_MIN_OCCURS + 
                 "." + stream.getFormat(), 0));
         }
         if (field.getMaxOccurs() == null) {
-            field.setMaxOccurs(field.getOccursRef() != null ? Integer.MAX_VALUE : Math.max(field.getMinOccurs(), 1));
+            field.setMaxOccurs(Math.max(field.getMinOccurs(), 1));
         }
         if (field.getMaxOccurs() <= 0) {
             throw new BeanIOConfigurationException("Maximum occurrences must be greater than 0");
@@ -403,10 +333,6 @@ public class Preprocessor extends ProcessorSupport {
         if (field.isRepeating() && field.isIdentifier()) {
             throw new BeanIOConfigurationException("repeating fields cannot be " +
                 "used as identifiers");   
-        }
-        
-        if (field.isBound() && field.isRepeating() && field.getCollection() == null) {
-            throw new BeanIOConfigurationException("collection not set");
         }
         
         if (field.isIdentifier()) {

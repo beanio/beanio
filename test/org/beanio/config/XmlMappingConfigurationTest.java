@@ -113,11 +113,6 @@ public class XmlMappingConfigurationTest extends ParserTest {
     }
     
     @Test
-    public void testNoWriteableMethod() throws IOException {
-        loadInvalidMappingFile("noWriteableMethod.xml", "No writeable method for property 'name' in class 'org.beanio.config.ConcreteBean'");
-    }
-
-    @Test
     public void testNoReadableMethod() throws IOException {
         loadInvalidMappingFile("noReadableMethod.xml", "No readable method for property 'value' in class 'org.beanio.config.InterfaceBean'");
     }
@@ -125,11 +120,6 @@ public class XmlMappingConfigurationTest extends ParserTest {
     @Test
     public void testNoBeanProperty() throws IOException {
         loadInvalidMappingFile("noBeanProperty.xml", "No such property 'birthDate' in class 'org.beanio.config.ConcreteBean'");
-    }
-    
-    @Test
-    public void testInvalidSetter() throws IOException {
-        loadInvalidMappingFile("invalidSetter.xml", "Method not found: setAge");
     }
     
     /**

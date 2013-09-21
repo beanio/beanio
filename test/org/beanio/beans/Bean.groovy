@@ -10,7 +10,7 @@ class Bean {
 	String type;
 	String text;
     String field1;
-    String field2;
+    private String field2;
     String field3;
     
     // collection properties

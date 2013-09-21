@@ -39,7 +39,7 @@ import org.beanio.types.*;
  * secondly, the finalized configuration is walked again (using a {@link ProcessorSupport},
  * to create the parser and property tree structure.  As components are initialized they can
  * be added to the tree structure using stacks with the {@link #pushParser(Component)} and 
- * {@link #pushProperty(Component)} methods.  After a component is finalized, it should be
+ * {@link #pushProperty(Component)} methods.  After a component is finalized, it should be      
  * removed from the stack using the {@link #popParser()} or {@link #popProperty()} method.
  * 
  * @author Kevin Seim
@@ -51,6 +51,9 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     
     private static final boolean asmEnabled = "asm".equalsIgnoreCase(
         Settings.getInstance().getProperty(Settings.PROPERTY_ACCESSOR_METHOD));
+    
+    private static final boolean allowProtectedPropertyAccess = "true".equalsIgnoreCase(
+        Settings.getInstance().getProperty(Settings.ALLOW_PROTECTED_PROPERTY_ACCESS));
     
     private static final Component unbound = new Component() {{ setName("unbound"); }};
     
@@ -266,7 +269,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         
         // find a suitable constructor
         Constructor<?> constructor = null;
-        CONSTRUCTOR_LOOP: for (Constructor<?> c : bean.getType().getConstructors()) {
+        CONSTRUCTOR_LOOP: for (Constructor<?> c : bean.getType().getDeclaredConstructors()) {
             if (c.getParameterTypes().length != count) {
                 continue;
             }
@@ -288,6 +291,18 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
             
             constructor = c;
             break CONSTRUCTOR_LOOP; 
+        }
+        
+        if (constructor != null) {
+            int mods = constructor.getModifiers();
+            if (!Modifier.isPublic(mods)) {
+                if (allowProtectedPropertyAccess) {
+                    constructor.setAccessible(true);
+                }
+                else {
+                    constructor = null;
+                }
+            }
         }
         
         // verify a constructor was found
@@ -1148,7 +1163,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
                 parent.getType(), descriptor, construtorArgumentIndex));
         }
         catch (BeanIOConfigurationException ex) {
-            // if a method accessor is not found, attempt to find a public field
+            // if a method accessor is not found, attempt to find a field declaration
             java.lang.reflect.Field field = getField(iteration.getName());
             if (field == null) {
                 // give up and rethrow the exception
@@ -1368,7 +1383,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     }
     
     /**
-     * Returns the public non-final {@link java.lang.reflect.Field} for a given property
+     * Returns the non-final {@link java.lang.reflect.Field} for a given property
      * name from the current bean class on the property stack.
      * @param property the propety name
      * @return the property {@link java.lang.reflect.Field} or null if not found
@@ -1376,19 +1391,59 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     protected java.lang.reflect.Field getField(String property) {
         Class<?> beanClass = ((Property)propertyStack.getLast()).getType();
         
-        try {
-            java.lang.reflect.Field field = beanClass.getField(property);
+        java.lang.reflect.Field field = null;
+        
+        Class<?> c = beanClass;
+        while (field == null && c != null) {
+            for (Class<?> i : c.getInterfaces()) {
+                for (java.lang.reflect.Field f : i.getDeclaredFields()) {
+                    if (f.getName().equals(property)) {
+                        field = f;
+                        break;
+                    }
+                }
+                if (field != null) {
+                    break;
+                }
+            }
             
-            // verify the field is public and not final
-            int mod = field.getModifiers();
-            if (Modifier.isPublic(mod) && !Modifier.isFinal(mod)) {
-                return field;
+            if (c.isInterface()) {
+                break;
+            }
+        
+            for (java.lang.reflect.Field f : c.getDeclaredFields()) {
+                if (f.getName().equals(property)) {
+                    field = f;
+                    break;
+                }
+            }
+            
+            c = c.getSuperclass();
+        }
+        
+        if (field == null) {
+            return null;
+        }
+        
+        // verify the field is public and not final
+        int mod = field.getModifiers();
+        if (Modifier.isFinal(mod)) {
+            return null;
+        }
+        
+        if (!Modifier.isPublic(mod)) {
+            if (allowProtectedPropertyAccess) {
+                field.setAccessible(true);
+            }
+            else {
+                return null;
             }
         }
-        catch (Exception e) { }
         
-        return null;
+        return field;
     }
+    
+    
     
     /**
      * Updates a simple property with its type and accessor, and returns a type handler for it.

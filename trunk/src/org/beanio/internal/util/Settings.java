@@ -119,7 +119,11 @@ public class Settings {
      * @since 2.1.0
      */
     public static final String SORT_XML_COMPONENTS_BY_POSITION = "org.beanio.xml.sorted";
-
+    /**
+     * Whether non-public fields and methods may be made accessible.
+     */
+    public static final String ALLOW_PROTECTED_PROPERTY_ACCESS = "org.beanio.allowProtectedPropertyAccess";
+    
     private static final String DEFAULT_CONFIGURATION_PATH = "org/beanio/internal/config/beanio.properties";
     private static final String DEFAULT_CONFIGURATION_FILENAME = "beanio.properties";
     private static final String CONFIGURATION_PROPERTY = "org.beanio.configuration";

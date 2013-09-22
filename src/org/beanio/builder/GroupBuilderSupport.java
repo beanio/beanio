@@ -38,6 +38,15 @@ public abstract class GroupBuilderSupport<T extends GroupBuilderSupport<T>> exte
         return me();
     }
     
+    public T addGroup(Class<?> group) throws BeanIOConfigurationException {
+        GroupConfig gc = AnnotationParser.createGroupConfig(group);
+        if (gc == null) {
+            throw new BeanIOConfigurationException("Group annotation not detected on class '" + group.getName() + "'");
+        }
+        getConfig().add(gc);
+        return me();
+    }
+    
     public T addRecord(RecordBuilder record) {
         getConfig().add(record.build());
         return me();

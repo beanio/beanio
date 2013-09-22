@@ -428,7 +428,13 @@ public class XmlMappingParser implements StringUtil.PropertySource {
      * @return the parsed group configuration
      */
     protected GroupConfig createGroupConfig(Element element) {
-        GroupConfig config = new GroupConfig();
+        String type = getAttribute(element, "class");
+        GroupConfig config = AnnotationParser.createGroupConfig(classLoader, type);
+        if (config != null) {
+            return config;
+        }
+        config = new GroupConfig();
+        config.setType(type);
         populatePropertyConfig(config, element);
         config.setOrder(getIntegerAttribute(element, "order"));
         config.setKey(getAttribute(element, "key"));
@@ -436,7 +442,6 @@ public class XmlMappingParser implements StringUtil.PropertySource {
         config.setXmlNamespace(getOptionalAttribute(element, "xmlNamespace"));
         config.setXmlPrefix(getOptionalAttribute(element, "xmlPrefix"));
         config.setXmlType(getOptionalAttribute(element, "xmlType"));
-        config.setType(getAttribute(element, "class"));
         config.setTarget(getAttribute(element, "value"));
         
         NodeList children = element.getChildNodes();
@@ -466,10 +471,11 @@ public class XmlMappingParser implements StringUtil.PropertySource {
     protected RecordConfig createRecordConfig(Element element) {
         String type = getAttribute(element, "class");
         RecordConfig segment = AnnotationParser.createRecordConfig(classLoader, type);
-        if (segment == null) {
-            segment = new RecordConfig();
-            segment.setType(type);
+        if (segment != null) {
+            return segment;
         }
+        segment = new RecordConfig();
+        segment.setType(type);
         populatePropertyConfig(segment, element);
         segment.setKey(getAttribute(element, "key"));
         segment.setOrder(getIntegerAttribute(element, "order"));

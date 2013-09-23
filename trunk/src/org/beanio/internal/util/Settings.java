@@ -41,6 +41,8 @@ public class Settings {
     /** This property is set to the fully qualified class name of the default stream factory implementation  */
     public static final String STREAM_FACTORY_CLASS = "org.beanio.streamFactory";
 
+    /** The default locale used by type handlers */
+    public static final String DEFAULT_LOCALE = "org.beanio.defaultTypeHandlerLocale";
     /** The default date format pattern for fields assigned type alias <tt>Date</tt> */
     public static final String DEFAULT_DATE_FORMAT = "org.beanio.defaultDateFormat";
     /** The default date format pattern for fields assigned type alias <tt>DateTime</tt> or of type <tt>java.util.Date</tt> */

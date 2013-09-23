@@ -84,13 +84,13 @@ public class TypeHandlerFactory {
         defaultFactory.registerHandlerFor(TypeUtil.DATE_ALIAS, new DateTypeHandler(
             settings.getProperty(Settings.DEFAULT_DATE_FORMAT)) {
             protected DateFormat createDefaultDateFormat() {
-                return DateFormat.getDateInstance();
+                return DateFormat.getDateInstance(DateFormat.DEFAULT, locale);
             }
         });
         defaultFactory.registerHandlerFor(TypeUtil.TIME_ALIAS, new DateTypeHandler(
             settings.getProperty(Settings.DEFAULT_TIME_FORMAT)) {
             protected DateFormat createDefaultDateFormat() {
-                return DateFormat.getTimeInstance();
+                return DateFormat.getTimeInstance(DateFormat.DEFAULT, locale);
             }
         });
         
@@ -99,13 +99,13 @@ public class TypeHandlerFactory {
         defaultFactory.registerHandlerFor(TypeUtil.CALENDAR_DATE_ALIAS, new CalendarTypeHandler(
             settings.getProperty(Settings.DEFAULT_DATE_FORMAT)) {
             protected DateFormat createDefaultDateFormat() {
-                return DateFormat.getDateInstance();
+                return DateFormat.getDateInstance(DateFormat.DEFAULT, locale);
             }
         });
         defaultFactory.registerHandlerFor(TypeUtil.CALENDAR_TIME_ALIAS, new CalendarTypeHandler(
             settings.getProperty(Settings.DEFAULT_TIME_FORMAT)) {
             protected DateFormat createDefaultDateFormat() {
-                return DateFormat.getTimeInstance();
+                return DateFormat.getTimeInstance(DateFormat.DEFAULT, locale);
             }
         });
         

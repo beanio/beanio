@@ -29,7 +29,7 @@ import java.util.Properties;
  * @since 1.0
  * @see DecimalFormat
  */
-public abstract class NumberTypeHandler implements ConfigurableTypeHandler, Cloneable {
+public abstract class NumberTypeHandler extends LocaleSupport implements ConfigurableTypeHandler, Cloneable {
 
     private String pattern;
     
@@ -129,7 +129,7 @@ public abstract class NumberTypeHandler implements ConfigurableTypeHandler, Clon
      * @return the new <tt>DecimalFormat</tt>
      */
     protected DecimalFormat createDecimalFormat() {
-        return new DecimalFormat(pattern);
+        return new DecimalFormat(pattern, DecimalFormatSymbols.getInstance(locale));
     }
     
     /**

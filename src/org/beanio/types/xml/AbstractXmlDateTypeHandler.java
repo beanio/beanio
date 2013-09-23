@@ -55,6 +55,9 @@ public abstract class AbstractXmlDateTypeHandler extends DateTypeHandler {
      */
     @Override
     public Date parse(String text) throws TypeConversionException {
+        if (pattern != null) {
+            return super.parse(text);
+        }
         if ("".equals(text)) {
             return null;
         }

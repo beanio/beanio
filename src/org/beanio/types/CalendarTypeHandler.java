@@ -68,7 +68,11 @@ public class CalendarTypeHandler extends DateTypeHandlerSupport implements Confi
      * @see org.beanio.types.AbstractDateTypeHandler#format(java.lang.Object)
      */
     public String format(Object value) {
-        return formatDate(value != null ? ((Calendar)value).getTime() : null);
+        return formatCalendar((Calendar)value);
+    }
+    
+    protected String formatCalendar(Calendar calendar) {
+        return formatDate(calendar != null ? calendar.getTime() : null);
     }
 
     /*

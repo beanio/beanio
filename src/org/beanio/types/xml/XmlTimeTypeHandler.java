@@ -44,6 +44,9 @@ public class XmlTimeTypeHandler extends AbstractXmlDateTypeHandler {
         }
         
         Date date = (Date) value;
+        if (pattern != null) {
+            return super.formatDate(date);
+        }
         
         Calendar cal = newCalendar();
         cal.setTime(date);

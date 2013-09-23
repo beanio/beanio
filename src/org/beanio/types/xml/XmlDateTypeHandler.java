@@ -41,8 +41,13 @@ public class XmlDateTypeHandler extends AbstractXmlDateTypeHandler {
             return null;
         }
         
+        Date date = (Date) value;
+        if (pattern != null) {
+            return super.formatDate(date);
+        }
+        
         Calendar cal = newCalendar();
-        cal.setTime((Date)value);
+        cal.setTime(date);
         
         XMLGregorianCalendar xcal = dataTypeFactory.newXMLGregorianCalendarDate(
             cal.get(Calendar.YEAR), 

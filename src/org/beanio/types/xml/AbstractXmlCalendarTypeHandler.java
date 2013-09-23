@@ -58,6 +58,9 @@ public abstract class AbstractXmlCalendarTypeHandler extends CalendarTypeHandler
         if ("".equals(text)) {
             return null;
         }
+        if (pattern != null) {
+            return super.parse(text);
+        }
         
         QName type = getDatatypeQName();
         

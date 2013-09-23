@@ -29,7 +29,7 @@ import java.util.*;
  * @see DateFormat
  * @see SimpleDateFormat
  */
-public class DateTypeHandler extends DateTypeHandlerSupport implements ConfigurableTypeHandler {
+public class DateTypeHandler extends DateTypeHandlerSupport implements ConfigurableTypeHandler, Cloneable {
 
     /**
      * Constructs a new <tt>DateTypeHandler</tt>.
@@ -72,12 +72,15 @@ public class DateTypeHandler extends DateTypeHandlerSupport implements Configura
         if (pattern.equals(getPattern())) {
             return this;
         }
-                
-        DateTypeHandler handler = new DateTypeHandler();
-        handler.setPattern(pattern);
-        handler.setLenient(isLenient());
-        handler.timeZone = this.timeZone;
-        return handler;
+
+        try {
+            DateTypeHandler handler = (DateTypeHandler) this.clone();
+            handler.setPattern(pattern);
+            return handler;
+        }
+        catch (CloneNotSupportedException e) {
+            throw new IllegalStateException(e);
+        }
     }
     
     /*

@@ -32,7 +32,7 @@ import java.util.TimeZone;
  * @see DateFormat
  * @see SimpleDateFormat
  */
-public abstract class DateTypeHandlerSupport {
+public abstract class DateTypeHandlerSupport extends LocaleSupport {
 
     protected String pattern = null;
     protected TimeZone timeZone = null;
@@ -90,7 +90,7 @@ public abstract class DateTypeHandlerSupport {
             return createDefaultDateFormat();
         }
         else {
-            return new SimpleDateFormat(pattern);
+            return new SimpleDateFormat(pattern, locale);
         }
     }
     
@@ -99,7 +99,7 @@ public abstract class DateTypeHandlerSupport {
      * @return the default date format
      */
     protected DateFormat createDefaultDateFormat() {
-        return DateFormat.getDateTimeInstance();
+        return DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, locale);
     }
 
     /**

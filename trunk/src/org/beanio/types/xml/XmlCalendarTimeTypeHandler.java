@@ -39,6 +39,9 @@ public class XmlCalendarTimeTypeHandler extends AbstractXmlCalendarTypeHandler {
         }
         
         Calendar cal = (Calendar) value;
+        if (pattern != null) {
+            return super.formatCalendar(cal);
+        }
         
         int ms = DatatypeConstants.FIELD_UNDEFINED;
         if (outputMilliseconds) {

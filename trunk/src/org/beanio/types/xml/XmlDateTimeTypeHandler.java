@@ -37,8 +37,11 @@ public class XmlDateTimeTypeHandler extends AbstractXmlDateTypeHandler {
         if (value == null) {
             return null;
         }
-        
+
         Date date = (Date) value;
+        if (pattern != null) {
+            return super.formatDate(date);
+        }
         
         Calendar cal = newCalendar();
         cal.setTime(date);

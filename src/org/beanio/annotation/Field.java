@@ -150,6 +150,12 @@ public @interface Field {
     boolean required() default false;
     
     /**
+     * The default value for this field.  The value is parsed into a Java object
+     * using the assigned type handler.
+     */
+    String defaultValue() default "";
+    
+    /**
      * The minimum length of the field text (after trimming if enabled).
      * @return the minimum length
      */

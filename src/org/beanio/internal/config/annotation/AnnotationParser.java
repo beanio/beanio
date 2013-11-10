@@ -582,6 +582,7 @@ public class AnnotationParser {
         fc.setRegex(toValue(fa.regex()));
         fc.setFormat(toValue(fa.format()));
         fc.setRequired(fa.required());
+        fc.setDefault(toValue(fa.defaultValue()));
         fc.setIdentifier(fa.rid());
         fc.setTrim(fa.trim());
         fc.setLazy(fa.lazy());

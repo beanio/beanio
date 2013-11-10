@@ -124,7 +124,7 @@ public class Settings {
     /**
      * Whether non-public fields and methods may be made accessible.
      */
-    public static final String ALLOW_PROTECTED_PROPERTY_ACCESS = "org.beanio.allowProtectedPropertyAccess";
+    public static final String ALLOW_PROTECTED_PROPERTY_ACCESS = "org.beanio.allowProtectedAccess";
     
     private static final String DEFAULT_CONFIGURATION_PATH = "org/beanio/internal/config/beanio.properties";
     private static final String DEFAULT_CONFIGURATION_FILENAME = "beanio.properties";

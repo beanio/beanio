@@ -11,7 +11,7 @@
 <body>
 
 <div class="title">BeanIO 2.1 Reference Guide</div>
-<p><i>Revision 1</i>, &copy; 2010-2013 Kevin Seim</p>
+<p><i>Revision 2</i>, &copy; 2010-2013 Kevin Seim</p>
 <p style="font-size: 90%"><i>Copies of this document may be made for your own use and for
 distribution to others, provided that you do not charge any fee for such copies and further provided
 that each copy contains this Copyright Notice, whether distributed in print or electronically.</i></p>
@@ -101,6 +101,11 @@ that each copy contains this Copyright Notice, whether distributed in print or e
     <a href="#XmlWrappedSegments">5.8.2.  Wrapped Segments</a><br />
   </div>
 </div>
+<a href="#BuilderApiAndAnnotations">6.0. Annotations and the Stream Builder API</a>
+  <div class="toc">
+    <a href="#BuilderApi">6.1.  The Stream Builder API</a><br />
+    <a href="#Annotations">6.2.  Annotations</a><br />
+  </div>
 <a href="#SpringBatch">7.0. Spring Batch Integration</a>
 <div class="toc">
   <a href="#SpringItemReaderWriter">7.1. BeanIO ItemReader/Writer Beans</a><br />
@@ -139,10 +144,12 @@ currently supports XML, CSV, delimited and fixed length file formats. BeanIO is 
 <p>BeanIO 2.1 includes the following significant enhancements:</p>
 <ul>
   <li>Stream builder API for programmatically  configuring a stream mapping</li>
-  <li><tt>@Record</tt> and <tt>@Field</tt> annotations (<tt>@Group</tt> coming soon)</li>
+  <li><tt>@Group</tt>, <tt>@Record</tt>, <tt>@Segemnt</tt> and <tt>@Field</tt> annotations.</li>
   <li>Dynamic field occurrences based on a preceding field in the same record</li>
   <li>Lazy collections</li>
   <li><tt>java.util.Calendar</tt> type handlers</li>
+  <li>Direct access to private variables and constructors</li>
+  <li>Configurable "locale" property on number, date and calendar type handlers</li>
 </ul>
 
 <h2><a name="Migration">1.2. Migrating from 2.0.x to 2.1</a></h2>
@@ -165,6 +172,9 @@ noted, legacy behavior can be restored using <tt>beanio.properties</tt> configur
   <li>Fields assigned a default field value will now return the default value if missing 
     from the input stream during unmarshalling.  The configuration setting
     <tt>org.beanio.useDefaultIfMissing=false</tt> can be used to restore legacy behavior.</li>
+
+  <li>BeanIO will now access private/protected member variables and constructors unless configured using
+   <tt>org.beanio.allowProtectedAccess=false</tt>.</li>
 </ul>
 
 
@@ -3241,11 +3251,11 @@ of a field, and the effect of <tt>minOccurs</tt> and <tt>nillable</tt> when mars
   Annotation and Builder API
 
  -->
-<h1><a name="Annotation">6.0. Annotations and the Stream Builder API</a></h1>
+<h1><a name="BuilderApiAndAnnotations">6.0. Annotations and the Stream Builder API</a></h1>
 <p>Since release 2.1, BeanIO includes support for Java annotations and a stream
 builder API.</p>
 
-<h2><a name="StreamBuilderAPI">6.1. The Stream Builder API</a></h2>
+<h2><a name="BuilderApi">6.1. The Stream Builder API</a></h2>
 <p>The stream builder API can be used to programatically create a stream mapping
 without the need for a mapping file.</p>
 
@@ -3349,8 +3359,8 @@ are added to a layout.</p>
 follow the same convention as well.  Refer to <a href="#A">Appendix A</a> for a complete 
 explanation of all settings.</p>
 
-<p>Where used, annotated records can not be overridden by mapping file components, and a
-<tt>BeanIOConfigurationException</tt> will be thrown if attempted.</p>
+<p>Where used, annotated records can not be overridden by mapping file components.  Configuration
+settings other than <tt>class</tt> and descendent components will be ignored.</p>
 
 <!-- 
 
@@ -3445,6 +3455,12 @@ working directory, and if not found, then from the root of the application's cla
   <th>Default</th>
 </tr>
 <tr>
+  <td><tt>org.beanio.allowProtectedAccess</tt></td>
+  <td>Whether private and protected class variables and constructors can be accessed (i.e.
+    make accessible using the reflection API).</td>
+  <td><tt>true</tt></td>
+</tr>
+<tr>
   <td><tt>org.beanio.lazyIfEmpty</tt></td>
   <td>Whether objects are lazily instantiated if String properties are empty (and not just null).</td>
   <td><tt>true</tt></td>
@@ -3479,6 +3495,12 @@ working directory, and if not found, then from the root of the application's cla
     </td>
   <td><tt>true</tt></td>
 </tr>
+<tr>
+  <td><tt>org.beanio.defaultTypeHandlerLocale</tt></td>
+  <td>Sets the default type handler locale.</td>
+  <td><tt>Locale.getDefault()</tt></td>
+</tr>
+
 <tr>
   <td><tt>org.beanio.defaultDateFormat</tt></td>
   <td>Sets the default <tt>SimpleDateFormat</tt> pattern for <tt>date</tt> and

@@ -100,6 +100,27 @@ public class TreeNode<T extends TreeNode> implements Replicateable, Iterable<T> 
     }
     
     /**
+     * Returns whether the given node is a descendant of this node or recursively
+     * one of its children.
+     * @param node the TreeNode to test
+     * @return true if the given node is a descendant, false otherwise
+     */
+    @SuppressWarnings("unchecked")
+    public boolean isDescendant(T node) {
+        if (node == this) {
+            return true;
+        }
+        if (children != null) {
+            for (T n : children) {
+                if (n.isDescendant(node)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
      * Returns the immediate children of this node.
      * @return the List of immediate children of this node
      */

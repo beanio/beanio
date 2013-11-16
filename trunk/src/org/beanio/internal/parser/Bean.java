@@ -200,7 +200,7 @@ public class Bean extends PropertyComponent implements Property {
 
         
         if (b == null) {
-            if (isRequired()) {
+            if (isRequired() || createMissingBeans) {
                 b = newInstance(context);
             }
             else if (hasProperties) {

@@ -1279,7 +1279,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
                 parent.getType(), descriptor, construtorArgumentIndex));
         }
         catch (BeanIOConfigurationException ex) {
-            // if a method accessor is not found, attempt to find a public field
+            // if a method accessor is not found, attempt to find a field
             java.lang.reflect.Field field = getField(config.getName());
             if (field == null) {
                 // give up and rethrow the exception

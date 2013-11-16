@@ -33,6 +33,11 @@ public abstract class NumberTypeHandler extends LocaleSupport implements Configu
 
     private String pattern;
     
+    // the same format instance can be reused if this type handler is not shared
+    // by multiple unmarshallers/marshallers, this can lead to significant
+    // performance improvements if parsing thousands of records
+    private DecimalFormat format;
+    
     /**
      * Parses a <tt>Number</tt> from the given text.
      * @param text the text to parse
@@ -58,8 +63,11 @@ public abstract class NumberTypeHandler extends LocaleSupport implements Configu
         }
         else {
             // create a DecimaFormat for parsing the number
-            DecimalFormat df = createDecimalFormat();
-            df.setParseBigDecimal(true);
+            DecimalFormat df = format;
+            if (df == null) {
+                df = createDecimalFormat();
+                df.setParseBigDecimal(true);
+            }
             
             // parse the number using the DecimalFormat
             ParsePosition pp = new ParsePosition(0);
@@ -110,13 +118,12 @@ public abstract class NumberTypeHandler extends LocaleSupport implements Configu
         if (pattern == null || "".equals(pattern)) {
             return this;
         }
-        if (pattern.equals(this.pattern)) {
-            return this;
-        }
         
         try {
             NumberTypeHandler handler = (NumberTypeHandler) this.clone();
             handler.setPattern(pattern);
+            handler.format = handler.createDecimalFormat();
+            handler.format.setParseBigDecimal(true);
             return handler;
         }
         catch (CloneNotSupportedException ex) {
@@ -143,6 +150,8 @@ public abstract class NumberTypeHandler extends LocaleSupport implements Configu
             return null;
         else if (pattern == null)
             return ((Number) value).toString();
+        else if (format != null) 
+            return format.format(value);
         else
             return createDecimalFormat().format(value);
     }

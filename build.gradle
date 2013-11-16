@@ -12,6 +12,11 @@
  * dependencies may be necessary:
  *   - jsr173 1.0 API (required for compilation and test execution)
  *   - sjsxp 1.0.x or equivalent JSR-173 implementation (required for test execution)
+ *  
+ * To execute the 'uploadArchives' task, the following properties must be specified
+ * in an external 'gradle.properties' file:
+ *   - sonatypeUsername
+ *   - sonatypePassword
  */
 
 apply plugin: 'java'
@@ -22,11 +27,15 @@ apply plugin: 'signing'
 apply from: 'https://raw.github.com/breskeby/gradleplugins/master/emmaPlugin/emma.gradle'
 
 version = "2.1.0.SNAPSHOT"
-
-ext.artifactId = "beanio"
 group = "org.beanio"
 sourceCompatibility = 1.5
 targetCompatibility = 1.5
+
+ext.artifactId = "beanio"
+if (!ext.hasProperty("sonatypeUsername")) {
+    ext.sonatypeUsername = null
+    ext.sonatypePassword = null
+}
 
 repositories {
     mavenCentral()

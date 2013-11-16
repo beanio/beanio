@@ -68,9 +68,6 @@ public class NumberTypeHandlerTest {
         props.setProperty(ConfigurableTypeHandler.FORMAT_SETTING, "0.00");
         IntegerTypeHandler handler2 = (IntegerTypeHandler) handler.newInstance(props);
         assertEquals("0.00", handler2.getPattern());
-        
-        handler.setPattern("0.00");
-        assertEquals(handler, handler.newInstance(props));
     }
     
     @Test(expected=IllegalArgumentException.class)

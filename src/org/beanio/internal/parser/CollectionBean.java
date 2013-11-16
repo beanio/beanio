@@ -95,7 +95,7 @@ public class CollectionBean extends PropertyComponent implements Property {
         }
 
         if (b == null) {
-            b = isRequired() ? newInstance() : Value.MISSING;
+            b = isRequired() || createMissingBeans ? newInstance() : Value.MISSING;
         }
         
         bean.set(context, b);

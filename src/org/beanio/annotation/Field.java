@@ -37,8 +37,8 @@ public @interface Field {
     String name() default "";
     
     /**
-     * Sets the position of the field.
-     * @return the position
+     * Sets the absolute position of the field.
+     * @return the absolute position
      */
     int at() default Integer.MIN_VALUE;
     
@@ -48,6 +48,12 @@ public @interface Field {
      * @return the maximum position
      */
     int until() default Integer.MIN_VALUE;
+
+    /**
+     * The relative position of the field.
+     * @return the relative position
+     */
+    int ordinal() default Integer.MIN_VALUE;
     
     /**
      * The padded length of the field.

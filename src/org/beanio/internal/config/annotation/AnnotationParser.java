@@ -34,6 +34,23 @@ import org.beanio.internal.util.TypeUtil;
  */
 public class AnnotationParser {
 
+    private static final Comparator<ComponentConfig> ORDINAL_COMPARATOR = new Comparator<ComponentConfig>() {
+        public int compare(ComponentConfig c1, ComponentConfig c2) {
+            Integer o1 = c1.getOrdinal();
+            Integer o2 = c2.getOrdinal();
+            
+            if (o1 == null) {
+                return o2 == null ? 0 : 1;
+            }
+            else if (o2 == null) {
+                return -1;
+            }
+            else {
+                return o1.compareTo(o2);
+            }
+        }
+    };
+    
     /**
      * Creates a {@link GroupConfig} from the given type, if the type is annotated
      * using {@link Group}.
@@ -465,6 +482,7 @@ public class AnnotationParser {
         
         handleConstructor(rc, info.propertyType);
         addAllChildren(rc, info.propertyType);
+        //rc.sort(ORDINAL_COMPARATOR);
         return rc;
     }
     
@@ -497,6 +515,7 @@ public class AnnotationParser {
         }
         sc.setPosition(toValue(sa.at()));
         sc.setUntil(toValue(sa.until()));
+        sc.setOrdinal(toValue(sa.ordinal()));
         sc.setMinOccurs(toValue(sa.minOccurs()));
         sc.setMaxOccurs(toUnboundedValue(sa.maxOccurs()));
         sc.setOccursRef(toValue(sa.occursRef()));
@@ -579,6 +598,7 @@ public class AnnotationParser {
         fc.setLiteral(toValue(fa.literal()));
         fc.setPosition(toValue(fa.at()));
         fc.setUntil(toValue(fa.until()));
+        fc.setOrdinal(toValue(fa.ordinal()));
         fc.setRegex(toValue(fa.regex()));
         fc.setFormat(toValue(fa.format()));
         fc.setRequired(fa.required());

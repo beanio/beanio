@@ -37,8 +37,8 @@ public @interface Segment {
     String name() default "";
     
     /**
-     * The position of the segment.
-     * @return the position
+     * The absolute position of the segment.
+     * @return the absolute position
      */
     int at() default Integer.MIN_VALUE;
     
@@ -48,6 +48,12 @@ public @interface Segment {
      * @return the maximum position
      */
     int until() default Integer.MIN_VALUE;
+    
+    /**
+     * The relative position of the segment.
+     * @return the relative position
+     */
+    int ordinal() default Integer.MIN_VALUE;
     
     /**
      * The getter method.

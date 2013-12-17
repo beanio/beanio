@@ -55,6 +55,7 @@ public abstract class ComponentConfig extends TreeNode<ComponentConfig> {
     /** Stream component type */
     public static final char STREAM = 'M';
     
+    private Integer ordinal;
     private String xmlName;
     private String xmlNamespace;
     private String xmlPrefix;
@@ -71,6 +72,22 @@ public abstract class ComponentConfig extends TreeNode<ComponentConfig> {
      *   {@link #CONSTANT} or {@link #WRAPPER}
      */
     public abstract char getComponentType();
+    
+    /**
+     * Returns the relative position of this component within its parent components.
+     * @return the relative position
+     */
+    public Integer getOrdinal() {
+        return ordinal;
+    }
+
+    /**
+     * Sets the relative position of this component within its parent components.
+     * @param ordinal the relative position
+     */
+    public void setOrdinal(Integer ordinal) {
+        this.ordinal = ordinal;
+    }
     
     /**
      * Returns XML element or attribute name of this component.

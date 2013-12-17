@@ -482,7 +482,7 @@ public class AnnotationParser {
         
         handleConstructor(rc, info.propertyType);
         addAllChildren(rc, info.propertyType);
-        //rc.sort(ORDINAL_COMPARATOR);
+        rc.sort(ORDINAL_COMPARATOR);
         return rc;
     }
     

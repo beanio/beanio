@@ -15,11 +15,8 @@
  */
 package org.beanio.types;
 
-import java.text.DateFormat;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
+import java.text.*;
+import java.util.*;
 
 /**
  * This abstract type handler uses a <tt>SimpleDateFormat</tt> class to parse and format 
@@ -32,12 +29,17 @@ import java.util.TimeZone;
  * @see DateFormat
  * @see SimpleDateFormat
  */
-public abstract class DateTypeHandlerSupport extends LocaleSupport {
+public abstract class DateTypeHandlerSupport extends LocaleSupport implements ConfigurableTypeHandler, Cloneable {
 
     protected String pattern = null;
-    protected TimeZone timeZone = null;
     protected boolean lenient = false;
-
+    protected TimeZone timeZone = null;
+    
+    // the same format instance can be reused if this type handler is not shared
+    // by multiple unmarshallers/marshallers, this can lead to significant
+    // performance improvements when parsing many records
+    private transient DateFormat format;
+    
     /**
      * Constructs a new AbstractDateTypeHandler.
      */
@@ -61,11 +63,8 @@ public abstract class DateTypeHandlerSupport extends LocaleSupport {
         if ("".equals(text))
             return null;
 
-        DateFormat dateFormat = createDateFormat();
-        dateFormat.setLenient(lenient);
-        
         ParsePosition pp = new ParsePosition(0);
-        Date date = dateFormat.parse(text, pp);
+        Date date = getFormat().parse(text, pp);
         if (pp.getErrorIndex() >= 0 || pp.getIndex() != text.length()) {
             throw new TypeConversionException("Invalid date");
         }
@@ -78,7 +77,11 @@ public abstract class DateTypeHandlerSupport extends LocaleSupport {
      * @return the formatted text
      */
     protected String formatDate(Date date) {
-        return date == null ? null : createDateFormat().format(date);
+        return date == null ? null : getFormat().format(date);
+    }
+    
+    private DateFormat getFormat() {
+        return this.format != null ? this.format : createDateFormat();
     }
     
     /**
@@ -90,7 +93,12 @@ public abstract class DateTypeHandlerSupport extends LocaleSupport {
             return createDefaultDateFormat();
         }
         else {
-            return new SimpleDateFormat(pattern, locale);
+            DateFormat df = new SimpleDateFormat(pattern, locale);
+            df.setLenient(lenient);
+            if (timeZone != null) {
+                df.setTimeZone(timeZone);
+            }
+            return df;
         }
     }
     
@@ -100,6 +108,32 @@ public abstract class DateTypeHandlerSupport extends LocaleSupport {
      */
     protected DateFormat createDefaultDateFormat() {
         return DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, locale);
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.types.AbstractDateTypeHandler#newInstance(java.util.Properties)
+     */
+    public DateTypeHandlerSupport newInstance(Properties properties) throws IllegalArgumentException {
+        String pattern = properties.getProperty(FORMAT_SETTING);
+        if (pattern == null || "".equals(pattern)) {
+            return this;
+        }
+        if (pattern.equals(getPattern())) {
+            return this;
+        }
+
+        try {
+            DateTypeHandlerSupport handler = (DateTypeHandlerSupport) this.clone();
+            handler.setPattern(pattern);
+            handler.lenient = this.lenient;
+            handler.timeZone = this.timeZone;
+            handler.format = handler.createDateFormat();
+            return handler;
+        }
+        catch (CloneNotSupportedException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     /**

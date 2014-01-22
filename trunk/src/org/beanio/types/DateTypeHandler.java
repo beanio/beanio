@@ -29,7 +29,7 @@ import java.util.*;
  * @see DateFormat
  * @see SimpleDateFormat
  */
-public class DateTypeHandler extends DateTypeHandlerSupport implements ConfigurableTypeHandler, Cloneable {
+public class DateTypeHandler extends DateTypeHandlerSupport {
 
     /**
      * Constructs a new <tt>DateTypeHandler</tt>.
@@ -58,29 +58,6 @@ public class DateTypeHandler extends DateTypeHandlerSupport implements Configura
      */
     public String format(Object value) {
         return super.formatDate((Date)value);
-    }
-    
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.types.AbstractDateTypeHandler#newInstance(java.util.Properties)
-     */
-    public DateTypeHandler newInstance(Properties properties) throws IllegalArgumentException {
-        String pattern = properties.getProperty(FORMAT_SETTING);
-        if (pattern == null || "".equals(pattern)) {
-            return this;
-        }
-        if (pattern.equals(getPattern())) {
-            return this;
-        }
-
-        try {
-            DateTypeHandler handler = (DateTypeHandler) this.clone();
-            handler.setPattern(pattern);
-            return handler;
-        }
-        catch (CloneNotSupportedException e) {
-            throw new IllegalStateException(e);
-        }
     }
     
     /*

@@ -74,7 +74,7 @@ public class DateTypeHandlerTest {
         assertEquals(handler, handler.newInstance(props));
         
         props.setProperty(ConfigurableTypeHandler.FORMAT_SETTING, "yyyy-MM-dd");
-        DateTypeHandler handler2 = handler.newInstance(props);
+        DateTypeHandler handler2 = (DateTypeHandler) handler.newInstance(props);
         assertEquals("yyyy-MM-dd", handler2.getPattern());
         assertEquals(handler.isLenient(), handler2.isLenient());
         

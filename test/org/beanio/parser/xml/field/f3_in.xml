@@ -4,6 +4,6 @@
     <lastName xsi:nil="true" />
   </person>
   <person>
-    <firstName>John</firstName>
+    <firstName>J<![CDATA[ohn]]></firstName>
   </person>
 </stream>

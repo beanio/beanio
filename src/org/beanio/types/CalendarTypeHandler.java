@@ -15,11 +15,8 @@
  */
 package org.beanio.types;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Properties;
+import java.text.*;
+import java.util.*;
 
 /**
  * This type handler uses a {@link SimpleDateFormat} to parse and format 
@@ -32,7 +29,7 @@ import java.util.Properties;
  * @see DateFormat
  * @see SimpleDateFormat
  */
-public class CalendarTypeHandler extends DateTypeHandlerSupport implements ConfigurableTypeHandler {
+public class CalendarTypeHandler extends DateTypeHandlerSupport {
 
     /**
      * Constructs a new CalendarTypeHandler.
@@ -73,26 +70,6 @@ public class CalendarTypeHandler extends DateTypeHandlerSupport implements Confi
     
     protected String formatCalendar(Calendar calendar) {
         return formatDate(calendar != null ? calendar.getTime() : null);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.beanio.types.AbstractDateTypeHandler#newInstance(java.util.Properties)
-     */
-    public CalendarTypeHandler newInstance(Properties properties) throws IllegalArgumentException {
-        String pattern = properties.getProperty(FORMAT_SETTING);
-        if (pattern == null || "".equals(pattern)) {
-            return this;
-        }
-        if (pattern.equals(getPattern())) {
-            return this;
-        }
-                
-        CalendarTypeHandler handler = new CalendarTypeHandler();
-        handler.setPattern(pattern);
-        handler.setLenient(isLenient());
-        handler.timeZone = this.timeZone;
-        return handler;
     }
     
     /*

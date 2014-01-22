@@ -36,7 +36,7 @@ public abstract class NumberTypeHandler extends LocaleSupport implements Configu
     // the same format instance can be reused if this type handler is not shared
     // by multiple unmarshallers/marshallers, this can lead to significant
     // performance improvements if parsing thousands of records
-    private DecimalFormat format;
+    private transient DecimalFormat format;
     
     /**
      * Parses a <tt>Number</tt> from the given text.

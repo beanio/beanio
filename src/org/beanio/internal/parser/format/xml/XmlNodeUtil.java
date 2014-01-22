@@ -82,6 +82,12 @@ public class XmlNodeUtil {
                 }
                 s.append(((Text)child).getTextContent());
             }
+            else if (child.getNodeType() == Node.CDATA_SECTION_NODE) {
+                if (s == null) {
+                    s = new StringBuilder();
+                }
+                s.append(((CDATASection)child).getData());
+            }
             child = child.getNextSibling();
         }
         return s == null ? null : s.toString();

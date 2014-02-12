@@ -15,13 +15,13 @@
  *  
  * To execute the 'uploadArchives' task, the following properties must be specified
  * in an external 'gradle.properties' file:
+ *   - (signing properties, see http://www.gradle.org/docs/current/userguide/signing_plugin.html)
  *   - sonatypeUsername
  *   - sonatypePassword
  */
 
 apply plugin: 'java'
 apply plugin: 'groovy'
-apply plugin: 'osgi'
 apply plugin: 'maven'
 apply plugin: 'signing'
 apply from: 'https://raw.github.com/breskeby/gradleplugins/master/emmaPlugin/emma.gradle'
@@ -32,10 +32,7 @@ sourceCompatibility = 1.5
 targetCompatibility = 1.5
 
 ext.artifactId = "beanio"
-if (!ext.hasProperty("sonatypeUsername")) {
-    ext.sonatypeUsername = null
-    ext.sonatypePassword = null
-}
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 repositories {
     mavenCentral()
@@ -99,17 +96,24 @@ jar {
     baseName = "$artifactId"
     includeEmptyDirs = false
     ext.metaInfDir = "$buildDir/tmp/jar"
+    // create a list of exported packages for OSGi
+    ant.dirset(id:"osgi.dirs", dir:"src/org/beanio", excludes: "xsd/**")
+    ant.pathconvert(refid:"osgi.dirs", property:"osgi.packages", dirsep:".", pathsep:";version=\"${version}\",") {
+        map(from:"$basedir/src/", to:"")
+    }
     manifest {
         attributes(
             "Implementation-Title": "BeanIO ${version}",
             "Implementation-Version": version,
+            "Bundle-ManifestVersion": "2",
             "Bundle-Name": "BeanIO",
             "Bundle-SymbolicName": "org.beanio",
+            "Bundle-Version": version,
             "Bundle-Vendor": "Kevin Seim",
             "Bundle-Description": "BeanIO OSGi support",
             "Bundle-License": "http://www.apache.org/licenses/LICENSE-2.0",
             "Bundle-DocURL": "http://beanio.org",
-            "Import-Package": "",
+            "Export-Package": ant.properties["osgi.packages"] + ";version=\"${version}\"",
             "DynamicImport-Package": "*")
     }
     doLast {
@@ -210,6 +214,7 @@ artifacts {
 }
 
 signing {
+    required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
     sign configurations.archives
 }
 

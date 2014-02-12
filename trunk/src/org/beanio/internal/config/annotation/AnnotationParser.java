@@ -417,7 +417,7 @@ public class AnnotationParser {
     }
     
     private static GroupConfig createGroup(TypeInfo info, Group group) {
-        updateTypeInfo(info, info.type, group.collection());
+        updateTypeInfo(info, group.type(), group.collection());
         
         GroupConfig gc = new GroupConfig();
         gc.setName(info.name);

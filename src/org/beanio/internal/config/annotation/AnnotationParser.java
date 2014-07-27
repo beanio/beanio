@@ -473,7 +473,7 @@ public class AnnotationParser {
         rc.setXmlNamespace(toXmlValue(record.xmlNamespace()));
         rc.setXmlPrefix(toXmlValue(record.xmlPrefix()));
         
-        Fields fields = info.type.getAnnotation(Fields.class);
+        Fields fields = info.propertyType.getAnnotation(Fields.class);
         if (fields != null) {
             for (Field field : fields.value()) {
                 rc.add(createField(null, field));

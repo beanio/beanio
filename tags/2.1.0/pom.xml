@@ -1,0 +1,29 @@
+ <project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.beanio</groupId>
+  <artifactId>beanio</artifactId>
+  <packaging>jar</packaging>
+  <name>BeanIO</name>
+  <version>2.1.0</version>
+  <description>The BeanIO Project</description>
+  <url>http://beanio.org</url>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <url>http://beanio.googlecode.com/svn</url>
+    <connection>scm:svn:http://beanio.googlecode.com/svn/trunk</connection>
+    <developerConnection>scm:svn:https://beanio.googlecode.com/svn/trunk</developerConnection>
+  </scm>
+  <developers>
+    <developer>
+      <id>kevinseim</id>
+      <name>Kevin Seim</name>
+      <email>kevin.seim@gmail.com</email>
+    </developer>
+  </developers>
+</project>

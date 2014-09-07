@@ -25,7 +25,7 @@ import org.w3c.dom.Document;
  * 
  * <p>The Java object bound to a <i>record</i> depends on the stream format.
  * The following table shows the object used for each format:</p>
- * <table>
+ * <table summary="">
  * <tr>
  *   <th>Format</th>
  *   <th>Record Type</th>
@@ -36,7 +36,7 @@ import org.w3c.dom.Document;
  * </tr>
  * <tr>
  *   <td>CSV, Delimited</td>
- *   <td><tt>String[]</td>
+ *   <td><tt>String[]</tt></td>
  * </tr>
  * <tr>
  *   <td>XML</td>
@@ -45,7 +45,7 @@ import org.w3c.dom.Document;
  * </table>
  * 
  * <p>The following table shows the method invoked for a requested BeanIO interface.</p>
- * <table>
+ * <table summary="">
  * <tr>
  *   <th>Requests For</th>
  *   <th>Invokes</th>

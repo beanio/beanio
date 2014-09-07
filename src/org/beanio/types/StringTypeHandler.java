@@ -91,7 +91,7 @@ public class StringTypeHandler implements TypeHandler {
 
     /**
      * Set to <tt>true</tt> if the parsed empty strings should be converted to <tt>null</tt>.
-     * @param nullIfEmpty <tt>true<</tt> to convert empty string to <tt>null</tt>
+     * @param nullIfEmpty <tt>true</tt> to convert empty string to <tt>null</tt>
      */
     public void setNullIfEmpty(boolean nullIfEmpty) {
         this.nullIfEmpty = nullIfEmpty;

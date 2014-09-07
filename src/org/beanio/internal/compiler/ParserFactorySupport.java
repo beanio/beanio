@@ -49,9 +49,6 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
 
     private static final String CONSTRUCTOR_PREFIX = "#";
     
-    private static final boolean asmEnabled = "asm".equalsIgnoreCase(
-        Settings.getInstance().getProperty(Settings.PROPERTY_ACCESSOR_METHOD));
-    
     private static final boolean allowProtectedPropertyAccess = "true".equalsIgnoreCase(
         Settings.getInstance().getProperty(Settings.ALLOW_PROTECTED_PROPERTY_ACCESS));
     
@@ -87,12 +84,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
         // pre-process configuration settings to set defaults and validate as much as possible 
         createPreprocessor(config).process(config);
         
-        if (asmEnabled) {
-            accessorFactory = new AsmAccessorFactory(classLoader);
-        }
-        else {
-            accessorFactory = new ReflectionAccessorFactory();
-        }
+        accessorFactory = new ReflectionAccessorFactory();
         
         try {
         	process(config);

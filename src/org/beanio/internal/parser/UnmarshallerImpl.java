@@ -19,7 +19,6 @@ import java.io.*;
 import java.util.List;
 
 import org.beanio.*;
-import org.beanio.internal.util.DebugUtil;
 import org.beanio.stream.*;
 import org.w3c.dom.Node;
 

@@ -18,7 +18,6 @@ package org.beanio.internal.parser;
 import java.io.*;
 
 import org.beanio.*;
-import org.beanio.internal.util.DebugUtil;
 
 /**
  * A {@link BeanReader} implementation.

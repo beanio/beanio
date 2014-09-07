@@ -8,10 +8,7 @@
  * See the following URL for instructions regarding deployment to the Sonatype Maven repo:
  *   https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
  * 
- * BeanIO is built using JDK1.6 or higher.  If using JDK1.5, the following additional
- * dependencies may be necessary:
- *   - jsr173 1.0 API (required for compilation and test execution)
- *   - sjsxp 1.0.x or equivalent JSR-173 implementation (required for test execution)
+ * BeanIO 3.x and up is built using Java 8, with Java 7 source/target compatibility.
  *  
  * To execute the 'uploadArchives' task, the following properties must be specified
  * in an external 'gradle.properties' file:
@@ -24,12 +21,13 @@ apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'maven'
 apply plugin: 'signing'
-apply from: 'https://raw.github.com/breskeby/gradleplugins/master/emmaPlugin/emma.gradle'
+// emma does not support Java 8
+//apply from: 'https://raw.github.com/breskeby/gradleplugins/master/emmaPlugin/emma.gradle'
 
-version = "2.1.0.SNAPSHOT"
+version = "3.0.0.SNAPSHOT"
 group = "org.beanio"
-sourceCompatibility = 1.5
-targetCompatibility = 1.5
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 ext.artifactId = "beanio"
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
@@ -43,14 +41,11 @@ configurations {
 }
 
 dependencies {
-    compile group: 'org.springframework.batch', name: 'spring-batch-core', version: '2.1.9.RELEASE'
-    compile group: 'org.ow2.asm', name: 'asm', version: '4.0'
     testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile group: 'org.codehaus.groovy', name: 'groovy-all', version: '1.8.9'
     testRuntime group: 'commons-logging', name: 'commons-logging', version: '1.1.2'
-    jarjar group:'com.googlecode.jarjar', name: 'jarjar', version: '1.3'
-    emma group: 'emma', name: 'emma', version: '2.0.5312'
-    emma group: 'emma', name: 'emma', version: '2.0.5312' 
+    //emma group: 'emma', name: 'emma', version: '2.0.5312'
+    //emma group: 'emma', name: 'emma', version: '2.0.5312' 
 }
 
 sourceSets {
@@ -83,12 +78,10 @@ sourceSets {
 
 javadoc {
     options.header = "BeanIO $version"
-    options.docTitle = "<h2>BeanIO 2.1 API</h2>"
-    options.footer = "<i>Copyright &copy; 2010-2013 Kevin Seim</i>"
+    options.docTitle = "<h2>BeanIO 3.0 API</h2>"
+    options.footer = "<i>Copyright &copy; 2010-2014 Kevin Seim</i>"
     options.links = [
-        "http://download.oracle.com/javase/6/docs/api/",
-        "http://static.springsource.org/spring-batch/apidocs/",
-        "http://static.springsource.org/spring/docs/2.5.x/api/"
+        "http://download.oracle.com/javase/7/docs/api/"
     ]
 }
 
@@ -118,21 +111,11 @@ jar {
     }
     doLast {
         manifest.writeTo("$metaInfDir/MANIFEST.MF")
-        project.ant {
-            taskdef name: "jarjar", classname: "com.tonicsystems.jarjar.JarJarTask", classpath: configurations.jarjar.asPath
-            jarjar(jarfile: "$buildDir/libs/${baseName}-${version}.jar", manifest: "$metaInfDir/MANIFEST.MF") {
-                fileset(dir: "$sourceSets.main.output.classesDir")
-                fileset(dir: "$sourceSets.main.output.resourcesDir")
-                metainf(dir: "$projectDir") {
-                    include(name: "LICENSE.txt")
-                    include(name: "LICENSE-ASM.txt")
-                    include(name: "NOTICE.txt")
-                }
-                configurations.compile.files { dep -> dep.name == 'asm' }.each { file -> zipfileset(src: file) }
-                rule pattern: "org.objectweb.asm.**", result: "org.beanio.internal.asm.@1"
-            }
-        }
     }
+}
+
+test {
+  jvmArgs = ["-XX:-UseSplitVerifier"]
 }
 
 task sourcesJar(type: Jar, dependsOn:classes) {
@@ -196,10 +179,10 @@ task site(type: Tar, dependsOn: javadoc) {
     version ""
     compression Compression.GZIP
     from(javadoc.destinationDir) {
-        into "2.1/docs/api"
+        into "3.0/docs/api"
     }
     from ("$projectDir/docs") {
-        into "2.1/docs"
+        into "3.0/docs"
     }
     from("$projectDir/site")
     from("$projectDir/src/org/beanio/xsd") {
@@ -249,10 +232,8 @@ uploadArchives {
                        name 'Kevin Seim'
                    }
                }
-           }
-           pom.whenConfigured {
-                dependencies.find { dep -> dep.artifactId == 'asm' }.scope = "provided"
-                dependencies.find { dep -> dep.artifactId == 'spring-batch-core' }.optional = true
+            }
+            pom.whenConfigured {
                 dependencies.find { dep -> dep.artifactId == 'commons-logging' }.optional = true
             }
         }

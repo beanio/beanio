@@ -37,6 +37,7 @@ public class RecordCollection extends RecordAggregation {
     public RecordCollection() { }
     
     @Override
+    @SuppressWarnings("unchecked")
     public boolean unmarshal(UnmarshallingContext context) {
         // allow the delegate to unmarshal itself
         boolean result = super.unmarshal(context);

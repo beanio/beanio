@@ -17,7 +17,7 @@ package org.beanio.util;
 
 import java.util.Properties;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.beanio.internal.util.StringUtil;
 import org.junit.Test;

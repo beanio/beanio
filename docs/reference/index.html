@@ -4,7 +4,7 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<title>BeanIO 2.1 Reference Guide</title>
+<title>BeanIO 3.0 Reference Guide</title>
 <link rel="stylesheet" type="text/css" href="style.css" />
 <link rel="shortcut icon" href="http://www.beanio.org/favicon.ico" />
 </head>
@@ -3539,14 +3539,7 @@ working directory, and if not found, then from the root of the application's cla
 </tr>
 <tr>
   <td><tt>org.beanio.propertyAccessorFactory </tt></td>
-  <td>Sets the method of property invocation to use. Defaults to <tt>reflection</tt>,
-    but may be set to <tt>asm</tt> to use <a href="http://asm.ow2.org/">ASM</a> 
-    bytecode generation for setting bean
-    properties.  (In my limited benchmarking, this can improve marshalling and 
-    unmarshalling performance by up to 20% in a 1.5 JVM.  Modern JVM's (1.6+) will likely
-    see little to no performance improvement.  I strongly recommend conducting your
-    own benchmarking tests before changing this setting.)</td>
-  <td><tt>reflection</tt></td>
+  <td>Sets the method of property invocation to use. Defaults to <tt>reflection</tt>.</td>
 </tr>
 <tr>
   <td><tt>org.beanio.xml.defaultXmlType</tt></td>

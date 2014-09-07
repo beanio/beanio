@@ -38,9 +38,9 @@ import org.beanio.stream.util.CommentReader;
  * <li>Quotation marks can be allowed in unquoted fields (as long as the quotation
  *   mark is not the first character in the field</li>
  * </ul>
- * </p>
+ *
  * <p>The reader will not recognize an escape character used outside of a quoted 
- * field.</p>
+ * field.
  * 
  * @author Kevin Seim
  * @since 1.0

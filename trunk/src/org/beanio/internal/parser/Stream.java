@@ -156,8 +156,8 @@ public class Stream {
     
     /**
      * Returns the allowed mode of operation for this stream configuration. 
-     * @return {@link #READ_WRITE_MODE} if reading and writing from a stream is allowed,<br />
-     *   {@link #READ_ONLY_MODE} if only reading is allowed,<br/>
+     * @return {@link #READ_WRITE_MODE} if reading and writing from a stream is allowed,
+     *   {@link #READ_ONLY_MODE} if only reading is allowed,
      *   {@link #WRITE_ONLY_MODE} if only writing is allowed
      */
     public int getMode() {
@@ -166,8 +166,8 @@ public class Stream {
 
     /**
      * Sets the allowed mode of operation for this stream configuration.
-     * @param mode {@link #READ_WRITE_MODE} if reading and writing from a stream is allowed,<br />
-     *   {@link #READ_ONLY_MODE} if only reading is allowed,<br />
+     * @param mode {@link #READ_WRITE_MODE} if reading and writing from a stream is allowed,
+     *   {@link #READ_ONLY_MODE} if only reading is allowed,
      *   {@link #WRITE_ONLY_MODE} if only writing is allowed
      */
     public void setMode(int mode) {

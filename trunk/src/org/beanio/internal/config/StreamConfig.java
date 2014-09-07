@@ -80,9 +80,9 @@ public class StreamConfig extends GroupConfig {
 
     /**
      * Returns the allowed mode(s) of operation for this stream. 
-     * @return {@link #READ_WRITE_MODE} if reading and writing from a stream is allowed,<br />
-     *   {@link #READ_ONLY_MODE} if only reading is allowed,<br/>
-     *   {@link #WRITE_ONLY_MODE} if only writing is allowed, <br/> 
+     * @return {@link #READ_WRITE_MODE} if reading and writing from a stream is allowed,
+     *   {@link #READ_ONLY_MODE} if only reading is allowed,
+     *   {@link #WRITE_ONLY_MODE} if only writing is allowed,
      *   or <tt>null</tt> if explicitly set
      */
     public String getMode() {
@@ -93,8 +93,8 @@ public class StreamConfig extends GroupConfig {
      * Sets the allowed mode(s) of operation for this stream.  If not
      * set, or explicitly set to <tt>null</tt>, the stream configuration defaults to
      * read/write.  Some configuration validations are relaxed if set to read or write only.
-     * @param mode {@link #READ_WRITE_MODE} if reading and writing from a stream is allowed,<br />
-     *   {@link #READ_ONLY_MODE} if only reading is allowed,<br/>
+     * @param mode {@link #READ_WRITE_MODE} if reading and writing from a stream is allowed,
+     *   {@link #READ_ONLY_MODE} if only reading is allowed,
      *   {@link #WRITE_ONLY_MODE} if only writing is allowed
      */
     public void setMode(String mode) {

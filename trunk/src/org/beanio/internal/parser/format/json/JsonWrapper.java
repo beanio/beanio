@@ -176,10 +176,6 @@ public class JsonWrapper extends DelegatingParser implements JsonNode {
         return optional;
     }
 
-    /**
-     * 
-     * @param lazy
-     */
     public void setOptional(boolean optional) {
         this.optional = optional;
     }

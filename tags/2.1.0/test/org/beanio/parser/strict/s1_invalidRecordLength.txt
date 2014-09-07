@@ -1,4 +1,0 @@
-header,2012-01-01
-detail,Joe,Smith
-detail,John,Smith,extra
-trailer,1

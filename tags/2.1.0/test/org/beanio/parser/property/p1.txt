@@ -1,3 +1,0 @@
-Header,2011-07-04
-Detail,John
-Trailer,1

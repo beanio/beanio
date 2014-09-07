@@ -1,3 +1,0 @@
-header,2
-order,100,2012-01-01
-customer,George,Smith

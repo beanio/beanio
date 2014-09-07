@@ -8,8 +8,8 @@
   <bean id="streamFactory" class="org.beanio.spring.BeanIOStreamFactory">
     <property name="streamMappings">
       <list>
-        <value>classpath:/org/beanio/spring/spring_mapping1.xml</value>
-        <value>classpath:/org/beanio/spring/spring_mapping2.xml</value>
+        <value type="org.springframework.core.io.ClassPathResource">classpath:/org/beanio/spring/spring_mapping1.xml</value>
+        <value type="org.springframework.core.io.ClassPathResource">classpath:/org/beanio/spring/spring_mapping2.xml</value>
       </list>
     </property>
   </bean>

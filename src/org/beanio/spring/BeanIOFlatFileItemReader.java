@@ -299,11 +299,11 @@ public class BeanIOFlatFileItemReader<T> extends AbstractItemCountingItemStreamI
      * Set to <tt>true</tt> to force {@link #read()} to wrap BeanIO exceptions
      * to their closest Spring-batch counterpart.  Defaults to <tt>false</tt>.
      * <ul>
-     * <li>BeanReaderIOException -> NonTransientResourceException</li>
-     * <li>MalformedRecordException -> NonTransientResourceException</li>
-     * <li>UnexpectedRecordException -> NonTransientResourceException</li>
-     * <li>UnidentifiedRecordException -> UnexpectedInputException</li>
-     * <li>InvalidRecordException -> ParseException</li>
+     * <li>BeanReaderIOException becomes NonTransientResourceException</li>
+     * <li>MalformedRecordException becomes NonTransientResourceException</li>
+     * <li>UnexpectedRecordException becomes NonTransientResourceException</li>
+     * <li>UnidentifiedRecordException becomes UnexpectedInputException</li>
+     * <li>InvalidRecordException becomes ParseException</li>
      * </ul>
      * @param useSpringExceptions set to <tt>true</tt> to map BeanIO exceptions
      *  to their Spring-batch counterpart

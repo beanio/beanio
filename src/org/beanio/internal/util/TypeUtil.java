@@ -99,14 +99,14 @@ public class TypeUtil {
     /**
      * Returns the <tt>Class</tt> object for a class name or type alias.  A type alias is not
      * case sensitive.  The following type aliases are supported:
-     * <table>
+     * <table summary="">
      * <tr><th>Alias</th><th>Class or Primitive</th></tr>
      * <tr><td>string</td><td>java.lang.String</td></tr>
      * <tr><td>boolean</td><td>java.lang.Boolean</td></tr>
      * <tr><td>byte</td><td>java.lang.Byte</td></tr>
      * <tr><td>int</td><td>java.lang.Integer</td></tr>
      * <tr><td>integer</td><td>java.lang.Integer</td></tr>
-     * <tr><td>short</td><td>java.lang.Short<</td></tr>
+     * <tr><td>short</td><td>java.lang.Short</td></tr>
      * <tr><td>char</td><td>java.lang.Character</td></tr>
      * <tr><td>character</td><td>java.lang.Character</td></tr>
      * <tr><td>long</td><td>java.lang.Long</td></tr>
@@ -119,8 +119,8 @@ public class TypeUtil {
      * <tr><td>url</td><td>java.net.URL</td></tr>
      * <tr><td>date</td><td>java.util.Date</td></tr>
      * <tr><td>time</td><td>java.util.Date</td></tr>
-     * <tr><td>datetime</td><td>java.util.Date</td></tr></tr>
-     * <tr><td>calendar</td><td>java.util.Calendar</td></tr></tr>
+     * <tr><td>datetime</td><td>java.util.Date</td></tr>
+     * <tr><td>calendar</td><td>java.util.Calendar</td></tr>
      * </table>
      * 
      * @param classLoader the {@link ClassLoader} for loading classes
@@ -195,7 +195,7 @@ public class TypeUtil {
     /**
      * Returns the collection <tt>Class</tt> object for a collection class name or type alias.  
      * A type alias is not case sensitive.  The following collection type aliases are supported:
-     * <table>
+     * <table summary="">
      * <tr><th>Alias</th><th>Class or Primitive</th></tr>
      * <tr><td>array</td><td>Java Array</td></tr>
      * <tr><td>list</td><td>java.util.ArrayList</td></tr>

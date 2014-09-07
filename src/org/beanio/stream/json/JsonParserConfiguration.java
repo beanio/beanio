@@ -28,7 +28,7 @@ public class JsonParserConfiguration {
     private String lineSeparator;
 
     /**
-     * Constructs a new <tt>JsonParserConfiguration</tt>>
+     * Constructs a new <tt>JsonParserConfiguration</tt>
      */
     public JsonParserConfiguration() { }
     

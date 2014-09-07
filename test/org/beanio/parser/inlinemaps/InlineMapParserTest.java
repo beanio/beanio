@@ -93,4 +93,16 @@ public class InlineMapParserTest extends ParserTest {
     	Assert.assertEquals("value1", map.get("key1"));
     	Assert.assertEquals("value2", map.get("key2"));
     }
+    
+    @Test
+    public void testMapRecordGroup() {
+        String text = 
+            "entity,PERSON,8.400000,-77.200000,TEST_ENTITY_1\n" +
+            "detail,foo,bar\n" +
+            "detail,foo2,bar\n" +
+            "entity,PERSON,-33.993670,25.676320,TEST_ENTITY_2\n" +
+            "entity,PERSON,-22.282174,166.441458,TEST_ENTITY_3\n";
+        
+        BeanReader in = factory.createReader("stream5", new StringReader(text));
+    }
 }

@@ -1,6 +1,15 @@
 Project BeanIO Change Log
 =========================
 
+Changes in version 2.1.0 (2014-09-06)
+-------------------------------------
+* Added 'ordinal' property to @Field and @Segment (gc0095)
+* Fixed OSGi manifest attributes (gc0101)
+* Improved date/calendar type handling performance when a pattern is set (gc0099)
+* Fixed @Group collection handling (gc0103)
+* Added 'record.unsatisfied' message keys (gc0107)
+* Fixed reading field annotations for collections in a group (gc0111)
+
 Changes in version 2.1.0.M2 (2013-11-15)
 ----------------------------------------
 * Modified visibility of *BuilderSupport classes (gc0074)
@@ -19,7 +28,7 @@ Changes in version 2.1.0.M2 (2013-11-15)
 * Added locale support for type handlers
 * Added 'defaultValue' attribute to Field annotation
 * Modified NumberTypeHandler to reuse a DecimalFormat instance when safe to do so
-
+	
 Changes in version 2.0.6 (2013-05-20)
 ------------------------------------
 * Fixed constructor argument logic, registered constructorArg parser local (gc0068)

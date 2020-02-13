@@ -332,7 +332,7 @@ public class MultilineRecordTest extends ParserTest {
     
     @Test
     public void testOptionalRecord() {
-        String text = "CUSTGeorge\n"; 
+        String text = "CUSTGeorge" + System.lineSeparator();
         
         BeanReader in = factory.createReader("ml8", new StringReader(text));
         Order order = (Order) in.read();

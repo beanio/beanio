@@ -17,6 +17,10 @@
  *   - sonatypePassword
  */
 
+plugins {
+    id "org.sonarqube" version "3.1.1"
+}
+
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'maven'
@@ -25,7 +29,7 @@ apply plugin: 'signing'
 //apply from: 'https://raw.github.com/breskeby/gradleplugins/master/emmaPlugin/emma.gradle'
 
 version = "3.0.0.SNAPSHOT"
-group = "org.beanio"
+group = "com.github.beanio"
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
@@ -237,5 +241,13 @@ uploadArchives {
                 dependencies.find { dep -> dep.artifactId == 'commons-logging' }.optional = true
             }
         }
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "beanio"
+        property "sonar.organization", "beanio"
+        property "sonar.host.url", "https://sonarcloud.io"
     }
 }

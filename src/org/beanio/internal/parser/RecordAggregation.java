@@ -36,7 +36,7 @@ public abstract class RecordAggregation extends DelegatingParser implements Sele
     protected boolean lazy;
     
     /**
-     * Constructs a new <tt>RecordAggregation</tt>.
+     * Constructs a new <code>RecordAggregation</code>.
      */
     public RecordAggregation() { }
     

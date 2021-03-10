@@ -30,7 +30,7 @@ class TypeHandlerLocaleTest extends AbstractParserTest {
               </record>
             </stream>""");
         
-        String text = '10.000,"10,000",01.02.2013 00:00:00'
+        String text = '10.000,"10,000","01.02.2013, 00:00:00"'
         Map map = ['int1':10000, 'int2':10000, 'date':date]
         
         Marshaller m = factory.createMarshaller("s")

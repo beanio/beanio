@@ -47,7 +47,7 @@ public class XmlRecordUnmarshaller implements RecordUnmarshaller {
     }
     
     /**
-     * Constructs a new <tt>XmlRecordUnmarshaller</tt>.
+     * Constructs a new <code>XmlRecordUnmarshaller</code>.
      */
     public XmlRecordUnmarshaller() { }
     

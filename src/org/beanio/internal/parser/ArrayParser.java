@@ -28,7 +28,7 @@ public class ArrayParser extends CollectionParser {
     private Class<?> arrayType;
     
     /**
-     * Constructs a new <tt>ArrayParser</tt>.
+     * Constructs a new <code>ArrayParser</code>.
      */
     public ArrayParser() { }
     

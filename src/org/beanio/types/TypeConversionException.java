@@ -26,7 +26,7 @@ public class TypeConversionException extends Exception {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Constructs a new <tt>TypeConversionException</tt>.
+	 * Constructs a new <code>TypeConversionException</code>.
 	 * @param message the error message
 	 * @param cause the root cause
 	 */
@@ -35,7 +35,7 @@ public class TypeConversionException extends Exception {
 	}
 
 	/**
-	 * Constructs a new <tt>TypeConversionException</tt>.
+	 * Constructs a new <code>TypeConversionException</code>.
 	 * @param message the error message
 	 */
 	public TypeConversionException(String message) {
@@ -43,7 +43,7 @@ public class TypeConversionException extends Exception {
 	}
 
 	/**
-	 * Constructs a new <tt>TypeConversionException</tt>.
+	 * Constructs a new <code>TypeConversionException</code>.
 	 * @param cause the root cause
 	 */
 	public TypeConversionException(Throwable cause) {

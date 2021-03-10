@@ -40,14 +40,14 @@ public class CsvRecordParser implements RecordMarshaller, RecordUnmarshaller {
     private List<String> fieldList = new ArrayList<String>();
     
     /**
-     * Constructs a new <tt>CsvRecordParser</tt>.
+     * Constructs a new <code>CsvRecordParser</code>.
      */
     public CsvRecordParser() { 
         this(null);
     }
     
     /**
-     * Constructs a new <tt>CsvRecordParser</tt>.
+     * Constructs a new <code>CsvRecordParser</code>.
      * @param config the {@link CsvParserConfiguration}
      */
     public CsvRecordParser(CsvParserConfiguration config) {
@@ -227,8 +227,8 @@ public class CsvRecordParser implements RecordMarshaller, RecordUnmarshaller {
     }
     
     /**
-     * Marshals a <tt>String</tt> array into a CSV formatted record.
-     * @param record the <tt>String[]</tt> to marshal
+     * Marshals a <code>String</code> array into a CSV formatted record.
+     * @param record the <code>String[]</code> to marshal
      * @return the CSV formatted record
      */
     public String marshal(String[] record) {
@@ -281,7 +281,7 @@ public class CsvRecordParser implements RecordMarshaller, RecordUnmarshaller {
     /**
      * Returns true if the given field must be quoted.
      * @param cs the field test
-     * @return <tt>true</tt> if the given field must be quoted
+     * @return <code>true</code> if the given field must be quoted
      */
     private boolean mustQuote(char [] cs) {
         for (char c : cs) {

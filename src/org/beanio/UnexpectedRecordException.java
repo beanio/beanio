@@ -29,7 +29,7 @@ public class UnexpectedRecordException extends BeanReaderException {
 	private static final long serialVersionUID = 2L;
 
 	/**
-	 * Constructs a new <tt>UnexpectedRecordException</tt>.
+	 * Constructs a new <code>UnexpectedRecordException</code>.
 	 * @param context the current context of the bean reader
 	 * @param message the error message
 	 */

@@ -34,7 +34,7 @@ public class JsonUnmarshallingContext extends UnmarshallingContext {
     private int depth = 0;
     
     /**
-     * Constructs a new <tt>JsonUnmarshallingContext</tt>.
+     * Constructs a new <code>JsonUnmarshallingContext</code>.
      * @param maxDepth the maximum depth of the all {@link JsonWrapper} components in the parser tree layout.
      */
     public JsonUnmarshallingContext(int maxDepth) {

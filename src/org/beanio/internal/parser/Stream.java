@@ -44,7 +44,7 @@ public class Stream {
     private Set<ParserLocal<?>> locals;
     
     /**
-     * Constructs a new <tt>Stream</tt>.
+     * Constructs a new <code>Stream</code>.
      * @param format the {@link StreamFormat}
      */
     public Stream(StreamFormat format) {

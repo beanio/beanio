@@ -23,7 +23,7 @@ import org.beanio.internal.util.Debuggable;
 /**
  * Interface for unmarshalling bean objects from an input stream.
  * 
- * <p>A <tt>BeanReader</tt> is created using a {@link StreamFactory} and a mapping file.</p>
+ * <p>A <code>BeanReader</code> is created using a {@link StreamFactory} and a mapping file.</p>
  * 
  * @author Kevin Seim
  * @since 1.0
@@ -54,7 +54,7 @@ public interface BeanReader extends Debuggable, Closeable {
 	 * method are not passed to the error handler.
 	 * @param count the number of bean objects to skip over that would have been returned
 	 *   by calling {@link #read()}
-	 * @return the number of skipped bean objects, which may be less than <tt>count</tt>
+	 * @return the number of skipped bean objects, which may be less than <code>count</code>
 	 *   if the end of the stream was reached
      * @throws BeanReaderIOException if the underlying input stream throws an
      *   {@link IOException} or this reader was closed

@@ -26,7 +26,7 @@ import org.beanio.internal.util.*;
 import org.w3c.dom.*;
 
 /**
- * Parses a mapping file into {@link BeanIOConfig} objects.  A <tt>BeanIOConfig</tt>
+ * Parses a mapping file into {@link BeanIOConfig} objects.  A <code>BeanIOConfig</code>
  * is produced for each mapping file imported by the mapping file being parsed,
  * and the entire collection is returned from {@link #loadConfiguration(InputStream, Properties)}
  * 
@@ -57,7 +57,7 @@ public class XmlMappingParser implements StringUtil.PropertySource {
     private LinkedList<Include> includeStack = new LinkedList<Include>();
 
     /**
-     * Constructs a new <tt>XmlMappingParser</tt>.
+     * Constructs a new <code>XmlMappingParser</code>.
      * @param classLoader the {@link ClassLoader} for loading imported resources
      * @param reader the XML mapping reader for reading XML mapping files
      *   into a DOM object
@@ -220,9 +220,9 @@ public class XmlMappingParser implements StringUtil.PropertySource {
     }
     
     /**
-     * Parses an <tt>import</tt> DOM element and loads its mapping file.
-     * @param element the <tt>import</tt> DOM element
-     * @return a new <tt>BeanIOConfig</tt> for the imported resource or file
+     * Parses an <code>import</code> DOM element and loads its mapping file.
+     * @param element the <code>import</code> DOM element
+     * @return a new <code>BeanIOConfig</code> for the imported resource or file
      */
     protected final XmlMapping importConfiguration(Element element) {
         URL url = null;
@@ -303,9 +303,9 @@ public class XmlMappingParser implements StringUtil.PropertySource {
     }
 
     /**
-     * Parses a <tt>TypeHandlerConfig</tt> from a DOM element. 
+     * Parses a <code>TypeHandlerConfig</code> from a DOM element.
      * @param element the DOM element to parse
-     * @return the new <tt>TypeHandlerConfig</tt>
+     * @return the new <code>TypeHandlerConfig</code>
      */
     protected TypeHandlerConfig createHandlerConfig(Element element) {
         TypeHandlerConfig config = new TypeHandlerConfig();
@@ -330,9 +330,9 @@ public class XmlMappingParser implements StringUtil.PropertySource {
     }
     
     /**
-     * Parses a <tt>Bean</tt> from a DOM element. 
+     * Parses a <code>Bean</code> from a DOM element.
      * @param element the DOM element to parse
-     * @return the new <tt>Bean</tt>
+     * @return the new <code>Bean</code>
      */
     @SuppressWarnings("rawtypes")
     protected BeanConfig createBeanFactory(Element element) {
@@ -343,9 +343,9 @@ public class XmlMappingParser implements StringUtil.PropertySource {
     }
 
     /**
-     * Parses <tt>Properties</tt> from a DOM element. 
+     * Parses <code>Properties</code> from a DOM element.
      * @param element the DOM element to parse
-     * @return the new <tt>Properties</tt>
+     * @return the new <code>Properties</code>
      */
     protected Properties createProperties(Element element) {
         Properties props = null;
@@ -376,9 +376,9 @@ public class XmlMappingParser implements StringUtil.PropertySource {
     }
 
     /**
-     * Parses a <tt>StreamConfig</tt> from a DOM element. 
-     * @param element the <tt>stream</tt> DOM element to parse
-     * @return the new <tt>StreamConfig</tt>
+     * Parses a <code>StreamConfig</code> from a DOM element.
+     * @param element the <code>stream</code> DOM element to parse
+     * @return the new <code>StreamConfig</code>
      */
     @SuppressWarnings("unchecked")
     protected StreamConfig createStreamConfig(Element element) {
@@ -424,7 +424,7 @@ public class XmlMappingParser implements StringUtil.PropertySource {
 
     /**
      * Parses a group configuration from a DOM element.
-     * @param element the <tt>group</tt> DOM element to parse
+     * @param element the <code>group</code> DOM element to parse
      * @return the parsed group configuration
      */
     protected GroupConfig createGroupConfig(Element element) {
@@ -465,7 +465,7 @@ public class XmlMappingParser implements StringUtil.PropertySource {
     
     /**
      * Parses a record configuration from the given DOM element.
-     * @param element the <tt>record</tt> DOM element to parse
+     * @param element the <code>record</code> DOM element to parse
      * @return the parsed record configuration
      */
     protected RecordConfig createRecordConfig(Element element) {
@@ -516,7 +516,7 @@ public class XmlMappingParser implements StringUtil.PropertySource {
     /**
      * Parses bean properties from the given DOM element.
      * @param config the enclosing bean configuration to add the properties to
-     * @param element the <tt>bean</tt> or <tt>record</tt> DOM element to parse
+     * @param element the <code>bean</code> or <code>record</code> DOM element to parse
      */
     protected void addProperties(ComponentConfig config, Element element) {
         NodeList children = element.getChildNodes();
@@ -550,7 +550,7 @@ public class XmlMappingParser implements StringUtil.PropertySource {
     /**
      * Includes a template.
      * @param config the parent bean configuration
-     * @param element the <tt>include</tt> DOM element to parse
+     * @param element the <code>include</code> DOM element to parse
      */
     protected void includeTemplate(ComponentConfig config, Element element) {
         String template = getAttribute(element, "template");
@@ -624,7 +624,7 @@ public class XmlMappingParser implements StringUtil.PropertySource {
     
     /**
      * Parses a segment component configuration from a DOM element.
-     * @param element the <tt>segment</tt> DOM element to parse
+     * @param element the <code>segment</code> DOM element to parse
      * @return the parsed segment configuration
      * @since 2.0
      */
@@ -662,7 +662,7 @@ public class XmlMappingParser implements StringUtil.PropertySource {
 
     /**
      * Parses a field configuration from a DOM element.
-     * @param element the <tt>field</tt> DOM element to parse
+     * @param element the <code>field</code> DOM element to parse
      * @return the parsed field configuration
      */
     protected FieldConfig createFieldConfig(Element element) {
@@ -726,7 +726,7 @@ public class XmlMappingParser implements StringUtil.PropertySource {
 
     /**
      * Parses a constant component configuration from a DOM element.
-     * @param element the <tt>property</tt> DOM element to parse
+     * @param element the <code>property</code> DOM element to parse
      * @return the parsed constant configuration
      * @since 2.0
      */

@@ -28,7 +28,7 @@ import org.beanio.internal.config.*;
 public class JsonPreprocessor extends Preprocessor {
 
     /**
-     * Constructs a new <tt>JsonPreprocessor</tt>.
+     * Constructs a new <code>JsonPreprocessor</code>.
      * @param stream the {@link StreamConfig} to preprocess
      */
     public JsonPreprocessor(StreamConfig stream) {

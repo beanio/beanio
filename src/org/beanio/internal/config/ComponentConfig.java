@@ -62,7 +62,7 @@ public abstract class ComponentConfig extends TreeNode<ComponentConfig> {
     private boolean xmlNamespaceAware;
     
     /**
-     * Constucts a new <tt>ComponentConfig</tt>.
+     * Constucts a new <code>ComponentConfig</code>.
      */
     public ComponentConfig() { }
     
@@ -98,7 +98,7 @@ public abstract class ComponentConfig extends TreeNode<ComponentConfig> {
     }
 
     /**
-     * Sets the XML element or attribute name of this component.  If set to <tt>null</tt> 
+     * Sets the XML element or attribute name of this component.  If set to <code>null</code> 
      * (default), the XML name defaults to the component name.
      * @param xmlName the XML element or attribute name
      */
@@ -115,7 +115,7 @@ public abstract class ComponentConfig extends TreeNode<ComponentConfig> {
     }
 
     /**
-     * Sets the XML namespace of this component.  If set to <tt>null</tt>
+     * Sets the XML namespace of this component.  If set to <code>null</code>
      * (default), the namespace is inherited from its parent.
      * @param xmlNamespace the XML namespace
      */
@@ -133,7 +133,7 @@ public abstract class ComponentConfig extends TreeNode<ComponentConfig> {
 
     /**
      * Sets the XML prefix for the namespace assigned to this component.  If 
-     * set to <tt>null</tt> and a namespace is set, the namespace will replace the 
+     * set to <code>null</code> and a namespace is set, the namespace will replace the 
      * default namespace during marshaling.  A prefix should not be set if a
      * namespace is not set.
      * @param xmlPrefix the XML namespace prefix

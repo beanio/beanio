@@ -23,9 +23,9 @@ import java.util.Properties;
 import java.util.TimeZone;
 
 /**
- * This abstract type handler uses a <tt>SimpleDateFormat</tt> class to parse and format 
- * <tt>java.util.Date</tt> objects.  If no pattern is set, <tt>DateFormat.getInstance()</tt> 
- * is used to create a default date format.  By default, <tt>lenient</tt> is false.
+ * This abstract type handler uses a <code>SimpleDateFormat</code> class to parse and format
+ * <code>java.util.Date</code> objects.  If no pattern is set, <code>DateFormat.getInstance()</code>
+ * is used to create a default date format.  By default, <code>lenient</code> is false.
  * 
  * @author Kevin Seim
  * @since 2.1.0
@@ -89,8 +89,8 @@ public abstract class DateTypeHandlerSupport extends LocaleSupport implements Co
     }
     
     /**
-     * Creates the <tt>DateFormat</tt> to use to parse and format the field value.
-     * @return the <tt>DateFormat</tt> for type conversion
+     * Creates the <code>DateFormat</code> to use to parse and format the field value.
+     * @return the <code>DateFormat</code> for type conversion
      */
     protected DateFormat createDateFormat() {
         if (pattern == null) {
@@ -142,7 +142,7 @@ public abstract class DateTypeHandlerSupport extends LocaleSupport implements Co
     }
 
     /**
-     * Returns the date pattern used by the <tt>SimpleDateFormat</tt>.
+     * Returns the date pattern used by the <code>SimpleDateFormat</code>.
      * @return the date pattern
      */
     public String getPattern() {
@@ -150,7 +150,7 @@ public abstract class DateTypeHandlerSupport extends LocaleSupport implements Co
     }
 
     /**
-     * Sets the date pattern used by the <tt>SimpleDateFormat</tt>.
+     * Sets the date pattern used by the <code>SimpleDateFormat</code>.
      * @param pattern the date pattern
      * @throws IllegalArgumentException if the date pattern is invalid
      */
@@ -184,7 +184,7 @@ public abstract class DateTypeHandlerSupport extends LocaleSupport implements Co
     }
     
     /**
-     * Returns the time zone used to interpret dates, or <tt>null</tt> if the default
+     * Returns the time zone used to interpret dates, or <code>null</code> if the default
      * time zone will be used.
      * @return the time zone ID
      * @see TimeZone
@@ -202,16 +202,16 @@ public abstract class DateTypeHandlerSupport extends LocaleSupport implements Co
     }
 
     /**
-     * Returns whether the <tt>SimpleDateFormat</tt> is lenient.
-     * @return <tt>true</tt> if lenient, <tt>false</tt> otherwise
+     * Returns whether the <code>SimpleDateFormat</code> is lenient.
+     * @return <code>true</code> if lenient, <code>false</code> otherwise
      */
     public boolean isLenient() {
         return lenient;
     }
 
     /**
-     * Sets whether the <tt>SimpleDateFormat</tt> is lenient.
-     * @param lenient <tt>true</tt> if lenient, <tt>false</tt> otherwise
+     * Sets whether the <code>SimpleDateFormat</code> is lenient.
+     * @param lenient <code>true</code> if lenient, <code>false</code> otherwise
      */
     public void setLenient(boolean lenient) {
         this.lenient = lenient;

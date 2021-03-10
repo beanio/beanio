@@ -20,7 +20,7 @@ import java.util.*;
 /**
  * Provides information about a record parsed by a {@link BeanReader} or {@link Unmarshaller}.  
  * 
- * <p>Depending on the current state of the <tt>BeanReader</tt> or <tt>Unmarshaller</tt>, some 
+ * <p>Depending on the current state of the <code>BeanReader</code> or <code>Unmarshaller</code>, some 
  * information may not be available.</p>
  * 
  * @author Kevin Seim
@@ -45,7 +45,7 @@ public interface RecordContext {
     
     /**
      * Returns the raw text of the parsed record.  Record text is not supported
-     * by XML stream formats, and <tt>null</tt> is returned instead.
+     * by XML stream formats, and <code>null</code> is returned instead.
      * @return the raw text of the parser record
      */
     public String getRecordText();
@@ -87,7 +87,7 @@ public interface RecordContext {
      * under the following circumstances:
      * <ul>
      * <li>A record level exception was thrown before a field was parsed</li>
-     * <li><tt>fieldName</tt> was not declared in the mapping file</li>
+     * <li><code>fieldName</code> was not declared in the mapping file</li>
      * <li>The field was not present in the record</li>
      * </ul>
      * <p>If the field repeats in the stream, this method returns the field text for
@@ -102,7 +102,7 @@ public interface RecordContext {
      * under the following circumstances:
      * <ul>
      * <li>A record level exception was thrown before a field was parsed</li>
-     * <li><tt>fieldName</tt> was not declared in the mapping file</li>
+     * <li><code>fieldName</code> was not declared in the mapping file</li>
      * <li>The field was not present in the record</li>
      * </ul>
      * @param fieldName the name of the field to get the text for
@@ -113,13 +113,13 @@ public interface RecordContext {
     
     /**
      * Returns whether there are one or more field level errors.
-     * @return <tt>true</tt> if there are one or more field level errors, false otherwise
+     * @return <code>true</code> if there are one or more field level errors, false otherwise
      */
     public boolean hasFieldErrors();
 
     /**
      * Returns a {@link Map} of all field errors.  The name of the field is used for the
-     * <tt>Map</tt> key, and the value is a {@link Collection} of field error messages.
+     * <code>Map</code> key, and the value is a {@link Collection} of field error messages.
      * @return a {@link Map} of all field errors
      */
     public Map<String, Collection<String>> getFieldErrors();

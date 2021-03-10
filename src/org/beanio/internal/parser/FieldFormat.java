@@ -16,7 +16,7 @@
 package org.beanio.internal.parser;
 
 /**
- * A <tt>FieldFormat</tt> provides format specific processing for a {@link Field} parser.
+ * A <code>FieldFormat</code> provides format specific processing for a {@link Field} parser.
  * 
  * <p>Implementations of this interface must be thread-safe.
  * 
@@ -26,7 +26,7 @@ package org.beanio.internal.parser;
 public interface FieldFormat {
 
     /**
-     * Extracts the field text from a record.  Returns <tt>null</tt> if the
+     * Extracts the field text from a record.  Returns <code>null</code> if the
      * field was not present in the record.
      * 
      * <p>May return {@link Value#INVALID} if the field is invalid, or {@link Value#NIL}

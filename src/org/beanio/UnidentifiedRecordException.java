@@ -28,7 +28,7 @@ public class UnidentifiedRecordException extends BeanReaderException {
 	private static final long serialVersionUID = 2L;
 
 	/**
-	 * Constructs a new <tt>UnidentifiedRecordException</tt>.
+	 * Constructs a new <code>UnidentifiedRecordException</code>.
 	 * @param context the current context of the bean reader
 	 * @param message the error message
 	 */

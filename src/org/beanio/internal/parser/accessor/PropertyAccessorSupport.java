@@ -28,7 +28,7 @@ public abstract class PropertyAccessorSupport implements PropertyAccessor {
     private int constructorArgumentIndex = -1;
     
     /**
-     * Constructs a new <tt>PropertyAccessorSupport</tt>.
+     * Constructs a new <code>PropertyAccessorSupport</code>.
      */
     public PropertyAccessorSupport() { }
 

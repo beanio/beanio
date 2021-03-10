@@ -16,7 +16,7 @@
 package org.beanio.types;
 
 /**
- * A type handler for the <tt>Character</tt> class.  A <tt>TypeConversionException</tt>
+ * A type handler for the <code>Character</code> class.  A <code>TypeConversionException</code>
  * is thrown if the input text length exceeds 1 character.
  * 
  * @author Kevin Seim

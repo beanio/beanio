@@ -25,7 +25,7 @@ import java.util.*;
  * <p>Subclasses can override {@link #isSupportedChild(TreeNode)} to restrict
  * a node's children.
  * 
- * <p>A tree node is not thread safe.  Instead, <tt>TreeNode</tt> implements 
+ * <p>A tree node is not thread safe.  Instead, <code>TreeNode</code> implements 
  * {@link Replicateable} so that an entire tree structure can be safely copied
  * to support multiple independent clients if needed.
  * 
@@ -39,14 +39,14 @@ public class TreeNode<T extends TreeNode> implements Replicateable, Iterable<T> 
     private List<T> children = null;
     
     /**
-     * Constructs a new <tt>TreeNode</tt>.
+     * Constructs a new <code>TreeNode</code>.
      */
     public TreeNode() { 
         this(-1);
     }
     
     /**
-     * Constructs a new <tt>TreeNode</tt>.
+     * Constructs a new <code>TreeNode</code>.
      * @param size the initial size of the node for accommodating children
      */
     public TreeNode(int size) {

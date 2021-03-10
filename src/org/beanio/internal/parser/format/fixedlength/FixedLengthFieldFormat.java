@@ -31,7 +31,7 @@ public class FixedLengthFieldFormat extends FlatFieldFormatSupport implements Fi
     private boolean lenientPadding;
     
     /**
-     * Constructs a new <tt>FixedLengthFieldFormat</tt>.
+     * Constructs a new <code>FixedLengthFieldFormat</code>.
      */
     public FixedLengthFieldFormat() { }
     

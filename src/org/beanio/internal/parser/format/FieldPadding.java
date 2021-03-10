@@ -23,10 +23,10 @@ import org.beanio.internal.util.TypeUtil;
  * 
  * <p>The method {@link #init()} must be called after all properties are set.
  * 
- * <p>If <tt>optional</tt> is set to true, the field text may be padded with spaces
- * regardless of the configured <tt>filler</tt> when a value does not exist.
+ * <p>If <code>optional</code> is set to true, the field text may be padded with spaces
+ * regardless of the configured <code>filler</code> when a value does not exist.
  * 
- * <p>Once configured, a <tt>FieldPadding</tt> object is thread-safe.
+ * <p>Once configured, a <code>FieldPadding</code> object is thread-safe.
  * 
  * @author Kevin Seim
  * @since 2.0
@@ -47,7 +47,7 @@ public class FieldPadding {
     private Class<?> propertyType;
     
     /**
-     * Constructs a new <tt>FieldPadding</tt>.
+     * Constructs a new <code>FieldPadding</code>.
      */
     public FieldPadding() { }
     
@@ -76,8 +76,8 @@ public class FieldPadding {
     }
     
     /**
-     * Formats field text.  If <tt>text.length()</tt> exceeds the padding length,
-     * the text will be truncated, otherwise it will be padded with <tt>filler</tt>. 
+     * Formats field text.  If <code>text.length()</code> exceeds the padding length,
+     * the text will be truncated, otherwise it will be padded with <code>filler</code>. 
      * @param text the field text to format
      * @return the formatted field text
      */

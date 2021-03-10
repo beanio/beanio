@@ -70,7 +70,7 @@ public abstract class PropertyConfig extends ComponentConfig {
     private Integer maxOccursRef;
     
     /**
-     * Constructs a new <tt>PropertyConfig</tt>.
+     * Constructs a new <code>PropertyConfig</code>.
      */
     public PropertyConfig() { }
 
@@ -93,7 +93,7 @@ public abstract class PropertyConfig extends ComponentConfig {
     
     /**
      * Returns the fully qualified class name or type alias of this property.
-     * By default, <tt>null</tt> is returned and the property value type
+     * By default, <code>null</code> is returned and the property value type
      * is detected through bean introspection.
      * @return the class name of this property value
      */
@@ -103,7 +103,7 @@ public abstract class PropertyConfig extends ComponentConfig {
 
     /**
      * Sets the fully qualified class name or type alias of this property.
-     * If set to <tt>null</tt>, the property value type will be detected 
+     * If set to <code>null</code>, the property value type will be detected 
      * through bean introspection if possible.
      * @param type the class name of this property value
      */
@@ -122,7 +122,7 @@ public abstract class PropertyConfig extends ComponentConfig {
 
     /**
      * Sets the name of the getter method for retrieving this property's
-     * value from it parent bean object during marshalling.  If <tt>null</tt>,
+     * value from it parent bean object during marshalling.  If <code>null</code>,
      * the getter method may be discovered through bean introspection if possible.
      * @param getter the getter method for this property
      */
@@ -141,7 +141,7 @@ public abstract class PropertyConfig extends ComponentConfig {
 
     /**
      * Sets the name of the setter method to use when setting this property's
-     * value on its parent bean object during unmarshalling.  If <tt>null</tt>,
+     * value on its parent bean object during unmarshalling.  If <code>null</code>,
      * the setter method may be discovered through bean introspection if possible.
      * @param setter the setter method for this property
      */
@@ -240,7 +240,7 @@ public abstract class PropertyConfig extends ComponentConfig {
     }
 
     /**
-     * Returns the collection type, or <tt>null</tt> if this component
+     * Returns the collection type, or <code>null</code> if this component
      * is not bound to a collection or array. 
      * @return the collection type
      */
@@ -249,10 +249,10 @@ public abstract class PropertyConfig extends ComponentConfig {
     }
 
     /**
-     * Sets the collection type.  Set to <tt>null</tt> (default) to indicate
+     * Sets the collection type.  Set to <code>null</code> (default) to indicate
      * this component is not bound to a collection or array.  The value may be set to the 
-     * fully qualified class name of a <tt>java.util.Collection</tt> subclass or a 
-     * collection type alias, or the value "<tt>array</tt>" to indicate a Java array.
+     * fully qualified class name of a <code>java.util.Collection</code> subclass or a 
+     * collection type alias, or the value "<code>array</code>" to indicate a Java array.
      * @param collection the collection type
      */
     public void setCollection(String collection) {
@@ -279,8 +279,8 @@ public abstract class PropertyConfig extends ComponentConfig {
 
     /**
      * Returns the maximum number of times this component may consecutively appear in
-     * a stream.  If <tt>null</tt>, one occurrence is assumed.
-     * @return the maximum occurrences of this component, or <tt>-1</tt> to 
+     * a stream.  If <code>null</code>, one occurrence is assumed.
+     * @return the maximum occurrences of this component, or <code>-1</code> to 
      *   indicate no limit
      */
     public Integer getMaxOccurs() {
@@ -289,11 +289,11 @@ public abstract class PropertyConfig extends ComponentConfig {
 
     /**
      * Sets the maximum number of times this component may consecutively appear in
-     * a stream.  If set to <tt>null</tt>, one occurrence is assumed.  If set to
+     * a stream.  If set to <code>null</code>, one occurrence is assumed.  If set to
      * any value greater than one, a collection type is expected.  Must be greater
-     * than the minimum occurrences, or set to <tt>-1</tt> to indicate the limit is
+     * than the minimum occurrences, or set to <code>-1</code> to indicate the limit is
      * unbounded.
-     * @param maxOccurs the maximum occurrences of this component, or <tt>-1</tt> to
+     * @param maxOccurs the maximum occurrences of this component, or <code>-1</code> to
      *   indicate no limit
      */
     public void setMaxOccurs(Integer maxOccurs) {
@@ -370,7 +370,7 @@ public abstract class PropertyConfig extends ComponentConfig {
     
     /**
      * Returns whether this component is nillable.
-     * @return <tt>true</tt> if this component is nillable
+     * @return <code>true</code> if this component is nillable
      */
     public boolean isNillable() {
         return nillable;
@@ -378,7 +378,7 @@ public abstract class PropertyConfig extends ComponentConfig {
 
     /**
      * Sets whether this component is nillable.
-     * @param nillable <tt>true</tt> if this component is nillable
+     * @param nillable <code>true</code> if this component is nillable
      */
     public void setNillable(boolean nillable) {
         this.nillable = nillable;
@@ -456,7 +456,7 @@ public abstract class PropertyConfig extends ComponentConfig {
      * unmarshalling or a bean during marshalling.  If this component is
      * a record or segment, true is returned if any descendent is used for
      * identification.
-     * @return <tt>true</tt> if this component is used for identification
+     * @return <code>true</code> if this component is used for identification
      */
     public boolean isIdentifier() {
         return identifier;
@@ -465,7 +465,7 @@ public abstract class PropertyConfig extends ComponentConfig {
     /**
      * Sets whether this component is used to identify a record during
      * unmarshalling or a bean during marshalling.
-     * @param b <tt>true</tt> if this component is used for identification
+     * @param b <code>true</code> if this component is used for identification
      */
     public void setIdentifier(boolean b) {
         this.identifier = b;
@@ -527,7 +527,7 @@ public abstract class PropertyConfig extends ComponentConfig {
     
     /**
      * Returns the name of the property descendant to use for the
-     * Map key when <tt>collection</tt> is set to <tt>map</tt>.
+     * Map key when <code>collection</code> is set to <code>map</code>.
      * @return the key property name
      */
     public String getKey() {

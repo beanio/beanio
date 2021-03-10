@@ -16,7 +16,7 @@
 package org.beanio.stream.xml;
 
 /**
- * This callback interface can be implemented by <tt>RecordReader</tt> implementations
+ * This callback interface can be implemented by <code>RecordReader</code> implementations
  * for XML formatted streams that wish to obtain configuration information from the
  * XML stream definition.
  * 
@@ -26,7 +26,7 @@ package org.beanio.stream.xml;
 public interface XmlStreamConfigurationAware {
 
     /**
-     * This method is invoked by a XML stream definition when a <tt>RecordReader</tt>
+     * This method is invoked by a XML stream definition when a <code>RecordReader</code>
      * implementation is registered.
      * @param configuration the XML stream configuration
      */

@@ -28,7 +28,7 @@ public class JsonParserConfiguration {
     private String lineSeparator;
 
     /**
-     * Constructs a new <tt>JsonParserConfiguration</tt>
+     * Constructs a new <code>JsonParserConfiguration</code>
      */
     public JsonParserConfiguration() { }
     
@@ -49,7 +49,7 @@ public class JsonParserConfiguration {
     }
     
     /**
-     * Returns the number of spaces to indent when <tt>pretty</tt> is enabled.
+     * Returns the number of spaces to indent when <code>pretty</code> is enabled.
      * Defaults to 2.
      * @return the number of spaces
      */
@@ -58,7 +58,7 @@ public class JsonParserConfiguration {
     }
     
     /**
-     * Sets the number of spaces to indent when <tt>pretty</tt> is enabled.
+     * Sets the number of spaces to indent when <code>pretty</code> is enabled.
      * @param indentation the number of spaces
      */
     public void setIndentation(int indentation) {
@@ -66,8 +66,8 @@ public class JsonParserConfiguration {
     }
     
     /**
-     * Returns the line separator to use when <tt>pretty</tt> is enabled.
-     * Defaults to the <tt>line.separator</tt> system property.
+     * Returns the line separator to use when <code>pretty</code> is enabled.
+     * Defaults to the <code>line.separator</code> system property.
      * @return the line separator
      */
     public String getLineSeparator() {
@@ -75,7 +75,7 @@ public class JsonParserConfiguration {
     }
     
     /**
-     * Sets the line separator to use when <tt>pretty</tt> is enabled.
+     * Sets the line separator to use when <code>pretty</code> is enabled.
      * @param lineSeparator the line separator
      */
     public void setLineSeparator(String lineSeparator) {

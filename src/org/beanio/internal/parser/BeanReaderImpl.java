@@ -41,7 +41,7 @@ public class BeanReaderImpl implements BeanReader {
     private boolean ignoreUnidentifiedRecords;
     
     /**
-     * Constructs a new <tt>BeanReaderImpl</tt>.
+     * Constructs a new <code>BeanReaderImpl</code>.
      * @param context the {@link UnmarshallingContext}
      * @param layout the root component of the parser tree
      */
@@ -121,7 +121,7 @@ public class BeanReaderImpl implements BeanReader {
     
     /**
      * Reads the next record from the input stream and returns the matching record node.
-     * @return the next matching record node, or <tt>null</tt> if the end of the stream
+     * @return the next matching record node, or <code>null</code> if the end of the stream
      *   was reached
      * @throws BeanReaderException if the next node cannot be determined
      */

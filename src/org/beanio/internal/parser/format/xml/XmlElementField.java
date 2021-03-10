@@ -40,7 +40,7 @@ public class XmlElementField extends XmlFieldFormat {
     private boolean nillable;
     
     /**
-     * Constructs a new <tt>XmlElementField</tt>.
+     * Constructs a new <code>XmlElementField</code>.
      */
     public XmlElementField() { }
     

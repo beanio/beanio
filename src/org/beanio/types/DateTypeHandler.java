@@ -19,9 +19,9 @@ import java.text.*;
 import java.util.*;
 
 /**
- * This type handler uses a <tt>SimpleDateFormat</tt> class to parse and format 
- * <tt>java.util.Date</tt> objects.  If no pattern is set, <tt>DateFormat.getInstance()</tt> 
- * is used to create a default date format.  By default, <tt>lenient</tt> is false.
+ * This type handler uses a <code>SimpleDateFormat</code> class to parse and format 
+ * <code>java.util.Date</code> objects.  If no pattern is set, <code>DateFormat.getInstance()</code> 
+ * is used to create a default date format.  By default, <code>lenient</code> is false.
  * 
  * @author Kevin Seim
  * @since 1.0
@@ -32,13 +32,13 @@ import java.util.*;
 public class DateTypeHandler extends DateTypeHandlerSupport {
 
     /**
-     * Constructs a new <tt>DateTypeHandler</tt>.
+     * Constructs a new <code>DateTypeHandler</code>.
      */
     public DateTypeHandler() { }
 
     /**
-     * Constructs a new <tt>DateTypeHandler</tt>.
-     * @param pattern the <tt>SimpleDateFormat</tt> pattern
+     * Constructs a new <code>DateTypeHandler</code>.
+     * @param pattern the <code>SimpleDateFormat</code> pattern
      */
     public DateTypeHandler(String pattern) {
         super(pattern);

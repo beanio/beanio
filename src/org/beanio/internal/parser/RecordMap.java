@@ -31,7 +31,7 @@ public class RecordMap extends RecordAggregation {
     private Property key;
     
     /**
-     * Constructs a new <tt>RecordMap</tt>.
+     * Constructs a new <code>RecordMap</code>.
      */
     public RecordMap() { }
     

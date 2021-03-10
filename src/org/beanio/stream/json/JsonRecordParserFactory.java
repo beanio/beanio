@@ -25,7 +25,7 @@ import org.beanio.stream.*;
  * 
  * <p>Record objects are stored using a {@link Map}.  A map may contain {@link List}
  * values for a JSON array, another {@link Map} for a JSON object, or the simple 
- * types {@link String}, {@link Number}, {@link Boolean} or <tt>null</tt>.
+ * types {@link String}, {@link Number}, {@link Boolean} or <code>null</code>.
  * 
  * @author Kevin Seim
  * @since 2.0
@@ -33,7 +33,7 @@ import org.beanio.stream.*;
 public class JsonRecordParserFactory extends JsonParserConfiguration implements RecordParserFactory {
 
     /**
-     * Constructs a new <tt>JsonRecordParserFactory</tt>.
+     * Constructs a new <code>JsonRecordParserFactory</code>.
      */
     public JsonRecordParserFactory() { }
     

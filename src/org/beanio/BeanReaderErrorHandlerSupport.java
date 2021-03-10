@@ -16,8 +16,8 @@
 package org.beanio;
 
 /**
- * Provides support for <tt>BeanReaderErrorHandler</tt> implementations.  The 
- * <tt>handleError</tt> method delegates to other methods that can be overridden
+ * Provides support for <code>BeanReaderErrorHandler</code> implementations.  The
+ * <code>handleError</code> method delegates to other methods that can be overridden
  * to handle specific error types.  If a method is not overridden for a specific
  * error type, the method will simply rethrow the exception by default.
  * 
@@ -27,13 +27,13 @@ package org.beanio;
 public class BeanReaderErrorHandlerSupport implements BeanReaderErrorHandler {
 
     /**
-     * Constructs a new <tt>BeanReaderErrorHandlerSupport</tt>.
+     * Constructs a new <code>BeanReaderErrorHandlerSupport</code>.
      */
     public BeanReaderErrorHandlerSupport() { }
     
     /**
      * Delegates error handling based on the exception type.
-     * @param ex the <tt>BeanReaderException</tt> to handle
+     * @param ex the <code>BeanReaderException</code> to handle
      * @throws Exception if the BeanReaderException is rethrown or this error
      *   handler throws a new Exception
      */
@@ -56,9 +56,9 @@ public class BeanReaderErrorHandlerSupport implements BeanReaderErrorHandler {
     }
 
     /**
-     * Handles <tt>InvalidRecordException</tt> and <tt>InvalidRecordGroupException</tt> errors.  
+     * Handles <code>InvalidRecordException</code> and <code>InvalidRecordGroupException</code> errors.
      * By default, this method simply rethrows the exception.
-     * @param ex the <tt>InvalidRecordException</tt> to handle
+     * @param ex the <code>InvalidRecordException</code> to handle
      * @throws Exception if the exception is not handled
      */
     public void invalidRecord(InvalidRecordException ex) throws Exception {
@@ -66,9 +66,9 @@ public class BeanReaderErrorHandlerSupport implements BeanReaderErrorHandler {
     }
 
     /**
-     * Handles <tt>UnexpectedRecordException</tt> errors.  By default, this method
+     * Handles <code>UnexpectedRecordException</code> errors.  By default, this method
      * simply rethrows the exception.
-     * @param ex the <tt>UnexpectedRecordException</tt> to handle
+     * @param ex the <code>UnexpectedRecordException</code> to handle
      * @throws Exception if the exception is not handled
      */
     public void unexpectedRecord(UnexpectedRecordException ex) throws Exception {
@@ -76,9 +76,9 @@ public class BeanReaderErrorHandlerSupport implements BeanReaderErrorHandler {
     }
     
     /**
-     * Handles <tt>UnidentifiedRecordException</tt> errors.  By default, this method
+     * Handles <code>UnidentifiedRecordException</code> errors.  By default, this method
      * simply rethrows the exception.
-     * @param ex the <tt>UnidentifiedRecordException</tt> to handle
+     * @param ex the <code>UnidentifiedRecordException</code> to handle
      * @throws Exception if the exception is not handled
      */
     public void unidentifiedRecord(UnidentifiedRecordException ex) throws Exception {
@@ -86,9 +86,9 @@ public class BeanReaderErrorHandlerSupport implements BeanReaderErrorHandler {
     }
     
     /**
-     * Handles <tt>MalformedRecordException</tt> errors.  By default, this method
+     * Handles <code>MalformedRecordException</code> errors.  By default, this method
      * simply rethrows the exception.
-     * @param ex the <tt>MalformedRecordException</tt> to handle
+     * @param ex the <code>MalformedRecordException</code> to handle
      * @throws Exception if the exception is not handled
      */
     public void malformedRecord(MalformedRecordException ex) throws Exception {
@@ -98,7 +98,7 @@ public class BeanReaderErrorHandlerSupport implements BeanReaderErrorHandler {
     /**
      * Handles errors not handled by any other method.  By default, this method
      * simply rethrows the exception.
-     * @param ex the <tt>BeanReaderException</tt> to handle
+     * @param ex the <code>BeanReaderException</code> to handle
      * @throws Exception if the exception is not handled
      */
     public void fatalError(BeanReaderException ex) throws Exception {

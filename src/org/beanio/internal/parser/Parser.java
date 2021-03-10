@@ -18,7 +18,7 @@ package org.beanio.internal.parser;
 import java.io.IOException;
 
 /**
- * A <tt>Parser</tt> is used marshal and unmarshal record components.
+ * A <code>Parser</code> is used marshal and unmarshal record components.
  * 
  * @author Kevin Seim
  * @since 2.0
@@ -42,8 +42,8 @@ public interface Parser {
     /**
      * Unmarshals a record.
      * @param context the {@link UnmarshallingContext}
-     * @return <tt>true</tt> if this component was present in the unmarshalled record, 
-     *   or <tt>false</tt> otherwise
+     * @return <code>true</code> if this component was present in the unmarshalled record, 
+     *   or <code>false</code> otherwise
      */
     public boolean unmarshal(UnmarshallingContext context) throws AbortRecordUnmarshalligException;
     

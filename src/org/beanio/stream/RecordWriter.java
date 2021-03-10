@@ -18,11 +18,11 @@ package org.beanio.stream;
 import java.io.*;
 
 /**
- * A <tt>RecordWriter</tt> is used to write records to an output stream.
+ * A <code>RecordWriter</code> is used to write records to an output stream.
  * The class used to represent a <i>record</i> is implementation specific and
  * dependent on the format of the output stream.  For example, a delimited stream
- * may use <tt>String[]</tt> objects to define records, while a fixed length based
- * stream may simply use <tt>String</tt>. 
+ * may use <code>String[]</code> objects to define records, while a fixed length based
+ * stream may simply use <code>String</code>. 
  * 
  * @author Kevin Seim
  * @since 1.0

@@ -28,7 +28,7 @@ import org.beanio.internal.config.*;
 public class FixedLengthPreprocessor extends FlatPreprocessor {
 
     /**
-     * Constructs a new <tt>FixedLengthPreprocessor</tt>.
+     * Constructs a new <code>FixedLengthPreprocessor</code>.
      * @param stream the stream configuration to pre-process
      */
     public FixedLengthPreprocessor(StreamConfig stream) {

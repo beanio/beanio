@@ -25,7 +25,7 @@ import org.w3c.dom.*;
 public class XmlTextField extends XmlFieldFormat {
 
     /**
-     * Constructs a new <tt>XmlTextField</tt>.
+     * Constructs a new <code>XmlTextField</code>.
      */
     public XmlTextField() { }
     

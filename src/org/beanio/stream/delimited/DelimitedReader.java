@@ -22,8 +22,8 @@ import org.beanio.stream.*;
 import org.beanio.stream.util.CommentReader;
 
 /**
- * A <tt>DelimitedReader</tt> is used to parse delimited flat files into
- * records of <tt>String</tt> arrays.  Records must be terminated by a single 
+ * A <code>DelimitedReader</code> is used to parse delimited flat files into
+ * records of <code>String</code> arrays.  Records must be terminated by a single
  * configurable character, or by default, any of the following: line feed (LF), 
  * carriage return (CR), or CRLF combination.  And fields that make up a record 
  * must be delimited by a single configurable character.  
@@ -71,7 +71,7 @@ public class DelimitedReader implements RecordReader {
     private transient List<String> fieldList = new ArrayList<String>();
 
     /**
-     * Constructs a new <tt>DelimitedReader</tt> using a tab character for
+     * Constructs a new <code>DelimitedReader</code> using a tab character for
      * the field delimiter.  Escaping is and line continuation characters
      * are disabled.
      * @param in the input stream to read from
@@ -81,7 +81,7 @@ public class DelimitedReader implements RecordReader {
     }
 
     /**
-     * Constructs a new <tt>DelimitedReader</tt>.  Escaping and line 
+     * Constructs a new <code>DelimitedReader</code>.  Escaping and line
      * continuation characters are disabled.
      * @param in the input stream to read from
      * @param delimiter the field delimiting character
@@ -91,9 +91,9 @@ public class DelimitedReader implements RecordReader {
     }
     
     /**
-     * Constructs a new <tt>DelimitedReader</tt>.
+     * Constructs a new <code>DelimitedReader</code>.
      * @param in the input stream to read from
-     * @param config the reader configuration settings or <tt>null</tt> to use default values
+     * @param config the reader configuration settings or <code>null</code> to use default values
      * @throws IllegalArgumentException if the delimiter matches the escape character or
      *   or the line continuation character
      * @since 1.2
@@ -329,11 +329,11 @@ public class DelimitedReader implements RecordReader {
     }
     
     /**
-     * Returns <tt>true</tt> if the given character matches the record separator.  This
-     * method also updates the internal <tt>skipLF</tt> flag.
+     * Returns <code>true</code> if the given character matches the record separator.  This
+     * method also updates the internal <code>skipLF</code> flag.
      * @param c the character to test
-     * @param skipLF the value to set <tt>skipLF</tt> if the character is a carriage return
-     * @return <tt>true</tt> if the character signifies the end of the record
+     * @param skipLF the value to set <code>skipLF</code> if the character is a carriage return
+     * @return <code>true</code> if the character signifies the end of the record
      */
     private boolean endOfRecord(char c, boolean skipLF) {
         if (recordTerminator == 0) {

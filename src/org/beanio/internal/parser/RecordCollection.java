@@ -24,7 +24,7 @@ import org.beanio.internal.util.StringUtil;
  * A {@link Parser} tree component for parsing a collection of bean objects, where
  * a bean object is mapped to a {@link Record} or {@link Group}.
  * 
- * <p>A <tt>RecordCollection</tt> supports a single {@link Record} or {@link Group} child.
+ * <p>A <code>RecordCollection</code> supports a single {@link Record} or {@link Group} child.
  * 
  * @author Kevin Seim
  * @since 2.0
@@ -32,7 +32,7 @@ import org.beanio.internal.util.StringUtil;
 public class RecordCollection extends RecordAggregation {
 
     /**
-     * Constructs a new <tt>RecordCollection</tt>.
+     * Constructs a new <code>RecordCollection</code>.
      */
     public RecordCollection() { }
     

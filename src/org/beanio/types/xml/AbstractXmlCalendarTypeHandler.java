@@ -45,7 +45,7 @@ public abstract class AbstractXmlCalendarTypeHandler extends CalendarTypeHandler
     private boolean lenientDatatype = false;
     
     /**
-     * Constructs a new <tt>AbstractXmlDateTypeHandler</tt>.
+     * Constructs a new <code>AbstractXmlDateTypeHandler</code>.
      */
     public AbstractXmlCalendarTypeHandler() { }
     
@@ -92,14 +92,14 @@ public abstract class AbstractXmlCalendarTypeHandler extends CalendarTypeHandler
     public abstract String format(Object value);
 
     /**
-     * Returns the expected XML Schema data type when <tt>parse</tt> is called.
-     * @return the expected XML schema data type <tt>QName</tt>
+     * Returns the expected XML Schema data type when <code>parse</code> is called.
+     * @return the expected XML schema data type <code>QName</code>
      */
     protected abstract QName getDatatypeQName();
     
     /**
      * Creates a new calendar using the configured time zone (if set).
-     * @return a new <tt>Calendar</tt> instance
+     * @return a new <code>Calendar</code> instance
      */
     protected Calendar newCalendar() {
         return timeZone == null ? Calendar.getInstance() : Calendar.getInstance(timeZone);
@@ -122,8 +122,8 @@ public abstract class AbstractXmlCalendarTypeHandler extends CalendarTypeHandler
 
     /**
      * Returns whether time zone information is allowed when parsing field text.  Defaults
-     * to <tt>true</tt>.
-     * @return <tt>true</tt> if time zone information is allowed when parsing field text
+     * to <code>true</code>.
+     * @return <code>true</code> if time zone information is allowed when parsing field text
      */
     public boolean isTimeZoneAllowed() {
         return timeZoneAllowed;
@@ -131,8 +131,8 @@ public abstract class AbstractXmlCalendarTypeHandler extends CalendarTypeHandler
 
     /**
      * Sets whether time zone information is allowed when parsing field text.  Defaults
-     * to <tt>true</tt>.
-     * @param timeZoneAllowed <tt>true</tt> if time zone information is allowed when
+     * to <code>true</code>.
+     * @param timeZoneAllowed <code>true</code> if time zone information is allowed when
      *   parsing field text
      */
     public void setTimeZoneAllowed(boolean timeZoneAllowed) {
@@ -141,10 +141,10 @@ public abstract class AbstractXmlCalendarTypeHandler extends CalendarTypeHandler
 
     /**
      * Returns whether data type validation is skipped when parsing field text.  Set to
-     * <tt>false</tt> by default, a <tt>TypeConversionException</tt> is thrown when a
+     * <code>false</code> by default, a <code>TypeConversionException</code> is thrown when a
      * XML dateTime type handler is used to parse a XML date or XML time, or a XML date
      * handler is used to parse a XML dateTime field, etc.
-     * @return <tt>true</tt> if data type validation is skipped
+     * @return <code>true</code> if data type validation is skipped
      */
     public boolean isLenientDatatype() {
         return lenientDatatype;
@@ -152,10 +152,10 @@ public abstract class AbstractXmlCalendarTypeHandler extends CalendarTypeHandler
 
     /**
      * Sets whether data type validation is skipped when parsing field text.  Set to
-     * <tt>false</tt> by default, a <tt>TypeConversionException</tt> is thrown when a
+     * <code>false</code> by default, a <code>TypeConversionException</code> is thrown when a
      * XML dateTime type handler is used to parse a XML date or XML time, or a XML date
      * handler is used to parse a XML dateTime field, etc.
-     * @param lenientDatatype <tt>true</tt> if data type validation is skipped
+     * @param lenientDatatype <code>true</code> if data type validation is skipped
      */
     public void setLenientDatatype(boolean lenientDatatype) {
         this.lenientDatatype = lenientDatatype;

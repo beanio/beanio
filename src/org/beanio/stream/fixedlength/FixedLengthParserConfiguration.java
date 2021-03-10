@@ -28,21 +28,21 @@ public class FixedLengthParserConfiguration {
     private String[] comments;
     
     /**
-     * Constructs a new <tt>FixedLengthParserConfiguration</tt>.
+     * Constructs a new <code>FixedLengthParserConfiguration</code>.
      */
     public FixedLengthParserConfiguration() { }
 
     /**
      * Returns the line continuation character.  By default, line continuation
-     * is disabled and <tt>null</tt> is returned.
-     * @return the line continuation character or <tt>null</tt> if disabled
+     * is disabled and <code>null</code> is returned.
+     * @return the line continuation character or <code>null</code> if disabled
      */
     public Character getLineContinuationCharacter() {
         return lineContinuationCharacter;
     }
 
     /**
-     * Sets the line continuation character.  Set to <tt>null</tt> to disable
+     * Sets the line continuation character.  Set to <code>null</code> to disable
      * line continuation.
      * @param lineContinuationCharacter the line continuation character
      */
@@ -53,7 +53,7 @@ public class FixedLengthParserConfiguration {
     /**
      * Returns whether the line continuation character is enabled.  By default,
      * line continuation is disabled.
-     * @return <tt>true</tt> if the line continuation character is enabled
+     * @return <code>true</code> if the line continuation character is enabled
      */
     public boolean isLineContinationEnabled() {
         return lineContinuationCharacter != null;
@@ -70,7 +70,7 @@ public class FixedLengthParserConfiguration {
     }
 
     /**
-     * Sets the character used to mark the end of a record.  If set to <tt>null</tt>,
+     * Sets the character used to mark the end of a record.  If set to <code>null</code>,
      * a carriage return (CR), line feed (LF), or CRLF sequence is used.
      * @param recordTerminator the record termination character
      */
@@ -99,7 +99,7 @@ public class FixedLengthParserConfiguration {
     
     /**
      * Returns whether one or more comment prefixes have been configured.
-     * @return <tt>true</tt> if one or more comment prefixes have been configured
+     * @return <code>true</code> if one or more comment prefixes have been configured
      */
     public boolean isCommentEnabled() {
         return comments != null && comments.length > 0;
@@ -107,7 +107,7 @@ public class FixedLengthParserConfiguration {
     
     /**
      * Returns the text used to terminate a record.  By default, the line
-     * separator is set to the value of the  <tt>line.separator</tt> system property.
+     * separator is set to the value of the  <code>line.separator</code> system property.
      * @return the line separation text
      * @deprecated
      */
@@ -116,8 +116,8 @@ public class FixedLengthParserConfiguration {
     }
 
     /**
-     * Sets the text used to terminate a record.  If set to <tt>null</tt>, the 
-     * the value of the <tt>line.separator</tt> system property is used to terminate
+     * Sets the text used to terminate a record.  If set to <code>null</code>, the
+     * the value of the <code>line.separator</code> system property is used to terminate
      * records.
      * @param lineSeparator the line separation text
      * @deprecated

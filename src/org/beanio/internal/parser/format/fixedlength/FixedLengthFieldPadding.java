@@ -30,7 +30,7 @@ import org.beanio.internal.parser.format.FieldPadding;
 public class FixedLengthFieldPadding extends FieldPadding {
 
     /**
-     * Constructs a new <tt>FixedLengthFieldPadding</tt>.
+     * Constructs a new <code>FixedLengthFieldPadding</code>.
      */
     public FixedLengthFieldPadding() { }
     

@@ -18,7 +18,7 @@ package org.beanio.internal.parser.format.flat;
 import org.beanio.internal.parser.*;
 
 /**
- * A <tt>FlatFieldFormat</tt> is a {@link FieldFormat} for flat stream formats 
+ * A <code>FlatFieldFormat</code> is a {@link FieldFormat} for flat stream formats 
  * (i.e. CSV, delimited and fixed length).
  * 
  * @author Kevin Seim
@@ -33,13 +33,13 @@ public interface FlatFieldFormat extends FieldFormat {
      * record starting at 0.  For example, the position of field2 in the following
      * comma delimited record is 1:
      * 
-     * <p><tt>field1,field2,field3</tt>
+     * <p><code>field1,field2,field3</code>
      * 
      * <p>In a fixed length stream format, the position is the index of the first character 
      * of the field in the record, also starting at 0.  For example, the position of field2
      * in the following record is 6: 
      * 
-     * <p><tt>field1field2field3</tt>
+     * <p><code>field1field2field3</code>
      * 
      * @return the field position
      */

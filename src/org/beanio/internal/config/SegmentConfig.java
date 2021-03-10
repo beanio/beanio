@@ -22,15 +22,15 @@ import java.util.*;
  * component may also be added to segment.
  * 
  * <p>A segment can be bound to a bean object by calling {@link #setType(String)}.
- * (The <tt>bound</tt> attribute is ignored for segments- setting <tt>type</tt>
- * to null has the same effect as setting <tt>bound</tt> to false.)
+ * (The <code>bound</code> attribute is ignored for segments- setting <code>type</code>
+ * to null has the same effect as setting <code>bound</code> to false.)
  * 
  * <p>A segment may repeat if its maximum occurrences is greater than one, and be
  * bound to a collection or array by calling {@link #setCollection(String)}.
  * 
  * <p>Segments will have their position calculated automatically during compilation.
  * 
- * <p>The <tt>constant</tt> attribute is set during compilation, and is meant for 
+ * <p>The <code>constant</code> attribute is set during compilation, and is meant for
  * internal use only.
  * 
  * @author Kevin Seim
@@ -44,7 +44,7 @@ public class SegmentConfig extends PropertyConfig {
     private boolean defaultExistence;
     
     /**
-     * Constructs a new <tt>SegmentConfig</tt>.
+     * Constructs a new <code>SegmentConfig</code>.
      */
     public SegmentConfig() { }
     
@@ -131,7 +131,7 @@ public class SegmentConfig extends PropertyConfig {
 
     /**
      * Returns the name of the property descendant to use for the
-     * Map key when <tt>collection</tt> is set to <tt>map</tt>.
+     * Map key when <code>collection</code> is set to <code>map</code>.
      * @return the key property name
      */
     public String getKey() {
@@ -140,7 +140,7 @@ public class SegmentConfig extends PropertyConfig {
 
     /**
      * Sets the name of the property descendant to use for the
-     * Map key when <tt>collection</tt> is set to <tt>map</tt>.
+     * Map key when <code>collection</code> is set to <code>map</code>.
      * @param key the key property name
      */
     public void setKey(String key) {
@@ -157,7 +157,7 @@ public class SegmentConfig extends PropertyConfig {
 
     /**
      * Sets the name of the target property for this segment, which can be used
-     * in lieu of <tt>class</tt> to return simple field types contained within
+     * in lieu of <code>class</code> to return simple field types contained within
      * the segment.
      * @param target the target property name
      */

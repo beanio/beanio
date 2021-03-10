@@ -56,7 +56,7 @@ public class Segment extends ParserComponent {
     };
     
     /**
-     * Constructs a new <tt>Segment</tt>.
+     * Constructs a new <code>Segment</code>.
      */
     public Segment() { }
     

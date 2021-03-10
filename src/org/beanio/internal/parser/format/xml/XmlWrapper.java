@@ -41,7 +41,7 @@ public class XmlWrapper extends DelegatingParser implements XmlNode {
     private boolean repeating;
     
     /**
-     * Constructs a new <tt>XmlWrapper</tt>.
+     * Constructs a new <code>XmlWrapper</code>.
      */
     public XmlWrapper() { }
     

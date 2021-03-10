@@ -30,7 +30,7 @@ public class MapAccessor implements PropertyAccessor {
     private String key;
     
     /**
-     * Constructs a new <tt>MapAccessor</tt>.
+     * Constructs a new <code>MapAccessor</code>.
      * @param key the key used to get and set a value from a Map bean
      */
     public MapAccessor(String key) {

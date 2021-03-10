@@ -21,7 +21,7 @@ import javax.xml.datatype.*;
 import javax.xml.namespace.QName;
 
 /**
- * A <tt>java.util.Date</tt> type handler implementation for parsing date-time values based on
+ * A <code>java.util.Date</code> type handler implementation for parsing date-time values based on
  * the W3C XML Schema <a href="http://www.w3.org/TR/xmlschema-2/#dateTime">dateTime</a> datatype
  * specification.
  * 
@@ -71,7 +71,7 @@ public class XmlDateTimeTypeHandler extends AbstractXmlDateTypeHandler {
     
     /**
      * Returns whether milliseconds are included when formatting the time.
-     * @return <tt>true</tt> if milliseconds are included when formatting the time
+     * @return <code>true</code> if milliseconds are included when formatting the time
      */
     public boolean isOutputMilliseconds() {
         return outputMilliseconds;
@@ -79,8 +79,8 @@ public class XmlDateTimeTypeHandler extends AbstractXmlDateTypeHandler {
 
     /**
      * Sets whether milliseconds are included when formatting the time.  Set
-     * to <tt>false</tt> by default.
-     * @param b set to <tt>true</tt> to include milliseconds when formatting the time
+     * to <code>false</code> by default.
+     * @param b set to <code>true</code> to include milliseconds when formatting the time
      */
     public void setOutputMilliseconds(boolean b) {
         this.outputMilliseconds = b;

@@ -22,7 +22,7 @@ import org.beanio.internal.util.Debuggable;
 /**
  * Interface for marshalling bean objects to an output stream.
  * 
- * <p>A <tt>BeanWriter</tt> is created using a {@link StreamFactory} and 
+ * <p>A <code>BeanWriter</code> is created using a {@link StreamFactory} and
  * a mapping file.</p>
  * 
  * @author Kevin Seim

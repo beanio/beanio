@@ -19,7 +19,7 @@ package org.beanio.internal.config;
  * A field is used to define the smallest physical part of a stream.  Fields are
  * combined to form segments and records.  
  * 
- * <p>Unless <tt>bound</tt> is set to false, a field is bound to a property of 
+ * <p>Unless <code>bound</code> is set to false, a field is bound to a property of 
  * its closest parent bean object.
  * 
  * <p>Position must be set for all fields in record, or for none of them.  If not
@@ -52,7 +52,7 @@ public class FieldConfig extends SimplePropertyConfig {
     private boolean lenientPadding;
     
     /**
-     * Constructs a new <tt>FieldConfig</tt>.
+     * Constructs a new <code>FieldConfig</code>.
      */
     public FieldConfig() { }
     
@@ -64,7 +64,7 @@ public class FieldConfig extends SimplePropertyConfig {
     /**
      * Returns the textual representation of the default value for
      * this field when the field is not present or empty during unmarshalling.
-     * May be <tt>null</tt>.
+     * May be <code>null</code>.
      * @return the default value (as text)
      */
     public String getDefault() {
@@ -74,7 +74,7 @@ public class FieldConfig extends SimplePropertyConfig {
     /**
      * Sets the textual representation of the default value of
      * this field when the field is not present or empty during unmarshalling.
-     * May be <tt>null</tt>.
+     * May be <code>null</code>.
      * @param text the default value (as text)
      */
     public void setDefault(String text) {
@@ -82,18 +82,18 @@ public class FieldConfig extends SimplePropertyConfig {
     }
 
     /**
-     * Returns the minimum length of this field in characters, or <tt>null</tt>
+     * Returns the minimum length of this field in characters, or <code>null</code>
      * if a minimum length should not be enforced.
-     * @return the minimum length, or <tt>null</tt> if not enforced
+     * @return the minimum length, or <code>null</code> if not enforced
      */
     public Integer getMinLength() {
         return minLength;
     }
 
     /**
-     * Sets the minimum length of this field in characters, or <tt>null</tt>
+     * Sets the minimum length of this field in characters, or <code>null</code>
      * if a minimum length should not be enforced.
-     * @param minLength the minimum length, or <tt>null</tt> if not enforced
+     * @param minLength the minimum length, or <code>null</code> if not enforced
      */
     public void setMinLength(Integer minLength) {
         this.minLength = minLength;
@@ -101,8 +101,8 @@ public class FieldConfig extends SimplePropertyConfig {
 
     /**
      * Returns the maximum length of this field in characters.  Returns
-     * <tt>null</tt> if a maximum length will not be enforced.
-     * @return the maximum length, or <tt>null</tt> if not enforced
+     * <code>null</code> if a maximum length will not be enforced.
+     * @return the maximum length, or <code>null</code> if not enforced
      */
     public Integer getMaxLength() {
         return maxLength;
@@ -110,8 +110,8 @@ public class FieldConfig extends SimplePropertyConfig {
 
     /**
      * Sets the maximum length of this field in characters.  Set to 
-     * <tt>null</tt> if a maximum length should not be enforced.
-     * @param maxLength the maximum length, or <tt>null</tt> if not enforced
+     * <code>null</code> if a maximum length should not be enforced.
+     * @param maxLength the maximum length, or <code>null</code> if not enforced
      */
     public void setMaxLength(Integer maxLength) {
         this.maxLength = maxLength;
@@ -120,7 +120,7 @@ public class FieldConfig extends SimplePropertyConfig {
     /**
      * Returns whether field text should be trimmed before validation
      * and type conversion.
-     * @return <tt>true</tt> if field text should be trimmed
+     * @return <code>true</code> if field text should be trimmed
      */
     public boolean isTrim() {
         return trim;
@@ -129,14 +129,14 @@ public class FieldConfig extends SimplePropertyConfig {
     /**
      * Sets whether field text should be trimmed before validation
      * and type conversion.
-     * @param trim <tt>true</tt> if field text should be trimmed
+     * @param trim <code>true</code> if field text should be trimmed
      */
     public void setTrim(boolean trim) {
         this.trim = trim;
     }
 
     /**
-     * Returns the static text for this field, or <tt>null</tt> if
+     * Returns the static text for this field, or <code>null</code> if
      * the field text is not static.  If set, unmarshalled field text must
      * match the literal text, and likewise, the literal text is always marshalled
      * for this field.
@@ -177,22 +177,22 @@ public class FieldConfig extends SimplePropertyConfig {
     }
 
     /**
-     * Returns <tt>true</tt> if this field is required when unmarshalled.  
+     * Returns <code>true</code> if this field is required when unmarshalled.  
      * Required fields must have at least one character (after
      * trimming, if enabled).  If this field is not required and no text
      * is parsed from the input stream, no further validations are performed. 
-     * @return <tt>true</tt> if this field is required
+     * @return <code>true</code> if this field is required
      */
     public boolean isRequired() {
         return required;
     }
 
     /**
-     * Set to <tt>true</tt> if this field is required when unmarshalled.
+     * Set to <code>true</code> if this field is required when unmarshalled.
      * Required fields must have at least one character (after
      * trimming, if enabled).  If this field is not required and no text
      * is parsed from the input stream, no further validations are performed. 
-     * @param required <tt>true</tt> if this field is required
+     * @param required <code>true</code> if this field is required
      */
     public void setRequired(boolean required) {
         this.required = required;
@@ -237,7 +237,7 @@ public class FieldConfig extends SimplePropertyConfig {
     }
 
     /**
-     * Returns the justification of this field.  Defaults to <tt>left</tt>.  
+     * Returns the justification of this field.  Defaults to <code>left</code>.  
      * Applies to fixed length and padded fields.
      * @return {@link #LEFT} or {@link #RIGHT}
      */

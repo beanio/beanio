@@ -39,12 +39,12 @@ public class XmlMapping {
     private Map<String,Element> templateMap = new HashMap<String,Element>();
     
     /**
-     * Constructs a new <tt>XmlMapping</tt>.
+     * Constructs a new <code>XmlMapping</code>.
      */
     public XmlMapping() { }
     
     /**
-     * Constructs a new <tt>XmlMapping</tt>.
+     * Constructs a new <code>XmlMapping</code>.
      * @param name the mapping file name used for error messages
      * @param location the location of the mapping (this should be
      *   the absolute URL location of the file so that the same
@@ -83,7 +83,7 @@ public class XmlMapping {
     
     /**
      * Returns the parent mapping file that imported this mapping file, 
-     * or <tt>null</tt> if this file is the "root" mapping file.
+     * or <code>null</code> if this file is the "root" mapping file.
      * @return the parent mapping file
      */
     public XmlMapping getParent() {
@@ -103,7 +103,7 @@ public class XmlMapping {
      * using its location to identify it.  This is used for detecting 
      * circular references.
      * @param url the mapping file location to check
-     * @return <tt>true</tt> if the given location is being actively
+     * @return <code>true</code> if the given location is being actively
      *   loaded, and thus the mapping file contains a circular reference
      */
     public boolean isLoading(String url) {
@@ -149,8 +149,8 @@ public class XmlMapping {
      * Adds a template configuration to this mapping file.
      * @param name the name of the template
      * @param element the 'template' DOM element
-     * @return <tt>true</tt> if the template was successfuly added, or
-     *   <tt>false</tt> if the template name already existed
+     * @return <code>true</code> if the template was successfuly added, or
+     *   <code>false</code> if the template name already existed
      */
     public boolean addTemplate(String name, Element element) {
         if (findTemplate(name) != null) {
@@ -162,7 +162,7 @@ public class XmlMapping {
     }
     
     /**
-     * Recursively finds the <tt>template</tt> DOM element for a given template 
+     * Recursively finds the <code>template</code> DOM element for a given template
      * name in this mapping file and its parents.
      * @param name the name of the template to retrieve
      * @return the matching template Element
@@ -185,7 +185,7 @@ public class XmlMapping {
      * given type handler name.  Recursively checks all imported
      * mapping files.
      * @param name the type handler name
-     * @return <tt>true</tt> if a type handler was declared globally
+     * @return <code>true</code> if a type handler was declared globally
      *   for the given name
      */
     public boolean isDeclaredGlobalTypeHandler(String name) {

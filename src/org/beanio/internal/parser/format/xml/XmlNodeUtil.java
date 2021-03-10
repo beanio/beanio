@@ -35,7 +35,7 @@ public class XmlNodeUtil {
     /**
      * Tests if an element is nil.
      * @param element the element to test
-     * @return <tt>true</tt> if the element is nil
+     * @return <code>true</code> if the element is nil
      */
     public static boolean isNil(Element element) {
         String nil = element.getAttributeNS(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "nil");
@@ -46,7 +46,7 @@ public class XmlNodeUtil {
      * Returns the value of an attribute for an element.
      * @param element the element to check
      * @param definition the definition of the attribute to retrieve from the element
-     * @return the defined attribute value, or <tt>null</tt> if the attribute was not
+     * @return the defined attribute value, or <code>null</code> if the attribute was not
      *   found on the element
      */
     public static String getAttribute(Element element, XmlNode definition) {
@@ -70,7 +70,7 @@ public class XmlNodeUtil {
     /**
      * Returns the child text from a DOM node.
      * @param node the node to parse
-     * @return the node text, or <tt>null</tt> if the node did not contain any text
+     * @return the node text, or <code>null</code> if the node did not contain any text
      */
     public static String getText(Node node) {
         StringBuilder s = null;
@@ -94,11 +94,11 @@ public class XmlNodeUtil {
     }
     
     /**
-     * Returns a sibling element that matches a given definition, or <tt>null</tt> if
+     * Returns a sibling element that matches a given definition, or <code>null</code> if
      * no match is found.
      * @param sibling the sibling DOM element to begin the search
      * @param target the node to search for
-     * @return the matching element, or <tt>null</tt> if not found
+     * @return the matching element, or <code>null</code> if not found
      */
     public static Element findSibling(Element sibling, XmlNode target) {
         String xmlName = target.getLocalName();
@@ -140,7 +140,7 @@ public class XmlNodeUtil {
      * @param parent the parent DOM node
      * @param target the node to search for
      * @param offset the occurrence of the matching node
-     * @return the matching element, or <tt>null</tt> if no match is found
+     * @return the matching element, or <code>null</code> if no match is found
      */
     public static Element findChild(Node parent, XmlNode target, int offset) {
         Node node = parent;

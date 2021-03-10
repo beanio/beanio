@@ -71,7 +71,7 @@ public class Field extends ParserComponent implements Property {
     private FieldFormat format;
     
     /**
-     * Constructs a new <tt>Field</tt>.
+     * Constructs a new <code>Field</code>.
      */
     public Field() {
         super(0);
@@ -131,7 +131,7 @@ public class Field extends ParserComponent implements Property {
     /**
      * Tests if the field text in the record matches this field.
      * @param context the {@link UnmarshallingContext} containing the record to match
-     * @return <tt>true</tt> if the field text is a match or this field is not used
+     * @return <code>true</code> if the field text is a match or this field is not used
      *   to identify the record
      */
     public boolean matches(UnmarshallingContext context) {
@@ -144,11 +144,11 @@ public class Field extends ParserComponent implements Property {
     }
         
     /**
-     * Returns <tt>true</tt> if the provided field text is a match for this field
+     * Returns <code>true</code> if the provided field text is a match for this field
      * definition based on the configured literal value or regular expression.
      * @param text the field text to test
-     * @return <tt>true</tt> if the field text matches this field definitions constraints,
-     *   or <tt>false</tt> if the field text is null or does not match
+     * @return <code>true</code> if the field text matches this field definitions constraints,
+     *   or <code>false</code> if the field text is null or does not match
      */
     protected boolean isMatch(String text) {
         if (text == null)

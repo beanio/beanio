@@ -36,7 +36,7 @@ public class DelimitedRecordFormat implements RecordFormat {
     private int maxMatchLength = Integer.MAX_VALUE;
     
     /**
-     * Constructs a new <tt>DelimitedRecordFormat</tt>.
+     * Constructs a new <code>DelimitedRecordFormat</code>.
      */
     public DelimitedRecordFormat() { }
     

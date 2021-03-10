@@ -81,7 +81,7 @@ public class IOUtil {
      * the root of the classpath, whether the resource name includes a
      * leading slash or not.
      * @param resource the name of the resource to load
-     * @return the resource URL, or <tt>null</tt> if the resource was not found
+     * @return the resource URL, or <code>null</code> if the resource was not found
      * @since 1.2.1
      */
     public static URL getResource(ClassLoader classLoader, String resource) {
@@ -105,7 +105,7 @@ public class IOUtil {
     /**
      * Loads a resource from the classpath.
      * @param resource the name of the resource to load
-     * @return a new {@link InputStream} to read the resource or <tt>null</tt> if the
+     * @return a new {@link InputStream} to read the resource or <code>null</code> if the
      *   resource was not found
      * @throws IOException if an I/O error occurs
      * @since 1.2

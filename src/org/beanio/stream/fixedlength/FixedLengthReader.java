@@ -21,7 +21,7 @@ import org.beanio.stream.*;
 import org.beanio.stream.util.CommentReader;
 
 /**
- * A <tt>FixedLengthReader</tt> is used to read records from a fixed length
+ * A <code>FixedLengthReader</code> is used to read records from a fixed length
  * file or input stream.  A fixed length record is represented using the
  * {@link String} class.  Records must be terminated by a single 
  * configurable character, or by default, any of the following: line feed (LF), 
@@ -50,7 +50,7 @@ public class FixedLengthReader implements RecordReader {
     private transient boolean eof = false;
 
     /**
-     * Constructs a new <tt>FixedLengthReader</tt>.  By default, line
+     * Constructs a new <code>FixedLengthReader</code>.  By default, line
      * continuation is disabled. 
      * @param in the input stream to read from
      */
@@ -59,9 +59,9 @@ public class FixedLengthReader implements RecordReader {
     }
     
     /**
-     * Constructs a new <tt>FixedLengthReader</tt>.
+     * Constructs a new <code>FixedLengthReader</code>.
      * @param in the input stream to read from
-     * @param config the reader configuration settings or <tt>null</tt> to accept defaults
+     * @param config the reader configuration settings or <code>null</code> to accept defaults
      * @throws IllegalArgumentException if a configuration setting is invalid
      * @since 1.2
      */
@@ -227,10 +227,10 @@ public class FixedLengthReader implements RecordReader {
     }
 
     /**
-     * Returns <tt>true</tt> if the given character matches the record separator.  This
-     * method also updates the internal <tt>skipLF</tt> flag.
+     * Returns <code>true</code> if the given character matches the record separator.  This
+     * method also updates the internal <code>skipLF</code> flag.
      * @param c the character to test
-     * @return <tt>true</tt> if the character signifies the end of the record
+     * @return <code>true</code> if the character signifies the end of the record
      */
     private boolean endOfRecord(char c) {
         if (recordTerminator == 0) {

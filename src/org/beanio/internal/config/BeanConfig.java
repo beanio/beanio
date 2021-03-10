@@ -18,7 +18,7 @@ package org.beanio.internal.config;
 import java.util.Properties;
 
 /**
- * Stores bean information.  A <tt>Bean</tt> object is used to instantiate 
+ * Stores bean information.  A <code>Bean</code> object is used to instantiate 
  * configurable components such as a type handler, record reader factory
  * or record writer factory.
  * 

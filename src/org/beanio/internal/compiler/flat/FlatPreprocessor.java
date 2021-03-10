@@ -49,7 +49,7 @@ public class FlatPreprocessor extends Preprocessor {
     private List<FieldConfig> fieldComponents = new ArrayList<FieldConfig>();
     
     /**
-     * Constructs a new <tt>FlatPreprocessor</tt>.
+     * Constructs a new <code>FlatPreprocessor</code>.
      * @param stream
      */
     public FlatPreprocessor(StreamConfig stream) {

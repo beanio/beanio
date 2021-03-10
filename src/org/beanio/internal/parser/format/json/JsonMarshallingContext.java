@@ -32,7 +32,7 @@ public class JsonMarshallingContext extends MarshallingContext {
     private int depth = -1;
     
     /**
-     * Constructs a new <tt>JsonMarshallingContext</tt>.
+     * Constructs a new <code>JsonMarshallingContext</code>.
      * @param maxDepth the maximum depth of the all {@link JsonWrapper} components in the parser tree layout.
      */
     public JsonMarshallingContext(int maxDepth) {

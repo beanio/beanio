@@ -35,7 +35,7 @@ public class JsonParserFactory extends ParserFactorySupport {
     private int maxDepth = 1;
     
     /**
-     * Constructs a new <tt>JsonParserFactory</tt>.
+     * Constructs a new <code>JsonParserFactory</code>.
      */
     public JsonParserFactory() { }
     

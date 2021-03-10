@@ -22,10 +22,10 @@ import org.beanio.builder.StreamBuilder;
 import org.beanio.internal.util.*;
 
 /**
- * A <tt>StreamFactory</tt> is used to load BeanIO mapping files and create 
+ * A <code>StreamFactory</code> is used to load BeanIO mapping files and create
  * {@link BeanReader}, {@link BeanWriter}, {@link Unmarshaller} and {@link Marshaller} instances.
  * <p>
- * The default <tt>StreamFactory</tt> implementation can be safely shared 
+ * The default <code>StreamFactory</code> implementation can be safely shared
  * across multiple threads.
  * 
  * @author Kevin Seim
@@ -40,12 +40,12 @@ public abstract class StreamFactory {
     private ClassLoader classLoader;
     
     /**
-     * Constructs a new <tt>StreamFactory</tt>.
+     * Constructs a new <code>StreamFactory</code>.
      */
     public StreamFactory() { }
 
     /**
-     * Creates a new <tt>BeanReader</tt> for reading from a file.
+     * Creates a new <code>BeanReader</code> for reading from a file.
      * @param name the name of the stream in the mapping file
      * @param filename the name of the file to read
      * @return the created {@link BeanReader}
@@ -58,7 +58,7 @@ public abstract class StreamFactory {
     }
     
     /**
-     * Creates a new <tt>BeanReader</tt> for reading from a file.
+     * Creates a new <code>BeanReader</code> for reading from a file.
      * @param name the name of the stream in the mapping file
      * @param file the {@link File} to read
      * @return the created {@link BeanReader}
@@ -87,7 +87,7 @@ public abstract class StreamFactory {
     }
 
     /**
-     * Creates a new <tt>BeanReader</tt> for reading from the given input stream.
+     * Creates a new <code>BeanReader</code> for reading from the given input stream.
      * @param name the name of the stream in the mapping file
      * @param in the input stream to read from
      * @return the created {@link BeanReader}
@@ -99,7 +99,7 @@ public abstract class StreamFactory {
     }
 
     /**
-     * Creates a new <tt>BeanReader</tt> for reading from a stream.
+     * Creates a new <code>BeanReader</code> for reading from a stream.
      * @param name the name of the stream in the mapping file
      * @param in the input stream to read from
      * @param locale the {@link Locale} used to format error messages, or null to use {@link Locale#getDefault()}
@@ -132,7 +132,7 @@ public abstract class StreamFactory {
     public abstract Unmarshaller createUnmarshaller(String name, Locale locale);
     
     /**
-     * Creates a new <tt>BeanWriter</tt> for writing to the given file.
+     * Creates a new <code>BeanWriter</code> for writing to the given file.
      * @param name the name of the stream in the mapping file
      * @param file the file to write to
      * @return the created {@link BeanWriter}
@@ -161,7 +161,7 @@ public abstract class StreamFactory {
     }
 
     /**
-     * Creates a new <tt>BeanWriter</tt> for writing to a stream.
+     * Creates a new <code>BeanWriter</code> for writing to a stream.
      * @param name the name of the stream in the mapping file
      * @param out the output stream to write to
      * @return the created {@link BeanWriter}
@@ -294,10 +294,10 @@ public abstract class StreamFactory {
     public abstract void load(InputStream in, Properties properties) throws IOException, BeanIOConfigurationException;
 
     /**
-     * Returns a new <tt>StreamFactory</tt> instance.  The implementation class is resolved
-     * using the the BeanIO configuration setting <tt>org.beanio.streamFactory</tt>.
-     * @return a new <tt>StreamFactory</tt>
-     * @throws BeanIOException if a <tt>StreamFactory</tt> could not be created
+     * Returns a new <code>StreamFactory</code> instance.  The implementation class is resolved
+     * using the the BeanIO configuration setting <code>org.beanio.streamFactory</code>.
+     * @return a new <code>StreamFactory</code>
+     * @throws BeanIOException if a <code>StreamFactory</code> could not be created
      * @see Settings
      */
     public static StreamFactory newInstance() throws BeanIOException {
@@ -305,14 +305,14 @@ public abstract class StreamFactory {
     }
     
     /**
-     * Returns a new <tt>StreamFactory</tt> instance.  An implementation class is loaded
-     * using the the BeanIO configuration setting <tt>org.beanio.streamFactory</tt>.
+     * Returns a new <code>StreamFactory</code> instance.  An implementation class is loaded
+     * using the the BeanIO configuration setting <code>org.beanio.streamFactory</code>.
      * @param classLoader the {@link ClassLoader} to use to load the stream factory and
      *   all subcomponents.  If null, the current thread's context class loader is used.
      *   If there is no context class loader for the thread, the class loader that loaded 
      *   this class is used.
-     * @return a new <tt>StreamFactory</tt>
-     * @throws BeanIOException if a <tt>StreamFactory</tt> could not be created
+     * @return a new <code>StreamFactory</code>
+     * @throws BeanIOException if a <code>StreamFactory</code> could not be created
      * @see Settings
      * @since 2.0
      */
@@ -358,7 +358,7 @@ public abstract class StreamFactory {
     /**
      * Test whether a mapping configuration exists for a named stream.
      * @param streamName the stream name to test for existence
-     * @return <tt>true</tt> if a mapping configuration is found for the named stream
+     * @return <code>true</code> if a mapping configuration is found for the named stream
      * @since 1.2
      */
     public abstract boolean isMapped(String streamName);

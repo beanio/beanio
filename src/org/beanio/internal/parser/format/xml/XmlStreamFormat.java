@@ -39,7 +39,7 @@ public class XmlStreamFormat extends StreamFormatSupport {
     private int groupDepth;
     
     /**
-     * Constructs a new <tt>XmlStreamFormat</tt>.
+     * Constructs a new <code>XmlStreamFormat</code>.
      */
     public XmlStreamFormat() { }
     

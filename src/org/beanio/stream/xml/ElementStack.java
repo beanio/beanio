@@ -18,14 +18,14 @@ package org.beanio.stream.xml;
 import java.util.*;
 
 /**
- * An <tt>ElementStack</tt> is used internally by {@link XmlWriter} for managing
+ * An <code>ElementStack</code> is used internally by {@link XmlWriter} for managing
  * namespace declarations as an XML document is written.
  * 
  * <p>When an element is created from the stack, its default namespace is derrived 
  * from the element and its parent using the following strategy:</p>
  * <ul>
  * <li>if no prefix is declared, the element's namespace is the default namespace
- * <li>else if the element has no parent, then <tt>null</tt> is used
+ * <li>else if the element has no parent, then <code>null</code> is used
  * <li>otherwise the parent's default namespace is used
  * </ul>
  * 
@@ -50,7 +50,7 @@ class ElementStack {
     private Map<String,String> nsMap;
     
     /**
-     * Constructs a new <tt>ElementStack</tt>.
+     * Constructs a new <code>ElementStack</code>.
      * @param parent the parent element, or null if this is the root element
      * @param ns the element namespace
      * @param prefix the element prefix or null
@@ -90,7 +90,7 @@ class ElementStack {
     
     /**
      * Returns whether this element uses the default XML namespace.
-     * @return <tt>true</tt> if this element uses the default XML namespace
+     * @return <code>true</code> if this element uses the default XML namespace
      */
     public boolean isDefaultNamespace() {
         if (ns == null) {
@@ -107,7 +107,7 @@ class ElementStack {
     /**
      * Tests whether a given namespace matches the current default namespace.
      * @param namespace the XML namespace to test
-     * @return <tt>true</tt> if a default namespace is assigned and the given
+     * @return <code>true</code> if a default namespace is assigned and the given
      *   namespace matches it
      */
     public boolean isDefaultNamespace(String namespace) {
@@ -123,7 +123,7 @@ class ElementStack {
     }
     
     /**
-     * Returns the XML namespace prefix of this element, or <tt>null</tt>
+     * Returns the XML namespace prefix of this element, or <code>null</code>
      * if no prefix was assigned.
      * @return the XML namespace prefix
      */
@@ -152,7 +152,7 @@ class ElementStack {
     }
     
     /**
-     * Returns the XML namespaces declared by this element.  May be <tt>null</tt>.
+     * Returns the XML namespaces declared by this element.  May be <code>null</code>.
      * @return the XML namespaces declared by this element
      */
     public Map<String,String> getNamespaces() {
@@ -171,7 +171,7 @@ class ElementStack {
      * Searches this element and its ancestors for a prefix declared for a
      * given XML namespace.
      * @param namespace the namespace to search for
-     * @return the previously declared prefix or <tt>null</tt> 
+     * @return the previously declared prefix or <code>null</code> 
      *   if no prefix has been declared
      */
     public String findPrefix(String namespace) {
@@ -206,10 +206,10 @@ class ElementStack {
     }
     
     /**
-     * Creates a new <tt>ElementStack</tt> from its token value.
+     * Creates a new <code>ElementStack</code> from its token value.
      * @param parent the parent stack element
      * @param token the element token
-     * @return the new <tt>ElementStack</tt>
+     * @return the new <code>ElementStack</code>
      */
     public static ElementStack fromToken(ElementStack parent, String token) {
         if (token == null || "".equals(token.trim())) {

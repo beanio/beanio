@@ -51,7 +51,7 @@ public class BeanUtil {
 
     /**
      * Instantiates a bean class.
-     * @param classLoader the {@link ClassLoader} to use to resolve <tt>className</tt>
+     * @param classLoader the {@link ClassLoader} to use to resolve <code>className</code>
      * @param className the fully qualified name of the bean class to create
      * @param props the bean properties to set on the instantiated object
      * @return the created bean object

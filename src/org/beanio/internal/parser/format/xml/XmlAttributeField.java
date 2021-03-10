@@ -33,7 +33,7 @@ public class XmlAttributeField extends XmlFieldFormat {
     private boolean namespaceAware;
     
     /**
-     * Constructs a new <tt>XmlAttributeField</tt>.
+     * Constructs a new <code>XmlAttributeField</code>.
      */
     public XmlAttributeField() { }
     

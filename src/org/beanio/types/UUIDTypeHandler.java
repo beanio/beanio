@@ -28,7 +28,7 @@ public class UUIDTypeHandler implements TypeHandler {
     /**
      * Parses a UUID using {@link UUID#fromString(String)}.
      * @param text the text to parse
-     * @return the parsed {@link UUID} or null if <tt>text</tt>
+     * @return the parsed {@link UUID} or null if <code>text</code>
      *   is null or an empty string
      */
     public Object parse(String text) throws TypeConversionException {
@@ -46,8 +46,8 @@ public class UUIDTypeHandler implements TypeHandler {
     }
 
     /**
-     * Formats a {@link UUID} by calling <tt>toString()</tt>.  If <tt>value</tt> is
-     * null, <tt>null</tt> is returned.
+     * Formats a {@link UUID} by calling <code>toString()</code>.  If <code>value</code> is
+     * null, <code>null</code> is returned.
      * @param value the {@link UUID} to format
      * @return the formatted text
      */

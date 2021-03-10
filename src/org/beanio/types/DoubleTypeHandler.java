@@ -19,9 +19,9 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
 /**
- * A type handler implementation for the <tt>Double</tt> class.  If <tt>pattern</tt>
- * is set, a <tt>DecimalFormat</tt> is used to parse and format the value.  Otherwise,
- * the value is parsed and formatted using the <tt>Double</tt> class.
+ * A type handler implementation for the <code>Double</code> class.  If <code>pattern</code>
+ * is set, a <code>DecimalFormat</code> is used to parse and format the value.  Otherwise,
+ * the value is parsed and formatted using the <code>Double</code> class.
  * 
  * @author Kevin Seim
  * @since 1.0

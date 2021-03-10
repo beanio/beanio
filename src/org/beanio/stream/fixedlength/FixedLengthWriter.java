@@ -20,7 +20,7 @@ import java.io.*;
 import org.beanio.stream.*;
 
 /**
- * A <tt>FixedLengthWriter</tt> is used to write records to fixed length
+ * A <code>FixedLengthWriter</code> is used to write records to fixed length
  * flat file or output stream.  A fixed length record is represented using 
  * the {@link String} class. 
  * 
@@ -33,7 +33,7 @@ public class FixedLengthWriter implements RecordWriter {
 	private String recordTerminator;
 	
 	/**
-	 * Constructs a new <tt>FixedLegthWriter</tt>.
+	 * Constructs a new <code>FixedLegthWriter</code>.
 	 * @param out the output stream to write to
 	 */
 	public FixedLengthWriter(Writer out) {
@@ -41,7 +41,7 @@ public class FixedLengthWriter implements RecordWriter {
 	}
 	
 	/**
-	 * Constructs a new <tt>FixedLegthWriter</tt>.
+	 * Constructs a new <code>FixedLegthWriter</code>.
 	 * @param out the output stream to write to
 	 * @param recordTerminator the text used to terminate a record
 	 */

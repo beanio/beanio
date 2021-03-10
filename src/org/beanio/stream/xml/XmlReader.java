@@ -29,23 +29,23 @@ import org.beanio.stream.*;
 import org.w3c.dom.*;
 
 /**
- * A <tt>XmlReader</tt> is used to read records from a XML input stream.  Each XML
+ * A <code>XmlReader</code> is used to read records from a XML input stream.  Each XML
  * record read from the input stream is parsed into a Document Object Model (DOM).  
- * A <tt>XmlReader</tt> is configured using a base DOM object to define the group
+ * A <code>XmlReader</code> is configured using a base DOM object to define the group
  * structure of the XML.  When a XML element is read from the input stream that
  * is not found in the base document, the element and its children are appended
  * to the base document to form the <i>record</i>.  The base document object model
  * will be modified as the input stream is read and should therefore not be
  * shared across multiple streams.
  * <p>
- * A <tt>XmlReader</tt> makes use of the DOM user data feature to pass additional
- * information to and from the parser.  The <tt>GROUP_COUNT</tt> is an <tt>Integer</tt> 
+ * A <code>XmlReader</code> makes use of the DOM user data feature to pass additional
+ * information to and from the parser.  The <code>GROUP_COUNT</code> is an <code>Integer</code> 
  * value added to elements in the base document to indicate the number of times an
- * element was read from the input stream.  And the <tt>IS_NAMESPACE_IGNORED</tt> is a
- * <tt>Boolean</tt> value set on elements in the base document where the XML namespace
+ * element was read from the input stream.  And the <code>IS_NAMESPACE_IGNORED</code> is a
+ * <code>Boolean</code> value set on elements in the base document where the XML namespace
  * should not be used to match nodes read from the input stream.
  * <p>
- * The method <tt>getRecordText()</tt> is not currently supported.
+ * The method <code>getRecordText()</code> is not currently supported.
  * 
  * @author Kevin Seim
  * @since 1.1
@@ -54,14 +54,14 @@ public class XmlReader implements RecordReader {
 
     /**
      * The DOM user data key to obtain the number of times a group element was
-     * read in the base document as a <tt>java.lang.Integer</tt>.
+     * read in the base document as a <code>java.lang.Integer</code>.
      */
     public static final String GROUP_COUNT = "count";
     
     /**
      * The DOM user data key to indicate whether the namespace of an element in 
      * the base document is ignored when matching nodes read from an input stream.
-     * The value must be a <tt>java.lang.Boolean</tt>. 
+     * The value must be a <code>java.lang.Boolean</code>. 
      */
     public static final String IS_NAMESPACE_IGNORED = "namespaceIgnored";
     
@@ -87,7 +87,7 @@ public class XmlReader implements RecordReader {
     private transient boolean eof = false;
 
     /**
-     * Constructs a new <tt>XmlReader</tt>.
+     * Constructs a new <code>XmlReader</code>.
      * @param reader the input stream to read from
      */
     public XmlReader(Reader reader) {
@@ -95,10 +95,10 @@ public class XmlReader implements RecordReader {
     }
     
     /**
-     * Constructs a new <tt>XmlReader</tt>.
+     * Constructs a new <code>XmlReader</code>.
      * @param reader the input stream to read from
      * @param base the base document object model (DOM) that defines the
-     *   group structure of the XML.  May be <tt>null</tt> if fully reading 
+     *   group structure of the XML.  May be <code>null</code> if fully reading 
      *   the XML document.
      */
     public XmlReader(Reader reader, Document base) {
@@ -154,7 +154,7 @@ public class XmlReader implements RecordReader {
     
     /**
      * Appends the next record read from the XML stream reader to the base document object model.
-     * @return <tt>true</tt> if a record was found, or <tt>false</tt> if the end of the
+     * @return <code>true</code> if a record was found, or <code>false</code> if the end of the
      *   stream was reached
      * @throws XMLStreamException
      */
@@ -257,7 +257,7 @@ public class XmlReader implements RecordReader {
      * @param parent the parent DOM element
      * @param namespace the XML namesapce to match
      * @param name the XML local name to match
-     * @return the matched child element, or <tt>null</tt> if not found
+     * @return the matched child element, or <code>null</code> if not found
      */
     private Element findChild(Element parent, String namespace, String name) {
         Node node = parent.getFirstChild();
@@ -278,7 +278,7 @@ public class XmlReader implements RecordReader {
      * @param node the Node to test
      * @param namespace the namespace to match
      * @param name the local name to match
-     * @return <tt>true</tt> if the Node matches the given XML namespace and
+     * @return <code>true</code> if the Node matches the given XML namespace and
      *   local name
      */
     private boolean isNode(Node node, String namespace, String name) {

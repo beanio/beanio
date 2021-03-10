@@ -16,8 +16,8 @@
 package org.beanio.stream;
 
 /**
- * A <tt>RecordIOException</tt> is thrown when a {@link RecordReader} or {@link RecordUnmarshaller} 
- * encounters a malformed record.  Subsequent reads from a <tt>RecordReader</tt> may or may not be possible. 
+ * A <code>RecordIOException</code> is thrown when a {@link RecordReader} or {@link RecordUnmarshaller} 
+ * encounters a malformed record.  Subsequent reads from a <code>RecordReader</code> may or may not be possible. 
  * 
  * @author Kevin Seim
  * @since 1.0
@@ -27,7 +27,7 @@ public class RecordIOException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Constructs a new <tt>RecordIOException</tt>.
+	 * Constructs a new <code>RecordIOException</code>.
 	 * @param message the error message
 	 * @param cause the root cause
 	 */
@@ -36,7 +36,7 @@ public class RecordIOException extends RuntimeException {
 	}
 
 	/**
-	 * Constructs a new <tt>RecordIOException</tt>.
+	 * Constructs a new <code>RecordIOException</code>.
 	 * @param message the error message
 	 */
 	public RecordIOException(String message) {
@@ -44,7 +44,7 @@ public class RecordIOException extends RuntimeException {
 	}
 
 	/**
-	 * Constructs a new <tt>RecordIOException</tt>.
+	 * Constructs a new <code>RecordIOException</code>.
 	 * @param cause the root cause
 	 */
 	public RecordIOException(Throwable cause) {

@@ -28,7 +28,7 @@ import org.beanio.stream.*;
 public class DelimitedRecordParserFactory  extends DelimitedParserConfiguration implements RecordParserFactory {
 
     /**
-     * Constructs a new <tt>DelimitedRecordParserFactory</tt>.
+     * Constructs a new <code>DelimitedRecordParserFactory</code>.
      */
     public DelimitedRecordParserFactory() { }
     

@@ -21,7 +21,7 @@ import javax.xml.datatype.*;
 import javax.xml.namespace.QName;
 
 /**
- * A <tt>java.util.Date</tt> type handler implementation for parsing dates based on
+ * A <code>java.util.Date</code> type handler implementation for parsing dates based on
  * the W3C XML Schema <a href="http://www.w3.org/TR/xmlschema-2/#date">date datatype</a>
  * specification.
  * 
@@ -31,7 +31,7 @@ import javax.xml.namespace.QName;
 public class XmlDateTypeHandler extends AbstractXmlDateTypeHandler {
 
     /**
-     * Constructs a new <tt>XmlDateTypeHandler</tt>.
+     * Constructs a new <code>XmlDateTypeHandler</code>.
      */
     public XmlDateTypeHandler() { }
     

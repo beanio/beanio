@@ -30,12 +30,12 @@ public class BeanIOConfig implements Cloneable {
     private List<TypeHandlerConfig> handlerList = new ArrayList<TypeHandlerConfig>();
     
     /**
-     * Constructs a new <tt>BeanIOConfig</tt>.
+     * Constructs a new <code>BeanIOConfig</code>.
      */
     public BeanIOConfig() { }
 
     /**
-     * Returns the source of this configuration.  May be <tt>null</tt>
+     * Returns the source of this configuration.  May be <code>null</code>
      * if unknown or not specified.
      * @return the configuration source
      */

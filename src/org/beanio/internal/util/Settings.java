@@ -22,13 +22,13 @@ import java.util.Properties;
 import org.beanio.BeanIOException;
 
 /**
- * <tt>Settings</tt> is used to load and store BeanIO configuration settings.  All settings are
+ * <code>Settings</code> is used to load and store BeanIO configuration settings.  All settings are
  * global within the JVM (or actually the class loader).
  * <p>
- * Default BeanIO settings can be overridden using a property file named <tt>beanio.properties</tt>
+ * Default BeanIO settings can be overridden using a property file named <code>beanio.properties</code>
  * The file will be loaded from the current working directory or from anywhere on the classpath.  
  * The default configuration filename can be overridden using the System property 
- * <tt>org.beanio.configuration</tt>.
+ * <code>org.beanio.configuration</code>.
  * <p>
  * Configuration settings can be further overridden by any System property of the same name when
  * the configuration file is loaded.
@@ -43,33 +43,33 @@ public class Settings {
 
     /** The default locale used by type handlers */
     public static final String DEFAULT_LOCALE = "org.beanio.defaultTypeHandlerLocale";
-    /** The default date format pattern for fields assigned type alias <tt>Date</tt> */
+    /** The default date format pattern for fields assigned type alias <code>Date</code> */
     public static final String DEFAULT_DATE_FORMAT = "org.beanio.defaultDateFormat";
-    /** The default date format pattern for fields assigned type alias <tt>DateTime</tt> or of type <tt>java.util.Date</tt> */
+    /** The default date format pattern for fields assigned type alias <code>DateTime</code> or of type <code>java.util.Date</code> */
     public static final String DEFAULT_DATETIME_FORMAT = "org.beanio.defaultDateTimeFormat";
-    /** The default date format pattern for fields assigned type alias <tt>Time</tt> */
+    /** The default date format pattern for fields assigned type alias <code>Time</code> */
     public static final String DEFAULT_TIME_FORMAT = "org.beanio.defaultTimeFormat";
     
     /** 
      * Whether property values support the following escape sequences:  
      * <ul>
-     *   <li><tt>\\</tt> - Backslash</li>
-     *   <li><tt>\n</tt> - Line Feed</li>
-     *   <li><tt>\r</tt> - Carriage Return</li>
-     *   <li><tt>\t</tt> - Tab</li>
-     *   <li><tt>\f</tt> - Form Feed</li>
-     *   <li><tt>\0</tt> - Null</li>
+     *   <li><code>\\</code> - Backslash</li>
+     *   <li><code>\n</code> - Line Feed</li>
+     *   <li><code>\r</code> - Carriage Return</li>
+     *   <li><code>\t</code> - Tab</li>
+     *   <li><code>\f</code> - Form Feed</li>
+     *   <li><code>\0</code> - Null</li>
      * </ul>
      * <p>A backslash preceding any other character is ignored.
-     * <p>Set to <tt>false</tt> to disable.
+     * <p>Set to <code>false</code> to disable.
      * @since 1.2
      */
     public static final String PROPERTY_ESCAPING_ENABLED = "org.beanio.propertyEscapingEnabled";
-    /** Whether the null character can be escaped using <tt>\0</tt> when property escaping is enabled. */
+    /** Whether the null character can be escaped using <code>\0</code> when property escaping is enabled. */
     public static final String NULL_ESCAPING_ENABLED = "org.beanio.propertyEscapingEnabled";
     /** Whether property substitution is enabled for mapping files */
     public static final String PROPERTY_SUBSTITUTION_ENABLED = "org.beanio.propertySubstitutionEnabled";
-    /** The default XML type for a field definition, set to <tt>element</tt> or <tt>attribute</tt>. */
+    /** The default XML type for a field definition, set to <code>element</code> or <code>attribute</code>. */
     public static final String DEFAULT_XML_TYPE = "org.beanio.xml.defaultXmlType";
     /** The default namespace prefix for 'http://www.w3.org/2001/XMLSchema-instance' */
     public static final String DEFAULT_XSI_NAMESPACE_PREFIX = "org.beanio.xml.xsiNamespacePrefix";
@@ -82,7 +82,7 @@ public class Settings {
     public static final String XML_WRITER_UPDATE_STATE_USING_DELTA = "org.beanio.stream.xml.XmlWriter.deltaEnabled";
     /** 
      * Whether a configured field default is marshalled for null property values.  The default configuration
-     * sets this property to <tt>true</tt>.
+     * sets this property to <code>true</code>.
      * @since 1.2.2
      */
     public static final String DEFAULT_MARSHALLING_ENABLED = "org.beanio.marshalDefaultEnabled";
@@ -139,7 +139,7 @@ public class Settings {
     private static Settings settings;
 
     /**
-     * Constructs a new <tt>Settings</tt>.
+     * Constructs a new <code>Settings</code>.
      * @param props the properties to expose as BeanIO settings
      */
     private Settings(Properties props) {
@@ -170,7 +170,7 @@ public class Settings {
      * @param key the property key
      * @param defaultValue the default value if the setting wasn't
      *   configured or invalid
-     * @return the <tt>int</tt> property value or <tt>defaultValue</tt>
+     * @return the <code>int</code> property value or <code>defaultValue</code>
      */
     public int getInt(String key, int defaultValue) {
         try {
@@ -185,7 +185,7 @@ public class Settings {
     }
 
     /**
-     * Returns the <tt>Settings</tt> instance.
+     * Returns the <code>Settings</code> instance.
      * @return the Settings
      */
     public synchronized static Settings getInstance() {
@@ -193,7 +193,7 @@ public class Settings {
     }
     
     /**
-     * Returns the <tt>Settings</tt> instance.
+     * Returns the <code>Settings</code> instance.
      * @param classLoader the {@link ClassLoader} to use for loading classpath resources
      * @return the Settings
      * @since 2.0

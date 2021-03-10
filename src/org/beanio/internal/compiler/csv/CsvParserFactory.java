@@ -32,7 +32,7 @@ import org.beanio.stream.csv.*;
 public class CsvParserFactory extends DelimitedParserFactory {
 
     /**
-     * Constructs a new <tt>CsvParserFactory</tt>.
+     * Constructs a new <code>CsvParserFactory</code>.
      */
     public CsvParserFactory() { }
     

@@ -25,7 +25,7 @@ import java.util.*;
  * the mapping file) that failed validation.
  * 
  * <p>An invalid record group does not affect the state of a {@link BeanReader}, and
- * subsequent calls to <tt>read()</tt> are not affected.
+ * subsequent calls to <code>read()</code> are not affected.
  * 
  * @author Kevin Seim
  * @since 2.0
@@ -37,7 +37,7 @@ public class InvalidRecordGroupException extends InvalidRecordException {
     private String groupName;
     
     /**
-     * Constructs a new <tt>InvalidRecordGroupException</tt>.
+     * Constructs a new <code>InvalidRecordGroupException</code>.
      * @param context one or more record contexts that make up the group
      * @param message the error message
      * @param groupName the group name

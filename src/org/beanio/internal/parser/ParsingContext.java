@@ -35,7 +35,7 @@ public abstract class ParsingContext {
     private ArrayList<Iteration> iterationStack = new ArrayList<Iteration>();
     
     /**
-     * Constructs a new <tt>ParsingContext</tt>.
+     * Constructs a new <code>ParsingContext</code>.
      */
     public ParsingContext() { }
     

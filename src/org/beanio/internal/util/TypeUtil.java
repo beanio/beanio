@@ -28,24 +28,24 @@ import java.util.*;
 public class TypeUtil {
 
     /** 
-     * Alias for a <tt>java.util.Date</tt> that includes both date and time information.
+     * Alias for a <code>java.util.Date</code> that includes both date and time information.
      * If a type handler is registered using this alias, the registered type handler will
-     * become the default type handler for all <tt>Date</tt> classes.
+     * become the default type handler for all <code>Date</code> classes.
      */
     public static final String DATETIME_ALIAS = "datetime";
-    /** Alias for the <tt>java.util.Date</tt> class that includes only date information */
+    /** Alias for the <code>java.util.Date</code> class that includes only date information */
     public static final String DATE_ALIAS = "date";
-    /** Alias for a <tt>java.util.Date</tt> that includes only time information */
+    /** Alias for a <code>java.util.Date</code> that includes only time information */
     public static final String TIME_ALIAS = "time";
     /** 
-     * Alias for a <tt>java.util.Calendar</tt> that includes both date and time information. 
+     * Alias for a <code>java.util.Calendar</code> that includes both date and time information.
      * If a type handler is registered using this alias, the registered type handler will
      * become the default type handler for all {@link Calendar} classes.
      */
     public static final String CALENDAR_DATETIME_ALIAS = "calendar-datetime";
-    /** Alias for a <tt>java.util.Calendar</tt> that includes only time information */
+    /** Alias for a <code>java.util.Calendar</code> that includes only time information */
     public static final String CALENDAR_TIME_ALIAS = "calendar-time";
-    /** Alias for a <tt>java.util.Calendar</tt> that includes only date information */
+    /** Alias for a <code>java.util.Calendar</code> that includes only date information */
     public static final String CALENDAR_DATE_ALIAS = "calendar-date";
     
     /** Class type used to indicate a Java array */
@@ -57,11 +57,11 @@ public class TypeUtil {
     private TypeUtil() { }
     
     /**
-     * Returns <tt>true</tt> if <tt>to.isAssignableFrom(from)</tt> after converting
-     * primitive values of <tt>to</tt> to its object counterpart.
+     * Returns <code>true</code> if <code>to.isAssignableFrom(from)</code> after converting
+     * primitive values of <code>to</code> to its object counterpart.
      * @param to the class or primitive to test assignability to
      * @param from the class to test assignability from
-     * @return <tt>true</tt> if <tt>to</tt> is assignable from <tt>from</tt>
+     * @return <code>true</code> if <code>to</code> is assignable from <code>from</code>
      */
     public static boolean isAssignable(Class<?> to, Class<?> from) {
         return toWrapperClass(to).isAssignableFrom(from);
@@ -70,7 +70,7 @@ public class TypeUtil {
     /**
      * Converts primitive types to their wrapper counterparts. 
      * @param type the class type to convert
-     * @return the wrapper equivalent for the primitive type, or if <tt>type</tt>
+     * @return the wrapper equivalent for the primitive type, or if <code>type</code>
      *   was not a primitive, its returned as is
      */
     public static Class<?> toWrapperClass(Class<?> type) {
@@ -97,9 +97,10 @@ public class TypeUtil {
     }
     
     /**
-     * Returns the <tt>Class</tt> object for a class name or type alias.  A type alias is not
+     * Returns the <code>Class</code> object for a class name or type alias.  A type alias is not
      * case sensitive.  The following type aliases are supported:
-     * <table summary="">
+     * <table>
+     * <caption></caption>
      * <tr><th>Alias</th><th>Class or Primitive</th></tr>
      * <tr><td>string</td><td>java.lang.String</td></tr>
      * <tr><td>boolean</td><td>java.lang.Boolean</td></tr>
@@ -180,10 +181,10 @@ public class TypeUtil {
     }
     
     /**
-     * Returns <tt>true</tt> if the type alias is not used to register a
+     * Returns <code>true</code> if the type alias is not used to register a
      * type handler for its associated class.
      * @param alias the type alias to check
-     * @return <tt>true</tt> if the type alias is only an alias
+     * @return <code>true</code> if the type alias is only an alias
      */
     public static boolean isAliasOnly(String alias) {
         return DATE_ALIAS.equalsIgnoreCase(alias) || 
@@ -193,9 +194,10 @@ public class TypeUtil {
     }
     
     /**
-     * Returns the collection <tt>Class</tt> object for a collection class name or type alias.  
+     * Returns the collection <code>Class</code> object for a collection class name or type alias.
      * A type alias is not case sensitive.  The following collection type aliases are supported:
-     * <table summary="">
+     * <table>
+     * <caption></caption>
      * <tr><th>Alias</th><th>Class or Primitive</th></tr>
      * <tr><td>array</td><td>Java Array</td></tr>
      * <tr><td>list</td><td>java.util.ArrayList</td></tr>
@@ -204,7 +206,7 @@ public class TypeUtil {
      * 
      * @param type the fully qualified class name or type alias of the collection
      * @return the collection class, or {@link #ARRAY_TYPE} for array, 
-     *   or <tt>null</tt> if the type name is invalid
+     *   or <code>null</code> if the type name is invalid
      */
     @SuppressWarnings("unchecked")
     public static Class<? extends Collection<Object>> toCollectionType(String type) {

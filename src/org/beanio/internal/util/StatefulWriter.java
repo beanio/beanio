@@ -3,7 +3,7 @@ package org.beanio.internal.util;
 import java.util.Map;
 
 /**
- * <tt>StatefulWriter</tt> can be implemented by writers that maintain state, so
+ * <code>StatefulWriter</code> can be implemented by writers that maintain state, so
  * that in case of an error, the last updated state of the writer can be restored and
  * writing can resume.
  * 

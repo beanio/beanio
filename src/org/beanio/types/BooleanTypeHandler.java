@@ -16,7 +16,7 @@
 package org.beanio.types;
 
 /**
- * A type handler implementation for the <tt>Boolean</tt> class, that
+ * A type handler implementation for the <code>Boolean</code> class, that
  * simply delegate parsing to its constructor.
  * 
  * @author Kevin Seim
@@ -37,8 +37,8 @@ public class BooleanTypeHandler implements TypeHandler {
     }
 
     /**
-     * Returns {@link Boolean#toString()}, or <tt>null</tt> if <tt>value</tt>
-     * is <tt>null</tt>.
+     * Returns {@link Boolean#toString()}, or <code>null</code> if <code>value</code>
+     * is <code>null</code>.
      */
     public String format(Object value) {
         if (value == null)

@@ -35,7 +35,7 @@ public class FixedLengthRecordFormat implements RecordFormat {
     private int maxMatchLength = Integer.MAX_VALUE;
     
     /**
-     * Constructs a new <tt>FixedLengthRecordFormat</tt>.
+     * Constructs a new <code>FixedLengthRecordFormat</code>.
      */
     public FixedLengthRecordFormat() { }
    

@@ -35,7 +35,7 @@ public class CsvParserConfiguration {
     private boolean alwaysQuote = false;
     
     /**
-     * Constructs a new <tt>CsvParserConfiguration</tt>.
+     * Constructs a new <code>CsvParserConfiguration</code>.
      */
     public CsvParserConfiguration() { } 
     
@@ -75,7 +75,7 @@ public class CsvParserConfiguration {
      * Sets the escape character. Quotation marks can be escaped within quoted
      * values using the escape character. For example, using the default escape
      * character, '"Hello ""friend"""' is parsed into 'Hello "friend"'.  Set
-     * to <tt>null</tt> to disable escaping.
+     * to <code>null</code> to disable escaping.
      * @param c new escape character
      */
     public void setEscape(Character c) {
@@ -86,8 +86,8 @@ public class CsvParserConfiguration {
      * Returns the escape character. Quotation marks can be escaped within
      * quoted values using the escape character. For example, using the default
      * escape character, '"Hello ""friend"""' is parsed into 'Hello "friend"'.
-     * Defaults to the quotation mark, <tt>"</tt>.
-     * @return the escape character or <tt>null</tt> if escaping is disabled
+     * Defaults to the quotation mark, <code>"</code>.
+     * @return the escape character or <code>null</code> if escaping is disabled
      */
     public Character getEscape() {
         return escape;
@@ -95,7 +95,7 @@ public class CsvParserConfiguration {
     
     /**
      * Returns whether escaping is enabled. By default, escaping is enabled.
-     * @return <tt>true</tt> if an escape character is enabled
+     * @return <code>true</code> if an escape character is enabled
      * @see #getEscape()
      */
     public boolean isEscapeEnabled() {
@@ -104,8 +104,8 @@ public class CsvParserConfiguration {
 
     /**
      * Returns whether a record may span multiple lines (when quoted). Defaults
-     * to <tt>false</tt>.
-     * @return <tt>true</tt> if a record may span multiple lines
+     * to <code>false</code>.
+     * @return <code>true</code> if a record may span multiple lines
      */
     public boolean isMultilineEnabled() {
         return multilineEnabled;
@@ -113,7 +113,7 @@ public class CsvParserConfiguration {
 
     /**
      * Sets whether a record may span multiple lines (when quoted).
-     * @param multilineEnabled set to true <tt>true</tt> to allow records to
+     * @param multilineEnabled set to true <code>true</code> to allow records to
      *   span multiple lines
      */
     public void setMultilineEnabled(boolean multilineEnabled) {
@@ -121,7 +121,7 @@ public class CsvParserConfiguration {
     }
 
     /**
-     * Returns whether to ignore unquoted whitespace. Returns <tt>false</tt> by
+     * Returns whether to ignore unquoted whitespace. Returns <code>false</code> by
      * default which causes the following record to raise an exception:
      * 
      * <pre>
@@ -130,7 +130,7 @@ public class CsvParserConfiguration {
      *        Unquoted whitespace here
      * </pre>
      * 
-     * @return <tt>true</tt> if unquoted whitespace is allowed
+     * @return <code>true</code> if unquoted whitespace is allowed
      */
     public boolean isWhitespaceAllowed() {
         return whitespaceAllowed;
@@ -138,7 +138,7 @@ public class CsvParserConfiguration {
 
     /**
      * Sets whether unquoted whitespace is ignored.
-     * @param whitespaceAllowed set to <tt>true</tt> to ignore unquoted
+     * @param whitespaceAllowed set to <code>true</code> to ignore unquoted
      *   whitespace
      */
     public void setWhitespaceAllowed(boolean whitespaceAllowed) {
@@ -147,12 +147,12 @@ public class CsvParserConfiguration {
 
     /**
      * Returns whether quotes are allowed to appear in an unquoted field. Set to
-     * <tt>false</tt> by default which will cause the following record to throw
+     * <code>false</code> by default which will cause the following record to throw
      * an exception:
      * <pre>
      * Field1,Field"2,Field3
      * </pre>
-     * @return <tt>true</tt> if quotes may appear in an unquoted field
+     * @return <code>true</code> if quotes may appear in an unquoted field
      */
     public boolean isUnquotedQuotesAllowed() {
         return unquotedQuotesAllowed;
@@ -160,7 +160,7 @@ public class CsvParserConfiguration {
 
     /**
      * Sets whether quotes are allowed to appear in an unquoted field.
-     * @param unquotedQuotesAllowed set to <tt>true</tt> if quotes may appear in
+     * @param unquotedQuotesAllowed set to <code>true</code> if quotes may appear in
      *   an unquoted field
      */
     public void setUnquotedQuotesAllowed(boolean unquotedQuotesAllowed) {
@@ -188,27 +188,27 @@ public class CsvParserConfiguration {
     
     /**
      * Returns whether one or more comment prefixes have been configured.
-     * @return <tt>true</tt> if one or more comment prefixes have been configured
+     * @return <code>true</code> if one or more comment prefixes have been configured
      */
     public boolean isCommentEnabled() {
         return comments != null && comments.length > 0;
     }
     
     /**
-     * Returns <tt>true</tt> if fields should always be quoted when marshalled.  
-     * Defaults to <tt>false</tt> which will only quote fields containing a quotation mark,
+     * Returns <code>true</code> if fields should always be quoted when marshalled.
+     * Defaults to <code>false</code> which will only quote fields containing a quotation mark,
      * delimiter, line feeds or carriage return.
-     * @return <tt>true</tt> if all fields will be quoted
+     * @return <code>true</code> if all fields will be quoted
      */
     public boolean isAlwaysQuote() {
         return alwaysQuote;
     }
 
     /**
-     * Set to <tt>true</tt> to quote every field when marshalled.  If <tt>false</tt>, a field
+     * Set to <code>true</code> to quote every field when marshalled.  If <code>false</code>, a field
      * will only be quoted if it contains a quotation mark, delimiter, line feed
      * or carriage return.
-     * @param alwaysQuote set to <tt>true</tt> to quote every field regardless
+     * @param alwaysQuote set to <code>true</code> to quote every field regardless
      *   of content
      */
     public void setAlwaysQuote(boolean alwaysQuote) {
@@ -217,7 +217,7 @@ public class CsvParserConfiguration {
 
     /**
      * Returns the text used to terminate a record.  By default, the record
-     * terminator is set to the value of the <tt>line.separator</tt> system property.
+     * terminator is set to the value of the <code>line.separator</code> system property.
      * @return the record termination text
      */
     public String getRecordTerminator() {
@@ -225,8 +225,8 @@ public class CsvParserConfiguration {
     }
 
     /**
-     * Sets the text used to terminate a record.  If set to <tt>null</tt>, the 
-     * the value of the <tt>line.separator</tt> system property is used to terminate
+     * Sets the text used to terminate a record.  If set to <code>null</code>, the
+     * the value of the <code>line.separator</code> system property is used to terminate
      * records.
      * @param recordTerminator the record termination text
      */
@@ -245,7 +245,7 @@ public class CsvParserConfiguration {
     }
 
     /**
-     * Sets the text used to terminate a record.  If set to <tt>null</tt>, the default
+     * Sets the text used to terminate a record.  If set to <code>null</code>, the default
      * line separator is used based on the 'line.separator' system property.
      * @param lineSeparator the line separation text
      * @deprecated

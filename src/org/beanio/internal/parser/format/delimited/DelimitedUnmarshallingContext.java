@@ -22,7 +22,7 @@ import org.beanio.internal.parser.UnmarshallingContext;
 /**
  * An {@link UnmarshallingContext} for a delimited record.
  * 
- * <p>The record value type for a delimited record is a <tt>String</tt> array.
+ * <p>The record value type for a delimited record is a <code>String</code> array.
  *  
  * @author Kevin Seim
  * @since 2.0
@@ -32,7 +32,7 @@ public class DelimitedUnmarshallingContext extends UnmarshallingContext {
     private String[] fields;
     
     /**
-     * Constructs a new <tt>DelimitedUnmarshallingContext</tt>.
+     * Constructs a new <code>DelimitedUnmarshallingContext</code>.
      */
     public DelimitedUnmarshallingContext() { }
 

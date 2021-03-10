@@ -32,7 +32,7 @@ public class BeanReaderException extends BeanIOException {
     private RecordContext[] recordContext;
     
     /**
-     * Constructs a new <tt>BeanReaderException</tt>.
+     * Constructs a new <code>BeanReaderException</code>.
      * @param message the error message
      */
     public BeanReaderException(String message) {
@@ -40,7 +40,7 @@ public class BeanReaderException extends BeanIOException {
     }
     
     /**
-     * Constructs a new <tt>BeanReaderException</tt>.
+     * Constructs a new <code>BeanReaderException</code>.
      * @param message the error message
      * @param cause the root cause
      */

@@ -16,7 +16,7 @@
 package org.beanio.internal.parser;
 
 /**
- * A <tt>RecordFormat</tt> provides format specific processing for a {@link Record} parser.
+ * A <code>RecordFormat</code> provides format specific processing for a {@link Record} parser.
  * 
  * <p>Implementations of this interface must be thread-safe.
  * 

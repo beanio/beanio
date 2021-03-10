@@ -35,14 +35,14 @@ public class DelimitedRecordParser implements RecordUnmarshaller, RecordMarshall
     private List<String> fieldList = new ArrayList<String>();
     
     /**
-     * Constructs a new <tt>DelimitedRecordParser</tt>.
+     * Constructs a new <code>DelimitedRecordParser</code>.
      */
     public DelimitedRecordParser() {  
         this(new DelimitedParserConfiguration());
     }
     
     /**
-     * Constructs a new <tt>DelimitedRecordParser</tt>.
+     * Constructs a new <code>DelimitedRecordParser</code>.
      * @param config the parser configuration settings
      */
     public DelimitedRecordParser(DelimitedParserConfiguration config) {
@@ -115,8 +115,8 @@ public class DelimitedRecordParser implements RecordUnmarshaller, RecordMarshall
     }
 
     /**
-     * Marshals a <tt>String</tt> array into a delimited record.
-     * @param record the <tt>String[]</tt> to marshal
+     * Marshals a <code>String</code> array into a delimited record.
+     * @param record the <code>String[]</code> to marshal
      * @return the formatted record text
      */
     public String marshal(String[] record) {

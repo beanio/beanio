@@ -28,7 +28,7 @@ public class URLTypeHandler implements TypeHandler {
     /**
      * Parses a {@link URL} using its constructor {@link URL#URL(String)}.
      * @param text the text to parse
-     * @return the parsed {@link URL} or null if <tt>text</tt>
+     * @return the parsed {@link URL} or null if <code>text</code>
      *   is null or an empty string
      */
     public Object parse(String text) throws TypeConversionException {
@@ -46,8 +46,8 @@ public class URLTypeHandler implements TypeHandler {
     }
 
     /**
-     * Formats a {@link URL} by calling <tt>toString()</tt>.  If <tt>value</tt> is
-     * null, <tt>null</tt> is returned.
+     * Formats a {@link URL} by calling <code>toString()</code>.  If <code>value</code> is
+     * null, <code>null</code> is returned.
      * @param value the {@link URL} to format
      * @return the formatted text
      */

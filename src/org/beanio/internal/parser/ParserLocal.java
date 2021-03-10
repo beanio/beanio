@@ -27,14 +27,14 @@ public class ParserLocal<T> {
     private T defaultValue = null;
 
     /**
-     * Constructs a new <tt>ParserLocal</tt>.
+     * Constructs a new <code>ParserLocal</code>.
      */
     public ParserLocal() {
         this(null);
     }
     
     /**
-     * Constructs a new <tt>ParserLocal</tt>.
+     * Constructs a new <code>ParserLocal</code>.
      * @param defaultValue the default value
      */
     public ParserLocal(T defaultValue) {

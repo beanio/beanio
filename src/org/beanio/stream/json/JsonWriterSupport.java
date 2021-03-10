@@ -42,7 +42,7 @@ public abstract class JsonWriterSupport {
     private transient int level = 0;
     
     /**
-     * Constructs a new <tt>JsonWriterSupport</tt>.
+     * Constructs a new <code>JsonWriterSupport</code>.
      */
     JsonWriterSupport() { }
     
@@ -101,10 +101,10 @@ public abstract class JsonWriterSupport {
     }
     
     /**
-     * Writes a value in JSON format.  The value must be a <tt>String</tt>, <tt>Number</tt>,
-     * <tt>Boolean</tt>, <tt>Map</tt> or <tt>Iterable</tt> (array), or else {@link Object#toString()}
+     * Writes a value in JSON format.  The value must be a <code>String</code>, <code>Number</code>,
+     * <code>Boolean</code>, <code>Map</code> or <code>Iterable</code> (array), or else {@link Object#toString()}
      * is called and the value is formatted as a JSON string.
-     * @param value the <tt>Object</tt> to write
+     * @param value the <code>Object</code> to write
      * @throws IOException
      */
     @SuppressWarnings("unchecked")

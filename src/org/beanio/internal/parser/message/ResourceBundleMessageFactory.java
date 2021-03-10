@@ -159,7 +159,7 @@ public class ResourceBundleMessageFactory implements MessageFactory {
      * Returns a message from a resource bundle.
      * @param bundle the resource bundle to check
      * @param key the resource bundle key for the message
-     * @return the message or <tt>null</tt> if not found
+     * @return the message or <code>null</code> if not found
      */
     private String getMessage(ResourceBundle bundle, String key) {
         try {

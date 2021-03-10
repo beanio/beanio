@@ -20,7 +20,7 @@ package org.beanio.internal.config;
  * may contain records and/or other groups.  In many cases, a group does not map to any
  * physical aspect of a stream.
  * 
- * <p>The <tt>minSize</tt>, <tt>maxSize</tt>, and <tt>nillable</tt> attributes do 
+ * <p>The <code>minSize</code>, <code>maxSize</code>, and <code>nillable</code> attributes do
  * not apply to groups.
  * 
  * @author Kevin Seim
@@ -33,7 +33,7 @@ public class GroupConfig extends PropertyConfig implements SelectorConfig {
     private String target;
     
     /**
-     * Constructs a new <tt>GroupConfig</tt>.
+     * Constructs a new <code>GroupConfig</code>.
      */
     public GroupConfig() { }
     
@@ -64,7 +64,7 @@ public class GroupConfig extends PropertyConfig implements SelectorConfig {
     
     /**
      * Returns the name of the property descendant to use for the
-     * Map key when <tt>collection</tt> is set to <tt>map</tt>.
+     * Map key when <code>collection</code> is set to <code>map</code>.
      * @return the key property name
      */
     public String getKey() {
@@ -73,7 +73,7 @@ public class GroupConfig extends PropertyConfig implements SelectorConfig {
 
     /**
      * Sets the name of the property descendant to use for the
-     * Map key when <tt>collection</tt> is set to <tt>map</tt>.
+     * Map key when <code>collection</code> is set to <code>map</code>.
      * @param key the key property name
      */
     public void setKey(String key) {
@@ -90,7 +90,7 @@ public class GroupConfig extends PropertyConfig implements SelectorConfig {
 
     /**
      * Sets the name of the target property for this group, which can be used
-     * in lieu of <tt>class</tt> to return descendant property types.
+     * in lieu of <code>class</code> to return descendant property types.
      * @param target the target property name
      */
     public void setTarget(String target) {

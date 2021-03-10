@@ -66,7 +66,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     private LinkedList<Component> propertyStack = new LinkedList<Component>();
     
     /**
-     * Constructs a new <tt>ParserFactory</tt>.
+     * Constructs a new <code>ParserFactory</code>.
      */
     public ParserFactorySupport() { }
     
@@ -1306,7 +1306,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
      * @param getter the getter method name, or null to use the default
      * @param setter the setter method name, or null to use the default
      * @param isConstructorArgument
-     * @return the <tt>PropertyDescriptor</tt>
+     * @return the <code>PropertyDescriptor</code>
      * @throws BeanIOConfigurationException if the property is not found on the bean class, or
      *   no read or write method is discovered
      */
@@ -1649,7 +1649,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     
     /**
      * Sets the type handler factory to use to create the stream definition.
-     * @param typeHandlerFactory the <tt>TypeHandlerFactory</tt> to use to
+     * @param typeHandlerFactory the <code>TypeHandlerFactory</code> to use to
      *   create the stream definition
      */
     public void setTypeHandlerFactory(TypeHandlerFactory typeHandlerFactory) {
@@ -1659,7 +1659,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     /**
      * Returns whether the stream definition must support reading
      * an input stream.
-     * @return <tt>true</tt> if the stream definition must support reading
+     * @return <code>true</code> if the stream definition must support reading
      *   an input stream
      */
     public boolean isReadEnabled() {
@@ -1669,7 +1669,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     /**
      * Returns whether the stream definition must support writing to an
      * output stream.
-     * @return <tt>true</tt> if the stream definition must support writing
+     * @return <code>true</code> if the stream definition must support writing
      *   to an output stream
      */
     public boolean isWriteEnabled() {

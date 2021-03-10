@@ -39,7 +39,7 @@ public class Record extends Segment implements Selector {
     private ParserLocal<Integer> count = new ParserLocal<Integer>(0);
 
     /**
-     * Constructs a new <tt>Record</tt>.
+     * Constructs a new <code>Record</code>.
      */
     public Record() { }
     

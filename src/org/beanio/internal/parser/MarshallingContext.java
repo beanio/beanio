@@ -38,7 +38,7 @@ public abstract class MarshallingContext extends ParsingContext {
     private RecordWriter recordWriter;
     
     /**
-     * Constructs a new <tt>MarshallingContext</tt>.
+     * Constructs a new <code>MarshallingContext</code>.
      */
     public MarshallingContext() { }
 
@@ -73,9 +73,9 @@ public abstract class MarshallingContext extends ParsingContext {
     protected abstract Object getRecordObject();
     
     /**
-     * Converts a record object to a <tt>String[]</tt>.
+     * Converts a record object to a <code>String[]</code>.
      * @param record the record object to convert
-     * @return the <tt>String</tt> array result, or null if not supported
+     * @return the <code>String</code> array result, or null if not supported
      */
     public String[] toArray(Object record) {
         return null;

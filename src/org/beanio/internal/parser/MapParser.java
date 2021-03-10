@@ -22,7 +22,7 @@ import org.beanio.internal.util.StringUtil;
 
 /**
  * A {@link Parser} component for aggregating inline {@link Map} objects.
- * For example: <tt>key1,field1,key2,field2</tt>.
+ * For example: <code>key1,field1,key2,field2</code>.
  * 
  * @author Kevin Seim
  * @since 2.0.1
@@ -37,7 +37,7 @@ public class MapParser extends Aggregation {
     private ParserLocal<Object> value = new ParserLocal<Object>();    
     
     /**
-     * Constructs a new <tt>MapParser</tt>.
+     * Constructs a new <code>MapParser</code>.
      */
     public MapParser() { }
     

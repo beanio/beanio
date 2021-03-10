@@ -44,7 +44,7 @@ public class XmlMappingReader {
     private DocumentBuilderFactory factory;
     
     /**
-     * Constructs a new <tt>XmlMappingReader</tt>.
+     * Constructs a new <code>XmlMappingReader</code>.
      */
     public XmlMappingReader() { 
         factory = createDocumentBuilderFactory();
@@ -106,7 +106,7 @@ public class XmlMappingReader {
     
     /**
      * Creates an XML document builder factory.
-     * @return the new <tt>DocumentBuilderFactory</tt>
+     * @return the new <code>DocumentBuilderFactory</code>
      */
     protected DocumentBuilderFactory createDocumentBuilderFactory() {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

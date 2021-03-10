@@ -18,7 +18,7 @@ package org.beanio.internal.config;
 /**
  * A constant component is used to add a property value to a bean object that is
  * not bound to any field in a stream.  During marshalling, constants can be
- * used to identify the record mapping for a bean object if <tt>identifier</tt>
+ * used to identify the record mapping for a bean object if <code>identifier</code>
  * is set to true.
  * 
  * @author Kevin Seim
@@ -29,7 +29,7 @@ public class ConstantConfig extends SimplePropertyConfig {
     private String value;
     
     /**
-     * Constructs a new <tt>ConstantConfig</tt>.
+     * Constructs a new <code>ConstantConfig</code>.
      */
     public ConstantConfig() { }
     

@@ -33,7 +33,7 @@ import org.beanio.stream.fixedlength.*;
 public class FixedLengthParserFactory extends FlatParserFactory {
 
     /**
-     * Constructs a new <tt>FixedLengthParserFactory</tt>.
+     * Constructs a new <code>FixedLengthParserFactory</code>.
      */
     public FixedLengthParserFactory() { }
     

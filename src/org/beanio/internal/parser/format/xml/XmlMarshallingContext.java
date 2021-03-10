@@ -41,7 +41,7 @@ public class XmlMarshallingContext extends MarshallingContext {
     private int ungroup = 0;
     
     /**
-     * Constructs a new <tt>XmlMarshallingContext</tt>.
+     * Constructs a new <code>XmlMarshallingContext</code>.
      * @param groupDepth the maximum depth of a group in the parser tree
      */
     public XmlMarshallingContext(int groupDepth) {

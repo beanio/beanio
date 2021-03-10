@@ -18,7 +18,7 @@ public class ToStringEnumTypeHandler implements TypeHandler {
     private Map<String,Enum> map;
     
     /**
-     * Constructs a new <tt>ToStringEnumTypeHandler</tt>.
+     * Constructs a new <code>ToStringEnumTypeHandler</code>.
      * @param type the Enum class
      */
     public ToStringEnumTypeHandler(Class<Enum> type) {

@@ -23,7 +23,7 @@ import org.beanio.internal.util.DebugUtil;
 
 /**
  * A Group holds child nodes including records and other groups.
- * This class is the dynamic counterpart to the <tt>GroupDefinition</tt> and
+ * This class is the dynamic counterpart to the <code>GroupDefinition</code> and
  * holds the current state of a group node during stream processing. 
  * 
  * @author Kevin Seim
@@ -44,7 +44,7 @@ public class Group extends ParserComponent implements Selector {
     private ParserLocal<Selector> lastMatched = new ParserLocal<Selector>();
     
     /**
-     * Constructs a new <tt>Group</tt>.
+     * Constructs a new <code>Group</code>.
      */
     public Group() { 
         super(5);

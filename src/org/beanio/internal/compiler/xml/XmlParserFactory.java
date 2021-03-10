@@ -33,7 +33,7 @@ import org.beanio.stream.xml.XmlRecordParserFactory;
 public class XmlParserFactory extends ParserFactorySupport {
 
     /**
-     * Constructs a new <tt>XmlParserFactory</tt>.
+     * Constructs a new <code>XmlParserFactory</code>.
      */
     public XmlParserFactory() { }
     

@@ -35,7 +35,7 @@ public class DelimitedMarshallingContext extends MarshallingContext {
     private ArrayList<Entry> entries = new ArrayList<Entry>();
     
     /**
-     * Constructs a new <tt>DelimitedMarshallingContext</tt>.
+     * Constructs a new <code>DelimitedMarshallingContext</code>.
      */
     public DelimitedMarshallingContext() { }
     

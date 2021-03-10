@@ -22,13 +22,13 @@ import org.beanio.stream.*;
 import org.beanio.stream.util.CommentReader;
 
 /**
- * A <tt>CsvReader</tt> is used to parse CSV formatted flat files into records
- * of <tt>String</tt> arrays.  
+ * A <code>CsvReader</code> is used to parse CSV formatted flat files into records
+ * of <code>String</code> arrays.
  * 
  * <p>The CSV format supported is defined by specification 
  * RFC 4180.  By default, there is one exception: lines that span multiple records will 
  * throw an exception.  To allow quoted multi-line fields, simply set 
- * <tt>multilineEnabled</tt> to <tt>true</tt> when constructing the reader.
+ * <code>multilineEnabled</code> to <code>true</code> when constructing the reader.
  * <p>
  * The reader also supports the following customizations:
  * <ul>
@@ -65,7 +65,7 @@ public class CsvReader implements RecordReader {
     private transient List<String> fieldList = new ArrayList<String>();
     
     /**
-     * Constructs a new <tt>CsvReader</tt>.
+     * Constructs a new <code>CsvReader</code>.
      * @param in the input stream to read from
      */
     public CsvReader(Reader in) {
@@ -73,9 +73,9 @@ public class CsvReader implements RecordReader {
     }
     
     /**
-     * Constructs a new <tt>CsvReader</tt>.
+     * Constructs a new <code>CsvReader</code>.
      * @param in the input stream to read from
-     * @param config the reader configuration settings or <tt>null</tt> to accept defaults
+     * @param config the reader configuration settings or <code>null</code> to accept defaults
      * @throws IllegalArgumentException if a configuration setting is invalid
      * @since 1.2
      */

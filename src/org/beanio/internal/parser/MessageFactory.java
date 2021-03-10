@@ -16,7 +16,7 @@
 package org.beanio.internal.parser;
 
 /**
- * A <tt>MessageFactory</tt> implementation is used to generate localized error
+ * A <code>MessageFactory</code> implementation is used to generate localized error
  * messages for record and field level errors.
  * 
  * @author Kevin Seim
@@ -27,7 +27,7 @@ public interface MessageFactory {
     /**
      * Returns the localized label for a record.
      * @param recordName the name of the record
-     * @return the record label, or <tt>null</tt> if no label was found
+     * @return the record label, or <code>null</code> if no label was found
      */
     public String getRecordLabel(String recordName);
     
@@ -35,7 +35,7 @@ public interface MessageFactory {
      * Returns the localized label for a field.
      * @param recordName the name of the record the field belongs to
      * @param fieldName the name of the field
-     * @return the field label, or <tt>null</tt> if no label was found
+     * @return the field label, or <code>null</code> if no label was found
      */
     public String getFieldLabel(String recordName, String fieldName);
     
@@ -44,7 +44,7 @@ public interface MessageFactory {
      * @param recordName the name of the record
      * @param fieldName the name of the field
      * @param rule the name of the validation rule
-     * @return the error message, or <tt>null</tt> if no message was configured
+     * @return the error message, or <code>null</code> if no message was configured
      */
     public String getFieldErrorMessage(String recordName, String fieldName, String rule);
     
@@ -52,7 +52,7 @@ public interface MessageFactory {
      * Returns a record level error message.
      * @param recordName the name of the record
      * @param rule the name of the validation rule
-     * @return the error message, or <tt>null</tt> if no message was configured
+     * @return the error message, or <code>null</code> if no message was configured
      */
     public String getRecordErrorMessage(String recordName, String rule);
     

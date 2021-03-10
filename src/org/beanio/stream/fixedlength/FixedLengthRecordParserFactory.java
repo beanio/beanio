@@ -31,7 +31,7 @@ public class FixedLengthRecordParserFactory extends FixedLengthParserConfigurati
     private static FixedLengthRecordParser parser = new FixedLengthRecordParser();
    
     /**
-     * Constructs a new <tt>FixedLengthRecordParserFactory</tt>.
+     * Constructs a new <code>FixedLengthRecordParserFactory</code>.
      */
     public FixedLengthRecordParserFactory() { }
     

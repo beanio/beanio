@@ -32,7 +32,7 @@ public abstract class XmlFieldFormat implements FieldFormat, XmlNode {
     private FieldPadding padding;
 
     /**
-     * Constructs a new <tt>XmlFieldFormat</tt>.
+     * Constructs a new <code>XmlFieldFormat</code>.
      */
     public XmlFieldFormat() { }
 

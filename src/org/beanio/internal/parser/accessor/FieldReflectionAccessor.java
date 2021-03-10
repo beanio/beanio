@@ -31,7 +31,7 @@ public class FieldReflectionAccessor extends PropertyAccessorSupport implements 
     private Field field;
     
     /**
-     * Constructs a new <tt>FieldReflectionAccessor</tt>.
+     * Constructs a new <code>FieldReflectionAccessor</code>.
      * @param field the reflected {@link Field}
      * @param constructorArgumentIndex the constructor argument index, or -1 if not a constructor argument
      */

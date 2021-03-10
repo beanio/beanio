@@ -21,10 +21,10 @@ import java.util.*;
 import org.beanio.internal.util.StringUtil;
 
 /**
- * A <tt>CollectionParser</tt> provides iteration support for a {@link Segment} or {@link Field},
+ * A <code>CollectionParser</code> provides iteration support for a {@link Segment} or {@link Field},
  * and is optionally bound to a {@link Collection} type property value.
  * 
- * <p>A <tt>CollectionParser</tt> must contain exactly one child {@link ParserComponent}.
+ * <p>A <code>CollectionParser</code> must contain exactly one child {@link ParserComponent}.
  *  
  * @author Kevin Seim
  * @since 2.0
@@ -37,7 +37,7 @@ public class CollectionParser extends Aggregation {
     private ParserLocal<Object> value = new ParserLocal<Object>();  
     
     /**
-     * Constructs a new <tt>CollectionParser</tt>.
+     * Constructs a new <code>CollectionParser</code>.
      */
     public CollectionParser() { }
     

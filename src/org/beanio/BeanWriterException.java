@@ -30,7 +30,7 @@ public class BeanWriterException extends BeanIOException {
     private static final long serialVersionUID = 2L;
 
     /**
-     * Constructs a new <tt>BeanWriterException</tt>.
+     * Constructs a new <code>BeanWriterException</code>.
      * @param message the error message
      * @param cause the root cause
      */
@@ -39,7 +39,7 @@ public class BeanWriterException extends BeanIOException {
     }
 
     /**
-     * Constructs a new <tt>BeanWriterException</tt>.
+     * Constructs a new <code>BeanWriterException</code>.
      * @param message the error message
      */
     public BeanWriterException(String message) {
@@ -47,7 +47,7 @@ public class BeanWriterException extends BeanIOException {
     }
 
     /**
-     * Constructs a new <tt>BeanWriterException</tt>.
+     * Constructs a new <code>BeanWriterException</code>.
      * @param cause the root cause
      */
     public BeanWriterException(Throwable cause) {

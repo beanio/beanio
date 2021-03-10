@@ -37,7 +37,7 @@ public class JsonReader extends JsonReaderSupport implements RecordReader {
     private int recordLineNumber;
     
     /**
-     * Constructs a new <tt>JsonReader</tt>.
+     * Constructs a new <code>JsonReader</code>.
      * @param in the {@link Reader} to read from
      */
     public JsonReader(Reader in) {

@@ -22,7 +22,7 @@ import java.util.*;
  * during unmarshalling.
  * 
  * <p>An invalid record does not affect the state of a {@link BeanReader}, and
- * subsequent calls to <tt>read()</tt> are not affected.
+ * subsequent calls to <code>read()</code> are not affected.
  * 
  * @author Kevin Seim
  * @since 1.0
@@ -32,7 +32,7 @@ public class InvalidRecordException extends BeanReaderException {
     private static final long serialVersionUID = 2L;
 
     /**
-     * Constructs a new <tt>InvalidRecordException</tt>.
+     * Constructs a new <code>InvalidRecordException</code>.
      * @param message the error message
      */
     protected InvalidRecordException(String message) {
@@ -40,7 +40,7 @@ public class InvalidRecordException extends BeanReaderException {
     }
     
     /**
-     * Constructs a new <tt>InvalidRecordException</tt>.
+     * Constructs a new <code>InvalidRecordException</code>.
      * @param context the {@link RecordContext} that caused the exception
      * @param message the error message
      */

@@ -21,7 +21,7 @@ import java.util.*;
 import org.beanio.BeanIOConfigurationException;
 
 /**
- * A <tt>ConfigurationLoader</tt> is used to load BeanIO mapping configurations from
+ * A <code>ConfigurationLoader</code> is used to load BeanIO mapping configurations from
  * an input stream.
  * 
  * <p>Implementations must be thread safe.</p>

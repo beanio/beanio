@@ -16,7 +16,7 @@
 package org.beanio.internal.parser;
 
 /**
- * Repeating components must implement <tt>Iteration</tt> to offset record positions 
+ * Repeating components must implement <code>Iteration</code> to offset record positions
  * during marshalling and unmarshalling.
  * 
  * @author Kevin Seim

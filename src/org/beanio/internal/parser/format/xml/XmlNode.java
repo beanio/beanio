@@ -49,21 +49,21 @@ public interface XmlNode {
 
     /**
      * Returns the namespace of this node.  If there is no namespace for this
-     * node, or this node is not namespace aware, <tt>null</tt> is returned.
+     * node, or this node is not namespace aware, <code>null</code> is returned.
      * @return the XML namespace of this node
      */
     public String getNamespace();
     
     /**
-     * Returns <tt>true</tt> if a namespace was configured for this node, and is
+     * Returns <code>true</code> if a namespace was configured for this node, and is
      * therefore used to unmarshal and marshal the node.
-     * @return <tt>true</tt> if this node uses a namespace for matching and 
+     * @return <code>true</code> if this node uses a namespace for matching and
      *   formatting this node
      */
     public boolean isNamespaceAware();
 
     /**
-     * Returns the namespace prefix for marshaling this node, or <tt>null</tt>
+     * Returns the namespace prefix for marshaling this node, or <code>null</code>
      * if the namespace should override the default namespace.
      * @return the namespace prefix
      */
@@ -71,7 +71,7 @@ public interface XmlNode {
     
     /**
      * Returns whether this node is nillable.
-     * @return <tt>true</tt> if this node is nillable
+     * @return <code>true</code> if this node is nillable
      */
     public boolean isNillable();
 

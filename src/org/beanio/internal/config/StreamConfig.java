@@ -49,7 +49,7 @@ public class StreamConfig extends GroupConfig {
     private BeanConfig<RecordParserFactory> parserFactory;
 
     /**
-     * Constructs a new <tt>StreamConfig</tt>.
+     * Constructs a new <code>StreamConfig</code>.
      */
     public StreamConfig() {
         setMinOccurs(0);
@@ -83,7 +83,7 @@ public class StreamConfig extends GroupConfig {
      * @return {@link #READ_WRITE_MODE} if reading and writing from a stream is allowed,
      *   {@link #READ_ONLY_MODE} if only reading is allowed,
      *   {@link #WRITE_ONLY_MODE} if only writing is allowed,
-     *   or <tt>null</tt> if explicitly set
+     *   or <code>null</code> if explicitly set
      */
     public String getMode() {
         return mode;
@@ -91,7 +91,7 @@ public class StreamConfig extends GroupConfig {
 
     /**
      * Sets the allowed mode(s) of operation for this stream.  If not
-     * set, or explicitly set to <tt>null</tt>, the stream configuration defaults to
+     * set, or explicitly set to <code>null</code>, the stream configuration defaults to
      * read/write.  Some configuration validations are relaxed if set to read or write only.
      * @param mode {@link #READ_WRITE_MODE} if reading and writing from a stream is allowed,
      *   {@link #READ_ONLY_MODE} if only reading is allowed,

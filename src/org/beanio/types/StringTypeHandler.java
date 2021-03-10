@@ -16,7 +16,7 @@
 package org.beanio.types;
 
 /**
- * A type handler implementation for the <tt>String</tt> class.
+ * A type handler implementation for the <code>String</code> class.
  * 
  * @author Kevin Seim
  * @since 1.0
@@ -27,9 +27,9 @@ public class StringTypeHandler implements TypeHandler {
     private boolean nullIfEmpty = false;
 
     /**
-     * Parses a <tt>String</tt> from the given text.
+     * Parses a <code>String</code> from the given text.
      * @param text the text to parse
-     * @return the parsed <tt>String</tt>
+     * @return the parsed <code>String</code>
      */
     public String parse(String text) {
         if (text != null) {
@@ -46,7 +46,7 @@ public class StringTypeHandler implements TypeHandler {
     /**
      * Formats the value by calling {@link Object#toString()}.
      * @param value the value to format
-     * @return the formatted value, or <tt>null</tt> if <tt>value</tt> is <tt>null</tt>
+     * @return the formatted value, or <code>null</code> if <code>value</code> is <code>null</code>
      */
     public String format(Object value) {
         if (value == null)
@@ -63,35 +63,35 @@ public class StringTypeHandler implements TypeHandler {
     }
 
     /**
-     * Returns <tt>true</tt> if <tt>parse(String)</tt> should trim the text.
-     * By default, <tt>trim</tt> is <tt>false</tt> which allows trimming to
+     * Returns <code>true</code> if <code>parse(String)</code> should trim the text.
+     * By default, <code>trim</code> is <code>false</code> which allows trimming to
      * be controlled by the field definition.
-     * @return <tt>true</tt> if parsed text is trimmed
+     * @return <code>true</code> if parsed text is trimmed
      */
     public boolean isTrim() {
         return trim;
     }
 
     /**
-     * Set to <tt>true</tt> to trim text when parsing.
-     * @param trim <tt>true</tt> if text should be trimmed when parsed
+     * Set to <code>true</code> to trim text when parsing.
+     * @param trim <code>true</code> if text should be trimmed when parsed
      */
     public void setTrim(boolean trim) {
         this.trim = trim;
     }
 
     /**
-     * Returns <tt>true</tt> if empty string values are parsed as <tt>null</tt>.
-     * Defaults to <tt>false</tt>.
-     * @return <tt>true</tt> to convert the empty string to <tt>null</tt>
+     * Returns <code>true</code> if empty string values are parsed as <code>null</code>.
+     * Defaults to <code>false</code>.
+     * @return <code>true</code> to convert the empty string to <code>null</code>
      */
     public boolean isNullIfEmpty() {
         return nullIfEmpty;
     }
 
     /**
-     * Set to <tt>true</tt> if the parsed empty strings should be converted to <tt>null</tt>.
-     * @param nullIfEmpty <tt>true</tt> to convert empty string to <tt>null</tt>
+     * Set to <code>true</code> if the parsed empty strings should be converted to <code>null</code>.
+     * @param nullIfEmpty <code>true</code> to convert empty string to <code>null</code>
      */
     public void setNullIfEmpty(boolean nullIfEmpty) {
         this.nullIfEmpty = nullIfEmpty;

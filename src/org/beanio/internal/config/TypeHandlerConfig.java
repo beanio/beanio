@@ -64,9 +64,9 @@ public class TypeHandlerConfig extends BeanConfig<TypeHandler> {
     }
 
     /**
-     * Returns the stream format to register this type handler for, or <tt>null</tt>
+     * Returns the stream format to register this type handler for, or <code>null</code>
      * if the type handler is used for all formats.
-     * @return the stream format (xml, csv, delimited, or fixedlength) or <tt>null</tt>
+     * @return the stream format (xml, csv, delimited, or fixedlength) or <code>null</code>
      */
     public String getFormat() {
         return format;
@@ -74,7 +74,7 @@ public class TypeHandlerConfig extends BeanConfig<TypeHandler> {
 
     /**
      * Sets the stream format to register this type handler for.  By default,
-     * the stream format is <tt>null</tt> and the type handler is used for
+     * the stream format is <code>null</code> and the type handler is used for
      * all formats.
      * @param format the stream format (xml, csv, delimited, or fixedlength)
      */

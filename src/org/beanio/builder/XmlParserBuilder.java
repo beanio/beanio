@@ -30,7 +30,7 @@ public class XmlParserBuilder extends ParserBuilder {
     private XmlRecordParserFactory parser = new XmlRecordParserFactory();
     
     /**
-     * Constructs a new <tt>XmlParserBuilder</tt>.
+     * Constructs a new <code>XmlParserBuilder</code>.
      */
     public XmlParserBuilder() { }
     

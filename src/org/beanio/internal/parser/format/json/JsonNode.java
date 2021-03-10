@@ -67,8 +67,8 @@ public interface JsonNode {
     public int getJsonArrayIndex();
     
     /**
-     * Returns whether this node may be explicitly set to <tt>null</tt>.
-     * @return true if this node value may be set to <tt>null</tt>, false otherwise
+     * Returns whether this node may be explicitly set to <code>null</code>.
+     * @return true if this node value may be set to <code>null</code>, false otherwise
      */
     public boolean isNillable();
     

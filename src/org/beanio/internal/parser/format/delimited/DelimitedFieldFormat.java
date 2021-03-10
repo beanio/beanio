@@ -27,7 +27,7 @@ import org.beanio.internal.parser.format.flat.FlatFieldFormatSupport;
 public class DelimitedFieldFormat extends FlatFieldFormatSupport implements FieldFormat {
 
     /**
-     * Constructs a new <tt>DelimitedFieldFormat</tt>.
+     * Constructs a new <code>DelimitedFieldFormat</code>.
      */
     public DelimitedFieldFormat() { }
     

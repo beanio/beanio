@@ -28,14 +28,14 @@ import org.beanio.internal.util.TreeNode;
 public abstract class Component extends TreeNode<Component> {
 
     /**
-     * Constructs a new <tt>Component</tt>.
+     * Constructs a new <code>Component</code>.
      */
     public Component() {
         super();
     }
 
     /**
-     * Constructs a new <tt>Component</tt>.
+     * Constructs a new <code>Component</code>.
      * @param size the initial child capacity
      */
     public Component(int size) {

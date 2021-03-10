@@ -32,7 +32,7 @@ public class RecordConfig extends SegmentConfig implements SelectorConfig {
     private Integer maxMatchLength;
     
     /**
-     * Constructs a new <tt>RecordConfig</tt>.
+     * Constructs a new <code>RecordConfig</code>.
      */
     public RecordConfig() { }
     
@@ -45,7 +45,7 @@ public class RecordConfig extends SegmentConfig implements SelectorConfig {
      * Returns the minimum length of the record.  Depending on the type
      * of stream, the length may refer to the number of fields or the 
      * number of characters.
-     * @return the minimum record length, or <tt>null</tt> if not set
+     * @return the minimum record length, or <code>null</code> if not set
      */
     public Integer getMinLength() {
         return minLength;
@@ -55,7 +55,7 @@ public class RecordConfig extends SegmentConfig implements SelectorConfig {
      * Sets the minimum length of the record.  Depending on the type
      * of stream, the length may refer to the number of fields or the 
      * number of characters.
-     * @param minLength the minimum record length, or <tt>null</tt> if not set
+     * @param minLength the minimum record length, or <code>null</code> if not set
      */
     public void setMinLength(Integer minLength) {
         this.minLength = minLength;
@@ -65,7 +65,7 @@ public class RecordConfig extends SegmentConfig implements SelectorConfig {
      * Returns the maximum length of the record.  Depending on the type of
      * stream, the length may refer to the number of fields or the number
      * of characters.
-     * @return the maximum record length, or <tt>null</tt> if not set
+     * @return the maximum record length, or <code>null</code> if not set
      */
     public Integer getMaxLength() {
         return maxLength;
@@ -75,7 +75,7 @@ public class RecordConfig extends SegmentConfig implements SelectorConfig {
      * Sets the maximum length of the record.  Depending on the type of
      * stream, the length may refer to the number of fields or the number
      * of characters.
-     * @param maxLength the maximum record length, or <tt>null</tt> if not set
+     * @param maxLength the maximum record length, or <code>null</code> if not set
      */
     public void setMaxLength(Integer maxLength) {
         this.maxLength = maxLength;

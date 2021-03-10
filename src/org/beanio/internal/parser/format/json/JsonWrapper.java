@@ -20,7 +20,7 @@ import java.io.IOException;
 import org.beanio.internal.parser.*;
 
 /**
- * A <tt>JsonWrapper</tt> is used to handle nested JSON objects.
+ * A <code>JsonWrapper</code> is used to handle nested JSON objects.
  * 
  * @author Kevin Seim
  * @since 2.0
@@ -39,7 +39,7 @@ public class JsonWrapper extends DelegatingParser implements JsonNode {
     private boolean optional;
     
     /**
-     * Constructs a new <tt>JsonWrapper</tt>.
+     * Constructs a new <code>JsonWrapper</code>.
      */
     public JsonWrapper() { }
     

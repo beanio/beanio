@@ -30,12 +30,12 @@ public class DelimitedParserConfiguration {
     private String[] comments;
     
     /**
-     * Constructs a new <tt>DelimitedParserConfiguration</tt>.
+     * Constructs a new <code>DelimitedParserConfiguration</code>.
      */
     public DelimitedParserConfiguration() { }
 
     /**
-     * Constructs a new <tt>DelimitedReaderConfiguration</tt>.
+     * Constructs a new <code>DelimitedReaderConfiguration</code>.
      * @param delimiter the field delimiting character
      */
     public DelimitedParserConfiguration(char delimiter) { 
@@ -61,7 +61,7 @@ public class DelimitedParserConfiguration {
     /**
      * Returns the character used by the input stream to escape delimiters and itself.
      * By default, escaping is disabled.
-     * @return the escape character or <tt>null</tt> if escaping is disabled
+     * @return the escape character or <code>null</code> if escaping is disabled
      */
     public Character getEscape() {
         return escape;
@@ -77,16 +77,16 @@ public class DelimitedParserConfiguration {
     }
 
     /**
-     * Returns the line continuation character or <tt>null</tt> if line
+     * Returns the line continuation character or <code>null</code> if line
      * continuation is disabled.  By default, line continuation is disabled.
-     * @return the line continuation character or <tt>null</tt> if disabled
+     * @return the line continuation character or <code>null</code> if disabled
      */
     public Character getLineContinuationCharacter() {
         return lineContinuationCharacter;
     }
 
     /**
-     * Sets the line continuation character.  May be set to <tt>null</tt> to
+     * Sets the line continuation character.  May be set to <code>null</code> to
      * disable line continuation.
      * @param lineContinuationCharacter the line continuation character
      */
@@ -96,7 +96,7 @@ public class DelimitedParserConfiguration {
 
     /**
      * Returns whether an escape character is enabled.
-     * @return <tt>true</tt> if enabled, false otherwise
+     * @return <code>true</code> if enabled, false otherwise
      */
     public boolean isEscapeEnabled() {
         return escape != null;
@@ -104,7 +104,7 @@ public class DelimitedParserConfiguration {
 
     /**
      * Returns whether the line continuation character is enabled.
-     * @return <tt>true</tt> if the line continuation character is enabled
+     * @return <code>true</code> if the line continuation character is enabled
      */
     public boolean isLineContinationEnabled() {
         return lineContinuationCharacter  != null;
@@ -121,7 +121,7 @@ public class DelimitedParserConfiguration {
     }
 
     /**
-     * Sets the character used to mark the end of a record.  If set to <tt>null</tt>,
+     * Sets the character used to mark the end of a record.  If set to <code>null</code>,
      * a carriage return (CR), line feed (LF), or CRLF sequence is used.
      * @param recordTerminator the record termination character
      */
@@ -150,7 +150,7 @@ public class DelimitedParserConfiguration {
     
     /**
      * Returns whether one or more comment prefixes have been configured.
-     * @return <tt>true</tt> if one or more comment prefixes have been configured
+     * @return <code>true</code> if one or more comment prefixes have been configured
      */
     public boolean isCommentEnabled() {
         return comments != null && comments.length > 0;

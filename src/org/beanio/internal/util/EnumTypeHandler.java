@@ -15,7 +15,7 @@ public class EnumTypeHandler implements TypeHandler {
     private Class<Enum> type;
     
     /**
-     * Constructs a new <tt>EnumTypeHandler</tt>.
+     * Constructs a new <code>EnumTypeHandler</code>.
      * @param type the Enum class
      */
     public EnumTypeHandler(Class<Enum> type) {

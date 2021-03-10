@@ -35,7 +35,7 @@ public class ErrorContext implements RecordContext, Cloneable {
     private HashMap<String, Collection<String>> fieldErrorMap;
     
     /**
-     * Constructs a new <tt>ErrorContext</tt>.
+     * Constructs a new <code>ErrorContext</code>.
      */
     public ErrorContext() { }
     
@@ -116,7 +116,7 @@ public class ErrorContext implements RecordContext, Cloneable {
 
     /**
      * Returns the name of the last record read from the record reader, 
-     * or <tt>null</tt> if not known.
+     * or <code>null</code> if not known.
      * @return the name of the record
      */
     public String getRecordName() {

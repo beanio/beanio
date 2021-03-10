@@ -16,7 +16,7 @@
 package org.beanio.types;
 
 /**
- * A <tt>TypeHandler</tt> is used to convert field text into a Java object and vice versa.
+ * A <code>TypeHandler</code> is used to convert field text into a Java object and vice versa.
  * <p>
  * Implementations should be thread-safe if multiple threads may concurrently process the 
  * same stream type.  All included BeanIO type handlers are thread safe.
@@ -29,7 +29,7 @@ public interface TypeHandler {
     /** 
      * This constant can be returned from {@link #format(Object)} for XML formatted streams to indicate
      * a nillable element should be set to nil even if the field's minimum occurrences is zero.  
-     * In all other cases, if NIL is returned, the formatted value is treated as <tt>null</tt>. 
+     * In all other cases, if NIL is returned, the formatted value is treated as <code>null</code>.
      */
     public final static String NIL = new String("");
     
@@ -44,7 +44,7 @@ public interface TypeHandler {
     /**
      * Formats a Java object into field text.
      * @param value the Java object to format, which may be null
-     * @return the formatted field text, or <tt>null</tt> to indicate the value is not present, 
+     * @return the formatted field text, or <code>null</code> to indicate the value is not present,
      *   or {@link #NIL} for XML formatted streams
      */
     public String format(Object value);

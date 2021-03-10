@@ -16,7 +16,7 @@
 package org.beanio.internal.parser;
 
 /**
- * The <tt>Property</tt> interface is implemented by parser components capable
+ * The <code>Property</code> interface is implemented by parser components capable
  * of storing a property value.
  * 
  * @author Kevin Seim
@@ -97,7 +97,7 @@ public interface Property {
     /**
      * Returns whether this property or any of its descendants are used to 
      * identify a bean object. 
-     * @return <tt>true</tt> if this property identifies a bean
+     * @return <code>true</code> if this property identifies a bean
      */
     public boolean isIdentifier();
     public void setIdentifier(boolean identifier);

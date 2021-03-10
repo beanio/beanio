@@ -38,7 +38,7 @@ public class UnmarshallerImpl implements Unmarshaller {
     private Object recordValue;
     
     /**
-     * Constructs a new <tt>UnmarshallerImpl</tt>
+     * Constructs a new <code>UnmarshallerImpl</code>
      * @param context the {@link UnmarshallingContext}
      * @param layout the stream layout
      * @param recordUnmarshaller the {@link RecordUnmarshaller} for converting record text to record values

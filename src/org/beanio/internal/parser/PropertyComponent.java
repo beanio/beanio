@@ -20,7 +20,7 @@ import org.beanio.internal.util.*;
 /**
  * Base class for {@link Property} implementations that hold other properties (e.g. a bean object or collection).
  * 
- * <p>A <tt>PropertyComponent</tt> may only hold {@link Property} children.
+ * <p>A <code>PropertyComponent</code> may only hold {@link Property} children.
  * 
  * @author Kevin Seim
  * @since 2.0
@@ -42,7 +42,7 @@ public abstract class PropertyComponent extends Component implements Property {
     private PropertyAccessor accessor;
     
     /**
-     * Constructs a new <tt>PropertyComponent</tt>.
+     * Constructs a new <code>PropertyComponent</code>.
      */
     public PropertyComponent() { }
     

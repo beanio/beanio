@@ -21,13 +21,13 @@ import org.beanio.internal.parser.Stream;
 import org.beanio.internal.util.TypeHandlerFactory;
 
 /**
- * A <tt>ParserFactory</tt> is used to convert a stream configuration (i.e. {@link StreamConfig})
+ * A <code>ParserFactory</code> is used to convert a stream configuration (i.e. {@link StreamConfig})
  * into a stream parser (i.e. {@link Stream}).
  * 
  * <p>A new parser factory is used to parse each stream configuration, thus implementations
  * need not worry about thread safety.
  * 
- * <p>All properties (e.g. <tt>classLoader</tt>) are set before {@link #createStream(StreamConfig)} is invoked.
+ * <p>All properties (e.g. <code>classLoader</code>) are set before {@link #createStream(StreamConfig)} is invoked.
  * 
  * @author Kevin Seim
  * @since 2.0

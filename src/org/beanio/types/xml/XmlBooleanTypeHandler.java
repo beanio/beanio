@@ -18,7 +18,7 @@ package org.beanio.types.xml;
 import org.beanio.types.*;
 
 /**
- * A type handler implementation for the <tt>Boolean</tt> class based on the
+ * A type handler implementation for the <code>Boolean</code> class based on the
  * W3C XML Schema <a href="http://www.w3.org/TR/xmlschema-2/#boolean">boolean</a> datatype
  * specification.
  * 
@@ -30,7 +30,7 @@ public class XmlBooleanTypeHandler implements TypeHandler {
     private boolean numericFormatEnabled = false;
     
     /**
-     * Constructs a new <tt>XmlBooleanTypeHandler</tt>.
+     * Constructs a new <code>XmlBooleanTypeHandler</code>.
      */
     public XmlBooleanTypeHandler() { }
     
@@ -55,8 +55,8 @@ public class XmlBooleanTypeHandler implements TypeHandler {
     }
 
     /**
-     * Returns {@link Boolean#toString()}, or <tt>null</tt> if <tt>value</tt>
-     * is <tt>null</tt>.
+     * Returns {@link Boolean#toString()}, or <code>null</code> if <code>value</code>
+     * is <code>null</code>.
      */
     public String format(Object value) {
         if (value == null)
@@ -81,8 +81,8 @@ public class XmlBooleanTypeHandler implements TypeHandler {
 
     /**
      * Returns whether the numeric format of a XML boolean is used to format
-     * Java <tt>Boolean</tt> types.
-     * @return <tt>true</tt> if a Boolean is formatted using 0 and 1 instead
+     * Java <code>Boolean</code> types.
+     * @return <code>true</code> if a Boolean is formatted using 0 and 1 instead
      *   of 'true' and 'false'
      */
     public boolean isNumericFormatEnabled() {
@@ -91,8 +91,8 @@ public class XmlBooleanTypeHandler implements TypeHandler {
 
     /**
      * Sets whether the numeric format of a XML boolean is used to format Java
-     * <tt>Boolean</tt> types.
-     * @param numericFormatEnabled <tt>true</tt> if a Boolean is formatted using 0 
+     * <code>Boolean</code> types.
+     * @param numericFormatEnabled <code>true</code> if a Boolean is formatted using 0 
      *   and 1 instead of 'true' and 'false'
      */
     public void setNumericFormatEnabled(boolean numericFormatEnabled) {

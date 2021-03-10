@@ -18,7 +18,7 @@ package org.beanio.internal.util;
 import java.util.Properties;
 
 /**
- * Utility class for working with <tt>Strings</tt>.
+ * Utility class for working with <code>Strings</code>.
  * 
  * @author Kevin Seim
  * @since 2.0
@@ -48,7 +48,7 @@ public final class StringUtil {
     }
     
     /**
-     * Substitutes <tt>${key,default}</tt> place holders with their property values.
+     * Substitutes <code>${key,default}</code> place holders with their property values.
      * @param text the template text
      * @param properties the user provided property values
      * @return the text after property substitution
@@ -65,7 +65,7 @@ public final class StringUtil {
     }
     
     /**
-     * Substitutes <tt>${key,default}</tt> place holders with their property values.
+     * Substitutes <code>${key,default}</code> place holders with their property values.
      * @param text the template text
      * @param properties the user provided property values
      * @return the text after property substitution

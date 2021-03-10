@@ -1,5 +1,5 @@
 /**
- * Gradle 1.5 build script.
+ * Gradle build script.
  *
  * Custom gradle tasks:
  *   zip     - Builds the BeanIO zip distribution
@@ -8,7 +8,7 @@
  * See the following URL for instructions regarding deployment to the Sonatype Maven repo:
  *   https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
  *
- * BeanIO 3.x and up is built using Java 8, with Java 7 source/target compatibility.
+ * BeanIO 3.x and up is built using Java 11, with Java 7 source/target compatibility.
  *
  * To execute the 'uploadArchives' task, the following properties must be specified
  * in an external 'gradle.properties' file:
@@ -18,14 +18,15 @@
  */
 
 plugins {
+    id 'java'
+    id 'groovy'
+
+    id 'maven'
+    id 'signing'
+
     id "org.sonarqube" version "3.1.1"
     id 'jacoco'
 }
-
-apply plugin: 'java'
-apply plugin: 'groovy'
-apply plugin: 'maven'
-apply plugin: 'signing'
 
 version = "3.0.0.SNAPSHOT"
 group = "com.github.beanio"
@@ -39,14 +40,10 @@ repositories {
     mavenCentral()
 }
 
-configurations {
-    jarjar
-}
-
 dependencies {
     testImplementation group: 'junit', name: 'junit', version: '4.13.2'
     testImplementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.5.14'
-    testRuntime group: 'commons-logging', name: 'commons-logging', version: '1.2'
+    testRuntimeOnly group: 'commons-logging', name: 'commons-logging', version: '1.2'
 }
 
 sourceSets {
@@ -80,16 +77,16 @@ sourceSets {
 javadoc {
     options.header = "BeanIO $version"
     options.docTitle = "<h2>BeanIO 3.0 API</h2>"
-    options.footer = "<i>Copyright &copy; 2010-2014 Kevin Seim</i>"
+    options.footer = "<i>Copyright &copy; 2010-2021 Kevin Seim and BeanIO contributors</i>"
     options.links = [
         "http://download.oracle.com/javase/7/docs/api/"
     ]
 }
 
 jar {
-    baseName = "$artifactId"
+    archiveBaseName = "$artifactId"
     includeEmptyDirs = false
-    ext.metaInfDir = "$buildDir/tmp/jar"
+
     // create a list of exported packages for OSGi
     ant.dirset(id:"osgi.dirs", dir:"src/org/beanio", excludes: "xsd/**")
     ant.pathconvert(refid:"osgi.dirs", property:"osgi.packages", dirsep:".", pathsep:";version=\"${version}\",") {
@@ -101,22 +98,22 @@ jar {
             "Implementation-Version": version,
             "Bundle-ManifestVersion": "2",
             "Bundle-Name": "BeanIO",
-            "Bundle-SymbolicName": "org.beanio",
+            "Bundle-SymbolicName": "com.github.beanio",
             "Bundle-Version": version,
             "Bundle-Vendor": "Kevin Seim",
             "Bundle-Description": "BeanIO OSGi support",
             "Bundle-License": "http://www.apache.org/licenses/LICENSE-2.0",
-            "Bundle-DocURL": "http://beanio.org",
+            "Bundle-DocURL": "https://beanio.github.io",
             "Export-Package": ant.properties["osgi.packages"] + ";version=\"${version}\"",
             "DynamicImport-Package": "*")
     }
     doLast {
-        manifest.writeTo("$metaInfDir/MANIFEST.MF")
+        manifest.writeTo("$buildDir/tmp/jar/MANIFEST.MF")
     }
 }
 
 test {
-  jvmArgs = ["-XX:-UseSplitVerifier"]
+    jvmArgs = ["-Duser.country=US", "-Duser.language=en"]
 }
 
 task sourcesJar(type: Jar, dependsOn:classes) {

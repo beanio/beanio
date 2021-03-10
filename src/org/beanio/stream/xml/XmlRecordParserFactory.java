@@ -32,7 +32,7 @@ public class XmlRecordParserFactory extends XmlParserConfiguration
     private XmlStreamConfiguration source;
     
     /**
-     * Constructs a new <tt>XmlRecordParserFactory</tt>.
+     * Constructs a new <code>XmlRecordParserFactory</code>.
      */
     public XmlRecordParserFactory() { }
     

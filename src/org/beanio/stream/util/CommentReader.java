@@ -19,7 +19,7 @@ import java.io.*;
 
 /**
  * Skips commented lines read from an input stream.  The input stream must support marking (i.e.
- * {@link Reader#markSupported()} must return <tt>true</tt>).  A line is considered commented if it starts
+ * {@link Reader#markSupported()} must return <code>true</code>).  A line is considered commented if it starts
  * with one of the configured comment indicators.
  * 
  * @author Kevin Seim
@@ -35,7 +35,7 @@ public class CommentReader {
     private boolean eof;
 
     /**
-     * Constructs a new <tt>CommentReader</tt>.
+     * Constructs a new <code>CommentReader</code>.
      * @param in the input stream to read
      * @param comments an array of comment identifying strings
      * @throws IllegalArgumentException if the configured comments are invalid or the reader does
@@ -46,7 +46,7 @@ public class CommentReader {
     }
     
     /**
-     * Constructs a new <tt>CommentReader</tt>.
+     * Constructs a new <code>CommentReader</code>.
      * @param in the input stream to read from
      * @param comments an array of comment identifying strings
      * @param recordTerminator the record terminating character
@@ -79,7 +79,7 @@ public class CommentReader {
     
     /**
      * Returns whether the next character should be ignored if its a line feed.
-     * @return <tt>true</tt> if the next line feed should be ignored
+     * @return <code>true</code> if the next line feed should be ignored
      */
     public boolean isSkipLF() {
         return skipLF;
@@ -87,7 +87,7 @@ public class CommentReader {
     
     /**
      * Returns whether the end of the stream was reached reading a commented line.
-     * @return <tt>true</tt> if the end of the stream was reached reading a commented line.
+     * @return <code>true</code> if the end of the stream was reached reading a commented line.
      */
     public boolean isEOF() {
         return eof;
@@ -97,7 +97,7 @@ public class CommentReader {
      * Skips comments in the input stream and returns the number of commented lines read.
      * If no commented lines were read, the stream is positioned just as it had been before
      * this method is called.
-     * @param initialSkipLF <tt>true</tt> if the first line feed character read should be ignored
+     * @param initialSkipLF <code>true</code> if the first line feed character read should be ignored
      * @return the number of skipped comment lines
      * @throws IOException
      */

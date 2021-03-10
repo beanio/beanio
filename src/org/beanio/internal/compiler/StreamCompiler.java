@@ -40,7 +40,7 @@ public class StreamCompiler {
     private ConfigurationLoader defaultConfigurationLoader;
 
     /**
-     * Constructs a new <tt>MappingFactory</tt>.
+     * Constructs a new <code>MappingFactory</code>.
      * @param classLoader the {@link ClassLoader} to use for resolving class names
      */
     public StreamCompiler(ClassLoader classLoader) {
@@ -188,7 +188,7 @@ public class StreamCompiler {
      * Creates a type handler factory for a list of configured type handlers. 
      * @param parent the parent {@link TypeHandlerFactory}
      * @param configList the list of type handler configurations
-     * @return the new {@link TypeHandlerFactory}, or <tt>parent</tt> if the configuration list was empty
+     * @return the new {@link TypeHandlerFactory}, or <code>parent</code> if the configuration list was empty
      * @since 2.0
      */
     private TypeHandlerFactory createTypeHandlerFactory(TypeHandlerFactory parent, List<TypeHandlerConfig> configList) {

@@ -29,7 +29,7 @@ import org.beanio.internal.util.Settings;
 public class XmlPreprocessor extends Preprocessor {
     
     /**
-     * Constructs a new <tt>XmlPreprocessor</tt>.
+     * Constructs a new <code>XmlPreprocessor</code>.
      * @param stream the stream configuration to pre-process
      */
     public XmlPreprocessor(StreamConfig stream) {

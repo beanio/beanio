@@ -28,7 +28,7 @@ public class MalformedRecordException extends BeanReaderException {
     private static final long serialVersionUID = 2L;
 
     /**
-     * Constructs a new <tt>MalformedRecordException</tt>.
+     * Constructs a new <code>MalformedRecordException</code>.
      * @param context the record context for the malformed record
      * @param message the error message
      */
@@ -37,7 +37,7 @@ public class MalformedRecordException extends BeanReaderException {
     }
 
     /**
-     * Constructs a new <tt>MalformedRecordException</tt>.
+     * Constructs a new <code>MalformedRecordException</code>.
      * @param context the record context for the malformed record
      * @param message the error message
      * @param cause the root cause

@@ -34,7 +34,7 @@ public class MethodReflectionAccessor extends PropertyAccessorSupport implements
     private Method setter;
     
     /**
-     * Constructs a new <tt>ReflectionAccessor</tt>.
+     * Constructs a new <code>ReflectionAccessor</code>.
      * @param descriptor the PropertyDescriptor describing the bean property
      * @param constructorArgumentIndex the constructor argument index, or -1 if not a constructor argument
      */

@@ -25,7 +25,7 @@ import java.io.IOException;
 public abstract class DelegatingParser extends ParserComponent {
 
     /**
-     * Constructs a new <tt>DelegatingParser</tt>.
+     * Constructs a new <code>DelegatingParser</code>.
      */
     public DelegatingParser() {
         super(1);

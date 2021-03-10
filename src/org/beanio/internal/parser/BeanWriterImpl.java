@@ -34,7 +34,7 @@ public class BeanWriterImpl implements BeanWriter, StatefulWriter {
     private MarshallingContext context;
     
     /**
-     * Constructs a new <tt>BeanWriterImpl</tt>.
+     * Constructs a new <code>BeanWriterImpl</code>.
      * @param context the {@link MarshallingContext}
      * @param layout the root {@link Selector} node in the parsing tree
      */

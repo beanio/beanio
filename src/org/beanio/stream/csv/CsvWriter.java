@@ -20,7 +20,7 @@ import java.io.*;
 import org.beanio.stream.RecordWriter;
 
 /**
- * A <tt>CsvWriter</tt> is used to format and write records, of <tt>String</tt> arrays,
+ * A <code>CsvWriter</code> is used to format and write records, of <code>String</code> arrays,
  * to a CSV output stream.  Using default settings, the CSV format supported is defined 
  * by specification RFC 4180.
  * <p>
@@ -50,7 +50,7 @@ public class CsvWriter implements RecordWriter {
     private transient int lineNumber;
     
     /**
-     * Constructs a new <tt>CsvWriter</tt> using default settings.
+     * Constructs a new <code>CsvWriter</code> using default settings.
      * according the RFC 4180 specification.
      * @param out the output stream to write to
      */
@@ -59,7 +59,7 @@ public class CsvWriter implements RecordWriter {
     }
         
     /**
-     * Constructs a new <tt>CsvWriter</tt>.
+     * Constructs a new <code>CsvWriter</code>.
      * @param out the output stream to write to
      * @param config the {@link CsvParserConfiguration}
      */
@@ -150,9 +150,9 @@ public class CsvWriter implements RecordWriter {
     }
     
     /**
-     * Returns <tt>true</tt> if the given field must be quoted.
+     * Returns <code>true</code> if the given field must be quoted.
      * @param cs the field to test
-     * @return <tt>true</tt> if the given field must be quoted
+     * @return <code>true</code> if the given field must be quoted
      */
     private boolean mustQuote(char [] cs) {
         for (char c : cs) {

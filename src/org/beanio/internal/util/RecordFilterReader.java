@@ -33,7 +33,7 @@ public class RecordFilterReader extends FilterReader {
     private int mark = -1;
     
     /**
-     * Constructs a new <tt>RecordFilterReader</tt>.
+     * Constructs a new <code>RecordFilterReader</code>.
      * @param in the {@link Reader} to read from
      */
     public RecordFilterReader(Reader in) {

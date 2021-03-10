@@ -26,16 +26,16 @@ import org.beanio.stream.RecordWriter;
 import org.w3c.dom.*;
 
 /**
- * A <tt>XmlWriter</tt> is used to write records to a XML output stream.  A document
+ * A <code>XmlWriter</code> is used to write records to a XML output stream.  A document
  * object model (DOM) is used to represent a record.  Group elements, as indicated
  * by a user data key (see below), are not closed when a record is written.  When
- * <tt>write(null)</tt> is called, an open group element is closed.  Finally, calling
- * <tt>flush()</tt> will close all remaining group elements and complete the document.
+ * <code>write(null)</code> is called, an open group element is closed.  Finally, calling
+ * <code>flush()</code> will close all remaining group elements and complete the document.
  * <p>
- * A <tt>XmlWriter</tt> makes use of the DOM user data feature to pass additional
- * information to and from the parser.  The <tt>IS_GROUP_ELEMENT</tt> user data is 
- * a <tt>Boolean</tt> value added to an element to indicate the element is group.  
- * And the <tt>IS_NAMESPACE_IGNORED</tt> user data is a <tt>Boolean</tt> value set on 
+ * A <code>XmlWriter</code> makes use of the DOM user data feature to pass additional
+ * information to and from the parser.  The <code>IS_GROUP_ELEMENT</code> user data is
+ * a <code>Boolean</code> value added to an element to indicate the element is group.
+ * And the <code>IS_NAMESPACE_IGNORED</code> user data is a <code>Boolean</code> value set on
  * elements where the XML namespace should be ignored when writing to the output stream.
  * 
  * @author Kevin Seim
@@ -59,7 +59,7 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
     /**
      * The DOM user data key to indicate a DOM element is a group element and should
      * be left "open" when the record is written to the output stream.  The value must 
-     * of type <tt>java.lang.Boolean</tt>. 
+     * of type <code>java.lang.Boolean</code>.
      */
     public static final String IS_GROUP_ELEMENT = "isGroup";
 
@@ -103,7 +103,7 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
     private boolean suppressOutput = false;
     
     /**
-     * Constructs a new <tt>XmlWriter</tt>.
+     * Constructs a new <code>XmlWriter</code>.
      * @param writer the output stream to write to
      */
     public XmlWriter(Writer writer) {
@@ -111,7 +111,7 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
     }
     
     /**
-     * Constructs a new <tt>XmlWriter</tt>.
+     * Constructs a new <code>XmlWriter</code>.
      * @param writer the output stream to write to
      * @param config the XML writer configuration
      */
@@ -218,7 +218,7 @@ public class XmlWriter implements RecordWriter, StatefulWriter {
     /**
      * Recursively writes an element to the XML stream writer.
      * @param element the DOM element to write
-     * @param indentationEnabled set to <tt>true</tt> if indentation is enabled
+     * @param indentationEnabled set to <code>true</code> if indentation is enabled
      * @throws XMLStreamException
      */
     private void write(Element element, boolean indentationEnabled) throws XMLStreamException {

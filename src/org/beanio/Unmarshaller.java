@@ -23,16 +23,16 @@ import org.w3c.dom.Node;
 /**
  * Interface for unmarshalling single records.
  * 
- * <p>An <tt>Unmarshaller</tt> can be used to unmarshal a bean object bound to
- * a <tt>record</tt> in a mapping file.  Unmarshalling bean objects that span multiple
+ * <p>An <code>Unmarshaller</code> can be used to unmarshal a bean object bound to
+ * a <code>record</code> in a mapping file.  Unmarshalling bean objects that span multiple
  * records is not supported and will cause a {@link BeanReaderException}.</p>
  * 
- * <p>An <tt>Unmarshaller</tt> instance is stateful.  If a BeanIO mapping file declares
+ * <p>An <code>Unmarshaller</code> instance is stateful.  If a BeanIO mapping file declares
  * record ordering and expected occurrences, a {@link BeanWriterException} may be thrown for
  * records read out of sequence or that have exceeded their maximum occurrences.</p>
  * 
- * <p>There is some performance benefit for reusing the same <tt>Unmarshaller</tt> instance,
- * but an <tt>Unmarshaller</tt> is not thread safe and should not be used to unmarshal multiple 
+ * <p>There is some performance benefit for reusing the same <code>Unmarshaller</code> instance,
+ * but an <code>Unmarshaller</code> is not thread safe and should not be used to unmarshal multiple
  * records concurrently.</p>
  * 
  * @author Kevin Seim
@@ -71,11 +71,11 @@ public interface Unmarshaller extends Debuggable {
         UnidentifiedRecordException, UnexpectedRecordException, InvalidRecordException;
 
     /**
-     * Unmarshals a bean object from the given <tt>String[]</tt> of fields.  This method is supported by
+     * Unmarshals a bean object from the given <code>String[]</code> of fields.  This method is supported by
      * CSV and delimited formatted streams only.
-     * @param fields the <tt>String[]</tt> of fields to unmarshal
+     * @param fields the <code>String[]</code> of fields to unmarshal
      * @return the unmarshalled bean object
-     * @throws BeanReaderException if a <tt>String[]</tt> is not supported by the stream format,
+     * @throws BeanReaderException if a <code>String[]</code> is not supported by the stream format,
      *   or if the bean is bound to a record group, or if some other rare (but fatal) error occurs
      * @throws UnidentifiedRecordException if the record type could not be identified
      * @throws UnexpectedRecordException if the record is out of sequence

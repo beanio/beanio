@@ -29,7 +29,7 @@ public class FixedLengthUnmarshallingContext extends UnmarshallingContext {
     private int recordLength;
     
     /**
-     * Constructs a new <tt>FixedLengthUnmarshallingContext</tt>.
+     * Constructs a new <code>FixedLengthUnmarshallingContext</code>.
      */
     public FixedLengthUnmarshallingContext() { }
 

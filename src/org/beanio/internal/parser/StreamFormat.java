@@ -20,7 +20,7 @@ import java.io.*;
 import org.beanio.stream.*;
 
 /**
- * A <tt>StreamFormat</tt> provides format specific extensions for a {@link Stream} parser. 
+ * A <code>StreamFormat</code> provides format specific extensions for a {@link Stream} parser. 
  * 
  * <p>Implementations of this interface must be thread-safe.
  *  

@@ -40,7 +40,7 @@ public class XmlUnmarshallingContext extends UnmarshallingContext {
     private XmlNode[] groupStack;
     
     /**
-     * Constructs a new <tt>XmlUnmarshallingContext</tt>
+     * Constructs a new <code>XmlUnmarshallingContext</code>
      * @param groupDepth the maximum depth of an element mapped to a {@link Group} in the DOM
      */
     public XmlUnmarshallingContext(int groupDepth) {
@@ -112,10 +112,10 @@ public class XmlUnmarshallingContext extends UnmarshallingContext {
     }
     
     /**
-     * Updates <tt>position</tt> by finding a child of the current position
-     * that matches a given node.  If <tt>isGroup</tt> is true, the node is
+     * Updates <code>position</code> by finding a child of the current position
+     * that matches a given node.  If <code>isGroup</code> is true, the node is
      * indexed by its depth so that calls to this method for subsequent records
-     * in the same group can update <tt>position</tt> according to the depth
+     * in the same group can update <code>position</code> according to the depth
      * of the record.
      * @param node the {@link XmlNode} to match
      * @param depth the depth of the node in the DOM tree 
@@ -154,7 +154,7 @@ public class XmlUnmarshallingContext extends UnmarshallingContext {
     }
     
     /**
-     * Updates <tt>position</tt> by finding a child of the current position
+     * Updates <code>position</code> by finding a child of the current position
      * that matches a given node.
      * @param node the {@link XmlNode} to match
      * @return the matching element, or null if not found
@@ -172,7 +172,7 @@ public class XmlUnmarshallingContext extends UnmarshallingContext {
     }
     
     /**
-     * Updates <tt>position</tt> to its parent (element), 
+     * Updates <code>position</code> to its parent (element),
      * or null if the parent element is the document itself.
      * @see #getPosition()
      */
@@ -189,7 +189,7 @@ public class XmlUnmarshallingContext extends UnmarshallingContext {
     }
     
     /**
-     * Finds a child element of the current <tt>position</tt>.
+     * Finds a child element of the current <code>position</code>.
      * @param node the {@link XmlNodeUtil}
      * @return the matched element or null if not found
      */

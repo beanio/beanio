@@ -38,25 +38,25 @@ public class XmlParserConfiguration implements Cloneable {
     private Map<String,String> namespaceMap = new HashMap<String,String>();
     
     /**
-     * Constructs a new <tt>XmlConfiguration</tt>.
+     * Constructs a new <code>XmlConfiguration</code>.
      */
     public XmlParserConfiguration() { }
 
     /**
-     * Returns the number of spaces to indent each level of XML, or <tt>-1</tt>
+     * Returns the number of spaces to indent each level of XML, or <code>-1</code>
      * if indentation is disabled.
      * @return the number of spaces to indent each level of XML, 
-     *   or <tt>-1</tt> to disable indentation
+     *   or <code>-1</code> to disable indentation
      */
     public int getIndentation() {
         return indentation;
     }
 
     /**
-     * Enables and sets the indentation level in spaces.  If set to <tt>-1</tt>
+     * Enables and sets the indentation level in spaces.  If set to <code>-1</code>
      * (the default value), indentation is disabled.
      * @param indentation the number of spaces to indent each level of XML, 
-     *   or <tt>-1</tt> to disable indentation
+     *   or <code>-1</code> to disable indentation
      */
     public void setIndentation(int indentation) {
         this.indentation = indentation;
@@ -64,7 +64,7 @@ public class XmlParserConfiguration implements Cloneable {
     
     /**
      * Returns whether XML output will be indented.
-     * @return <tt>true</tt> if indentation is enabled
+     * @return <code>true</code> if indentation is enabled
      */
     public boolean isIndentationEnabled() {
         return indentation >= 0;
@@ -72,8 +72,8 @@ public class XmlParserConfiguration implements Cloneable {
 
     /**
      * Returns the text used to terminate a line when indentation is enabled. 
-     * When set to <tt>null</tt> (the default), the line separator is set to the 
-     * value of the <tt>line.separator</tt> system property.
+     * When set to <code>null</code> (the default), the line separator is set to the 
+     * value of the <code>line.separator</code> system property.
      * @return the line separation text
      */
     public String getLineSeparator() {
@@ -82,8 +82,8 @@ public class XmlParserConfiguration implements Cloneable {
 
     /**
      * Sets the text used to terminate a line when indentation is enabled.  
-     * When set to <tt>null</tt> (the default), the line separator is set to the 
-     * value of the <tt>line.separator</tt> system property.
+     * When set to <code>null</code> (the default), the line separator is set to the 
+     * value of the <code>line.separator</code> system property.
      * @param lineSeparator the line separation text
      */
     public void setLineSeparator(String lineSeparator) {
@@ -91,8 +91,8 @@ public class XmlParserConfiguration implements Cloneable {
     }
 
     /**
-     * Returns whether the XML header is suppressed.  Defaults to <tt>false</tt>.
-     * @return <tt>true</tt> if the XML header is suppressed
+     * Returns whether the XML header is suppressed.  Defaults to <code>false</code>.
+     * @return <code>true</code> if the XML header is suppressed
      */
     public boolean isSuppressHeader() {
         return suppressHeader;
@@ -100,7 +100,7 @@ public class XmlParserConfiguration implements Cloneable {
 
     /**
      * Sets whether the XML header is suppressed.
-     * @param suppressHeader <tt>true</tt> to suppress the XML header
+     * @param suppressHeader <code>true</code> to suppress the XML header
      */
     public void setSuppressHeader(boolean suppressHeader) {
         this.suppressHeader = suppressHeader;
@@ -115,8 +115,8 @@ public class XmlParserConfiguration implements Cloneable {
     }
 
     /**
-     * Sets the XML version to include in the document header.  Defaults to <tt>1.0</tt>.
-     * May not be set to <tt>null</tt>.
+     * Sets the XML version to include in the document header.  Defaults to <code>1.0</code>.
+     * May not be set to <code>null</code>.
      * @param version the XML version
      */
     public void setVersion(String version) {
@@ -136,7 +136,7 @@ public class XmlParserConfiguration implements Cloneable {
 
     /**
      * Sets the XML character encoding to include in the document header.  Defaults
-     * to '<tt>utf-8</tt>'.  If set to <tt>null</tt> or empty string the document 
+     * to '<code>utf-8</code>'.  If set to <code>null</code> or empty string the document 
      * header will not include the encoding setting. 
      * @param encoding the XML character encoding
      */

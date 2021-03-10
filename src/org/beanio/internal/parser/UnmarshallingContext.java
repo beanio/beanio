@@ -60,7 +60,7 @@ public abstract class UnmarshallingContext extends ParsingContext {
     private List<ErrorContext> recordList = new ArrayList<ErrorContext>();
     
     /**
-     * Constructs a new <tt>UnmarshallingContext</tt>.
+     * Constructs a new <code>UnmarshallingContext</code>.
      */
     public UnmarshallingContext() { }
     
@@ -70,15 +70,15 @@ public abstract class UnmarshallingContext extends ParsingContext {
     }
     
     /**
-     * Sets the value of the record returned from the <tt>RecordReader</tt>
+     * Sets the value of the record returned from the <code>RecordReader</code>
      * @param value the record value read by a record reader
      * @see RecordReader
      */
     public abstract void setRecordValue(Object value);
     
     /**
-     * Converts a <tt>String[]</tt> to a record value.
-     * @param array the <tt>String[]</tt> to convert
+     * Converts a <code>String[]</code> to a record value.
+     * @param array the <code>String[]</code> to convert
      * @return the record value, or null if not supported
      */
     public Object toRecordValue(String[] array) {
@@ -87,7 +87,7 @@ public abstract class UnmarshallingContext extends ParsingContext {
     
     /**
      * Converts a {@link List} to a record value.
-     * @param list the <tt>List</tt> to convert
+     * @param list the <code>List</code> to convert
      * @return the record value, or null if not supported
      */
     public Object toRecordValue(List<String> list) {
@@ -96,7 +96,7 @@ public abstract class UnmarshallingContext extends ParsingContext {
 
     /**
      * Converts a {@link Node} to a record value.
-     * @param node the <tt>Node</tt> to convert
+     * @param node the <code>Node</code> to convert
      * @return the record value, or null if not supported
      */
     public Object toRecordValue(Node node) {
@@ -241,18 +241,18 @@ public abstract class UnmarshallingContext extends ParsingContext {
     }
     
     /**
-     * Returns <tt>true</tt> if a field error was reported while parsing
+     * Returns <code>true</code> if a field error was reported while parsing
      * this record.
-     * @return <tt>true</tt> if a field error was reported
+     * @return <code>true</code> if a field error was reported
      */
     public final boolean hasFieldErrors() {
         return recordContext.hasFieldErrors();
     }
     
     /**
-     * Returns <tt>true</tt> if a record level error was reported while parsing
+     * Returns <code>true</code> if a record level error was reported while parsing
      * this record.
-     * @return <tt>true</tt> if a record level error was reported
+     * @return <code>true</code> if a record level error was reported
      */
     public final boolean hasRecordErrors() {
         return recordContext.hasRecordErrors();

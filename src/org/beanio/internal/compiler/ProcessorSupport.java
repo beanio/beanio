@@ -33,7 +33,7 @@ public abstract class ProcessorSupport {
     private LinkedList<ComponentConfig> configStack = new LinkedList<ComponentConfig>();
     
     /**
-     * Constructs a new <tt>ProcessorSupport</tt>.
+     * Constructs a new <code>ProcessorSupport</code>.
      */
     public ProcessorSupport() { }
     

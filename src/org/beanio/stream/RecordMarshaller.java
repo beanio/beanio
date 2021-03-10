@@ -20,7 +20,7 @@ package org.beanio.stream;
  * 
  * <p>The class used to represent a <i>record</i> is specific to the
  * format of a record.  For example, a delimited record marshaller may use 
- * <tt>Stringp[]</tt>.</p>
+ * <code>Stringp[]</code>.</p>
  * 
  * @author Kevin Seim
  * @since 2.0
@@ -28,7 +28,7 @@ package org.beanio.stream;
 public interface RecordMarshaller {
 
     /**
-     * Marshals a single record object to a <tt>String</tt>.
+     * Marshals a single record object to a <code>String</code>.
      * @param record the record object to marshal
      * @return the marshalled record text
      */

@@ -20,9 +20,9 @@ import java.text.*;
 import java.util.Properties;
 
 /**
- * Base class for type handlers that parse objects extending from <tt>Number</tt>.  If a
- * <tt>pattern</tt> is set, a <tt>DecimalFormat</tt> is used to parse and format the value.  
- * Otherwise, the value is parsed and formatted using the <tt>Number</tt> subclass 
+ * Base class for type handlers that parse objects extending from <code>Number</code>.  If a
+ * <code>pattern</code> is set, a <code>DecimalFormat</code> is used to parse and format the value.
+ * Otherwise, the value is parsed and formatted using the <code>Number</code> subclass
  * specific to this type handler.
  * 
  * @author Kevin Seim
@@ -39,9 +39,9 @@ public abstract class NumberTypeHandler extends LocaleSupport implements Configu
     private transient ThreadLocal<DecimalFormat> format = new ThreadLocal<>();
 
     /**
-     * Parses a <tt>Number</tt> from the given text.
+     * Parses a <code>Number</code> from the given text.
      * @param text the text to parse
-     * @return the parsed Number, or null if <tt>text</tt> was <tt>null</tt>
+     * @return the parsed Number, or null if <code>text</code> was <code>null</code>
      *    or an empty string
      * @throws TypeConversionException if the text is not a valid number
      */
@@ -93,19 +93,19 @@ public abstract class NumberTypeHandler extends LocaleSupport implements Configu
     }
     
     /**
-     * Parses a <tt>Number</tt> from text.
+     * Parses a <code>Number</code> from text.
      * @param text the text to convert to a Number
-     * @return the parsed <tt>Number</tt>
+     * @return the parsed <code>Number</code>
      * @throws NumberFormatException if the text is not a valid number
      */
     protected abstract Number createNumber(String text) throws NumberFormatException;
 
     /**
-     * Parses a <tt>Number</tt> from a <tt>BigDecimal</tt>.
-     * @param bg the <tt>BigDecimal</tt> version of the number
-     * @return the parsed <tt>Number</tt>
-     * @throws ArithmeticException if the <tt>BigDecimal</tt> cannot be converted
-     *   to the <tt>Number</tt> type supported by this handler
+     * Parses a <code>Number</code> from a <code>BigDecimal</code>.
+     * @param bg the <code>BigDecimal</code> version of the number
+     * @return the parsed <code>Number</code>
+     * @throws ArithmeticException if the <code>BigDecimal</code> cannot be converted
+     *   to the <code>Number</code> type supported by this handler
      */
     protected abstract Number createNumber(BigDecimal bg) throws ArithmeticException;
     
@@ -133,16 +133,16 @@ public abstract class NumberTypeHandler extends LocaleSupport implements Configu
     }
     
     /**
-     * Creates a <tt>DecimalFormat</tt> for parsing and formatting the number value.
-     * @return the new <tt>DecimalFormat</tt>
+     * Creates a <code>DecimalFormat</code> for parsing and formatting the number value.
+     * @return the new <code>DecimalFormat</code>
      */
     protected DecimalFormat createDecimalFormat() {
         return new DecimalFormat(pattern, DecimalFormatSymbols.getInstance(locale));
     }
     
     /**
-     * Formats a <tt>Number</tt> by calling <tt>toString()</tt>.  If <tt>value</tt> is
-     * null, <tt>null</tt> is returned.
+     * Formats a <code>Number</code> by calling <code>toString()</code>.  If <code>value</code> is
+     * null, <code>null</code> is returned.
      * @param value the number to format
      * @return the formatted number
      */
@@ -158,19 +158,19 @@ public abstract class NumberTypeHandler extends LocaleSupport implements Configu
     }
 
     /**
-     * Returns the <tt>DecimalFormat</tt> pattern to use to parse and format the
-     * number value.  May be <tt>null</tt> if a <tt>DecimalFormat</tt> is not used.
-     * @return the <tt>DeimcalFormat</tt> pattern
+     * Returns the <code>DecimalFormat</code> pattern to use to parse and format the
+     * number value.  May be <code>null</code> if a <code>DecimalFormat</code> is not used.
+     * @return the <code>DeimcalFormat</code> pattern
      */
     public String getPattern() {
         return pattern;
     }
 
     /**
-     * Sets the <tt>DeimcalFormat</tt> pattern to use to parse and format the number
-     * value.  By default, the pattern is set to <tt>null</tt> and a <tt>Number</tt>
+     * Sets the <code>DeimcalFormat</code> pattern to use to parse and format the number
+     * value.  By default, the pattern is set to <code>null</code> and a <code>Number</code>
      * subclass is used to parse and format the number value. 
-     * @param pattern the <tt>DecimalFormat</tt> pattern
+     * @param pattern the <code>DecimalFormat</code> pattern
      */
     public void setPattern(String pattern) {
         // validate the pattern

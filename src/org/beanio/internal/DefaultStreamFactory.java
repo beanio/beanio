@@ -25,7 +25,7 @@ import org.beanio.internal.compiler.StreamCompiler;
 import org.beanio.internal.parser.Stream;
 
 /**
- * The <tt>DefaultStreamFactory</tt> stores configured stream definitions used
+ * The <code>DefaultStreamFactory</code> stores configured stream definitions used
  * to create bean readers and writers.  A single factory instance may be accessed 
  * concurrently by multiple threads.
  *  
@@ -38,7 +38,7 @@ public class DefaultStreamFactory extends StreamFactory {
     private Map<String, Stream> contextMap = new ConcurrentHashMap<String, Stream>();
 
     /**
-     * Constructs a new <tt>DefaultStreamFactory</tt>.
+     * Constructs a new <code>DefaultStreamFactory</code>.
      */
     public DefaultStreamFactory() { }
 
@@ -142,7 +142,7 @@ public class DefaultStreamFactory extends StreamFactory {
     /**
      * Removes the named stream from this manager.
      * @param name the name of the stream to remove
-     * @return the removed {@link Stream}, or <tt>null</tt> if
+     * @return the removed {@link Stream}, or <code>null</code> if
      *   the there was no stream for the given name
      */
     public Stream removeStream(String name) {

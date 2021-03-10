@@ -26,7 +26,7 @@ public class BeanIOConfigurationException extends BeanIOException {
     private static final long serialVersionUID = 2L;
 
     /**
-     * Constructs a new <tt>BeanIOConfigurationException</tt>.
+     * Constructs a new <code>BeanIOConfigurationException</code>.
      * @param message the error message
      * @param cause the root cause
      */
@@ -35,7 +35,7 @@ public class BeanIOConfigurationException extends BeanIOException {
     }
 
     /**
-     * Constructs a new <tt>BeanIOConfigurationException</tt>.
+     * Constructs a new <code>BeanIOConfigurationException</code>.
      * @param message the error message
      */
     public BeanIOConfigurationException(String message) {
@@ -43,7 +43,7 @@ public class BeanIOConfigurationException extends BeanIOException {
     }
 
     /**
-     * Constructs a new <tt>BeanIOConfigurationException</tt>.
+     * Constructs a new <code>BeanIOConfigurationException</code>.
      * @param cause the root cause
      */
     public BeanIOConfigurationException(Throwable cause) {

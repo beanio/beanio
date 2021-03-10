@@ -32,7 +32,7 @@ public class JsonRecordUnmarshaller extends JsonReaderSupport implements RecordU
     private StringReader reader = new StringReader();
     
     /**
-     * Constructs a new <tt>JsonRecordUnmarshaller</tt>.
+     * Constructs a new <code>JsonRecordUnmarshaller</code>.
      */
     public JsonRecordUnmarshaller() {
         setReader(reader);

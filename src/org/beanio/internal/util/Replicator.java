@@ -33,7 +33,7 @@ public class Replicator {
     private Set<Replicateable> archetypes = new HashSet<Replicateable>();
     
     /**
-     * Constructs a new <tt>Replicator</tt>.
+     * Constructs a new <code>Replicator</code>.
      */
     public Replicator() { }
     
@@ -52,7 +52,7 @@ public class Replicator {
      * @param <T> the node type
      * @param value the root graph node
      * @return a copy of the root graph node and its descendants
-     * @throws IllegalStateException if <tt>value</tt> is not a registered node
+     * @throws IllegalStateException if <code>value</code> is not a registered node
      */
     @SuppressWarnings("unchecked")
     public <T> T replicate(T value) {

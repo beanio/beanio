@@ -35,7 +35,7 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
     private ClassLoader classLoader;
     
     /**
-     * Constructs a new <tt>XmlConfigurationLoader</tt>.
+     * Constructs a new <code>XmlConfigurationLoader</code>.
      * @param classLoader the {@link ClassLoader} for loading imported resources
      */
     public XmlConfigurationLoader(ClassLoader classLoader) {

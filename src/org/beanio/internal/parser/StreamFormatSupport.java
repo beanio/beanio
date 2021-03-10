@@ -31,7 +31,7 @@ public abstract class StreamFormatSupport implements StreamFormat {
     private RecordParserFactory recordParserFactory;
     
     /**
-     * Constructs a new <tt>StreamFormatSupport</tt>.
+     * Constructs a new <code>StreamFormatSupport</code>.
      */
     public StreamFormatSupport() { }
     
@@ -52,20 +52,20 @@ public abstract class StreamFormatSupport implements StreamFormat {
     }
 
     /**
-     * Creates a new <tt>RecordReader</tt> to read from the given input stream.
+     * Creates a new <code>RecordReader</code> to read from the given input stream.
      * This method delegates to the configured record parser factory.
      * @param in the input stream to read from
-     * @return a new <tt>RecordReader</tt>
+     * @return a new <code>RecordReader</code>
      */
     public RecordReader createRecordReader(Reader in) {
         return recordParserFactory.createReader(in);
     }
 
     /**
-     * Creates a new <tt>RecordWriter</tt> for writing to the given output stream.
+     * Creates a new <code>RecordWriter</code> for writing to the given output stream.
      * This method delegates to the configured record parser factory.
      * @param out the output stream to write to
-     * @return a new <tt>RecordWriter</tt>
+     * @return a new <code>RecordWriter</code>
      */
     public RecordWriter createRecordWriter(Writer out) {
         return recordParserFactory.createWriter(out);

@@ -20,7 +20,7 @@ import java.io.*;
 import org.beanio.stream.*;
 
 /**
- * A <tt>DelimitedWriter</tt> is used to write records to delimited flat files.
+ * A <code>DelimitedWriter</code> is used to write records to delimited flat files.
  * Each record must be a String array of fields.  By default, fields are 
  * delimited by the tab character, but any other single character may be configured
  * instead.
@@ -50,7 +50,7 @@ public class DelimitedWriter implements RecordWriter {
     private Writer out;
 
     /**
-     * Constructs a new <tt>DelimitedWriter</tt>.
+     * Constructs a new <code>DelimitedWriter</code>.
      * @param out the output stream to write to
      */
     public DelimitedWriter(Writer out) {
@@ -58,7 +58,7 @@ public class DelimitedWriter implements RecordWriter {
     }
 
     /**
-     * Constructs a new <tt>DelimitedWriter</tt>.  By default, the 
+     * Constructs a new <code>DelimitedWriter</code>.  By default, the 
      * escape character is disabled.
      * @param out the output stream to write to
      * @param delimiter the field delimiting character
@@ -68,7 +68,7 @@ public class DelimitedWriter implements RecordWriter {
     }
 
     /**
-     * Constructs a new <tt>DelimitedWriter</tt>.
+     * Constructs a new <code>DelimitedWriter</code>.
      * @param out the output stream to write to
      * @param config the delimited parser configuration
      */

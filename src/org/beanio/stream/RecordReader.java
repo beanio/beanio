@@ -18,7 +18,7 @@ package org.beanio.stream;
 import java.io.IOException;
 
 /**
- * A <tt>RecordReader</tt> is used to divide an input stream into records.
+ * A <code>RecordReader</code> is used to divide an input stream into records.
  * The Java class used to represent a <i>record</i> is implementation specific and
  * dependent on the format of the input stream.
  * 

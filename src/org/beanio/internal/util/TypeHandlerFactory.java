@@ -25,24 +25,24 @@ import org.beanio.types.*;
 import org.beanio.types.xml.*;
 
 /**
- * A factory class used to get a <tt>TypeHandler</tt> for parsing field text 
+ * A factory class used to get a <code>TypeHandler</code> for parsing field text 
  * into field objects, and for formatting field objects into field text.
  * <p>
- * A <tt>TypeHandler</tt> is registered and retrieved by class, type alias, or name.  If a stream
+ * A <code>TypeHandler</code> is registered and retrieved by class, type alias, or name.  If a stream
  * format is specified when registering a type handler by class or type alias, the type handler
  * will only be returned when the same format is queried for.
  * In most cases, registering a type handler by type alias has the same effect as registering the
  * type handler using the target class associated with the alias.  There are two exceptions: 
- * type handlers can be specifically registered for '<tt>date</tt>' and '<tt>time</tt>' type aliases
+ * type handlers can be specifically registered for '<code>date</code>' and '<code>time</code>' type aliases
  * without overriding the default Date type handler, which is registered for the class 
- * <tt>java.util.Date</tt> and type alias '<tt>datetime</tt>'.
+ * <code>java.util.Date</code> and type alias '<code>datetime</code>'.
  * <p>
- * If a registered type handler implements the <tt>ConfigurableTypeHandler</tt> interface, 
- * handler properties can be overridden using a <tt>Properties</tt> object.  When the type handler
+ * If a registered type handler implements the <code>ConfigurableTypeHandler</code> interface, 
+ * handler properties can be overridden using a <code>Properties</code> object.  When the type handler
  * is retrieved, the factory calls {@link ConfigurableTypeHandler#newInstance(Properties)} to 
  * allow the type handler to return a customized version of itself.
  * <p>
- * By default, a <tt>TypeHandlerFactory</tt> holds a reference to a parent
+ * By default, a <code>TypeHandlerFactory</code> holds a reference to a parent
  * factory.  If a factory cannot find a type handler, its parent will be checked
  * recursively until there is no parent left to check.
  * 
@@ -120,7 +120,7 @@ public class TypeHandlerFactory {
     }
 
     /**
-     * Constructs a new <tt>TypeHandlerFactory</tt> using the default type handler factory
+     * Constructs a new <code>TypeHandlerFactory</code> using the default type handler factory
      * for its parent and the same {@link ClassLoader} that loaded this class.
      */
     public TypeHandlerFactory() {
@@ -128,7 +128,7 @@ public class TypeHandlerFactory {
     }
 
     /**
-     * Constructs a new <tt>TypeHandlerFactory</tt> using the default type handler factory
+     * Constructs a new <code>TypeHandlerFactory</code> using the default type handler factory
      * for its parent.
      * @param classLoader the {@link ClassLoader} for resolving unrecognized types
      * @since 2.0
@@ -139,9 +139,9 @@ public class TypeHandlerFactory {
     }
     
     /**
-     * Constructs a new <tt>TypeHandlerFactory</tt>.
+     * Constructs a new <code>TypeHandlerFactory</code>.
      * @param classLoader the {@link ClassLoader} for resolving unrecognized types
-     * @param parent the parent <tt>TypeHandlerFactory</tt>
+     * @param parent the parent <code>TypeHandlerFactory</code>
      * @since 2.0
      */
     public TypeHandlerFactory(ClassLoader classLoader, TypeHandlerFactory parent) {
@@ -150,10 +150,10 @@ public class TypeHandlerFactory {
     }
     
     /**
-     * Returns a named type handler, or <tt>null</tt> if there is no type handler configured
+     * Returns a named type handler, or <code>null</code> if there is no type handler configured
      * for the given name in this factory or any of its ancestors.
      * @param name the name of type handler was registered under
-     * @return the type handler, or <tt>null</tt> if there is no configured type handler
+     * @return the type handler, or <code>null</code> if there is no configured type handler
      *    registered for the name
      */
     public TypeHandler getTypeHandler(String name) {
@@ -161,11 +161,11 @@ public class TypeHandlerFactory {
     }
 
     /**
-     * Returns a named type handler, or <tt>null</tt> if there is no type handler configured
+     * Returns a named type handler, or <code>null</code> if there is no type handler configured
      * for the given name in this factory or any of its ancestors.
      * @param name the name the type handler was registered under
      * @param properties the custom properties for configuring the type handler
-     * @return the type handler, or <tt>null</tt> if there is no configured type handler
+     * @return the type handler, or <code>null</code> if there is no configured type handler
      *    registered for the name
      * @throws IllegalArgumentException if a custom property value was invalid
      */
@@ -177,10 +177,10 @@ public class TypeHandlerFactory {
     }
 
     /**
-     * Returns the type handler for the given type, or <tt>null</tt> if there is no type 
+     * Returns the type handler for the given type, or <code>null</code> if there is no type 
      * handler configured for the type in this factory or any of its ancestors.
      * @param type the class name or type alias
-     * @return the type handler, or <tt>null</tt> if there is no configured type handler
+     * @return the type handler, or <code>null</code> if there is no configured type handler
      *    registered for the type
      */
     public TypeHandler getTypeHandlerFor(String type) {
@@ -188,11 +188,11 @@ public class TypeHandlerFactory {
     }
 
     /**
-     * Returns the type handler for the given type and format, or <tt>null</tt> if there is no type 
+     * Returns the type handler for the given type and format, or <code>null</code> if there is no type 
      * handler configured for the type in this factory or any of its ancestors.
      * @param type the class name or type alias
      * @param format the stream format, or if null, format specific handlers will not be returned
-     * @return the type handler, or <tt>null</tt> if there is no configured type handler
+     * @return the type handler, or <code>null</code> if there is no configured type handler
      *    registered for the type
      * @since 2.0
      */
@@ -201,12 +201,12 @@ public class TypeHandlerFactory {
     }
     
     /**
-     * Returns the type handler for the given type, or <tt>null</tt> if there is no type 
+     * Returns the type handler for the given type, or <code>null</code> if there is no type 
      * handler configured for the type in this factory or any of its ancestors.
      * @param type the property type
      * @param format the stream format, or if null, format specific handlers will not be returned
      * @param properties the custom properties for configuring the type handler
-     * @return the type handler, or <tt>null</tt> if there is no configured type handler
+     * @return the type handler, or <code>null</code> if there is no configured type handler
      *    registered for the type
      * @throws IllegalArgumentException if a custom property value was invalid
      * @since 2.0
@@ -229,7 +229,7 @@ public class TypeHandlerFactory {
     }
 
     /**
-     * Returns a type handler for a class, or <tt>null</tt> if there is no type 
+     * Returns a type handler for a class, or <code>null</code> if there is no type 
      * handler configured for the class in this factory or any of its ancestors
      * @param clazz the target class to find a type handler for
      * @return the type handler, or null if the class is not supported
@@ -239,7 +239,7 @@ public class TypeHandlerFactory {
     }
     
     /**
-     * Returns a type handler for a class, or <tt>null</tt> if there is no type 
+     * Returns a type handler for a class, or <code>null</code> if there is no type 
      * handler configured for the class in this factory or any of its ancestors
      * @param clazz the target class to find a type handler for
      * @param format the stream format, or if null, format specific handlers will not be returned
@@ -411,16 +411,16 @@ public class TypeHandlerFactory {
     }
 
     /**
-     * Returns the default <tt>TypeHandlerFactory</tt>.
-     * @return the default <tt>TypeHandlerFactory</tt>
+     * Returns the default <code>TypeHandlerFactory</code>.
+     * @return the default <code>TypeHandlerFactory</code>
      */
     public static TypeHandlerFactory getDefault() {
         return defaultFactory;
     }
     
     /**
-     * Sets the parent <tt>TypeHandlerFactory</tt>.
-     * @param parent the parent <tt>TypeHandlerFactory</tt>
+     * Sets the parent <code>TypeHandlerFactory</code>.
+     * @param parent the parent <code>TypeHandlerFactory</code>
      */
     private void setParent(TypeHandlerFactory parent) {
         this.parent = parent;

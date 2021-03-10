@@ -35,7 +35,7 @@ public class CollectionBean extends PropertyComponent implements Property {
     };
     
     /**
-     * Constructs a new <tt>CollectionBean</tt>.
+     * Constructs a new <code>CollectionBean</code>.
      */
     public CollectionBean() { }
     
@@ -184,7 +184,7 @@ public class CollectionBean extends PropertyComponent implements Property {
     
     /**
      * Creates a new instance of this bean object.
-     * @return the new bean <tt>Object</tt>
+     * @return the new bean <code>Object</code>
      */
     protected Object newInstance() {
         return ObjectUtils.newInstance(getType());

@@ -20,8 +20,8 @@ import java.util.*;
 
 /**
  * This type handler uses a {@link SimpleDateFormat} to parse and format 
- * <tt>java.util.Calendar</tt> objects.  If no pattern is set, <tt>DateFormat.getInstance()</tt> 
- * is used to create a default date format.  By default, <tt>lenient</tt> is false.
+ * <code>java.util.Calendar</code> objects.  If no pattern is set, <code>DateFormat.getInstance()</code>
+ * is used to create a default date format.  By default, <code>lenient</code> is false.
  * 
  * @author Kevin Seim
  * @since 2.1.0

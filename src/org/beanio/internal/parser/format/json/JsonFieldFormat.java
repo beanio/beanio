@@ -50,7 +50,7 @@ public class JsonFieldFormat implements FieldFormat, JsonNode {
     private boolean bypassTypeHandler;
     
     /**
-     * Constructs a new <tt>JsonFieldFormat</tt>.
+     * Constructs a new <code>JsonFieldFormat</code>.
      */
     public JsonFieldFormat() { }
     

@@ -19,7 +19,7 @@ import org.w3c.dom.Document;
 
 /**
  * This interface provides access to the XMl stream definition for XML 
- * <tt>RecordReaderFactory</tt> classes that implement <tt>XmlStreamConfigurationAware</tt>. 
+ * <code>RecordReaderFactory</code> classes that implement <code>XmlStreamConfigurationAware</code>. 
  * 
  * @author Kevin Seim
  * @since 1.1

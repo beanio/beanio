@@ -28,7 +28,7 @@ public class Constant extends Component implements Property {
     private PropertyAccessor accessor;
     
     /**
-     * Constructs a new <tt>Constant</tt>.
+     * Constructs a new <code>Constant</code>.
      */
     public Constant() { }
     

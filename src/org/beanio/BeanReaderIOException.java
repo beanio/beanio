@@ -29,7 +29,7 @@ public class BeanReaderIOException extends BeanReaderException {
     private static final long serialVersionUID = 2L;
 
     /**
-     * Constructs a new <tt>BeanReaderIOException</tt>.
+     * Constructs a new <code>BeanReaderIOException</code>.
      * @param message the error message
      */
     public BeanReaderIOException(String message) {
@@ -37,7 +37,7 @@ public class BeanReaderIOException extends BeanReaderException {
     }
     
     /**
-     * Constructs a new <tt>BeanReaderIOException</tt>.
+     * Constructs a new <code>BeanReaderIOException</code>.
      * @param message the error message
      * @param cause the root cause
      */

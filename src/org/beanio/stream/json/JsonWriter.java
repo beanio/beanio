@@ -32,7 +32,7 @@ public class JsonWriter extends JsonWriterSupport implements RecordWriter {
     private Writer out;
 
     /**
-     * Constructs a new <tt>JsonWriter</tt>.
+     * Constructs a new <code>JsonWriter</code>.
      * @param out
      */
     public JsonWriter(Writer out) {
@@ -40,7 +40,7 @@ public class JsonWriter extends JsonWriterSupport implements RecordWriter {
     }
     
     /**
-     * Constructs a new <tt>JsonWriter</tt>.
+     * Constructs a new <code>JsonWriter</code>.
      * @param out
      */
     public JsonWriter(Writer out, JsonParserConfiguration config) {

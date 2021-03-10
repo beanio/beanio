@@ -68,7 +68,7 @@ public class XmlCalendarDateTimeTypeHandler extends AbstractXmlCalendarTypeHandl
     
     /**
      * Returns whether milliseconds are included when formatting the time.
-     * @return <tt>true</tt> if milliseconds are included when formatting the time
+     * @return <code>true</code> if milliseconds are included when formatting the time
      */
     public boolean isOutputMilliseconds() {
         return outputMilliseconds;
@@ -76,8 +76,8 @@ public class XmlCalendarDateTimeTypeHandler extends AbstractXmlCalendarTypeHandl
 
     /**
      * Sets whether milliseconds are included when formatting the time.  Set
-     * to <tt>false</tt> by default.
-     * @param b set to <tt>true</tt> to include milliseconds when formatting the time
+     * to <code>false</code> by default.
+     * @param b set to <code>true</code> to include milliseconds when formatting the time
      */
     public void setOutputMilliseconds(boolean b) {
         this.outputMilliseconds = b;

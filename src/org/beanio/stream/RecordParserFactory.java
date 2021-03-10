@@ -25,18 +25,19 @@ import org.w3c.dom.Document;
  * 
  * <p>The Java object bound to a <i>record</i> depends on the stream format.
  * The following table shows the object used for each format:</p>
- * <table summary="">
+ * <table>
+ * <caption></caption>
  * <tr>
  *   <th>Format</th>
  *   <th>Record Type</th>
  * </tr>
  *  <tr>
  *   <td>Fixed Length</td>
- *   <td><tt>String</tt></td>
+ *   <td><code>String</code></td>
  * </tr>
  * <tr>
  *   <td>CSV, Delimited</td>
- *   <td><tt>String[]</tt></td>
+ *   <td><code>String[]</code></td>
  * </tr>
  * <tr>
  *   <td>XML</td>
@@ -45,7 +46,8 @@ import org.w3c.dom.Document;
  * </table>
  * 
  * <p>The following table shows the method invoked for a requested BeanIO interface.</p>
- * <table summary="">
+ * <table>
+ * <caption></caption>
  * <tr>
  *   <th>Requests For</th>
  *   <th>Invokes</th>
@@ -68,7 +70,7 @@ import org.w3c.dom.Document;
  * </tr>
  * </table>
  * 
- * <p>A <tt>RecordParserFactory</tt> implementation must be thread safe (after all of its properties have been set).</p>
+ * <p>A <code>RecordParserFactory</code> implementation must be thread safe (after all of its properties have been set).</p>
  * 
  * @author Kevin Seim
  * @since 2.0

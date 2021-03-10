@@ -19,8 +19,8 @@ import java.util.Properties;
 
 /**
  * Interface for type handlers that support field specific customization.  When a type
- * handler is registered that implements this interface, the <tt>TypeHandlerFactory</tt> 
- * invokes <tt>newInstance(Properties)</tt> if any type handler field properties were
+ * handler is registered that implements this interface, the <code>TypeHandlerFactory</code>
+ * invokes <code>newInstance(Properties)</code> if any type handler field properties were
  * set.
  * 
  * @author Kevin Seim
@@ -34,7 +34,7 @@ public interface ConfigurableTypeHandler extends TypeHandler {
     /**
      * Creates a customized instance of this type handler.
      * @param properties the properties for customizing the instance
-     * @return the new <tt>TypeHandler</tt>
+     * @return the new <code>TypeHandler</code>
      * @throws IllegalArgumentException if a property value is invalid
      */
     public TypeHandler newInstance(Properties properties) throws IllegalArgumentException;

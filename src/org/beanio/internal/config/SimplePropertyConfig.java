@@ -34,13 +34,13 @@ public abstract class SimplePropertyConfig extends PropertyConfig {
     private String format;
     
     /**
-     * Constructs a new <tt>SimplePropertyConfig</tt>.
+     * Constructs a new <code>SimplePropertyConfig</code>.
      */
     public SimplePropertyConfig() { }
     
     /**
      * Returns the name of the custom type handler used for type 
-     * conversion by this component, or <tt>null</tt> if the default
+     * conversion by this component, or <code>null</code> if the default
      * type handler is sufficient.
      * @return the name of a custom type handler
      */
@@ -50,7 +50,7 @@ public abstract class SimplePropertyConfig extends PropertyConfig {
 
     /**
      * Sets the name of the custom type handler to use for type 
-     * conversion by this component.  Set to <tt>null</tt> if the default
+     * conversion by this component.  Set to <code>null</code> if the default
      * type handler is sufficient.
      * @param handler the name of a custom type handler
      */

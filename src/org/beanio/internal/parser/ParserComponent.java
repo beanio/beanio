@@ -28,14 +28,14 @@ package org.beanio.internal.parser;
 public abstract class ParserComponent extends Component implements Parser {
 
     /**
-     * Constructs a new <tt>ParserComponent</tt>.
+     * Constructs a new <code>ParserComponent</code>.
      */
     public ParserComponent() {
         super();
     }
 
     /**
-     * Constructs a new <tt>ParserComponent</tt>.
+     * Constructs a new <code>ParserComponent</code>.
      * @param size the initial child capacity
      */
     public ParserComponent(int size) {

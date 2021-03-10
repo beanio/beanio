@@ -50,7 +50,7 @@ public class Bean extends PropertyComponent implements Property {
     private boolean lazy;
     
     /**
-     * Constructs a new <tt>Bean</tt>.
+     * Constructs a new <code>Bean</code>.
      */
     public Bean() { }
        
@@ -284,7 +284,7 @@ public class Bean extends PropertyComponent implements Property {
     /**
      * Creates a new instance of this bean object.
      * @param context the {@link ParsingContext}
-     * @return the new bean <tt>Object</tt>
+     * @return the new bean <code>Object</code>
      */
     protected Object newInstance(ParsingContext context) {
         // if the bean class is null, the record will be ignored and null is returned here

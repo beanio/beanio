@@ -54,14 +54,14 @@ public class XmlRecordMarshaller implements RecordMarshaller {
     private Map<String,String> namespaceMap = new HashMap<String,String>();
 
     /**
-     * Constructs a new <tt>XmlRecordMarshaller</tt>.
+     * Constructs a new <code>XmlRecordMarshaller</code>.
      */
     public XmlRecordMarshaller() { 
         this(null);
     }
     
     /**
-     * Constructs a new <tt>XmlRecordMarshaller</tt>.
+     * Constructs a new <code>XmlRecordMarshaller</code>.
      * @param config the {@link XmlParserConfiguration}
      */
     public XmlRecordMarshaller(XmlParserConfiguration config) { 
@@ -148,7 +148,7 @@ public class XmlRecordMarshaller implements RecordMarshaller {
     /**
      * Recursively writes an element to the XML stream writer.
      * @param element the DOM element to write
-     * @param indentationEnabled set to <tt>true</tt> if indentation is enabled
+     * @param indentationEnabled set to <code>true</code> if indentation is enabled
      * @throws XMLStreamException
      */
     private void write(XMLStreamWriter out, Element element, boolean indentationEnabled) throws XMLStreamException {

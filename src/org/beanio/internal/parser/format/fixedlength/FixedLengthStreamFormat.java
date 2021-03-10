@@ -30,7 +30,7 @@ import org.beanio.stream.fixedlength.*;
 public class FixedLengthStreamFormat extends StreamFormatSupport {
 
     /**
-     * Constructs a new <tt>FixedLengthStreamFormat</tt>.
+     * Constructs a new <code>FixedLengthStreamFormat</code>.
      */
     public FixedLengthStreamFormat() { }
     

@@ -18,7 +18,7 @@ package org.beanio.internal.parser;
 import java.util.Map;
 
 /**
- * A <tt>Selector</tt> is used to match a {@link Group} or {@link Record} for
+ * A <code>Selector</code> is used to match a {@link Group} or {@link Record} for
  * marshalling and unmarshalling.
  * 
  * @author Kevin Seim

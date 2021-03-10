@@ -36,7 +36,7 @@ public class FixedLengthMarshallingContext extends MarshallingContext {
     private ArrayList<Entry> entries = new ArrayList<Entry>();
     
     /**
-     * Constructs a new <tt>FixedLengthMarshallingContext</tt>.
+     * Constructs a new <code>FixedLengthMarshallingContext</code>.
      */
     public FixedLengthMarshallingContext() { }
     

@@ -39,7 +39,7 @@ public class Preprocessor extends ProcessorSupport {
     private boolean recordIgnored;
     
     /**
-     * Constructs a new <tt>Preprocessor</tt>.
+     * Constructs a new <code>Preprocessor</code>.
      * @param stream the stream configuration to preprocess
      */
     public Preprocessor(StreamConfig stream) {

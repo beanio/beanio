@@ -32,14 +32,14 @@ public class JsonRecordMarshaller extends JsonWriterSupport implements RecordMar
     private StringWriter out = new StringWriter();
     
     /**
-     * Constructs a new <tt>JsonRecordMarshaller</tt>.
+     * Constructs a new <code>JsonRecordMarshaller</code>.
      */
     public JsonRecordMarshaller() {
         this(new JsonParserConfiguration());
     }
     
     /**
-     * Constructs a new <tt>JsonRecordMarshaller</tt>.
+     * Constructs a new <code>JsonRecordMarshaller</code>.
      * @param config the {@link JsonParserConfiguration}
      */
     public JsonRecordMarshaller(JsonParserConfiguration config) {

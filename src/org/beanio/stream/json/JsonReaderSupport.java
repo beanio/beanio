@@ -36,7 +36,7 @@ public abstract class JsonReaderSupport {
     protected boolean eof;
     
     /**
-     * Constructs a new <tt>JsonReaderSupport</tt>.
+     * Constructs a new <code>JsonReaderSupport</code>.
      */
     JsonReaderSupport() { }
     

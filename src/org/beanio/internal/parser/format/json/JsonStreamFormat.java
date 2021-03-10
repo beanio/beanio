@@ -28,7 +28,7 @@ public class JsonStreamFormat extends StreamFormatSupport implements StreamForma
     private int maxDepth;
     
     /**
-     * Constructs a new <tt>JsonStreamFormat</tt>.
+     * Constructs a new <code>JsonStreamFormat</code>.
      */
     public JsonStreamFormat() { }
     

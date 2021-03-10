@@ -33,7 +33,7 @@ import org.beanio.stream.delimited.*;
 public class DelimitedParserFactory extends FlatParserFactory {
     
     /**
-     * Constructs a new <tt>DelimitedParserFactory</tt>.
+     * Constructs a new <code>DelimitedParserFactory</code>.
      */
     public DelimitedParserFactory() { }
     

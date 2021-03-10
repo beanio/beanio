@@ -24,7 +24,7 @@ import org.beanio.BeanReaderException;
  * A {@link Parser} tree component for parsing an array of bean objects, where
  * a bean object is mapped to a {@link Record}.
  * 
- * <p>A <tt>RecordArray</tt> supports a single {@link Record} child.
+ * <p>A <code>RecordArray</code> supports a single {@link Record} child.
  * 
  * @author Kevin Seim
  * @since 2.0
@@ -34,7 +34,7 @@ public class RecordArray extends RecordCollection {
     private Class<?> arrayType;
     
     /**
-     * Constructs a new <tt>RecordArray</tt>.
+     * Constructs a new <code>RecordArray</code>.
      */
     public RecordArray() { }
     
@@ -92,7 +92,7 @@ public class RecordArray extends RecordCollection {
     }
 
     /**
-     * Sets the class type of the array (e.g. <tt>int.class</tt> for <tt>int[]</tt>)
+     * Sets the class type of the array (e.g. <code>int.class</code> for <code>int[]</code>)
      * @param arrayType the array class type
      */
     public void setArrayType(Class<?> arrayType) {

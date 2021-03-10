@@ -47,14 +47,14 @@ public class XmlSelectorWrapper extends ParserComponent implements Selector, Xml
     private boolean namespaceAware;
     
     /**
-     * Constructs a new <tt>XmlSelectorWrapper</tt>.
+     * Constructs a new <code>XmlSelectorWrapper</code>.
      */
     public XmlSelectorWrapper() { 
         super(1);
     }
     
     /**
-     * Creates a DOM made up of all <tt>XmlSelectorWrapper</tt> descendants that wrap
+     * Creates a DOM made up of all <code>XmlSelectorWrapper</code> descendants that wrap
      * a group or record.
      * @return the created {@link Document}
      */

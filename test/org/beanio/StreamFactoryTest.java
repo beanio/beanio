@@ -18,6 +18,7 @@ package org.beanio;
 import static org.junit.Assert.*;
 
 import java.io.*;
+import java.util.HashMap;
 import java.util.Locale;
 
 import org.beanio.internal.DefaultStreamFactory;
@@ -89,7 +90,21 @@ public class StreamFactoryTest {
             while (in.read() != null);
         }
     }
-    
+
+    @Test
+    public void testCreateCloseableWriter() {
+        StreamFactory factory = StreamFactory.newInstance();
+        factory.loadResource("org/beanio/mapping.xml");
+
+        StringWriter writer = new StringWriter();
+
+        try (BeanWriter out = factory.createWriter("stream1", writer)) {
+            out.write("header", null);
+        }
+
+        assertEquals("H\n", writer.toString());
+    }
+
     @Test(expected=BeanIOException.class)
     public void testInputFileNotFound() {
         StreamFactory factory = StreamFactory.newInstance();

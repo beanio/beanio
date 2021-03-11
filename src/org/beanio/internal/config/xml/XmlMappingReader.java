@@ -41,7 +41,7 @@ public class XmlMappingReader {
 
     private static final EntityResolver defaultEntityResolver = new DefaultEntityResolver();
     
-    private DocumentBuilderFactory factory;
+    private final DocumentBuilderFactory factory;
     
     /**
      * Constructs a new <code>XmlMappingReader</code>.
@@ -65,15 +65,15 @@ public class XmlMappingReader {
             DocumentBuilder builder = factory.newDocumentBuilder();
             builder.setEntityResolver(createEntityResolver());
 
-            final List<String> errorMessages = new ArrayList<String>();
+            final List<String> errorMessages = new ArrayList<>();
 
             builder.setErrorHandler(new ErrorHandler() {
-                public void warning(SAXParseException exception) throws SAXException {
+                public void warning(SAXParseException exception) {
                     errorMessages.add("Error at line " + exception.getLineNumber() +
                         ": " + exception.getMessage());
                 }
 
-                public void error(SAXParseException exception) throws SAXException {
+                public void error(SAXParseException exception) {
                     errorMessages.add("Error at line " + exception.getLineNumber() +
                         ": " + exception.getMessage());
                 }
@@ -110,6 +110,8 @@ public class XmlMappingReader {
      */
     protected DocumentBuilderFactory createDocumentBuilderFactory() {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         factory.setIgnoringComments(true);
         factory.setCoalescing(true);
         factory.setNamespaceAware(true);
@@ -138,8 +140,7 @@ public class XmlMappingReader {
     }
 
     private static class DefaultEntityResolver implements EntityResolver {
-        public InputSource resolveEntity(String publicId, String systemId) throws SAXException,
-            IOException {
+        public InputSource resolveEntity(String publicId, String systemId) {
             if (publicId == null && (BEANIO_XMLNS.equals(systemId) ||
                 (BEANIO_XMLNS + "/mapping.xsd").equals(systemId))) {
                 return new InputSource(XmlConfigurationLoader.class.getResourceAsStream(BEANIO_XSD));

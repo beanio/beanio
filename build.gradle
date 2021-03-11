@@ -54,7 +54,6 @@ sourceSets {
         resources {
             srcDir 'src'
             exclude '**/*.java'
-            exclude '**/package.html'
         }
     }
     test {
@@ -119,9 +118,7 @@ test {
 task sourcesJar(type: Jar, dependsOn:classes) {
     baseName = "$artifactId"
     classifier = 'sources'
-    from("$projectDir/src") {
-        exclude '**/package.html'
-    }
+    from("$projectDir/src")
     manifest {
         attributes(
             "Implementation-Title": "BeanIO ${version}",

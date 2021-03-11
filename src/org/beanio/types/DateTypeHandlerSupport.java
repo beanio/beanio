@@ -39,8 +39,7 @@ public abstract class DateTypeHandlerSupport extends LocaleSupport implements Co
     protected boolean lenient = false;
     protected TimeZone timeZone = null;
     
-    // the same format instance can be reused if this type handler is not shared
-    // by multiple unmarshallers/marshallers, this can lead to significant
+    // The same format instance can be reused in the same thread, this can lead to significant
     // performance improvements when parsing many records
     private transient ThreadLocal<DateFormat> format = new ThreadLocal<>();
     

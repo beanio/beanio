@@ -1,6 +1,8 @@
 Project BeanIO Change Log
 =========================
 
+Note: `gcXXXX` references an issue in the old Google Code repo. #XXX references an issue on this GitHub repo.
+
 Changes in version 3.0.0 (TBD)
 -------------------------------------
 * Requires JDK 1.7 or higher
@@ -11,6 +13,8 @@ Changes in version 3.0.0 (TBD)
 * BeanWriter now implements AutoCloseable
 * BeanReader now implements Closeable
 * Added SegmentBuilder.at(int) method
+* Fixed a thread issue in `DateTypeHandlerSupport` (#131)
+* Fixed a thread issue in `NumberTypeHandler`
 
 Changes in version 2.1.0 (2014-09-06)
 -------------------------------------

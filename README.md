@@ -15,14 +15,4 @@ The website for version 2.x is available at http://www.beanio.org.
 
 # What's new in v3?
 
-* Requires JDK 1.7 or higher
-* Removed support for ASM class rewriting
-* Removed Spring framework support
-* Fixed IOUtil.getResource() to use ClassLoader argument (gc0109)
-* Added support for validating marshalled fields (gc0096)
-* BeanWriter now implements AutoCloseable
-* BeanReader now implements Closeable
-* Added SegmentBuilder.at(int) method
-* Fixed a thread issue in `DateTypeHandlerSupport`
-* Fixed a thread issue in `NumberTypeHandler`
-
+See [changelog.txt](changelog.txt)

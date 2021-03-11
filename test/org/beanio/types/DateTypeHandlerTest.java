@@ -15,10 +15,22 @@
  */
 package org.beanio.types;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.util.*;
-
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
+import org.beanio.internal.util.TypeHandlerFactory;
+import org.beanio.internal.util.TypeUtil;
 import org.junit.Test;
 
 /**
@@ -86,5 +98,48 @@ public class DateTypeHandlerTest {
     public void testInvalidPattern() {
         DateTypeHandler handler = new DateTypeHandler();
         handler.setPattern("xxx");
+    }
+
+    @Test
+    public void testThreadSafety() throws InterruptedException {
+        // Given
+        int numThreads = 20;
+        final int iterations = 100_000;
+
+        Properties properties = new Properties();
+        properties.setProperty(ConfigurableTypeHandler.FORMAT_SETTING, "yyyy-MM-dd");
+
+        final DateTypeHandlerSupport dateTypeHandler = ((DateTypeHandler) TypeHandlerFactory.getDefault()
+            .getTypeHandlerFor(TypeUtil.DATE_ALIAS))
+            .newInstance(properties);
+
+        final Queue<String> convertedDates = new ConcurrentLinkedQueue<>();
+        final List<Throwable> exceptions = new CopyOnWriteArrayList<>();
+        ExecutorService pool = Executors.newFixedThreadPool(numThreads);
+
+        // When
+        for (int i = 0; i < numThreads; i++) {
+            pool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < iterations; j++) {
+                        try {
+                            long randomDate = ThreadLocalRandom.current().nextLong(0, System.currentTimeMillis());
+                            convertedDates.add(dateTypeHandler.format(new Date(randomDate)));
+                        } catch (Throwable e) {
+                            exceptions.add(e);
+                        }
+                    }
+                }
+            });
+        }
+
+        pool.shutdown();
+        boolean wasOk = pool.awaitTermination(10, TimeUnit.SECONDS);
+
+        // Then
+        assertTrue(wasOk);
+        assertEquals(0, exceptions.size());
+        assertEquals(numThreads * iterations, convertedDates.size());
     }
 }

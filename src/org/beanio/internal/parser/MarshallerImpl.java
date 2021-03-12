@@ -48,10 +48,13 @@ public class MarshallerImpl implements Marshaller {
         this.recordMarshaller = recordMarshaller;
         
         this.context.setRecordWriter(new RecordWriter() {
+            @Override
             public void write(Object record) {
                 recordValue = record;
             }
+            @Override
             public void flush() { }
+            @Override
             public void close() { }
         });
     }
@@ -60,6 +63,7 @@ public class MarshallerImpl implements Marshaller {
      * (non-Javadoc)
      * @see org.beanio.Marshaller#marshal(java.lang.Object)
      */
+    @Override
     public Marshaller marshal(Object bean) throws BeanWriterException {
         return marshal(null, bean);
     }
@@ -68,6 +72,7 @@ public class MarshallerImpl implements Marshaller {
      * (non-Javadoc)
      * @see org.beanio.Marshaller#marshal(java.lang.String, java.lang.Object)
      */
+    @Override
     public Marshaller marshal(String recordName, Object bean) throws BeanWriterException {
         recordValue = null;
         
@@ -134,6 +139,7 @@ public class MarshallerImpl implements Marshaller {
      * (non-Javadoc)
      * @see org.beanio.Marshaller#toArray()
      */
+    @Override
     public String[] toArray() throws BeanWriterException {
         String[] array = context.toArray(recordValue);
         if (array == null) {
@@ -146,6 +152,7 @@ public class MarshallerImpl implements Marshaller {
      * (non-Javadoc)
      * @see org.beanio.Marshaller#toList()
      */
+    @Override
     public List<String> toList() throws BeanWriterException {
         List<String> list = context.toList(recordValue);
         if (list == null) {
@@ -158,6 +165,7 @@ public class MarshallerImpl implements Marshaller {
      * (non-Javadoc)
      * @see org.beanio.Marshaller#toDocument()
      */
+    @Override
     public Document toDocument() throws BeanWriterException {
         Document document = context.toDocument(recordValue);
         if (document == null) {
@@ -174,9 +182,11 @@ public class MarshallerImpl implements Marshaller {
         return recordValue;
     }
     
+    @Override
     public void debug() {
         debug(System.out);
     }
+    @Override
     public void debug(PrintStream out) {
         ((Component)layout).print(out);
     }

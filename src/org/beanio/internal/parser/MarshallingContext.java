@@ -50,7 +50,8 @@ public abstract class MarshallingContext extends ParsingContext {
     /**
      * Clear is invoked after each bean object (record or group) is marshalled.
      */
-    public void clear() { 
+    @Override
+    public void clear() {
         this.bean = null;
         this.componentName = null;
     }

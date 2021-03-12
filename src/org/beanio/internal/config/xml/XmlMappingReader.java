@@ -68,16 +68,19 @@ public class XmlMappingReader {
             final List<String> errorMessages = new ArrayList<>();
 
             builder.setErrorHandler(new ErrorHandler() {
+                @Override
                 public void warning(SAXParseException exception) {
                     errorMessages.add("Error at line " + exception.getLineNumber() +
                         ": " + exception.getMessage());
                 }
 
+                @Override
                 public void error(SAXParseException exception) {
                     errorMessages.add("Error at line " + exception.getLineNumber() +
                         ": " + exception.getMessage());
                 }
 
+                @Override
                 public void fatalError(SAXParseException exception) throws SAXException {
                     throw exception;
                 }
@@ -140,6 +143,7 @@ public class XmlMappingReader {
     }
 
     private static class DefaultEntityResolver implements EntityResolver {
+        @Override
         public InputSource resolveEntity(String publicId, String systemId) {
             if (publicId == null && (BEANIO_XMLNS.equals(systemId) ||
                 (BEANIO_XMLNS + "/mapping.xsd").equals(systemId))) {

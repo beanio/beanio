@@ -57,7 +57,8 @@ public class FixedLengthWriter implements RecordWriter {
 	 * (non-Javadoc)
 	 * @see org.beanio.line.RecordWriter#write(java.lang.Object)
 	 */
-	public void write(Object value) throws IOException, RecordIOException {
+	@Override
+  public void write(Object value) throws IOException, RecordIOException {
 		out.write(value.toString());
 		out.write(recordTerminator);
 	}
@@ -66,7 +67,8 @@ public class FixedLengthWriter implements RecordWriter {
 	 * (non-Javadoc)
 	 * @see org.beanio.line.RecordWriter#flush()
 	 */
-	public void flush() throws IOException {
+	@Override
+  public void flush() throws IOException {
 		out.flush();
 	}
 
@@ -74,7 +76,8 @@ public class FixedLengthWriter implements RecordWriter {
 	 * (non-Javadoc)
 	 * @see org.beanio.line.RecordWriter#close()
 	 */
-	public void close() throws IOException {
+	@Override
+  public void close() throws IOException {
 		out.close();
 	}
 }

@@ -53,6 +53,7 @@ public class JsonWriter extends JsonWriterSupport implements RecordWriter {
      * (non-Javadoc)
      * @see org.beanio.stream.RecordWriter#write(java.lang.Object)
      */
+    @Override
     @SuppressWarnings("unchecked")
     public void write(Object record) throws IOException {
         write((Map<String,Object>)record);
@@ -63,6 +64,7 @@ public class JsonWriter extends JsonWriterSupport implements RecordWriter {
      * (non-Javadoc)
      * @see org.beanio.stream.RecordWriter#flush()
      */
+    @Override
     public void flush() throws IOException {
         out.flush();
     }
@@ -71,6 +73,7 @@ public class JsonWriter extends JsonWriterSupport implements RecordWriter {
      * (non-Javadoc)
      * @see org.beanio.stream.RecordWriter#close()
      */
+    @Override
     public void close() throws IOException {
         out.close();
     }

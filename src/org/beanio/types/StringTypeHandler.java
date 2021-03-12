@@ -31,6 +31,7 @@ public class StringTypeHandler implements TypeHandler {
      * @param text the text to parse
      * @return the parsed <code>String</code>
      */
+    @Override
     public String parse(String text) {
         if (text != null) {
             if (trim) {
@@ -48,6 +49,7 @@ public class StringTypeHandler implements TypeHandler {
      * @param value the value to format
      * @return the formatted value, or <code>null</code> if <code>value</code> is <code>null</code>
      */
+    @Override
     public String format(Object value) {
         if (value == null)
             return null;
@@ -58,6 +60,7 @@ public class StringTypeHandler implements TypeHandler {
      * (non-Javadoc)
      * @see org.beanio.types.TypeHandler#getType()
      */
+    @Override
     public Class<?> getType() {
         return String.class;
     }

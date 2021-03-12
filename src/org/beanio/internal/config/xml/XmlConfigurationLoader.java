@@ -46,7 +46,8 @@ public class XmlConfigurationLoader implements ConfigurationLoader {
      * (non-Javadoc)
      * @see org.beanio.config.MultiConfigurationLoader#loadConfigurations(java.io.InputStream)
      */
-    public Collection<BeanIOConfig> loadConfiguration(InputStream in, Properties properties) 
+    @Override
+    public Collection<BeanIOConfig> loadConfiguration(InputStream in, Properties properties)
         throws IOException, BeanIOConfigurationException {
         return createParser().loadConfiguration(in, properties);
     }

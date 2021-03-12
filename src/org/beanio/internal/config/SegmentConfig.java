@@ -63,7 +63,7 @@ public class SegmentConfig extends PropertyConfig {
      * @return list of children
      */
     public List<PropertyConfig> getPropertyList() {
-        List<PropertyConfig> list = new ArrayList<PropertyConfig>(getChildren().size());
+        List<PropertyConfig> list = new ArrayList<>(getChildren().size());
         toPropertyList(this, list);
         return list;
     }

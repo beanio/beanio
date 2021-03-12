@@ -52,7 +52,7 @@ public class Segment extends ParserComponent {
     private ParserLocal<List<Parser>> missing = new ParserLocal<List<Parser>>() {
         @Override
         protected List<Parser> createDefaultValue() {
-            return new ArrayList<Parser>();
+            return new ArrayList<>();
         }
     };
     

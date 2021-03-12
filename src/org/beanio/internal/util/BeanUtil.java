@@ -337,7 +337,7 @@ public class BeanUtil {
             
             boolean escaped = false;
             StringBuilder item = new StringBuilder();
-            List<String> list = new ArrayList<String>();
+            List<String> list = new ArrayList<>();
             
             char[] ca = text.toCharArray();
             for (char c : ca) {

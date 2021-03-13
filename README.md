@@ -1,4 +1,4 @@
-# BeanIO [![Java CI](https://github.com/beanio/beanio/actions/workflows/gradle.yml/badge.svg)](https://github.com/beanio/beanio/actions/workflows/gradle.yml) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=beanio&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=beanio) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=beanio&metric=security_rating)](https://sonarcloud.io/dashboard?id=beanio) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=beanio&metric=coverage)](https://sonarcloud.io/dashboard?id=beanio)
+# BeanIO ![](https://img.shields.io/maven-central/v/com.github.beanio/beanio) [![Java CI](https://github.com/beanio/beanio/actions/workflows/gradle.yml/badge.svg)](https://github.com/beanio/beanio/actions/workflows/gradle.yml) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=beanio&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=beanio) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=beanio&metric=security_rating)](https://sonarcloud.io/dashboard?id=beanio) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=beanio&metric=coverage)](https://sonarcloud.io/dashboard?id=beanio)
 
 A Java library for marshalling and unmarshalling bean objects from XML, CSV, delimited and fixed length stream formats.
 
@@ -8,7 +8,8 @@ Please note the new groupId `com.github.beanio`.
 
 ### Maven
 
-To use snapshot versions, you have to configure the following repository:
+<details>
+  <summary>To use snapshot versions, configure the following repository:</summary>
 
 ```xml
 <repositories>
@@ -24,20 +25,22 @@ To use snapshot versions, you have to configure the following repository:
     </repository>
 </repositories>
 ```
+</details>
 
-Then add this dependency:
+Add the following dependency to your `pom.xml`:
 
 ```xml
 <dependency>
     <groupId>com.github.beanio</groupId>
     <artifactId>beanio</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.0.M1</version>
 </dependency>
 ```
 
 ### Gradle
 
-To use snapshot versions, you have to configure the following repository:
+<details>
+  <summary>To use snapshot versions, configure the following repository:</summary>
 
 ```groovy
 repositories {
@@ -46,11 +49,12 @@ repositories {
     }
 }
 ```
+</details>
 
-Then add this dependency:
+Add the following dependency to your `build.gradle`:
 
 ```groovy
-implementation 'com.github.beanio:beanio:3.0.0-SNAPSHOT'
+implementation 'com.github.beanio:beanio:3.0.0.M1'
 ```
 
 ## What's new in v3?
@@ -64,7 +68,7 @@ This is a fork of the [original BeanIO library](https://github.com/kevinseim/bea
 * the legacy SVN codebase that was hosted at https://code.google.com/p/beanio/
 * "the future BeanIO 3.x" that was started at https://github.com/kevinseim/beanio
 * several fixes from other forks (see commit messages for more info)
- 
-The website for version 2.x is available at http://www.beanio.org.
 
 The website for version 3.x is available at https://beanio.github.io.
+
+The website for version 2.x is available at http://www.beanio.org.

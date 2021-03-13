@@ -35,10 +35,10 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle
 
       - name: Build
-        run: ./gradlew build --info -Dsonar.login=${SONAR_TOKEN} -PsonatypeUsername= -PsonatypePassword=
+        run: ./gradlew build --info
 
       - name: Analyze with SonarQube
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew jacocoTestReport sonarqube -Dsonar.login=${SONAR_TOKEN} -PsonatypeUsername= -PsonatypePassword=
+        run: ./gradlew jacocoTestReport sonarqube -Dsonar.login=${SONAR_TOKEN}

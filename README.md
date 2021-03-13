@@ -1,5 +1,4 @@
-BeanIO
-======
+# BeanIO [![Java CI](https://github.com/beanio/beanio/actions/workflows/gradle.yml/badge.svg)](https://github.com/beanio/beanio/actions/workflows/gradle.yml) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=beanio&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=beanio) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=beanio&metric=security_rating)](https://sonarcloud.io/dashboard?id=beanio) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=beanio&metric=coverage)](https://sonarcloud.io/dashboard?id=beanio)
 
 A Java library for marshalling and unmarshalling bean objects from XML, CSV, delimited and fixed length stream formats.
 

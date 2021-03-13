@@ -21,19 +21,16 @@ plugins {
     id 'java'
     id 'groovy'
 
-    id 'maven'
+    id 'maven-publish'
     id 'signing'
 
     id "org.sonarqube" version "3.1.1"
     id 'jacoco'
 }
 
-version = "3.0.0.SNAPSHOT"
-group = "com.github.beanio"
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-ext.artifactId = "beanio"
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 repositories {
@@ -83,27 +80,26 @@ javadoc {
 }
 
 jar {
-    archiveBaseName = "$artifactId"
     includeEmptyDirs = false
 
     // create a list of exported packages for OSGi
     ant.dirset(id:"osgi.dirs", dir:"src/org/beanio", excludes: "xsd/**")
-    ant.pathconvert(refid:"osgi.dirs", property:"osgi.packages", dirsep:".", pathsep:";version=\"${version}\",") {
+    ant.pathconvert(refid:"osgi.dirs", property:"osgi.packages", dirsep:".", pathsep:";version=\"${project.version}\",") {
         map(from:"$basedir/src/", to:"")
     }
     manifest {
         attributes(
-            "Implementation-Title": "BeanIO ${version}",
-            "Implementation-Version": version,
+            "Implementation-Title": "BeanIO ${project.version}",
+            "Implementation-Version": project.version,
             "Bundle-ManifestVersion": "2",
             "Bundle-Name": "BeanIO",
             "Bundle-SymbolicName": "com.github.beanio",
-            "Bundle-Version": version,
+            "Bundle-Version": project.version,
             "Bundle-Vendor": "Kevin Seim",
             "Bundle-Description": "BeanIO OSGi support",
             "Bundle-License": "http://www.apache.org/licenses/LICENSE-2.0",
             "Bundle-DocURL": "https://beanio.github.io",
-            "Export-Package": ant.properties["osgi.packages"] + ";version=\"${version}\"",
+            "Export-Package": ant.properties["osgi.packages"] + ";version=\"${project.version}\"",
             "DynamicImport-Package": "*")
     }
     doLast {
@@ -116,13 +112,12 @@ test {
 }
 
 task sourcesJar(type: Jar, dependsOn:classes) {
-    baseName = "$artifactId"
-    classifier = 'sources'
+    archiveClassifier.set('sources')
     from("$projectDir/src")
     manifest {
         attributes(
-            "Implementation-Title": "BeanIO ${version}",
-            "Implementation-Version": version
+            "Implementation-Title": "BeanIO ${project.version}",
+            "Implementation-Version": project.version
         )
     }
     metaInf {
@@ -134,13 +129,12 @@ task sourcesJar(type: Jar, dependsOn:classes) {
 }
 
 task javadocJar(type: Jar, dependsOn:javadoc) {
-    baseName = "$artifactId"
-    classifier = 'javadoc'
+    archiveClassifier.set('javadoc')
     from javadoc.destinationDir
     manifest {
         attributes(
-            "Implementation-Title": "BeanIO ${version}",
-            "Implementation-Version": version
+            "Implementation-Title": "BeanIO ${project.version}",
+            "Implementation-Version": project.version
         )
     }
     metaInf {
@@ -152,8 +146,7 @@ task javadocJar(type: Jar, dependsOn:javadoc) {
 }
 
 task zip(type: Zip, dependsOn: [javadoc, jar] ) {
-    baseName = "$artifactId"
-    from jar.archivePath
+    from jar.archiveFile
     from(javadoc.destinationDir) {
         into "docs/api"
     }
@@ -169,7 +162,6 @@ task zip(type: Zip, dependsOn: [javadoc, jar] ) {
 }
 
 task site(type: Tar, dependsOn: javadoc) {
-    baseName = "$artifactId"
     classifier "site"
     version ""
     compression Compression.GZIP
@@ -186,50 +178,53 @@ task site(type: Tar, dependsOn: javadoc) {
 }
 
 artifacts {
-    archives jar
-    archives sourcesJar
-    archives javadocJar
+    archives jar, sourcesJar, javadocJar
 }
 
 signing {
-    required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
-    sign configurations.archives
+    afterEvaluate { project ->
+        required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
+        sign publishing.publications.mavenJava
+    }
 }
 
-uploadArchives {
+publishing {
     repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signPom(deployment) }
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: sonatypeUsername, password: sonatypePassword)
+        maven {
+            def releaseRepo = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotRepo = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            url = version.endsWith('SNAPSHOT') ? snapshotRepo : releaseRepo
+
+            credentials {
+                username = project.hasProperty('sonatypeUsername') ? sonatypeUsername : "Unknown user"
+                password = project.hasProperty('sonatypePassword') ? sonatypePassword : "Unknown password"
             }
-            pom.project {
-               name 'BeanIO'
-               artifactId "$artifactId"
-               packaging 'jar'
-               description 'A Java un/marshalling library for CSV, XML, delimited and fixed length stream formats.'
-               url 'http://beanio.org/'
-               scm {
-                   url 'http://beanio.googlecode.com/svn'
-                   connection 'scm:svn:http://beanio.googlecode.com/svn/trunk'
-                   developerConnection 'scm:svn:https://beanio.googlecode.com/svn/trunk'
-               }
-               licenses {
-                   license {
-                       name 'The Apache Software License, Version 2.0'
-                       url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                       distribution 'repo'
-                   }
-               }
-               developers {
-                   developer {
-                       id 'kevinseim'
-                       name 'Kevin Seim'
-                   }
-               }
-            }
-            pom.whenConfigured {
-                dependencies.find { dep -> dep.artifactId == 'commons-logging' }.optional = true
+        }
+    }
+
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                groupId = project.group
+                name = project.name
+                description = 'A Java un/marshalling library for CSV, XML, delimited and fixed length stream formats.'
+                url = 'https://beanio.github.io/'
+
+                from components.java
+                artifact sourcesJar
+                artifact javadocJar
+
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git@github.com:beanio/beanio.git'
+                    developerConnection = 'scm:git:git@github.com:beanio/beanio.git'
+                    url = 'https://github.com/beanio/beanio/'
+                }
             }
         }
     }

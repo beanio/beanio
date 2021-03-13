@@ -225,6 +225,12 @@ publishing {
                     developerConnection = 'scm:git:git@github.com:beanio/beanio.git'
                     url = 'https://github.com/beanio/beanio/'
                 }
+                developers {
+                    developer {
+                        id = 'kevinseim'
+                        name = 'Kevin Seim'
+                    }
+                }
             }
         }
     }

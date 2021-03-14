@@ -18,6 +18,11 @@ package org.beanio.internal.util;
 import java.math.*;
 import java.net.URL;
 import java.text.DateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import org.beanio.BeanIOConfigurationException;
@@ -121,6 +126,24 @@ public class TypeHandlerFactory {
         defaultFactory.registerHandlerFor(TypeUtil.CALENDAR_DATETIME_ALIAS, new XmlCalendarDateTimeTypeHandler(), "xml");
         defaultFactory.registerHandlerFor(TypeUtil.CALENDAR_TIME_ALIAS, new XmlCalendarTimeTypeHandler(), "xml");
         defaultFactory.registerHandlerFor(Boolean.class, new XmlBooleanTypeHandler(), "xml");
+
+        // java.time handlers
+        defaultFactory.registerHandlerFor(
+            LocalDate.class,
+            new TemporalAccessorTypeHandler(LocalDate.class, DateTimeFormatter.ISO_LOCAL_DATE)
+        );
+        defaultFactory.registerHandlerFor(
+            LocalTime.class,
+            new TemporalAccessorTypeHandler(LocalTime.class, DateTimeFormatter.ISO_LOCAL_TIME)
+        );
+        defaultFactory.registerHandlerFor(
+            LocalDateTime.class,
+            new TemporalAccessorTypeHandler(LocalDateTime.class, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        );
+        defaultFactory.registerHandlerFor(
+            ZonedDateTime.class,
+            new TemporalAccessorTypeHandler(ZonedDateTime.class, DateTimeFormatter.ISO_ZONED_DATE_TIME)
+        );
     }
 
     /**

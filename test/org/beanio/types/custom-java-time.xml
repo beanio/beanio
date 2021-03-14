@@ -1,0 +1,12 @@
+<beanio xmlns="http://www.beanio.org/2012/03">
+
+  <typeHandler name="CustomLocalDateTime" class="org.beanio.types.TemporalAccessorTypeHandler">
+    <property name="typeName" value="java.time.LocalDateTime"/>
+  </typeHandler>
+
+  <stream name="my-stream" format="fixedlength" strict="true">
+    <record name="rec" class="org.beanio.beans.JavaTime" occurs="1">
+      <field name="localDateTime" length="12" typeHandler="CustomLocalDateTime" format="dd/MM, HH:mm"/>
+    </record>
+  </stream>
+</beanio>

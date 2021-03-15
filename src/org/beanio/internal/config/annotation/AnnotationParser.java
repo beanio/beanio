@@ -756,7 +756,7 @@ public class AnnotationParser {
         if (val == null) {
             return null;
         }
-        if (val.compareTo(new Integer(0)) < 0) {
+        if (val.compareTo(0) < 0) {
             return Integer.MAX_VALUE;
         }
         return val;

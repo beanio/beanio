@@ -129,7 +129,7 @@ public class FixedLengthMarshallingContext extends MarshallingContext {
         
         @Override
         public int compareTo(Entry o) {
-            return new Integer(this.order).compareTo(o.order);
+            return Integer.compare(this.order, o.order);
         }
         
         @Override

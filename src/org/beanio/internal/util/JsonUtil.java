@@ -80,7 +80,7 @@ public class JsonUtil {
         else {
             Long n = new Long(text);
             if (n.intValue() == n.longValue()) {
-                return new Integer(n.intValue());
+                return Integer.valueOf(n.intValue());
             }
             return n;
         }

@@ -28,12 +28,7 @@ import org.beanio.stream.xml.XmlRecordParserFactory;
 public class XmlParserBuilder extends ParserBuilder {
 
     private XmlRecordParserFactory parser = new XmlRecordParserFactory();
-    
-    /**
-     * Constructs a new <code>XmlParserBuilder</code>.
-     */
-    public XmlParserBuilder() { }
-    
+
     public XmlParserBuilder suppressHeader() {
         parser.setSuppressHeader(true);
         return this;

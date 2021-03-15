@@ -29,11 +29,6 @@ import org.beanio.stream.fixedlength.*;
  */
 public class FixedLengthStreamFormat extends StreamFormatSupport {
 
-    /**
-     * Constructs a new <code>FixedLengthStreamFormat</code>.
-     */
-    public FixedLengthStreamFormat() { }
-    
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.StreamFormat#createUnmarshallingContext()

@@ -45,12 +45,7 @@ public class FieldPadding {
     private String paddedNull = "";
     private boolean optional;
     private Class<?> propertyType;
-    
-    /**
-     * Constructs a new <code>FieldPadding</code>.
-     */
-    public FieldPadding() { }
-    
+
     /**
      * Initializes padding settings.  This method must be invoked before
      * {@link #pad(String)} or {@link #unpad(String)} is called.

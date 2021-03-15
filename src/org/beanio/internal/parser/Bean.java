@@ -50,12 +50,7 @@ public class Bean extends PropertyComponent implements Property {
     };
     // whether to return null for objects with all nulls and/or empty strings
     private boolean lazy;
-    
-    /**
-     * Constructs a new <code>Bean</code>.
-     */
-    public Bean() { }
-       
+
     /*
      * (non-Javadoc)
      * @see org.beanio.parser.Property#clearValue()

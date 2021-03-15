@@ -38,11 +38,6 @@ import org.beanio.internal.util.*;
 public abstract class StreamFactory {
 
     private ClassLoader classLoader;
-    
-    /**
-     * Constructs a new <code>StreamFactory</code>.
-     */
-    public StreamFactory() { }
 
     /**
      * Creates a new <code>BeanReader</code> for reading from a file.

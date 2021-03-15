@@ -27,12 +27,7 @@ package org.beanio.internal.config;
 public class ConstantConfig extends SimplePropertyConfig {
 
     private String value;
-    
-    /**
-     * Constructs a new <code>ConstantConfig</code>.
-     */
-    public ConstantConfig() { }
-    
+
     @Override
     public char getComponentType() {
         return CONSTANT;

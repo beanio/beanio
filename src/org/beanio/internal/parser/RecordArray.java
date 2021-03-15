@@ -32,12 +32,7 @@ import org.beanio.BeanReaderException;
 public class RecordArray extends RecordCollection {
 
     private Class<?> arrayType;
-    
-    /**
-     * Constructs a new <code>RecordArray</code>.
-     */
-    public RecordArray() { }
-    
+
     @Override
     public int type() {
         return Property.AGGREGATION_ARRAY;

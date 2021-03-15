@@ -68,11 +68,6 @@ public abstract class PropertyConfig extends ComponentConfig {
     private int maxSize;
     private Integer minOccursRef;
     private Integer maxOccursRef;
-    
-    /**
-     * Constructs a new <code>PropertyConfig</code>.
-     */
-    public PropertyConfig() { }
 
     /**
      * Returns the component name used for identification in error handling.

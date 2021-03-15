@@ -30,12 +30,7 @@ public class RecordConfig extends SegmentConfig implements SelectorConfig {
     private Integer maxLength;
     private Integer minMatchLength;
     private Integer maxMatchLength;
-    
-    /**
-     * Constructs a new <code>RecordConfig</code>.
-     */
-    public RecordConfig() { }
-    
+
     @Override
     public char getComponentType() {
         return RECORD;

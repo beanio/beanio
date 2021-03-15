@@ -29,12 +29,7 @@ import org.beanio.stream.*;
 public class FixedLengthRecordParserFactory extends FixedLengthParserConfiguration implements RecordParserFactory {
 
     private static FixedLengthRecordParser parser = new FixedLengthRecordParser();
-   
-    /**
-     * Constructs a new <code>FixedLengthRecordParserFactory</code>.
-     */
-    public FixedLengthRecordParserFactory() { }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.stream.RecordParserFactory#init()

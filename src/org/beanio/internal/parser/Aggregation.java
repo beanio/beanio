@@ -41,12 +41,7 @@ public abstract class Aggregation extends DelegatingParser implements Property, 
     
     // the current iteration index
     private ParserLocal<Integer> index = new ParserLocal<>();
-    
-    /**
-     * Constructs a new <code>Aggregation</code>.
-     */
-    public Aggregation() { }
-    
+
     /**
      * Returns whether this aggregation is a property of
      * its parent bean object.

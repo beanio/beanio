@@ -32,11 +32,6 @@ import org.beanio.stream.*;
  */
 public class JsonRecordParserFactory extends JsonParserConfiguration implements RecordParserFactory {
 
-    /**
-     * Constructs a new <code>JsonRecordParserFactory</code>.
-     */
-    public JsonRecordParserFactory() { }
-    
     /*
      * (non-Javadoc)
      * @see org.beanio.stream.RecordParserFactory#init()

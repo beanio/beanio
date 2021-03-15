@@ -26,12 +26,7 @@ import org.beanio.internal.parser.*;
 public class JsonStreamFormat extends StreamFormatSupport implements StreamFormat {
 
     private int maxDepth;
-    
-    /**
-     * Constructs a new <code>JsonStreamFormat</code>.
-     */
-    public JsonStreamFormat() { }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.StreamFormat#createUnmarshallingContext()

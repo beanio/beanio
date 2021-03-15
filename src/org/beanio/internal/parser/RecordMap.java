@@ -29,12 +29,7 @@ public class RecordMap extends RecordAggregation {
 
     // the child property used for the key
     private Property key;
-    
-    /**
-     * Constructs a new <code>RecordMap</code>.
-     */
-    public RecordMap() { }
-    
+
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     public boolean unmarshal(UnmarshallingContext context) {

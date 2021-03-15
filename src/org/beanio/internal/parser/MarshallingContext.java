@@ -36,11 +36,6 @@ public abstract class MarshallingContext extends ParsingContext {
     private Object bean;
     private String componentName;
     private RecordWriter recordWriter;
-    
-    /**
-     * Constructs a new <code>MarshallingContext</code>.
-     */
-    public MarshallingContext() { }
 
     @Override
     public final char getMode() {

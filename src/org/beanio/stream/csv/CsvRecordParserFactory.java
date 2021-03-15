@@ -27,11 +27,6 @@ import org.beanio.stream.*;
  */
 public class CsvRecordParserFactory extends CsvParserConfiguration implements RecordParserFactory {
 
-    /**
-     * Constructs a new <code>CsvRecordParserFactory</code>.
-     */
-    public CsvRecordParserFactory() { }
-    
     /*
      * (non-Javadoc)
      * @see org.beanio.stream.RecordParserFactory#init()

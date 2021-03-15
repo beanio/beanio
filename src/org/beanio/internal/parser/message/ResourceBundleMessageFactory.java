@@ -40,9 +40,7 @@ public class ResourceBundleMessageFactory implements MessageFactory {
     private ConcurrentHashMap<String, String> messageCache = new ConcurrentHashMap<>();
     /* used to flag cache misses */
     private static final String NOT_FOUND = new String();
-    
-    public ResourceBundleMessageFactory() { }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.parser.MessageContext#getRecordLabel(java.lang.String)

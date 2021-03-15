@@ -34,12 +34,7 @@ public class FixedLengthMarshallingContext extends MarshallingContext {
     private int committed = 0;
     // the list of entries for creating the record (may be unordered)
     private ArrayList<Entry> entries = new ArrayList<>();
-    
-    /**
-     * Constructs a new <code>FixedLengthMarshallingContext</code>.
-     */
-    public FixedLengthMarshallingContext() { }
-    
+
     @Override
     public void clear() {
         super.clear();

@@ -26,9 +26,4 @@ import org.beanio.internal.parser.format.delimited.DelimitedStreamFormat;
  */
 public class CsvStreamFormat extends DelimitedStreamFormat {
 
-    /**
-     * Constructs a new <code>CsvStreamFormat</code>.
-     */
-    public CsvStreamFormat() { }
-    
 }

@@ -58,12 +58,7 @@ public abstract class UnmarshallingContext extends ParsingContext {
     private boolean dirty;
     // a list of record contexts (for parsing record groups)
     private List<ErrorContext> recordList = new ArrayList<>();
-    
-    /**
-     * Constructs a new <code>UnmarshallingContext</code>.
-     */
-    public UnmarshallingContext() { }
-    
+
     @Override
     public final char getMode() {
         return UNMARSHALLING;

@@ -24,11 +24,6 @@ import org.w3c.dom.*;
  */
 public class XmlTextField extends XmlFieldFormat {
 
-    /**
-     * Constructs a new <code>XmlTextField</code>.
-     */
-    public XmlTextField() { }
-    
     @Override
     public String extractText(XmlUnmarshallingContext context) {
         Element parent = context.getPosition();

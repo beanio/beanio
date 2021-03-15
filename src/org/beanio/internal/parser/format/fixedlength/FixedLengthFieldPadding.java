@@ -29,11 +29,6 @@ import org.beanio.internal.parser.format.FieldPadding;
  */
 public class FixedLengthFieldPadding extends FieldPadding {
 
-    /**
-     * Constructs a new <code>FixedLengthFieldPadding</code>.
-     */
-    public FixedLengthFieldPadding() { }
-    
     @Override
     public void init() {
         super.init();

@@ -39,12 +39,7 @@ public class XmlWrapper extends DelegatingParser implements XmlNode {
     private boolean nillable;
     private boolean lazy;
     private boolean repeating;
-    
-    /**
-     * Constructs a new <code>XmlWrapper</code>.
-     */
-    public XmlWrapper() { }
-    
+
     @Override
     public boolean matches(UnmarshallingContext context) {
         if (!isIdentifier()) {

@@ -31,12 +31,7 @@ public class GroupConfig extends PropertyConfig implements SelectorConfig {
     private Integer order;
     private String key;
     private String target;
-    
-    /**
-     * Constructs a new <code>GroupConfig</code>.
-     */
-    public GroupConfig() { }
-    
+
     @Override
     public char getComponentType() { 
         return GROUP;

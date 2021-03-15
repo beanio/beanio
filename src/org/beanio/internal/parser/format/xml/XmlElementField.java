@@ -38,12 +38,7 @@ public class XmlElementField extends XmlFieldFormat {
     private String namespace;
     private boolean namespaceAware;
     private boolean nillable;
-    
-    /**
-     * Constructs a new <code>XmlElementField</code>.
-     */
-    public XmlElementField() { }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.format.xml.XmlFieldFormat#extractText(org.beanio.internal.parser.format.xml.XmlUnmarshallingContext)

@@ -32,12 +32,7 @@ public abstract class SimplePropertyConfig extends PropertyConfig {
     private String handler;
     private TypeHandler typeHandlerInstance;
     private String format;
-    
-    /**
-     * Constructs a new <code>SimplePropertyConfig</code>.
-     */
-    public SimplePropertyConfig() { }
-    
+
     /**
      * Returns the name of the custom type handler used for type 
      * conversion by this component, or <code>null</code> if the default

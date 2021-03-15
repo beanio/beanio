@@ -40,12 +40,7 @@ public abstract class PropertyComponent extends Component implements Property {
     private boolean identifier;
     // the accessor for setting this bean on its parent, may be null
     private PropertyAccessor accessor;
-    
-    /**
-     * Constructs a new <code>PropertyComponent</code>.
-     */
-    public PropertyComponent() { }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Property#isIdentifier()

@@ -45,12 +45,7 @@ public class XmlRecordUnmarshaller implements RecordUnmarshaller {
             throw new BeanIOException(ex);
         }
     }
-    
-    /**
-     * Constructs a new <code>XmlRecordUnmarshaller</code>.
-     */
-    public XmlRecordUnmarshaller() { }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.stream.RecordUnmarshaller#unmarshal(java.lang.String)

@@ -26,11 +26,6 @@ public class FixedLengthParserConfiguration {
     private Character lineContinuationCharacter = null;
     private String recordTerminator = null;
     private String[] comments;
-    
-    /**
-     * Constructs a new <code>FixedLengthParserConfiguration</code>.
-     */
-    public FixedLengthParserConfiguration() { }
 
     /**
      * Returns the line continuation character.  By default, line continuation

@@ -31,12 +31,7 @@ import org.beanio.stream.delimited.*;
  * @since 2.0
  */
 public class DelimitedParserFactory extends FlatParserFactory {
-    
-    /**
-     * Constructs a new <code>DelimitedParserFactory</code>.
-     */
-    public DelimitedParserFactory() { }
-    
+
     @Override
     public StreamFormat createStreamFormat(StreamConfig config) {
         DelimitedStreamFormat format = new DelimitedStreamFormat();

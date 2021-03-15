@@ -48,12 +48,7 @@ public class JsonFieldFormat implements FieldFormat, JsonNode {
     private FieldPadding padding;
     /* whether type conversion can be bypassed and the value directly set into the map */
     private boolean bypassTypeHandler;
-    
-    /**
-     * Constructs a new <code>JsonFieldFormat</code>.
-     */
-    public JsonFieldFormat() { }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.FieldFormat#extract(org.beanio.internal.parser.UnmarshallingContext, boolean)

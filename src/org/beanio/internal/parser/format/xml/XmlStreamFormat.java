@@ -37,12 +37,7 @@ public class XmlStreamFormat extends StreamFormatSupport {
     private Selector layout;
     // the maximum depth of a group component in the parser tree 
     private int groupDepth;
-    
-    /**
-     * Constructs a new <code>XmlStreamFormat</code>.
-     */
-    public XmlStreamFormat() { }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.parser2.StreamFormat#createUnmarshallingContext()

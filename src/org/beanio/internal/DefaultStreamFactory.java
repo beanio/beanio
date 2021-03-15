@@ -37,11 +37,6 @@ public class DefaultStreamFactory extends StreamFactory {
     private StreamCompiler compiler;
     private Map<String, Stream> contextMap = new ConcurrentHashMap<>();
 
-    /**
-     * Constructs a new <code>DefaultStreamFactory</code>.
-     */
-    public DefaultStreamFactory() { }
-
     @Override
     protected void init() {
         super.init();

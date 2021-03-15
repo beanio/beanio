@@ -43,12 +43,7 @@ public abstract class AbstractXmlCalendarTypeHandler extends CalendarTypeHandler
     
     private boolean timeZoneAllowed = true;
     private boolean lenientDatatype = false;
-    
-    /**
-     * Constructs a new <code>AbstractXmlDateTypeHandler</code>.
-     */
-    public AbstractXmlCalendarTypeHandler() { }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.types.TypeHandler#parse(java.lang.String)

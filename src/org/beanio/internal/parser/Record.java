@@ -38,11 +38,6 @@ public class Record extends Segment implements Selector {
     // current record count
     private ParserLocal<Integer> count = new ParserLocal<>(0);
 
-    /**
-     * Constructs a new <code>Record</code>.
-     */
-    public Record() { }
-    
     /*
      * (non-Javadoc)
      * @see org.beanio.parser2.Marshaller#marshal(org.beanio.parser2.MarshallingContext)

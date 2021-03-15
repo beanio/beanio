@@ -36,11 +36,6 @@ public class XmlParserConfiguration implements Cloneable {
     
     /* Map of namespace prefixes to namespace uri's */
     private Map<String,String> namespaceMap = new HashMap<>();
-    
-    /**
-     * Constructs a new <code>XmlConfiguration</code>.
-     */
-    public XmlParserConfiguration() { }
 
     /**
      * Returns the number of spaces to indent each level of XML, or <code>-1</code>

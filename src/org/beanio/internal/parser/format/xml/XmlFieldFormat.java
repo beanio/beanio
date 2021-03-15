@@ -31,11 +31,6 @@ public abstract class XmlFieldFormat implements FieldFormat, XmlNode {
     private boolean lazy;
     private FieldPadding padding;
 
-    /**
-     * Constructs a new <code>XmlFieldFormat</code>.
-     */
-    public XmlFieldFormat() { }
-
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.FieldFormat#insertValue(org.beanio.internal.parser.MarshallingContext, java.lang.Object)

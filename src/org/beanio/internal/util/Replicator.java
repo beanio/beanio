@@ -31,12 +31,7 @@ import java.util.*;
 public class Replicator {
 
     private Set<Replicateable> archetypes = new HashSet<>();
-    
-    /**
-     * Constructs a new <code>Replicator</code>.
-     */
-    public Replicator() { }
-    
+
     /**
      * Registers a node in a graph that can be copied.
      * @param node the graph node to register

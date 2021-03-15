@@ -35,12 +35,7 @@ public class MapParser extends Aggregation {
     private Property key;
     // the property value
     private ParserLocal<Object> value = new ParserLocal<>();
-    
-    /**
-     * Constructs a new <code>MapParser</code>.
-     */
-    public MapParser() { }
-    
+
     @Override
     public void clearValue(ParsingContext context) {
         this.value.set(context, null);

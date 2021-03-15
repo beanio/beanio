@@ -34,12 +34,7 @@ public abstract class RecordAggregation extends DelegatingParser implements Sele
     private Class<?> type;
     // true if null should be returned for an empty collection
     protected boolean lazy;
-    
-    /**
-     * Constructs a new <code>RecordAggregation</code>.
-     */
-    public RecordAggregation() { }
-    
+
     /**
      * Sets the collection type.
      * @param type {@link Collection} class type

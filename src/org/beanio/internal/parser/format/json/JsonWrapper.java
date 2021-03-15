@@ -37,12 +37,7 @@ public class JsonWrapper extends DelegatingParser implements JsonNode {
     /* whether the segment may be explicitly set to 'null' */
     private boolean nillable;
     private boolean optional;
-    
-    /**
-     * Constructs a new <code>JsonWrapper</code>.
-     */
-    public JsonWrapper() { }
-    
+
     @Override
     public boolean matches(UnmarshallingContext context) {
         if (!isIdentifier()) {

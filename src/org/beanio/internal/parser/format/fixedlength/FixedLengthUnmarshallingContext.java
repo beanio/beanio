@@ -27,11 +27,6 @@ public class FixedLengthUnmarshallingContext extends UnmarshallingContext {
 
     private String record;
     private int recordLength;
-    
-    /**
-     * Constructs a new <code>FixedLengthUnmarshallingContext</code>.
-     */
-    public FixedLengthUnmarshallingContext() { }
 
     @Override
     public void setRecordValue(Object value) {

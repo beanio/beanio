@@ -33,12 +33,7 @@ public class CollectionBean extends PropertyComponent implements Property {
             return isRequired() ? null : Value.MISSING;
         }
     };
-    
-    /**
-     * Constructs a new <code>CollectionBean</code>.
-     */
-    public CollectionBean() { }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Property#type()

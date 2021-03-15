@@ -33,12 +33,7 @@ public class JsonParserFactory extends ParserFactorySupport {
 
     // depth starts at one to accomodate the root JSON object
     private int maxDepth = 1;
-    
-    /**
-     * Constructs a new <code>JsonParserFactory</code>.
-     */
-    public JsonParserFactory() { }
-    
+
     @Override
     protected Preprocessor createPreprocessor(StreamConfig config) {
         return new JsonPreprocessor(config);

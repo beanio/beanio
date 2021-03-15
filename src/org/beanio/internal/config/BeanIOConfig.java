@@ -28,11 +28,6 @@ public class BeanIOConfig implements Cloneable {
     private String source;
     private List<StreamConfig> streamList = new ArrayList<>();
     private List<TypeHandlerConfig> handlerList = new ArrayList<>();
-    
-    /**
-     * Constructs a new <code>BeanIOConfig</code>.
-     */
-    public BeanIOConfig() { }
 
     /**
      * Returns the source of this configuration.  May be <code>null</code>

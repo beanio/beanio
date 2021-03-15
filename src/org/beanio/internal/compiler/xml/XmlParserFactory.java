@@ -32,11 +32,6 @@ import org.beanio.stream.xml.XmlRecordParserFactory;
  */
 public class XmlParserFactory extends ParserFactorySupport {
 
-    /**
-     * Constructs a new <code>XmlParserFactory</code>.
-     */
-    public XmlParserFactory() { }
-    
     // the current depth of the parser tree
     private int groupDepth = 0;
     private int maxGroupDepth = 0;

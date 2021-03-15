@@ -30,11 +30,6 @@ import org.beanio.internal.parser.UnmarshallingContext;
 public class DelimitedUnmarshallingContext extends UnmarshallingContext {
 
     private String[] fields;
-    
-    /**
-     * Constructs a new <code>DelimitedUnmarshallingContext</code>.
-     */
-    public DelimitedUnmarshallingContext() { }
 
     @Override
     public void setRecordValue(Object value) {

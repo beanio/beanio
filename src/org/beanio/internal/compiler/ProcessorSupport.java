@@ -31,12 +31,7 @@ import org.beanio.internal.config.*;
 public abstract class ProcessorSupport {
 
     private LinkedList<ComponentConfig> configStack = new LinkedList<>();
-    
-    /**
-     * Constructs a new <code>ProcessorSupport</code>.
-     */
-    public ProcessorSupport() { }
-    
+
     /**
      * Processes a stream configuration.
      * @throws BeanIOConfigurationException if the configuration is invalid

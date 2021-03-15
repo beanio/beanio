@@ -30,11 +30,6 @@ import javax.xml.namespace.QName;
  */
 public class XmlCalendarDateTypeHandler extends AbstractXmlCalendarTypeHandler {
 
-    /**
-     * Constructs a new <code>XmlCalendarDateTypeHandler</code>.
-     */
-    public XmlCalendarDateTypeHandler() { }
-    
     @Override
     public String format(Object value) {
         if (value == null) {

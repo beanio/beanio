@@ -32,11 +32,6 @@ import org.beanio.stream.fixedlength.*;
  */
 public class FixedLengthParserFactory extends FlatParserFactory {
 
-    /**
-     * Constructs a new <code>FixedLengthParserFactory</code>.
-     */
-    public FixedLengthParserFactory() { }
-    
     @Override
     protected Preprocessor createPreprocessor(StreamConfig config) {
         return new FixedLengthPreprocessor(config);

@@ -30,11 +30,6 @@ import javax.xml.namespace.QName;
  */
 public class XmlDateTypeHandler extends AbstractXmlDateTypeHandler {
 
-    /**
-     * Constructs a new <code>XmlDateTypeHandler</code>.
-     */
-    public XmlDateTypeHandler() { }
-    
     @Override
     public String format(Object value) {
         if (value == null) {

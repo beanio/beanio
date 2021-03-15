@@ -28,11 +28,6 @@ public class JsonParserConfiguration {
     private String lineSeparator;
 
     /**
-     * Constructs a new <code>JsonParserConfiguration</code>
-     */
-    public JsonParserConfiguration() { }
-    
-    /**
      * Returns whether JSON output should be formatted prettily.
      * @return true to format JSON output, false otherwise
      */

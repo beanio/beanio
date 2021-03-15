@@ -31,12 +31,7 @@ public class XmlAttributeField extends XmlFieldFormat {
     private String prefix;
     private String namespace;
     private boolean namespaceAware;
-    
-    /**
-     * Constructs a new <code>XmlAttributeField</code>.
-     */
-    public XmlAttributeField() { }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.format.xml.XmlFieldFormat#extractText(org.beanio.internal.parser.format.xml.XmlUnmarshallingContext)

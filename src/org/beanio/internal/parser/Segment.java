@@ -55,12 +55,7 @@ public class Segment extends ParserComponent {
             return new ArrayList<>();
         }
     };
-    
-    /**
-     * Constructs a new <code>Segment</code>.
-     */
-    public Segment() { }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.Parser#clearValue()

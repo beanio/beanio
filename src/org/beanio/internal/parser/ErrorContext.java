@@ -33,12 +33,7 @@ public class ErrorContext implements RecordContext, Cloneable {
     private HashMap<String, String> fieldTextMap;
     private HashMap<String, Counter> fieldCountMap;
     private HashMap<String, Collection<String>> fieldErrorMap;
-    
-    /**
-     * Constructs a new <code>ErrorContext</code>.
-     */
-    public ErrorContext() { }
-    
+
     /**
      * Clears this context;
      */

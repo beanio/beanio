@@ -64,12 +64,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
     
     private LinkedList<Component> parserStack = new LinkedList<>();
     private LinkedList<Component> propertyStack = new LinkedList<>();
-    
-    /**
-     * Constructs a new <code>ParserFactory</code>.
-     */
-    public ParserFactorySupport() { }
-    
+
     /**
      * Creates a new stream definition based on a stream configuration.
      * @param config the stream configuration

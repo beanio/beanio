@@ -26,11 +26,6 @@ import org.beanio.internal.parser.format.flat.FlatFieldFormatSupport;
  */
 public class DelimitedFieldFormat extends FlatFieldFormatSupport implements FieldFormat {
 
-    /**
-     * Constructs a new <code>DelimitedFieldFormat</code>.
-     */
-    public DelimitedFieldFormat() { }
-    
     @Override
     public void insertFieldText(MarshallingContext context, String fieldText, boolean commit) {
         ((DelimitedMarshallingContext)context).setField(getPosition(), fieldText, commit);

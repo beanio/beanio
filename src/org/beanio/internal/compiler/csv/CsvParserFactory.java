@@ -31,11 +31,6 @@ import org.beanio.stream.csv.*;
  */
 public class CsvParserFactory extends DelimitedParserFactory {
 
-    /**
-     * Constructs a new <code>CsvParserFactory</code>.
-     */
-    public CsvParserFactory() { }
-    
     @Override
     public StreamFormat createStreamFormat(StreamConfig config) {
         CsvStreamFormat format = new CsvStreamFormat();

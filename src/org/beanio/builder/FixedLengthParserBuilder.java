@@ -28,12 +28,7 @@ import org.beanio.stream.fixedlength.FixedLengthRecordParserFactory;
 public class FixedLengthParserBuilder extends ParserBuilder {
 
     private FixedLengthRecordParserFactory parser = new FixedLengthRecordParserFactory();
-    
-    /**
-     * Constructs a new FixedLengthParserBuilder.
-     */
-    public FixedLengthParserBuilder() { }
-    
+
     /**
      * Sets the record terminator.
      * @param terminator the record termination character

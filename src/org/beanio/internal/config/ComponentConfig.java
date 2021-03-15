@@ -60,12 +60,7 @@ public abstract class ComponentConfig extends TreeNode<ComponentConfig> {
     private String xmlNamespace;
     private String xmlPrefix;
     private boolean xmlNamespaceAware;
-    
-    /**
-     * Constucts a new <code>ComponentConfig</code>.
-     */
-    public ComponentConfig() { }
-    
+
     /**
      * Returns the component type.
      * @return one of {@link #GROUP}, {@link #RECORD}, {@link #SEGMENT}, {@link #FIELD},

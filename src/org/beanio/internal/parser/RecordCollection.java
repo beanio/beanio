@@ -31,11 +31,6 @@ import org.beanio.internal.util.StringUtil;
  */
 public class RecordCollection extends RecordAggregation {
 
-    /**
-     * Constructs a new <code>RecordCollection</code>.
-     */
-    public RecordCollection() { }
-    
     @Override
     @SuppressWarnings("unchecked")
     public boolean unmarshal(UnmarshallingContext context) {

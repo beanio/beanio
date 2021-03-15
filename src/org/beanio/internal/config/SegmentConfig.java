@@ -42,12 +42,7 @@ public class SegmentConfig extends PropertyConfig {
     private String target;
     private boolean constant;
     private boolean defaultExistence;
-    
-    /**
-     * Constructs a new <code>SegmentConfig</code>.
-     */
-    public SegmentConfig() { }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.config.PropertyConfig#type()

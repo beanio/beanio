@@ -29,12 +29,7 @@ public abstract class StreamFormatSupport implements StreamFormat {
 
     private String name;
     private RecordParserFactory recordParserFactory;
-    
-    /**
-     * Constructs a new <code>StreamFormatSupport</code>.
-     */
-    public StreamFormatSupport() { }
-    
+
     /**
      * Sets the name of this stream.
      * @param name the stream name

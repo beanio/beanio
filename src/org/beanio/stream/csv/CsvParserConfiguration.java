@@ -33,12 +33,7 @@ public class CsvParserConfiguration {
     
     private String recordTerminator = null;
     private boolean alwaysQuote = false;
-    
-    /**
-     * Constructs a new <code>CsvParserConfiguration</code>.
-     */
-    public CsvParserConfiguration() { } 
-    
+
     /**
      * Sets the field delimiter. By default, the delimiter is a comma.
      * @param c the character used to delimit fields

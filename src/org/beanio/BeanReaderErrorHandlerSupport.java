@@ -27,11 +27,6 @@ package org.beanio;
 public class BeanReaderErrorHandlerSupport implements BeanReaderErrorHandler {
 
     /**
-     * Constructs a new <code>BeanReaderErrorHandlerSupport</code>.
-     */
-    public BeanReaderErrorHandlerSupport() { }
-    
-    /**
      * Delegates error handling based on the exception type.
      * @param ex the <code>BeanReaderException</code> to handle
      * @throws Exception if the BeanReaderException is rethrown or this error

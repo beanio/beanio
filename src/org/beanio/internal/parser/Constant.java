@@ -26,12 +26,7 @@ public class Constant extends Component implements Property {
     private Class<?> type;
     private boolean identifier;
     private PropertyAccessor accessor;
-    
-    /**
-     * Constructs a new <code>Constant</code>.
-     */
-    public Constant() { }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.parser.Property#type()

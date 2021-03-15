@@ -31,12 +31,7 @@ import javax.xml.namespace.QName;
 public class XmlTimeTypeHandler extends AbstractXmlDateTypeHandler {
 
     private boolean outputMilliseconds = false;
-    
-    /**
-     * Constructs a new <code>XmlTimeTypeHandler</code>.
-     */
-    public XmlTimeTypeHandler() { }
-    
+
     @Override
     public String format(Object value) {
         if (value == null) {

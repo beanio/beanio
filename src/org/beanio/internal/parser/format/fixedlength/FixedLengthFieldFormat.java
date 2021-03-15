@@ -29,12 +29,7 @@ public class FixedLengthFieldFormat extends FlatFieldFormatSupport implements Fi
     
     private boolean keepPadding;
     private boolean lenientPadding;
-    
-    /**
-     * Constructs a new <code>FixedLengthFieldFormat</code>.
-     */
-    public FixedLengthFieldFormat() { }
-    
+
     @Override
     public String extract(UnmarshallingContext context, boolean reportErrors) {
         String text = extractFieldText(context, reportErrors);

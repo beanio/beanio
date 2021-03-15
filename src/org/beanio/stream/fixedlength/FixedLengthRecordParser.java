@@ -26,11 +26,6 @@ import org.beanio.stream.*;
  */
 public class FixedLengthRecordParser implements RecordMarshaller, RecordUnmarshaller {
 
-    /**
-     * Constructs a new <code>FixedLengthRecordParser</code>.
-     */
-    public FixedLengthRecordParser() { }
-    
     /*
      * (non-Javadoc)
      * @see org.beanio.stream.RecordUnmarshaller#unmarshal(java.lang.String)

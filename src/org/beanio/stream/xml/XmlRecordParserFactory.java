@@ -30,12 +30,7 @@ public class XmlRecordParserFactory extends XmlParserConfiguration
     implements RecordParserFactory, XmlStreamConfigurationAware {
 
     private XmlStreamConfiguration source;
-    
-    /**
-     * Constructs a new <code>XmlRecordParserFactory</code>.
-     */
-    public XmlRecordParserFactory() { }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.stream.RecordParserFactory#init()

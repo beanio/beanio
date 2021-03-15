@@ -34,12 +34,7 @@ public class DelimitedRecordFormat implements RecordFormat {
     
     private int minMatchLength = 0;
     private int maxMatchLength = Integer.MAX_VALUE;
-    
-    /**
-     * Constructs a new <code>DelimitedRecordFormat</code>.
-     */
-    public DelimitedRecordFormat() { }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.internal.parser.RecordFormat#matches(org.beanio.internal.parser.UnmarshallingContext)

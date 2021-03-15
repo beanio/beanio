@@ -50,12 +50,7 @@ public class FieldConfig extends SimplePropertyConfig {
     private String justify = LEFT;
     private boolean keepPadding;
     private boolean lenientPadding;
-    
-    /**
-     * Constructs a new <code>FieldConfig</code>.
-     */
-    public FieldConfig() { }
-    
+
     @Override
     public char getComponentType() { 
         return FIELD;

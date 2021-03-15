@@ -29,9 +29,7 @@ import org.beanio.stream.csv.CsvRecordParserFactory;
 public class CsvParserBuilder extends ParserBuilder {
 
     private CsvRecordParserFactory parser = new CsvRecordParserFactory();
-    
-    public CsvParserBuilder() { }
-    
+
     public CsvParserBuilder delimiter(char delimiter) {
         parser.setDelimiter(delimiter);
         return this;

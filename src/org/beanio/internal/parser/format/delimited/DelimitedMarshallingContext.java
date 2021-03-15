@@ -33,12 +33,7 @@ public class DelimitedMarshallingContext extends MarshallingContext {
     private ArrayList<String> record = new ArrayList<>();
     // the list of entries for creating the record (may be unordered)
     private ArrayList<Entry> entries = new ArrayList<>();
-    
-    /**
-     * Constructs a new <code>DelimitedMarshallingContext</code>.
-     */
-    public DelimitedMarshallingContext() { }
-    
+
     @Override
     public void clear() {
         super.clear();

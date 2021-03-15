@@ -26,12 +26,7 @@ import java.util.*;
 public class ArrayParser extends CollectionParser {
 
     private Class<?> arrayType;
-    
-    /**
-     * Constructs a new <code>ArrayParser</code>.
-     */
-    public ArrayParser() { }
-    
+
     @Override
     public int type() {
         return Property.AGGREGATION_ARRAY;

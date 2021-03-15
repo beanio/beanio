@@ -28,12 +28,7 @@ import org.beanio.types.*;
 public class XmlBooleanTypeHandler implements TypeHandler {
 
     private boolean numericFormatEnabled = false;
-    
-    /**
-     * Constructs a new <code>XmlBooleanTypeHandler</code>.
-     */
-    public XmlBooleanTypeHandler() { }
-    
+
     /**
      * Parses a Boolean object from the given text.
      * @param text the text to parse

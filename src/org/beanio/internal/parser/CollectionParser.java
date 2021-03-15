@@ -35,12 +35,7 @@ public class CollectionParser extends Aggregation {
     private Class<? extends Collection<Object>> type;
     // the property value
     private ParserLocal<Object> value = new ParserLocal<>();
-    
-    /**
-     * Constructs a new <code>CollectionParser</code>.
-     */
-    public CollectionParser() { }
-    
+
     /*
      * (non-Javadoc)
      * @see org.beanio.parser2.DelegatingParser#clear()

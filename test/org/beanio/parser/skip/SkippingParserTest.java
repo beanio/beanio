@@ -44,10 +44,10 @@ public class SkippingParserTest extends ParserTest {
         
         try {
             int count = in.skip(0);
-            assertEquals(count, 0);
+            assertEquals(0, count);
             
             count = in.skip(4);
-            assertEquals(count, 4);
+            assertEquals(4, count);
             
             in.read();
             assertEquals("Detail", in.getRecordName());
@@ -66,7 +66,7 @@ public class SkippingParserTest extends ParserTest {
         
         try {
             int count = in.skip(10);
-            assertEquals(count, 6);
+            assertEquals(6, count);
         }
         finally {
             in.close();

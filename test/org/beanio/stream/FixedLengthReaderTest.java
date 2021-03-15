@@ -19,8 +19,8 @@ public class FixedLengthReaderTest {
     public void testBasic() throws IOException {
         FixedLengthRecordParserFactory factory = new FixedLengthRecordParserFactory();
         FixedLengthReader in = createReader(factory, "1111\n2222");
-        assertEquals(in.read(), "1111");
-        assertEquals(in.read(), "2222");
+        assertEquals("1111", in.read());
+        assertEquals("2222", in.read());
         assertNull(in.read());
     }
 
@@ -41,9 +41,9 @@ public class FixedLengthReaderTest {
         FixedLengthRecordParserFactory factory = new FixedLengthRecordParserFactory();
         factory.setLineContinuationCharacter('#');
         FixedLengthReader in = createReader(factory, "11#\n22\n33");
-        assertEquals(in.read(), "1122");
+        assertEquals("1122", in.read());
         assertEquals(1, in.getRecordLineNumber());
-        assertEquals(in.read(), "33");
+        assertEquals("33", in.read());
         assertEquals(3, in.getRecordLineNumber());
         assertNull(in.read());
     }
@@ -53,9 +53,9 @@ public class FixedLengthReaderTest {
         FixedLengthRecordParserFactory factory = new FixedLengthRecordParserFactory();
         factory.setLineContinuationCharacter('\\');
         FixedLengthReader in = createReader(factory, "11\\");
-        assertEquals(in.read(), "1122");
+        assertEquals("1122", in.read());
         assertEquals(1, in.getRecordLineNumber());
-        assertEquals(in.read(), "33");
+        assertEquals("33", in.read());
         assertEquals(3, in.getRecordLineNumber());
         assertNull(in.read());
     }
@@ -64,9 +64,9 @@ public class FixedLengthReaderTest {
     public void testCR() throws IOException {
         FixedLengthRecordParserFactory factory = new FixedLengthRecordParserFactory();
         FixedLengthReader in = createReader(factory, "1111\r2222");
-        assertEquals(in.read(), "1111");
+        assertEquals("1111", in.read());
         assertEquals(1, in.getRecordLineNumber());
-        assertEquals(in.read(), "2222");
+        assertEquals("2222", in.read());
         assertEquals(2, in.getRecordLineNumber());
         assertNull(in.read());
     }
@@ -75,9 +75,9 @@ public class FixedLengthReaderTest {
     public void testLF() throws IOException {
         FixedLengthRecordParserFactory factory = new FixedLengthRecordParserFactory();
         FixedLengthReader in = createReader(factory, "1111\n2222");
-        assertEquals(in.read(), "1111");
+        assertEquals("1111", in.read());
         assertEquals(1, in.getRecordLineNumber());
-        assertEquals(in.read(), "2222");
+        assertEquals("2222", in.read());
         assertEquals(2, in.getRecordLineNumber());
         assertNull(in.read());
     }
@@ -86,9 +86,9 @@ public class FixedLengthReaderTest {
     public void testCRLF() throws IOException {
         FixedLengthRecordParserFactory factory = new FixedLengthRecordParserFactory();
         FixedLengthReader in = createReader(factory, "1111\r\n2222");
-        assertEquals(in.read(), "1111");
+        assertEquals("1111", in.read());
         assertEquals(1, in.getRecordLineNumber());
-        assertEquals(in.read(), "2222");
+        assertEquals("2222", in.read());
         assertEquals(2, in.getRecordLineNumber());
         assertNull(in.read());
     }

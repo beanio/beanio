@@ -73,7 +73,7 @@ public class DelimitedReaderTest {
         factory.setLineContinuationCharacter('\\');
         DelimitedReader in = createReader(factory, "1,2,\\\n3,4");
         assertArrayEquals(new String[] { "1", "2", "3", "4" }, in.read());
-        assertEquals(in.getRecordLineNumber(), 1);
+        assertEquals(1, in.getRecordLineNumber());
         assertNull(in.read());
     }
 
@@ -84,7 +84,7 @@ public class DelimitedReaderTest {
         factory.setLineContinuationCharacter('\\');
         DelimitedReader in = createReader(factory, "1,2,\\\r\n3,4");
         assertArrayEquals(new String[] { "1", "2", "3", "4" }, in.read());
-        assertEquals(in.getRecordLineNumber(), 1);
+        assertEquals(1, in.getRecordLineNumber());
         assertNull(in.read());
     }
 
@@ -95,7 +95,7 @@ public class DelimitedReaderTest {
         factory.setLineContinuationCharacter('\\');
         DelimitedReader in = createReader(factory, "1,2,\\3,4");
         assertArrayEquals(new String[] { "1", "2", "\\3", "4" }, in.read());
-        assertEquals(in.getRecordLineNumber(), 1);
+        assertEquals(1, in.getRecordLineNumber());
         assertNull(in.read());
     }
 
@@ -107,7 +107,7 @@ public class DelimitedReaderTest {
         factory.setEscape('\\');
         DelimitedReader in = createReader(factory, "1,2,\\3,4");
         assertArrayEquals(new String[] { "1", "2", "\\3", "4" }, in.read());
-        assertEquals(in.getRecordLineNumber(), 1);
+        assertEquals(1, in.getRecordLineNumber());
         assertNull(in.read());
     }
 

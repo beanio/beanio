@@ -33,7 +33,7 @@ public class InlineMapParserTest extends ParserTest {
         Person person;
         Map map = (Map) u.unmarshal(text);
         
-        Assert.assertEquals(map.size(), 2);
+        Assert.assertEquals(2, map.size());
         Assert.assertTrue(map.containsKey("js"));
         
         person = (Person) map.get("js");
@@ -59,7 +59,7 @@ public class InlineMapParserTest extends ParserTest {
         
         Map map = (Map) u.unmarshal(text);
         
-        Assert.assertEquals(map.size(), 2);
+        Assert.assertEquals(2, map.size());
         Assert.assertTrue(map.containsKey("js"));
         Assert.assertEquals("Joe", map.get("js"));
         Assert.assertTrue(map.containsKey("bm"));

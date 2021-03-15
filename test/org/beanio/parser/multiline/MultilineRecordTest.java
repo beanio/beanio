@@ -336,8 +336,8 @@ public class MultilineRecordTest extends ParserTest {
         
         BeanReader in = factory.createReader("ml8", new StringReader(text));
         Order order = (Order) in.read();
-        assertEquals(order.getCustomer().getId(), "CUST");
-        assertEquals(order.getCustomer().getFirstName(), "George");
+        assertEquals("CUST", order.getCustomer().getId());
+        assertEquals("George", order.getCustomer().getFirstName());
         assertNull(order.getShipper());   
         
         StringWriter output = new StringWriter();

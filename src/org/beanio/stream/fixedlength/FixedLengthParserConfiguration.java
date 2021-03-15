@@ -111,6 +111,7 @@ public class FixedLengthParserConfiguration {
      * @return the line separation text
      * @deprecated
      */
+    @Deprecated
     public String getLineSeparator() {
         return recordTerminator;
     }
@@ -122,6 +123,7 @@ public class FixedLengthParserConfiguration {
      * @param lineSeparator the line separation text
      * @deprecated
      */
+    @Deprecated
     public void setLineSeparator(String lineSeparator) {
         this.recordTerminator = lineSeparator;
     }

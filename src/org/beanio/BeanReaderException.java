@@ -66,6 +66,7 @@ public class BeanReaderException extends BeanIOException {
      * @since 2.0
      * @deprecated use {@link #getRecordContext()}
      */
+    @Deprecated
     public RecordContext getContext() {
         return getRecordContext();
     }

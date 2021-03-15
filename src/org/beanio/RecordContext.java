@@ -41,6 +41,7 @@ public interface RecordContext {
      * @return the line number of this record
      * @deprecated use {@link #getLineNumber()}
      */
+    @Deprecated
     public int getRecordLineNumber();
     
     /**

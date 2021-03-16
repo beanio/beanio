@@ -6,13 +6,17 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Properties;
+import org.beanio.BeanReader;
 import org.beanio.BeanWriter;
 import org.beanio.StreamFactory;
 import org.beanio.beans.JavaTime;
@@ -162,10 +166,14 @@ public class TemporalAccessorTypeHandlerTest {
         BeanWriter beanWriter = streamFactory.createWriter("my-stream", writer);
         beanWriter.write(javaTime);
 
+        BeanReader reader = streamFactory.createReader("my-date-stream", new StringReader("14/03-21"));
+        Object read = reader.read();
+
         // Then
         assertEquals("14/03, 21:40\n", writer.toString());
+        assertTrue(read instanceof JavaTime);
+        assertEquals(LocalDate.of(2021, 3, 14), ((JavaTime) read).getLocalDate());
     }
-
 
     @Test
     public void testZonedDateTime() throws TypeConversionException {
@@ -183,5 +191,23 @@ public class TemporalAccessorTypeHandlerTest {
         assertEquals("2021-03-14T20:34:14+01:00[Europe/Paris]", formatted);
         assertTrue(parsed instanceof ZonedDateTime);
         assertEquals(zonedDateTime, parsed);
+    }
+
+    @Test
+    public void testOffsetDateTime() throws TypeConversionException {
+        // Given
+        TypeHandler typeHandler = typeHandlerFactory.getTypeHandlerFor(OffsetDateTime.class);
+        LocalDate localDate = LocalDate.of(2021, 3, 14);
+        LocalTime localTime = LocalTime.of(20, 34, 14);
+        OffsetDateTime offsetDateTime = OffsetDateTime.of(localDate, localTime, ZoneOffset.ofHours(3));
+
+        // When
+        String formatted = typeHandler.format(offsetDateTime);
+        Object parsed = typeHandler.parse("2021-03-14T20:34:14+03:00");
+
+        // Then
+        assertEquals("2021-03-14T20:34:14+03:00", formatted);
+        assertTrue(parsed instanceof OffsetDateTime);
+        assertEquals(offsetDateTime, parsed);
     }
 }

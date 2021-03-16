@@ -4,6 +4,7 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
@@ -19,6 +20,7 @@ public class TemporalAccessorTypeHandler implements ConfigurableTypeHandler {
     private Class<?> type;
 
     public TemporalAccessorTypeHandler() {
+        // Used by XML mappings
     }
 
     public TemporalAccessorTypeHandler(Class<?> type, DateTimeFormatter formatter) {
@@ -42,7 +44,7 @@ public class TemporalAccessorTypeHandler implements ConfigurableTypeHandler {
     }
 
     @Override
-    public Object parse(String text) throws TypeConversionException {
+    public TemporalAccessor parse(String text) throws TypeConversionException {
         try {
             TemporalAccessor temporalAccessor = formatter.parse(text);
 
@@ -54,6 +56,8 @@ public class TemporalAccessorTypeHandler implements ConfigurableTypeHandler {
                 return LocalDateTime.from(temporalAccessor);
             } else if (type == ZonedDateTime.class) {
                 return ZonedDateTime.from(temporalAccessor);
+            } else if (type == OffsetDateTime.class) {
+                return OffsetDateTime.from(temporalAccessor);
             }
 
             return temporalAccessor;

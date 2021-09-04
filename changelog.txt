@@ -15,6 +15,7 @@ Changes in version 3.0.0 (TBD)
 * Added SegmentBuilder.at(int) method
 * Fixed a thread issue in `DateTypeHandlerSupport` (#131)
 * Fixed a thread issue in `NumberTypeHandler`
+* Added an Automatic-Module-Name in MANIFEST.MF (#138)
 
 Changes in version 2.1.0 (2014-09-06)
 -------------------------------------

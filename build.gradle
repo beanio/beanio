@@ -99,6 +99,7 @@ jar {
             "Bundle-Description": "BeanIO OSGi support",
             "Bundle-License": "http://www.apache.org/licenses/LICENSE-2.0",
             "Bundle-DocURL": "https://beanio.github.io",
+            "Automatic-Module-Name" : project.group,
             "Export-Package": ant.properties["osgi.packages"] + ";version=\"${project.version}\"",
             "DynamicImport-Package": "*")
     }

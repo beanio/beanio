@@ -18,6 +18,12 @@ package org.beanio.internal.util;
 import java.math.*;
 import java.net.URL;
 import java.text.DateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import org.beanio.BeanIOConfigurationException;
@@ -61,7 +67,7 @@ public class TypeHandlerFactory {
     private static final String TYPE_KEY = "type:";
     
     /* The default type handler factory */
-    private final static TypeHandlerFactory defaultFactory;
+    private static final TypeHandlerFactory defaultFactory;
     static {
         defaultFactory = new TypeHandlerFactory(TypeHandlerFactory.class.getClassLoader());
         defaultFactory.registerHandlerFor(Character.class, new CharacterTypeHandler());
@@ -121,6 +127,28 @@ public class TypeHandlerFactory {
         defaultFactory.registerHandlerFor(TypeUtil.CALENDAR_DATETIME_ALIAS, new XmlCalendarDateTimeTypeHandler(), "xml");
         defaultFactory.registerHandlerFor(TypeUtil.CALENDAR_TIME_ALIAS, new XmlCalendarTimeTypeHandler(), "xml");
         defaultFactory.registerHandlerFor(Boolean.class, new XmlBooleanTypeHandler(), "xml");
+
+        // java.time handlers
+        defaultFactory.registerHandlerFor(
+            LocalDate.class,
+            new TemporalAccessorTypeHandler(LocalDate.class, DateTimeFormatter.ISO_LOCAL_DATE)
+        );
+        defaultFactory.registerHandlerFor(
+            LocalTime.class,
+            new TemporalAccessorTypeHandler(LocalTime.class, DateTimeFormatter.ISO_LOCAL_TIME)
+        );
+        defaultFactory.registerHandlerFor(
+            LocalDateTime.class,
+            new TemporalAccessorTypeHandler(LocalDateTime.class, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        );
+        defaultFactory.registerHandlerFor(
+            ZonedDateTime.class,
+            new TemporalAccessorTypeHandler(ZonedDateTime.class, DateTimeFormatter.ISO_ZONED_DATE_TIME)
+        );
+        defaultFactory.registerHandlerFor(
+            OffsetDateTime.class,
+            new TemporalAccessorTypeHandler(OffsetDateTime.class, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+        );
     }
 
     /**
@@ -274,10 +302,10 @@ public class TypeHandlerFactory {
             format = properties.getProperty("format");
         }
         if (format == null || "name".equals(format)) {
-            return new EnumTypeHandler((Class<Enum>) clazz);
+            return new EnumTypeHandler(clazz);
         }
         else if ("toString".equals(format)) {
-            return new ToStringEnumTypeHandler((Class<Enum>) clazz);
+            return new ToStringEnumTypeHandler(clazz);
         }
         else {
             throw new BeanIOConfigurationException("Invalid format '" + format + "', " +

@@ -4,7 +4,8 @@ A Java library for marshalling and unmarshalling bean objects from XML, CSV, del
 
 ## Installation
 
-Please note the new groupId `com.github.beanio`.
+If you're coming from BeanIO 2.x, please note the new groupId `com.github.beanio`. Package names remain the same as
+before (`org.beanio.*`).
 
 ### Maven
 
@@ -65,7 +66,7 @@ See [changelog.txt](changelog.txt)
 
 This is a fork of the [original BeanIO library](https://github.com/kevinseim/beanio). It combines :
 
-* the legacy SVN codebase that was hosted at https://code.google.com/p/beanio/
+* the legacy SVN codebase for 2.x that was hosted at https://code.google.com/p/beanio/
 * "the future BeanIO 3.x" that was started at https://github.com/kevinseim/beanio
 * several fixes from other forks (see commit messages for more info)
 

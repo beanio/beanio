@@ -5,7 +5,7 @@ Note: `gcXXXX` references an issue in the old Google Code repo. #XXX references 
 
 Changes in version 3.0.0 (TBD)
 -------------------------------------
-* Requires JDK 1.7 or higher
+* Requires JDK 1.8 or higher
 * Removed support for ASM class rewriting
 * Removed Spring framework support
 * Fixed IOUtil.getResource() to use ClassLoader argument (gc0109)
@@ -16,6 +16,7 @@ Changes in version 3.0.0 (TBD)
 * Fixed a thread issue in `DateTypeHandlerSupport` (#131)
 * Fixed a thread issue in `NumberTypeHandler`
 * Added an Automatic-Module-Name in MANIFEST.MF (#138)
+* Added support for `java.time` types (`LocalDate`, `ZonedDateTime` etc.) (#132)
 
 Changes in version 2.1.0 (2014-09-06)
 -------------------------------------

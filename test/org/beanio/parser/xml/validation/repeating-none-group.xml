@@ -1,0 +1,7 @@
+<beanio xmlns="http://www.beanio.org/2012/03">
+    <stream name="Records" format="xml">
+        <group name="Group" xmlType="none" collection="list" minOccurs="0" maxOccurs="unbounded">
+            <record name="Record" />
+        </group>
+    </stream>
+</beanio>

@@ -125,6 +125,18 @@ public class TemporalAccessorTypeHandlerTest {
     }
 
     @Test
+    public void testParseEmptyString() throws TypeConversionException {
+        // Given
+        TypeHandler typeHandler = typeHandlerFactory.getTypeHandlerFor(LocalDateTime.class);
+
+        // When
+        final Object result = typeHandler.parse("");
+
+        // Then
+        assertNull(result);
+    }
+
+    @Test
     public void testNewInstanceWithNullPatternReturnsSameInstance() {
         // Given
         TypeHandler typeHandler = typeHandlerFactory.getTypeHandlerFor(LocalDateTime.class);

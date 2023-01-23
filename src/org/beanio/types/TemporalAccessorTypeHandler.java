@@ -45,6 +45,10 @@ public class TemporalAccessorTypeHandler implements ConfigurableTypeHandler {
 
     @Override
     public TemporalAccessor parse(String text) throws TypeConversionException {
+        if (text == null || "".equals(text)) {
+            return null;
+        }
+        
         try {
             TemporalAccessor temporalAccessor = formatter.parse(text);
 

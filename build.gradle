@@ -8,7 +8,7 @@
  * See the following URL for instructions regarding deployment to the Sonatype Maven repo:
  *   https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
  *
- * BeanIO 3.x and up is built using Java 11, with Java 7 source/target compatibility.
+ * BeanIO 3.x and up is built using Java 11, with Java 8 source/target compatibility.
  *
  * To execute the 'uploadArchives' task, the following properties must be specified
  * in an external 'gradle.properties' file:

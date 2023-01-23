@@ -24,7 +24,7 @@ plugins {
     id 'maven-publish'
     id 'signing'
 
-    id "org.sonarqube" version "3.3"
+    id "org.sonarqube" version "3.5.0.2730"
     id 'jacoco'
 }
 
@@ -39,7 +39,7 @@ repositories {
 
 dependencies {
     testImplementation group: 'junit', name: 'junit', version: '4.13.2'
-    testImplementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.5.16'
+    testImplementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.5.21'
     testRuntimeOnly group: 'commons-logging', name: 'commons-logging', version: '1.2'
 }
 
@@ -164,7 +164,7 @@ task zip(type: Zip, dependsOn: [javadoc, jar] ) {
 
 task site(type: Tar, dependsOn: javadoc) {
     classifier "site"
-    version ""
+    archiveVersion = ""
     compression Compression.GZIP
     from(javadoc.destinationDir) {
         into "3.0/docs/api"
@@ -239,9 +239,9 @@ publishing {
 
 jacocoTestReport {
     reports {
-        xml.enabled true
-        csv.enabled false
-        html.enabled false
+        xml.required = true
+        csv.required = false
+        html.required = false
     }
 }
 

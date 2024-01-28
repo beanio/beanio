@@ -38,6 +38,8 @@ jobs:
         run: ./gradlew build --info
 
       - name: Analyze with SonarQube
+        # Disable because we need to update to Java 17
+        if: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

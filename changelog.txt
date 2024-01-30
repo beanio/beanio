@@ -3,7 +3,7 @@ Project BeanIO Change Log
 
 Note: `gcXXXX` references an issue in the old Google Code repo. #XXX references an issue on this GitHub repo.
 
-Changes in version 3.0.0 (TBD)
+Changes in version 3.0.0 (2024-01-30)
 -------------------------------------
 * Requires JDK 1.8 or higher
 * Removed support for ASM class rewriting

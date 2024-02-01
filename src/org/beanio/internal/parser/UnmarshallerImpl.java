@@ -18,8 +18,10 @@ package org.beanio.internal.parser;
 import java.io.*;
 import java.util.List;
 
+import org.apache.poi.ss.usermodel.Row;
 import org.beanio.*;
 import org.beanio.stream.*;
+import org.beanio.stream.excel.ExcelUtils;
 import org.w3c.dom.Node;
 
 /**
@@ -154,6 +156,28 @@ public class UnmarshallerImpl implements Unmarshaller {
         
         if (recordValue == null) {
             throw new BeanReaderException("unmarshal(Node) not supported by stream format");
+        }
+        
+        return unmarshal();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.beanio.Unmarshaller#unmarshal(org.w3c.dom.Node)
+     */
+    @Override
+    public Object unmarshal(Row row) throws BeanReaderException, UnidentifiedRecordException,
+        UnexpectedRecordException, InvalidRecordException {
+        
+        if (row == null) {
+            throw new NullPointerException("null row");
+        }
+        
+        this.recordName = null;
+        this.recordValue = context.toRecordValue(ExcelUtils.readRowValue(row));
+        
+        if (recordValue == null) {
+            throw new BeanReaderException("unmarshal(row) not supported by stream format");
         }
         
         return unmarshal();

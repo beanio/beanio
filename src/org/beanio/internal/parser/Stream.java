@@ -91,6 +91,28 @@ public class Stream {
         reader.setIgnoreUnidentifiedRecords(ignoreUnidentifiedRecords);
         return reader;
     }
+
+     /**
+     * Creates a new {@link BeanReader} for reading from the given input stream.
+     * @param in the input stream to read from
+     * @param locale the locale to use for rendering error messages
+     * @return the new {@link BeanReader}
+     */
+    public BeanReader createBeanReader(InputStream in, Locale locale) {
+        if (in == null) {
+            throw new NullPointerException("null reader");
+        }
+        
+        UnmarshallingContext context = format.createUnmarshallingContext();
+        initContext(context);
+        context.setMessageFactory(messageFactory);
+        context.setLocale(locale);
+        context.setRecordReader(format.createRecordReader(in));
+        
+        BeanReaderImpl reader = new BeanReaderImpl(context, layout);
+        reader.setIgnoreUnidentifiedRecords(ignoreUnidentifiedRecords);
+        return reader;
+    }
     
     /**
      * Creates a new {@link Unmarshaller}.
@@ -118,6 +140,24 @@ public class Stream {
      * @return the new {@link BeanWriter}
      */
     public BeanWriter createBeanWriter(Writer out) {
+        if (out == null) {
+            throw new NullPointerException("null writer");
+        }
+        
+        MarshallingContext context = format.createMarshallingContext(true);
+        initContext(context);
+        context.setRecordWriter(format.createRecordWriter(out));
+
+        BeanWriterImpl writer = new BeanWriterImpl(context, layout);
+        return writer;
+    }
+
+      /**
+     * Creates a new {@link BeanWriter} for writing to the given output stream.
+     * @param out the output stream to write to
+     * @return the new {@link BeanWriter}
+     */
+    public BeanWriter createBeanWriter(OutputStream out) {
         if (out == null) {
             throw new NullPointerException("null writer");
         }

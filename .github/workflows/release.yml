@@ -1,9 +1,9 @@
-name: Java CI
+name: Release CI
 
 on:
-  push:
-  pull_request:
-    types: [ opened, synchronize, reopened ]
+  release:
+    types:
+      - published
 
 jobs:
   build:
@@ -38,9 +38,16 @@ jobs:
         run: ./gradlew build --info
 
       - name: Analyze with SonarQube
-        # Disable because we need to update to Java 17
         if: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew jacocoTestReport sonarqube -Dsonar.login=${SONAR_TOKEN}
+
+      - name: Publish to Sonatype
+        env:
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+        run: ./gradlew publish -PsonatypeUsername="${SONATYPE_USERNAME}" -PsonatypePassword="${SONATYPE_PASSWORD}" -PsigningKey="${SIGNING_KEY}" -PsigningPassword="${SIGNING_PASSWORD}"

@@ -18,7 +18,6 @@ package org.beanio.builder;
 import org.beanio.internal.config.BeanConfig;
 import org.beanio.stream.RecordParserFactory;
 import org.beanio.stream.excel.ExcelRecordParserFactory;
-import org.beanio.stream.excel.ExcelType;
 
 /**
  * Builder for excel parsers.

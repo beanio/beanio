@@ -20,10 +20,10 @@ import java.io.*;
 import org.beanio.stream.*;
 
 /**
- * A <code>StreamFormat</code> provides format specific extensions for a {@link Stream} parser. 
+ * A <code>StreamFormat</code> provides format specific extensions for a {@link Stream} parser.
  * 
  * <p>Implementations of this interface must be thread-safe.
- *  
+ * 
  * @author Kevin Seim
  * @since 2.0
  */
@@ -31,47 +31,67 @@ public interface StreamFormat {
 
     /**
      * Returns the name of the stream.
-     * @return the stream name
+          * @return the stream name
      */
     public String getName();
-    
+
     /**
      * Creates a new ummarshalling context.
-     * @return the new {@link UnmarshallingContext}
+          * @return the new {@link UnmarshallingContext}
      */
     public UnmarshallingContext createUnmarshallingContext();
- 
+
     /**
      * Creates a new marshalling context.
      * @param streaming true if marshalling to a stream
      * @return the new {@link MarshallingContext}
      */
     public MarshallingContext createMarshallingContext(boolean streaming);
-    
+
     /**
      * Creates a new record marshaller.
-     * @return the new {@link RecordMarshaller}
+          * @return the new {@link RecordMarshaller}
      */
     public RecordMarshaller createRecordMarshaller();
-    
+
     /**
      * Creates a new record unmarshaller.
-     * @return the new {@link RecordUnmarshaller}
+          * @return the new {@link RecordUnmarshaller}
      */
     public RecordUnmarshaller createRecordUnmarshaller();
-    
+
     /**
      * Creates a new record reader.
      * @param in the {@link Reader} to read records from
      * @return the new {@link RecordReader}
      */
     public RecordReader createRecordReader(Reader in);
-    
+
     /**
      * Creates a new record writer.
      * @param out the {@link Writer} to write records to
      * @return the new {@link RecordWriter}
      */
     public RecordWriter createRecordWriter(Writer out);
-    
+
+    /**
+     * Creates a new record reader.
+     * 
+     * @param in the {@link InputStream} to read records from
+     * @return the new {@link RecordReader}
+     */
+    default public RecordReader createRecordReader(InputStream in) {
+        return this.createRecordReader(new InputStreamReader(in));
+    }
+
+    /**
+     * Creates a new record writer.
+     * 
+     * @param out the {@link OuputStream} to write records to
+     * @return the new {@link RecordWriter}
+     */
+    default public RecordWriter createRecordWriter(OutputStream out) {
+        return this.createRecordWriter(new OutputStreamWriter(out));
+    }
+
 }

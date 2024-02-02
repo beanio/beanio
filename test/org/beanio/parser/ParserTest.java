@@ -16,6 +16,7 @@
 package org.beanio.parser;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.io.*;
@@ -115,10 +116,16 @@ public class ParserTest {
             RecordContext ctx = ex.getRecordContext();
             assertEquals(recordName, ctx.getRecordName());
             assertEquals(lineNumber, ctx.getLineNumber());
-            assertEquals(fieldText, ctx.getFieldText(fieldName, fieldIndex));
-            for (String s : ctx.getFieldErrors(fieldName)) {
-                assertEquals(message, s);
+
+            if(fieldText != null){
+                assertEquals(fieldText, ctx.getFieldText(fieldName, fieldIndex));
+                for (String s : ctx.getFieldErrors(fieldName)) {
+                    assertEquals(message, s);
+                }
+            } else {
+                assertNull(ctx.getFieldText(fieldName, fieldIndex));
             }
+            
         }
     }
 }

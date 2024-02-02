@@ -1,8 +1,8 @@
 package org.beanio.builder
 
-import org.beanio.internal.compiler.fixedlength.FixedLengthParserFactory
 import org.beanio.internal.config.*
-import org.beanio.stream.csv.CsvRecordParserFactory
+import org.beanio.stream.excel.ExcelRecordParserFactory;
+import org.beanio.stream.csv.CsvRecordParserFactory;
 import org.beanio.stream.delimited.DelimitedRecordParserFactory;
 import org.beanio.stream.fixedlength.FixedLengthRecordParserFactory;
 import org.beanio.stream.xml.XmlRecordParserFactory
@@ -13,6 +13,32 @@ import org.junit.*
  * JUnit test for the builder API.
  */
 class BuilderTest {
+
+    @Test
+    void testExcelParserBuilder() {
+        ExcelParserBuilder b = new ExcelParserBuilder()
+        ExcelRecordParserFactory p = b.build().instance
+        assert p.sheetIndex == "0" as int
+        assert p.excelType == "xls"
+        assert !p.password
+        assert !p.sheetName
+
+        
+        b = new ExcelParserBuilder().with {
+            sheetName("sheetName")
+            excelType("XLSX")
+            password("kjhoao1&!")
+        }
+        p = b.build().instance
+        assert p.excelType == "xlsx"
+        assert p.password == "kjhoao1&!"
+        assert p.sheetName == "sheetName"
+        
+        b = new ExcelParserBuilder("1" as int)
+        p = b.build().instance
+        assert p.sheetIndex == "1" as int
+
+    }
 
     @Test
     void testXmlParserBuilder() {

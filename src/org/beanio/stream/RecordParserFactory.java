@@ -23,54 +23,62 @@ import org.w3c.dom.Document;
 /**
  * Factory interface for creating record parsers.
  * 
- * <p>The Java object bound to a <i>record</i> depends on the stream format.
- * The following table shows the object used for each format:</p>
+ * <p>
+ * The Java object bound to a <i>record</i> depends on the stream format.
+ * The following table shows the object used for each format:
+ * </p>
  * <table>
  * <caption></caption>
  * <tr>
- *   <th>Format</th>
- *   <th>Record Type</th>
- * </tr>
- *  <tr>
- *   <td>Fixed Length</td>
- *   <td><code>String</code></td>
+ * <th>Format</th>
+ * <th>Record Type</th>
  * </tr>
  * <tr>
- *   <td>CSV, Delimited</td>
- *   <td><code>String[]</code></td>
+ * <td>Fixed Length</td>
+ * <td><code>String</code></td>
  * </tr>
  * <tr>
- *   <td>XML</td>
- *   <td>{@link Document}</td>
+ * <td>CSV, Delimited</td>
+ * <td><code>String[]</code></td>
+ * </tr>
+ * <tr>
+ * <td>XML</td>
+ * <td>{@link Document}</td>
  * </tr>
  * </table>
  * 
- * <p>The following table shows the method invoked for a requested BeanIO interface.</p>
+ * <p>
+ * The following table shows the method invoked for a requested BeanIO
+ * interface.
+ * </p>
  * <table>
  * <caption></caption>
  * <tr>
- *   <th>Requests For</th>
- *   <th>Invokes</th>
+ * <th>Requests For</th>
+ * <th>Invokes</th>
  * </tr>
  * <tr>
- *   <td>{@link BeanReader}</td>
- *   <td>{@link #createReader(Reader)}</td>
+ * <td>{@link BeanReader}</td>
+ * <td>{@link #createReader(Reader)}</td>
  * </tr>
  * <tr>
- *   <td>{@link BeanWriter}</td>
- *   <td>{@link #createWriter(Writer)}</td>
+ * <td>{@link BeanWriter}</td>
+ * <td>{@link #createWriter(Writer)}</td>
  * </tr>
  * <tr>
- *   <td>{@link Unmarshaller}</td>
- *   <td>{@link #createUnmarshaller()}</td>
+ * <td>{@link Unmarshaller}</td>
+ * <td>{@link #createUnmarshaller()}</td>
  * </tr>
  * <tr>
- *   <td>{@link Marshaller}</td>
- *   <td>{@link #createMarshaller()}</td>
+ * <td>{@link Marshaller}</td>
+ * <td>{@link #createMarshaller()}</td>
  * </tr>
  * </table>
  * 
- * <p>A <code>RecordParserFactory</code> implementation must be thread safe (after all of its properties have been set).</p>
+ * <p>
+ * A <code>RecordParserFactory</code> implementation must be thread safe (after
+ * all of its properties have been set).
+ * </p>
  * 
  * @author Kevin Seim
  * @since 2.0
@@ -82,45 +90,77 @@ import org.w3c.dom.Document;
 public interface RecordParserFactory {
 
     /**
-     * Initializes the factory.  This method is called when a mapping file is loaded after
-     * all parser properties have been set, and is therefore ideally used to preemptively
+     * Initializes the factory. This method is called when a mapping file is loaded
+     * after
+     * all parser properties have been set, and is therefore ideally used to
+     * preemptively
      * validate parser configuration settings.
+     * 
      * @throws IllegalArgumentException if the parser configuration is invalid
      */
     public void init() throws IllegalArgumentException;
-    
+
     /**
      * Creates a parser for reading records from an input stream.
+     * 
      * @param in the input stream to read from
      * @return the created {@link RecordReader}
      * @throws IllegalArgumentException if this factory is improperly configured
-     *   and a {@link RecordReader} cannot be created
+     *                                  and a {@link RecordReader} cannot be created
      */
     public RecordReader createReader(Reader in) throws IllegalArgumentException;
-    
+
+    /**
+     * Creates a parser for reading records from an input stream.
+     * 
+     * @param in the input stream to read from
+     * @return the created {@link RecordReader}
+     * @throws IllegalArgumentException if this factory is improperly configured
+     *                                  and a {@link RecordReader} cannot be created
+     */
+    default public RecordReader createReader(InputStream in) throws IllegalArgumentException {
+        return this.createReader(new InputStreamReader(in));
+    }
+
     /**
      * Creates a parser for writing records to an output stream.
+     * 
      * @param out the output stream to write to
      * @return the new {@link RecordWriter}
      * @throws IllegalArgumentException if this factory is improperly configured
-     *   and a {@link RecordWriter} cannot be created
+     *                                  and a {@link RecordWriter} cannot be created
      */
     public RecordWriter createWriter(Writer out) throws IllegalArgumentException;
-    
+
+    /**
+     * Creates a parser for writing records to an output stream.
+     * 
+     * @param out the output stream to write to
+     * @return the new {@link RecordWriter}
+     * @throws IllegalArgumentException if this factory is improperly configured
+     *                                  and a {@link RecordWriter} cannot be created
+     */
+    default public RecordWriter createWriter(OutputStream out) throws IllegalArgumentException {
+        return this.createWriter(new OutputStreamWriter(out));
+    }
+
     /**
      * Creates a parser for marshalling records.
+     * 
      * @return the created {@link RecordMarshaller}
      * @throws IllegalArgumentException if this factory is improperly configured and
-     *   a {@link RecordMarshaller} cannot be created
+     *                                  a {@link RecordMarshaller} cannot be created
      */
     public RecordMarshaller createMarshaller() throws IllegalArgumentException;
 
     /**
      * Creates a parser for unmarshalling records.
+     * 
      * @return the created {@link RecordUnmarshaller}
      * @throws IllegalArgumentException if this factory is improperly configured and
-     *   a {@link RecordUnmarshaller} cannot be created
+     *                                  a {@link RecordUnmarshaller} cannot be
+     *                                  created
      */
     public RecordUnmarshaller createUnmarshaller() throws IllegalArgumentException;
-    
+
 }

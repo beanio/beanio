@@ -17,6 +17,7 @@ package org.beanio;
 
 import java.util.List;
 
+import org.apache.poi.ss.usermodel.Row;
 import org.beanio.internal.util.Debuggable;
 import org.w3c.dom.Node;
 
@@ -96,7 +97,21 @@ public interface Unmarshaller extends Debuggable {
      * @throws InvalidRecordException if the record fails validation
      */
     public Object unmarshal(Node node) throws BeanReaderException,
-        UnidentifiedRecordException, UnexpectedRecordException, InvalidRecordException;
+    UnidentifiedRecordException, UnexpectedRecordException, InvalidRecordException;
+
+    /**
+     * Unmarshals a bean object from the given {@link Excel Row}.  This method is supported by
+     * Excel streams only.
+     * @param rpw the {@link Excel Row} to unmarshal
+     * @return the unmarshalled bean object
+     * @throws BeanReaderException if a {@link Excel row} is not supported by the stream format,
+     *   or if the bean is bound to a record group, or if some other rare (but fatal) error occurs
+     * @throws UnidentifiedRecordException if the record type could not be identified
+     * @throws UnexpectedRecordException if the record is out of sequence
+     * @throws InvalidRecordException if the record fails validation
+     */
+    public Object unmarshal(Row row) throws BeanReaderException,
+    UnidentifiedRecordException, UnexpectedRecordException, InvalidRecordException;
     
     /**
      * Returns the record or group name of the most recent unmarshalled bean object.

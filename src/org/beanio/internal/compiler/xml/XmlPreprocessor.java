@@ -16,6 +16,7 @@
 package org.beanio.internal.compiler.xml;
 
 import org.beanio.BeanIOConfigurationException;
+import org.beanio.BeanIOConfigurationRepeatingNoneException;
 import org.beanio.internal.compiler.Preprocessor;
 import org.beanio.internal.config.*;
 import org.beanio.internal.util.Settings;
@@ -49,7 +50,9 @@ public class XmlPreprocessor extends Preprocessor {
             group.setXmlType(XmlTypeConstants.XML_TYPE_ELEMENT);
         }
         else {
-            if (!XmlTypeConstants.XML_TYPE_NONE.equals(type) &&
+            if (group.isRepeating() && !XmlTypeConstants.XML_TYPE_ELEMENT.equals(type)) {
+                throw new BeanIOConfigurationRepeatingNoneException("Repeating segments must have xmlType 'element'");
+            } else if (!XmlTypeConstants.XML_TYPE_NONE.equals(type) &&
                 !XmlTypeConstants.XML_TYPE_ELEMENT.equals(type)) {
                 throw new BeanIOConfigurationException("Invalid xmlType '" + type + "'");
             }
@@ -96,8 +99,10 @@ public class XmlPreprocessor extends Preprocessor {
             segment.setXmlType(XmlTypeConstants.XML_TYPE_ELEMENT);
         }
         else {
-            if (!XmlTypeConstants.XML_TYPE_NONE.equals(type) &&
-                !XmlTypeConstants.XML_TYPE_ELEMENT.equals(type)) {
+            if (segment.isRepeating() && !XmlTypeConstants.XML_TYPE_ELEMENT.equals(type)) {
+                throw new BeanIOConfigurationRepeatingNoneException("Repeating segments must have xmlType 'element'");
+            } else if (!XmlTypeConstants.XML_TYPE_NONE.equals(type) &&
+                       !XmlTypeConstants.XML_TYPE_ELEMENT.equals(type)) {
                 throw new BeanIOConfigurationException("Invalid xmlType '" + type + "'");
             }
         }
@@ -150,7 +155,7 @@ public class XmlPreprocessor extends Preprocessor {
         }
         // repeating fields must be of type 'element'
         if (field.isRepeating() && !XmlTypeConstants.XML_TYPE_ELEMENT.equals(type)) {
-            throw new BeanIOConfigurationException("Repeating fields must have xmlType 'element'");
+            throw new BeanIOConfigurationRepeatingNoneException("Repeating fields must have xmlType 'element'");
         }
 
         if (field.getXmlNamespace() != null &&

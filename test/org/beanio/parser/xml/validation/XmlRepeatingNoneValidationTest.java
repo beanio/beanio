@@ -24,9 +24,6 @@ import org.junit.jupiter.api.Assertions;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-
 /**
  * JUnit test cases for collection type fields.
  * 
@@ -36,18 +33,18 @@ import static org.junit.Assert.assertEquals;
 public class XmlRepeatingNoneValidationTest extends ParserTest {
 
     @Test
-    public void testCollectionShouldNotRunInfinite() throws Exception{
+    public void testCollectionShouldNotRunInfinite() {
         executeTest("segment");
     }
 
 
     @Test
-    public void testCollectionShouldNotRunInfiniteField() throws Exception {
+    public void testCollectionShouldNotRunInfiniteField() {
         executeTest("field");
     }
 
     @Test
-    public void testCollectionShouldNotRunInfiniteGroup() throws Exception {
+    public void testCollectionShouldNotRunInfiniteGroup() {
         executeTest("group");
     }
 
@@ -55,7 +52,6 @@ public class XmlRepeatingNoneValidationTest extends ParserTest {
         BeanIOConfigurationException beanIOConfigurationException = Assertions.assertThrows(BeanIOConfigurationException.class, () ->
                 createStreamFactory(elementName)
         );
-        beanIOConfigurationException.printStackTrace();
         Assert.assertTrue("A BeanIOConfigurationException was thrown, but we excpected a BeanIOConfigurationRepeatingNoneException as cause.", BeanIOConfigurationRepeatingNoneException.class.isAssignableFrom(beanIOConfigurationException.getCause().getClass()));
     }
 

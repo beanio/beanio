@@ -51,7 +51,7 @@ public class XmlPreprocessor extends Preprocessor {
         }
         else {
             if (group.isRepeating() && !XmlTypeConstants.XML_TYPE_ELEMENT.equals(type)) {
-                throw new BeanIOConfigurationRepeatingNoneException("Repeating segments must have xmlType 'element'");
+                throw new BeanIOConfigurationRepeatingNoneException("Repeating groups must have xmlType 'element'");
             } else if (!XmlTypeConstants.XML_TYPE_NONE.equals(type) &&
                 !XmlTypeConstants.XML_TYPE_ELEMENT.equals(type)) {
                 throw new BeanIOConfigurationException("Invalid xmlType '" + type + "'");

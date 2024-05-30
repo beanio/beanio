@@ -18,6 +18,8 @@ package org.beanio.types;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 
 import org.junit.Test;
 
@@ -77,10 +79,10 @@ public class NumberTypeHandlerTest {
     }
 
     @Test
-    public void testDifferentThreads() {
+    public void testDifferentThreads() throws InterruptedException, ExecutionException {
         IntegerTypeHandler handler = new IntegerTypeHandler();
         handler.setPattern("#");
-        handler.format(10);
-        new Thread(() -> {handler.format(10);}).start();
+        assertEquals("10", handler.format(10));
+        assertEquals("10", ForkJoinPool.commonPool().submit(() -> handler.format(10)).get());
     }
 }

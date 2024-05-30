@@ -124,9 +124,11 @@ public abstract class NumberTypeHandler extends LocaleSupport implements Configu
         try {
             NumberTypeHandler handler = (NumberTypeHandler) this.clone();
             handler.setPattern(pattern);
-            handler.format = new ThreadLocal<>();
-            handler.format.set(handler.createDecimalFormat());
-            handler.format.get().setParseBigDecimal(true);
+            handler.format = ThreadLocal.withInitial(() -> {
+                DecimalFormat df = handler.createDecimalFormat();
+                df.setParseBigDecimal(true);
+                return df;
+            });
             return handler;
         }
         catch (CloneNotSupportedException ex) {
@@ -154,7 +156,7 @@ public abstract class NumberTypeHandler extends LocaleSupport implements Configu
             return null;
         else if (pattern == null)
             return ((Number) value).toString();
-        else if (format != null) 
+        else if (format.get() != null)
             return format.get().format(value);
         else
             return createDecimalFormat().format(value);

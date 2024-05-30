@@ -75,4 +75,12 @@ public class NumberTypeHandlerTest {
         IntegerTypeHandler handler = new IntegerTypeHandler();
         handler.setPattern("0.00.00");
     }
+
+    @Test
+    public void testDifferentThreads() {
+        IntegerTypeHandler handler = new IntegerTypeHandler();
+        handler.setPattern("#");
+        handler.format(10);
+        new Thread(() -> {handler.format(10);}).start();
+    }
 }

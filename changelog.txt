@@ -3,6 +3,10 @@ Project BeanIO Change Log
 
 Note: `gcXXXX` references an issue in the old Google Code repo. #XXX references an issue on this GitHub repo.
 
+Changes in version 3.0.2 (2024-06-07)
+-------------------------------------
+* Fixed a `NullPointerException` in multithreaded environments (#162)
+
 Changes in version 3.0.1 (2024-05-28)
 -------------------------------------
 * Fixed `IllegalArgumentException` when JAXP version is < 1.5 (#161)

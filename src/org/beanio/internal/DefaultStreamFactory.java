@@ -26,9 +26,9 @@ import org.beanio.internal.parser.Stream;
 
 /**
  * The <code>DefaultStreamFactory</code> stores configured stream definitions used
- * to create bean readers and writers.  A single factory instance may be accessed 
+ * to create bean readers and writers.  A single factory instance may be accessed
  * concurrently by multiple threads.
- *  
+ * 
  * @author Kevin Seim
  * @since 1.0
  */
@@ -47,7 +47,7 @@ public class DefaultStreamFactory extends StreamFactory {
     public void define(StreamBuilder builder) {
         addStream(compiler.build(builder.build()));
     }
-    
+
     @Override
     public void load(InputStream in, Properties properties) throws IOException, BeanIOConfigurationException {
         Collection<Stream> streams = compiler.loadMapping(in, properties);
@@ -55,13 +55,13 @@ public class DefaultStreamFactory extends StreamFactory {
             addStream(stream);
         }
     }
-    
+
     @Override
     public BeanReader createReader(String name, Reader in, Locale locale) {
         if (locale == null) {
             locale = Locale.getDefault();
         }
-        
+
         Stream stream = getStream(name);
         switch (stream.getMode()) {
             case Stream.READ_WRITE_MODE:
@@ -71,13 +71,22 @@ public class DefaultStreamFactory extends StreamFactory {
                 throw new IllegalArgumentException("Read mode not supported for stream mapping '" + name + "'");
         }
     }
-    
+
+    @Override
+    public BeanReader createReader(String name, InputStream in, Locale locale) {
+        try {
+            return this.createReader(name, new InputStreamReader(in));
+        } catch (UnsupportedOperationException e) {
+            return getStream(name).createBeanReader(in, locale);
+        }
+    }
+
     @Override
     public Unmarshaller createUnmarshaller(String name, Locale locale) {
         if (locale == null) {
             locale = Locale.getDefault();
         }
-        
+
         Stream stream = getStream(name);
         switch (stream.getMode()) {
             case Stream.READ_WRITE_MODE:
@@ -99,7 +108,16 @@ public class DefaultStreamFactory extends StreamFactory {
                 throw new IllegalArgumentException("Write mode not supported for stream mapping '" + name + "'");
         }
     }
-    
+
+    @Override
+    public BeanWriter createWriter(String name, OutputStream out) {
+        try {
+            return this.createWriter(name, new OutputStreamWriter(out));
+        } catch (UnsupportedOperationException e) {
+            return getStream(name).createBeanWriter(out);
+        }
+    }
+
     @Override
     public Marshaller createMarshaller(String name) {
         Stream stream = getStream(name);
@@ -114,7 +132,7 @@ public class DefaultStreamFactory extends StreamFactory {
 
     /**
      * Returns the named stream.
-     * @param name the name of the stream
+          * @param name the name of the stream
      * @return the {@link Stream}
      * @throws IllegalArgumentException if there is no stream configured for the given name
      */
@@ -128,7 +146,7 @@ public class DefaultStreamFactory extends StreamFactory {
 
     /**
      * Adds a stream to this manager.
-     * @param stream the {@link Stream} to add
+          * @param stream the {@link Stream} to add
      */
     public void addStream(Stream stream) {
         contextMap.put(stream.getName(), stream);
@@ -136,7 +154,7 @@ public class DefaultStreamFactory extends StreamFactory {
 
     /**
      * Removes the named stream from this manager.
-     * @param name the name of the stream to remove
+          * @param name the name of the stream to remove
      * @return the removed {@link Stream}, or <code>null</code> if
      *   the there was no stream for the given name
      */

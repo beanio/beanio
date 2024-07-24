@@ -1,0 +1,13 @@
+<beanio xmlns="http://www.beanio.org/2012/03">
+
+  <typeHandler name="CustomStrictLocalDate" class="org.beanio.types.TemporalAccessorTypeHandler">
+    <property name="typeName" value="java.time.LocalDate"/>
+    <property name="strict" value="true"/>
+  </typeHandler>
+
+  <stream name="my-strict-date-stream" format="fixedlength" strict="true">
+    <record name="rec" class="org.beanio.beans.JavaTime" occurs="1">
+      <field name="localDate" length="8" typeHandler="CustomStrictLocalDate" format="uuuuMMdd"/>
+    </record>
+  </stream>
+</beanio>

@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
 import java.time.temporal.TemporalAccessor;
 import java.util.Properties;
 
@@ -15,6 +16,8 @@ import java.util.Properties;
  * java.time.ZonedDateTime} using a {@link DateTimeFormatter}.
  */
 public class TemporalAccessorTypeHandler implements ConfigurableTypeHandler {
+
+    private boolean strict;
 
     private DateTimeFormatter formatter;
     private Class<?> type;
@@ -31,21 +34,25 @@ public class TemporalAccessorTypeHandler implements ConfigurableTypeHandler {
     @Override
     public TypeHandler newInstance(Properties properties) {
         String pattern = properties.getProperty(FORMAT_SETTING);
-        if (pattern == null || "".equals(pattern)) {
+        if (pattern == null || pattern.isEmpty()) {
             return this;
         }
 
         DateTimeFormatter newFormatter = DateTimeFormatter.ofPattern(pattern);
+        if (strict) {
+            newFormatter = newFormatter.withResolverStyle(ResolverStyle.STRICT);
+        }
 
         TemporalAccessorTypeHandler clone = new TemporalAccessorTypeHandler();
         clone.type = type;
         clone.formatter = newFormatter;
+        clone.strict = strict;
         return clone;
     }
 
     @Override
     public TemporalAccessor parse(String text) throws TypeConversionException {
-        if (text == null || "".equals(text)) {
+        if (text == null || text.isEmpty()) {
             return null;
         }
         
@@ -91,5 +98,13 @@ public class TemporalAccessorTypeHandler implements ConfigurableTypeHandler {
     @Override
     public Class<?> getType() {
         return type;
+    }
+
+    public boolean isStrict() {
+        return strict;
+    }
+
+    public void setStrict(boolean strict) {
+        this.strict = strict;
     }
 }

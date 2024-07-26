@@ -18,6 +18,7 @@ import java.time.ZonedDateTime;
 import java.util.Properties;
 import org.beanio.BeanReader;
 import org.beanio.BeanWriter;
+import org.beanio.InvalidRecordException;
 import org.beanio.StreamFactory;
 import org.beanio.beans.JavaTime;
 import org.beanio.internal.util.TypeHandlerFactory;
@@ -185,6 +186,32 @@ public class TemporalAccessorTypeHandlerTest {
         assertEquals("14/03, 21:40\n", writer.toString());
         assertTrue(read instanceof JavaTime);
         assertEquals(LocalDate.of(2021, 3, 14), ((JavaTime) read).getLocalDate());
+    }
+
+    @Test
+    public void testCustomTypeHandlerWithStrictParsing() {
+        // Given
+        StreamFactory streamFactory = StreamFactory.newInstance();
+        streamFactory.loadResource("org/beanio/types/custom-strict-java-date.xml");
+
+        // When
+        BeanReader reader = streamFactory.createReader("my-strict-date-stream", new StringReader("20240202"));
+        Object read = reader.read();
+
+        // Then
+        assertTrue(read instanceof JavaTime);
+        assertEquals(LocalDate.of(2024, 2, 2), ((JavaTime) read).getLocalDate());
+    }
+
+    @Test(expected = InvalidRecordException.class)
+    public void testFailedCustomTypeHandlerWithStrictParsing() {
+        // Given
+        StreamFactory streamFactory = StreamFactory.newInstance();
+        streamFactory.loadResource("org/beanio/types/custom-strict-java-date.xml");
+
+        // When
+        BeanReader reader = streamFactory.createReader("my-strict-date-stream", new StringReader("20240231"));
+        reader.read();
     }
 
     @Test

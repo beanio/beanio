@@ -3,6 +3,10 @@ Project BeanIO Change Log
 
 Note: `gcXXXX` references an issue in the old Google Code repo. #XXX references an issue on this GitHub repo.
 
+Changes in version 3.1.0 (2024-07-26)
+-------------------------------------
+* Allow to configure TemporalAccessorTypeHandler with strict date parsing (#164)
+
 Changes in version 3.0.2 (2024-06-07)
 -------------------------------------
 * Fixed a `NullPointerException` in multithreaded environments (#162)

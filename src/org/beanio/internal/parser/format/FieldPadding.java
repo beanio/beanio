@@ -69,6 +69,10 @@ public class FieldPadding {
             }
         }
     }
+
+    protected int calculateTextLength(String text) {
+        return text.length();
+    }
     
     /**
      * Formats field text.  If <code>text.length()</code> exceeds the padding length,
@@ -91,7 +95,7 @@ public class FieldPadding {
             return text;
         }
         else {
-            currentLength = text.length();
+            currentLength = calculateTextLength(text);
             if (currentLength == length) {
                 return text;
             }

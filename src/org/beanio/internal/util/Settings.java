@@ -86,6 +86,18 @@ public class Settings {
      * @since 1.2.2
      */
     public static final String DEFAULT_MARSHALLING_ENABLED = "org.beanio.marshalDefaultEnabled";
+    /**
+     * Whether record length for fixed length data format is counted by characters or bytes. The default value is
+     * <code>chars</code>, which counts record length as a number of characters. The other option is <code>bytes</code>,
+     * which is useful for Asian language users who want to count Asian characters as two bytes wide. The latter option
+     * must be paired with a matching setting of {@link #FIXED_LENGTH_CHARSET} to work properly.
+     */
+    public static final String FIXED_LENGTH_COUNT_MODE = "org.beanio.fixedlength.countMode";
+    /**
+     * A charset used for fixed length stream data. Must be matched correctly if {@link #FIXED_LENGTH_COUNT_MODE} option
+     * is set <code>bytes</code>. The default value is <code>utf-8</code>.
+     */
+    public static final String FIXED_LENGTH_CHARSET = "org.beanio.fixedlength.charset";
     
     /** The default minOccurs setting for a group. */
     public static final String DEFAULT_GROUP_MIN_OCCURS = "org.beanio.group.minOccurs";

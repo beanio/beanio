@@ -41,6 +41,11 @@ public class FixedLengthFieldPadding extends FieldPadding {
             setPaddedNull(s.toString());
         }
     }
+
+    @Override
+    protected int calculateTextLength(String text) {
+        return FixedLengthUtils.calculateTextLength(text);
+    }
     
     @Override
     public String unpad(String fieldText) {

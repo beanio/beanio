@@ -217,13 +217,14 @@ public class Field extends ParserComponent implements Property {
                 }
             }
             else {
+                TextLengthCounter counter = context.getTextLengthCounter();
                 // validate minimum length
-                if (text.length() < minLength) {
+                if (counter.calculateTextLength(text) < minLength) {
                     throw new InvalidBeanException("Invalid field '" + getName() + "', '" + 
                         text + "' does not meet minimum length of " + minLength);
                 }
                 // validate maximum length
-                if (text.length() > maxLength) {
+                if (counter.calculateTextLength(text) > maxLength) {
                     throw new InvalidBeanException("Invalid field '" + getName() + "', '" + 
                         text + "' exceeds maximum length of " + maxLength);
                 }
@@ -338,14 +339,15 @@ public class Field extends ParserComponent implements Property {
                 context.addFieldError(getName(), fieldText, "literal", literal);
                 valid = false;
             }
+            TextLengthCounter counter = context.getTextLengthCounter();
             // validate minimum length
-            if (text.length() < minLength) {
-                context.addFieldError(getName(), fieldText, "minLength", minLength, maxLength);
+            if (counter.calculateTextLength(text) < minLength) {
+                context.addFieldError(getName(), fieldText, counter.getMinLengthRule(), minLength, maxLength);
                 valid = false;
             }
             // validate maximum length
-            if (text.length() > maxLength) {
-                context.addFieldError(getName(), fieldText, "maxLength", minLength, maxLength);
+            if (counter.calculateTextLength(text) > maxLength) {
+                context.addFieldError(getName(), fieldText, counter.getMaxLengthRule(), minLength, maxLength);
                 valid = false;
             }
             // validate the regular expression

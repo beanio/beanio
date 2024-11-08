@@ -234,7 +234,11 @@ public abstract class UnmarshallingContext extends ParsingContext {
     public final void setFieldText(String fieldName, String text) {
         recordContext.setFieldText(fieldName, text, isRepeating());
     }
-    
+
+    public TextLengthCounter getTextLengthCounter() {
+        return new TextLengthCounter();
+    }
+
     /**
      * Returns <code>true</code> if a field error was reported while parsing
      * this record.

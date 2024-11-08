@@ -41,6 +41,10 @@ public abstract class MarshallingContext extends ParsingContext {
     public final char getMode() {
         return MARSHALLING;
     }
+
+    public TextLengthCounter getTextLengthCounter() {
+        return new TextLengthCounter();
+    }
     
     /**
      * Clear is invoked after each bean object (record or group) is marshalled.

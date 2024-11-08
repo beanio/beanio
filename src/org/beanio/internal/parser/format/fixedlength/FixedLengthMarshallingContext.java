@@ -18,6 +18,7 @@ package org.beanio.internal.parser.format.fixedlength;
 import java.util.*;
 
 import org.beanio.internal.parser.MarshallingContext;
+import org.beanio.internal.parser.TextLengthCounter;
 
 /**
  * A {@link MarshallingContext} for a fixed length formatted stream.
@@ -62,6 +63,11 @@ public class FixedLengthMarshallingContext extends MarshallingContext {
             committed = entries.size();
         }
     }
+
+    @Override
+    public TextLengthCounter getTextLengthCounter() {
+        return new FixedLengthTextLengthCounter();
+    }
     
     @Override
     public Object getRecordObject() {
@@ -99,7 +105,7 @@ public class FixedLengthMarshallingContext extends MarshallingContext {
             }
             
             if (index < size) {
-                record.replace(index, index + entry.text.length(), entry.text);
+                record.replace(index, index + FixedLengthUtils.calculateTextLength(entry.text), entry.text);
                 size = record.length();
             }
             else {
@@ -109,7 +115,7 @@ public class FixedLengthMarshallingContext extends MarshallingContext {
                 }
                 
                 record.append(entry.text);
-                size += entry.text.length();
+                size += FixedLengthUtils.calculateTextLength(entry.text);
             }
         }
         

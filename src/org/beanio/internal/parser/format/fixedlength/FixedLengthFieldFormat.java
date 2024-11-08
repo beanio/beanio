@@ -18,6 +18,9 @@ package org.beanio.internal.parser.format.fixedlength;
 import org.beanio.internal.parser.*;
 import org.beanio.internal.parser.format.FieldPadding;
 import org.beanio.internal.parser.format.flat.FlatFieldFormatSupport;
+import org.beanio.internal.util.Settings;
+
+import static org.beanio.internal.util.Settings.FIXED_LENGTH_COUNT_MODE;
 
 /**
  * A {@link FieldFormat} implementation for a field in a fixed length formatted stream.
@@ -38,9 +41,11 @@ public class FixedLengthFieldFormat extends FlatFieldFormatSupport implements Fi
         }
         
         FieldPadding padding = getPadding();
-        if (padding.getLength() >= 0 && text.length() != padding.getLength() && !lenientPadding) {
+        if (padding.getLength() >= 0 && FixedLengthUtils.calculateTextLength(text) != padding.getLength() && !lenientPadding) {
+            String countMode = Settings.getInstance().getProperty(FIXED_LENGTH_COUNT_MODE);
+            String rule = countMode.equals("bytes") ? "byteLength" : "length";
             if (reportErrors) {
-                context.addFieldError(getName(), text, "length", padding.getLength());
+                context.addFieldError(getName(), text, rule, padding.getLength());
             }
             return Value.INVALID;
         }

@@ -72,10 +72,10 @@ sourceSets {
 
 javadoc {
     options.header = "BeanIO $version"
-    options.docTitle = "<h2>BeanIO 3.0 API</h2>"
-    options.footer = "<i>Copyright &copy; 2010-2021 Kevin Seim and BeanIO contributors</i>"
+    options.docTitle = "<h2>BeanIO 3 API</h2>"
+    options.footer = "<i>Copyright &copy; 2010-2024 Kevin Seim and BeanIO contributors</i>"
     options.links = [
-        "http://download.oracle.com/javase/7/docs/api/"
+        "http://download.oracle.com/javase/8/docs/api/"
     ]
 }
 

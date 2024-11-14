@@ -1,0 +1,7 @@
+<beanio xmlns="http://www.beanio.org/2012/03">
+    <stream name="Records" format="xml">
+        <record name="Record" class="map">
+            <segment name="Segment" class="map" xmlType="none" collection="list" minOccurs="0" maxOccurs="unbounded" />
+        </record>
+    </stream>
+</beanio>

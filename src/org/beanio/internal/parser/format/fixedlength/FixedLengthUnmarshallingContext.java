@@ -15,7 +15,17 @@
  */
 package org.beanio.internal.parser.format.fixedlength;
 
+import org.beanio.BeanIOException;
+import org.beanio.internal.parser.TextLengthCounter;
 import org.beanio.internal.parser.UnmarshallingContext;
+import org.beanio.internal.util.Settings;
+
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+
+import static org.beanio.internal.util.Settings.FIXED_LENGTH_CHARSET;
+import static org.beanio.internal.util.Settings.FIXED_LENGTH_COUNT_MODE;
 
 /**
  * The {@link UnmarshallingContext} implementation for a fixed length formatted stream.
@@ -31,7 +41,7 @@ public class FixedLengthUnmarshallingContext extends UnmarshallingContext {
     @Override
     public void setRecordValue(Object value) {
         this.record = (String) value;
-        this.recordLength = value == null ? 0 : record.length();
+        this.recordLength = value == null ? 0 : FixedLengthUtils.calculateTextLength(record);
     }
     
     /**
@@ -40,6 +50,11 @@ public class FixedLengthUnmarshallingContext extends UnmarshallingContext {
      */
     public int getRecordLength() {
         return recordLength;
+    }
+
+    @Override
+    public TextLengthCounter getTextLengthCounter() {
+        return new FixedLengthTextLengthCounter();
     }
 
     /**
@@ -77,7 +92,23 @@ public class FixedLengthUnmarshallingContext extends UnmarshallingContext {
             text = record.substring(position, max);
         }
         else {
-            text = record.substring(position, Math.min(max, position + length));
+            String mode = Settings.getInstance().getProperty(FIXED_LENGTH_COUNT_MODE);
+            if (mode.equals("chars")) {
+                text = record.substring(position, Math.min(max, position + length));
+            }
+            else if (mode.equals("bytes")) {
+                try {
+                    String charset = Settings.getInstance().getProperty(FIXED_LENGTH_CHARSET);
+                    byte[] b = Arrays.copyOfRange(record.getBytes(charset), position, Math.min(max, position + length));
+                    text = new String(b, Charset.forName(charset));
+                }
+                catch (UnsupportedEncodingException ex) {
+                    throw new BeanIOException("Unsupported encoding: " + mode + " for countMode");
+                }
+            }
+            else {
+                throw new BeanIOException("Unsupported value: " + mode + " for countMode");
+            }
         }
         setFieldText(name, text);
         return text;

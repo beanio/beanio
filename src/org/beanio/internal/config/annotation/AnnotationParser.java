@@ -23,6 +23,7 @@ import java.util.*;
 import org.beanio.BeanIOConfigurationException;
 import org.beanio.annotation.*;
 import org.beanio.annotation.Field;
+import org.beanio.annotation.Record;
 import org.beanio.internal.config.*;
 import org.beanio.internal.util.TypeUtil;
 

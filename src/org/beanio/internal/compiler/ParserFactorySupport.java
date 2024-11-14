@@ -25,6 +25,7 @@ import org.beanio.internal.compiler.accessor.*;
 import org.beanio.internal.config.*;
 import org.beanio.internal.parser.*;
 import org.beanio.internal.parser.Field;
+import org.beanio.internal.parser.Record;
 import org.beanio.internal.parser.accessor.*;
 import org.beanio.internal.parser.message.ResourceBundleMessageFactory;
 import org.beanio.internal.util.*;

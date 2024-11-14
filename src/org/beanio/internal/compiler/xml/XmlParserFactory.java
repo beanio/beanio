@@ -19,6 +19,7 @@ import org.beanio.BeanIOConfigurationException;
 import org.beanio.internal.compiler.*;
 import org.beanio.internal.config.*;
 import org.beanio.internal.parser.*;
+import org.beanio.internal.parser.Record;
 import org.beanio.internal.parser.format.FieldPadding;
 import org.beanio.internal.parser.format.xml.*;
 import org.beanio.stream.RecordParserFactory;

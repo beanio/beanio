@@ -28,9 +28,6 @@ plugins {
     id 'jacoco'
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 repositories {
@@ -68,6 +65,14 @@ sourceSets {
             exclude '**/*.groovy'
         }
     }
+}
+
+compileJava {
+    options.release = 8
+}
+
+compileTestGroovy {
+    options.release = 8
 }
 
 javadoc {

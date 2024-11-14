@@ -20,6 +20,7 @@ import java.util.*;
 import org.beanio.internal.compiler.*;
 import org.beanio.internal.config.*;
 import org.beanio.internal.parser.*;
+import org.beanio.internal.parser.Record;
 import org.beanio.internal.parser.format.flat.FlatFieldFormat;
 
 /**

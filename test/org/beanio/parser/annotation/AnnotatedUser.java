@@ -3,6 +3,7 @@ package org.beanio.parser.annotation;
 import java.util.*;
 
 import org.beanio.annotation.*;
+import org.beanio.annotation.Record;
 import org.beanio.builder.*;
 
 /**

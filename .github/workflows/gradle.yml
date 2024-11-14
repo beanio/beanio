@@ -18,7 +18,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: 21
 
       - name: Cache SonarCloud packages
         uses: actions/cache@v1
@@ -38,9 +38,7 @@ jobs:
         run: ./gradlew build --info
 
       - name: Analyze with SonarQube
-        # Disable because we need to update to Java 17
-        if: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew jacocoTestReport sonarqube -Dsonar.login=${SONAR_TOKEN}
+        run: ./gradlew jacocoTestReport sonar --info

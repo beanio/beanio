@@ -26,7 +26,7 @@ class AnnotatedGroupTest extends AbstractParserTest {
             BD,bd1
             BD,bd2
             BF,bf
-        """.stripIndent()
+        """.stripIndent(true)
         
         BeanReader reader = factory.createReader("s1", new StringReader(input));
         

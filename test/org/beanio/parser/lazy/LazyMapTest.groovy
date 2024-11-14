@@ -100,7 +100,7 @@ class LazyMapTest extends AbstractParserTest {
 		def obj = r.read()
         assert !obj.record
         assert obj.list
-        assert obj.list.size == 2
+        assert obj.list.size() == 2
 		assert obj.list[0].text == "One"
 		assert obj.list[1].text == "Two"
 		

@@ -17,24 +17,39 @@ package org.beanio.parser.fixedlength.countMode;
 
 import org.beanio.BeanReader;
 import org.beanio.StreamFactory;
+import org.beanio.internal.util.Settings;
 import org.beanio.parser.ParserTest;
 import org.junit.*;
 
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 
-@Ignore
 public class FixedLengthCountModeTest extends ParserTest {
 
     private StreamFactory factory;
 
     @BeforeClass
     public static void setUpClass() {
+        clearSettings();
         System.setProperty("org.beanio.configuration", "org/beanio/parser/fixedlength/countMode/beanio_test.properties");
+        Settings.getInstance();
     }
 
     @AfterClass
     public static void tearDownClass() {
+        clearSettings();
         System.clearProperty("org.beanio.configuration");
+        Settings.getInstance();
+    }
+
+    private static void clearSettings() {
+        try {
+            Field settings = Settings.class.getDeclaredField("settings");
+            settings.setAccessible(true);
+            settings.set(null, null);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalArgumentException("Could not access settings field", e);
+        }
     }
 
     @Before

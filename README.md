@@ -34,7 +34,7 @@ Add the following dependency to your `pom.xml`:
 <dependency>
     <groupId>com.github.beanio</groupId>
     <artifactId>beanio</artifactId>
-    <version>3.1.0</version>
+    <version>3.2.0</version>
 </dependency>
 ```
 
@@ -55,7 +55,7 @@ repositories {
 Add the following dependency to your `build.gradle`:
 
 ```groovy
-implementation 'com.github.beanio:beanio:3.1.0'
+implementation 'com.github.beanio:beanio:3.2.0'
 ```
 
 ## What's new in v3?

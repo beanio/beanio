@@ -1292,7 +1292,7 @@ public abstract class ParserFactorySupport extends ProcessorSupport implements P
                 config.getType() + "' is not assignable to bean property " +
                 "type '" + reflectedType.getName() + "'");
         }
-        else if (reflectedType.isPrimitive()) {
+        else if (reflectedType != null && reflectedType.isPrimitive()) {
             property.setType(reflectedType);
         }
     }

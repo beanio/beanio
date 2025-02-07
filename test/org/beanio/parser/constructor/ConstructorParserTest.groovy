@@ -3,7 +3,6 @@ package org.beanio.parser.constructor;
 import org.beanio.*;
 import org.beanio.builder.StreamBuilder;
 import org.beanio.parser.AbstractParserTest;
-import org.beanio.parser.ParserTest;
 import org.junit.*;
 
 /**
@@ -25,7 +24,7 @@ class ConstructorParserTest extends AbstractParserTest {
               <field name="b" type="int" setter="#4" />
             </record>
           </stream>""");
-        
+
         Unmarshaller u = factory.createUnmarshaller("c1");
         def color = u.unmarshal("red,255,0,0");
         assert color.name == "red"
@@ -33,7 +32,27 @@ class ConstructorParserTest extends AbstractParserTest {
         assert color.g == 0
         assert color.b == 0
     }
-    
+
+    @Test
+    void testClassWithOnlyConstructor() {
+        StreamFactory factory = createFactory("""
+          <stream name="c1" format="csv" mode="read">
+            <record name="record" class="org.beanio.parser.constructor.ColorConstructorOnly">
+              <field name="name" setter="#1" />
+              <field name="r" type="int" setter="#2" />
+              <field name="g" type="int" setter="#3" />
+              <field name="b" type="int" setter="#4" />
+            </record>
+          </stream>""");
+
+        Unmarshaller u = factory.createUnmarshaller("c1");
+        def color = u.unmarshal("red,255,0,0");
+        assert color.name == "red"
+        assert color.r == 255
+        assert color.g == 0
+        assert color.b == 0
+    }
+
     @Test
     void testAnnotatedConstructor() {
         StreamFactory factory = createFactory(new StreamBuilder("c1")

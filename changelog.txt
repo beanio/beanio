@@ -3,6 +3,10 @@ Project BeanIO Change Log
 
 Note: `gcXXXX` references an issue in the old Google Code repo. #XXX references an issue on this GitHub repo.
 
+Changes in version 3.2.1 (2025-02-07)
+-------------------------------------
+* Fixed a NPE when mapping a read stream on a class with a constructor but no getter (#172)
+
 Changes in version 3.2.0 (2024-11-14)
 -------------------------------------
 * Make it possible to customize calculating of record length (#159)

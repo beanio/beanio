@@ -51,10 +51,10 @@ public abstract class StreamFactory {
     public BeanReader createReader(String name, String filename) throws IllegalArgumentException, BeanReaderIOException {
         return createReader(name, new File(filename));
     }
-    
+
     /**
      * Creates a new <code>BeanReader</code> for reading from a file.
-     * @param name the name of the stream in the mapping file
+          * @param name the name of the stream in the mapping file
      * @param file the {@link File} to read
      * @return the created {@link BeanReader}
      * @throws IllegalArgumentException if there is no stream configured for the given name, or
@@ -65,7 +65,7 @@ public abstract class StreamFactory {
         if (!isMapped(name)) {
             throw new IllegalArgumentException("No stream mapping configured for name '" + name + "'");
         }
-        
+
         Reader in = null;
         try {
             in = new BufferedReader(new FileReader(file));
@@ -77,13 +77,13 @@ public abstract class StreamFactory {
         }
         catch (RuntimeException ex) {
             IOUtil.closeQuietly(in);
-            throw ex;            
+            throw ex;
         }
     }
 
     /**
      * Creates a new <code>BeanReader</code> for reading from the given input stream.
-     * @param name the name of the stream in the mapping file
+          * @param name the name of the stream in the mapping file
      * @param in the input stream to read from
      * @return the created {@link BeanReader}
      * @throws IllegalArgumentException if there is no stream configured for the given name, or
@@ -92,6 +92,31 @@ public abstract class StreamFactory {
     public BeanReader createReader(String name, Reader in) throws IllegalArgumentException {
         return createReader(name, in, Locale.getDefault());
     }
+
+    /**
+     * Creates a new <code>BeanReader</code> for reading from the given input stream.
+     * 
+     * @param name the name of the stream in the mapping file
+     * @param in   the input stream to read from
+     * @return the created {@link BeanReader}
+     * @throws IllegalArgumentException if there is no stream configured for the given name, or
+     * if the stream mapping mode does not support reading an input stream
+     */
+    public BeanReader createReader(String name, InputStream in) throws IllegalArgumentException {
+        return createReader(name, in, Locale.getDefault());
+    }
+
+    /**
+     * Creates a new <code>BeanReader</code> for reading from the given input stream.
+     * 
+     * @param name the name of the stream in the mapping file
+     * @param in   the input stream to read from
+     * @return the created {@link BeanReader}
+     * @param locale the {@link Locale} used to format error messages, or null to use {@link Locale#getDefault()}
+     * @throws IllegalArgumentException if there is no stream configured for the given name, or
+     *  if the stream mapping mode does not support reading an input stream
+     */
+    public abstract BeanReader createReader(String name, InputStream in, Locale locale) throws IllegalArgumentException;
 
     /**
      * Creates a new <code>BeanReader</code> for reading from a stream.
@@ -103,19 +128,19 @@ public abstract class StreamFactory {
      *   if the stream mapping mode does not support reading an input stream
      */
     public abstract BeanReader createReader(String name, Reader in, Locale locale)
-        throws IllegalArgumentException;
+            throws IllegalArgumentException;
 
     /**
      * Creates a new {@link Unmarshaller} for unmarshalling records.
-     * @param name the name of the stream in the mapping file
+          * @param name the name of the stream in the mapping file
      * @return the created {@link Unmarshaller}
      * @throws IllegalArgumentException if there is no stream configured for the given name, or
      *   if the stream mapping mode does not support unmarshalling
-     */    
+     */
     public Unmarshaller createUnmarshaller(String name) throws IllegalArgumentException {
         return createUnmarshaller(name, null);
     }
-    
+
     /**
      * Creates a new {@link Unmarshaller} for unmarshalling records.
      * @param name the name of the stream in the mapping file
@@ -125,10 +150,10 @@ public abstract class StreamFactory {
      *   if the stream mapping mode does not support unmarshalling
      */
     public abstract Unmarshaller createUnmarshaller(String name, Locale locale);
-    
+
     /**
      * Creates a new <code>BeanWriter</code> for writing to the given file.
-     * @param name the name of the stream in the mapping file
+          * @param name the name of the stream in the mapping file
      * @param file the file to write to
      * @return the created {@link BeanWriter}
      * @throws IllegalArgumentException if there is no stream configured for the given name, or
@@ -139,7 +164,7 @@ public abstract class StreamFactory {
         if (!isMapped(name)) {
             throw new IllegalArgumentException("No stream mapping configured for name '" + name + "'");
         }
-        
+
         Writer out = null;
         try {
             out = new BufferedWriter(new FileWriter(file));
@@ -157,42 +182,65 @@ public abstract class StreamFactory {
 
     /**
      * Creates a new <code>BeanWriter</code> for writing to a stream.
-     * @param name the name of the stream in the mapping file
+          * @param name the name of the stream in the mapping file
      * @param out the output stream to write to
      * @return the created {@link BeanWriter}
      * @throws IllegalArgumentException if there is no stream configured for the given name, or
      *   if the stream mapping mode does not support writing to an output stream
      */
     public abstract BeanWriter createWriter(String name, Writer out)
-        throws IllegalArgumentException;
+            throws IllegalArgumentException;
+
+    /**
+     * Creates a new <code>BeanWriter</code> for writing to a stream.
+     * 
+     * @param name the name of the stream in the mapping file
+     * @param out  the output stream to write to
+     * @return the created {@link BeanWriter}
+     * @throws IllegalArgumentException if there is no stream configured for the
+     *                                  given name, or
+     *                                  if the stream mapping mode does not support
+     *                                  writing to an output stream
+     */
+    public BeanWriter createWriter(String name, OutputStream out)
+            throws IllegalArgumentException {
+        try {
+            return this.createWriter(name, new OutputStreamWriter(out));
+        } 
+        catch (UnsupportedOperationException e) 
+        {
+            return this.createWriter(name, out);
+        }
+
+    }
 
     /**
      * Creates a new {@link Marshaller} for marshalling bean objects.
-     * @param name the name of the stream in the mapping file
+          * @param name the name of the stream in the mapping file
      * @return the created {@link Marshaller}
      * @throws IllegalArgumentException if there is no stream configured for the given name, or
      *   if the stream mapping mode does not support marshalling
      */
     public abstract Marshaller createMarshaller(String name) throws IllegalArgumentException;
-    
+
     /**
      * Defines a new stream mapping.
-     * @param builder the {@link StreamBuilder}
+          * @param builder the {@link StreamBuilder}
      * @throws BeanIOConfigurationException if the stream builder is not valid
      * @since 2.1.0
      */
     public abstract void define(StreamBuilder builder) throws BeanIOConfigurationException;
-    
+
     /**
      * Loads a BeanIO mapping file from the application's classpath.
-     * @param resource the configuration resource name
+          * @param resource the configuration resource name
      * @throws BeanIOException if an {@link IOException} or other fatal error is caught while loading the file
      * @throws BeanIOConfigurationException if the mapping file is not found or invalid
      */
     public void loadResource(String resource) throws BeanIOException, BeanIOConfigurationException {
         loadResource(resource, null);
     }
-    
+
     /**
      * Loads a BeanIO mapping file from the application's classpath.
      * @param resource the configuration resource name
@@ -216,10 +264,10 @@ public abstract class StreamFactory {
             IOUtil.closeQuietly(in);
         }
     }
-    
+
     /**
      * Loads a BeanIO mapping file from the file system, and adds the configured streams to this factory.
-     * @param filename the name of the BeanIO configuration file to load
+          * @param filename the name of the BeanIO configuration file to load
      * @throws BeanIOException if an {@link IOException} or other fatal error is caught while loading the file
      * @throws BeanIOConfigurationException if the mapping file is invalid
      */
@@ -228,7 +276,7 @@ public abstract class StreamFactory {
     }
 
     /**
-     * Loads a BeanIO mapping file from the file system, and adds the configured streams to this factory.
+     * Loads a BeanIO mapping file from the file system, and adds the configured streams to this factory. 
      * @param filename the name of the BeanIO configuration file to load
      * @param properties user {@link Properties} for property substitution
      * @throws BeanIOException if an {@link IOException} or other fatal error is caught while loading the file
@@ -237,19 +285,19 @@ public abstract class StreamFactory {
     public void load(String filename, Properties properties) throws BeanIOException, BeanIOConfigurationException {
         load(new File(filename), properties);
     }
-    
+
     /**
      * Loads a BeanIO mapping file from the file system, and adds the configured streams to this factory.
-     * @param file the BeanIO configuration file to load
+          * @param file the BeanIO configuration file to load
      * @throws BeanIOException if an {@link IOException} or other fatal error is caught while loading the file
      * @throws BeanIOConfigurationException if the mapping file is invalid
      */
     public void load(File file) throws BeanIOException, BeanIOConfigurationException {
         load(file, null);
     }
-    
+
     /**
-     * Loads a BeanIO mapping file from the file system, and adds the configured streams to this factory.
+     * Loads a BeanIO mapping file from the file system, and adds the configured streams to this factory. 
      * @param file the BeanIO configuration file to load
      * @param properties user {@link Properties} for property substitution
      * @throws BeanIOException if an {@link IOException} or other fatal error is caught while loading the file
@@ -271,7 +319,7 @@ public abstract class StreamFactory {
 
     /**
      * Loads a BeanIO mapping file, and adds the configured streams to this factory.
-     * @param in the input stream to read the mapping file from
+          * @param in the input stream to read the mapping file from
      * @throws BeanIOException if an {@link IOException} or other fatal error is caught while reading the input stream
      * @throws BeanIOConfigurationException if the mapping file is invalid
      */
@@ -291,20 +339,20 @@ public abstract class StreamFactory {
     /**
      * Returns a new <code>StreamFactory</code> instance.  The implementation class is resolved
      * using the the BeanIO configuration setting <code>org.beanio.streamFactory</code>.
-     * @return a new <code>StreamFactory</code>
+          * @return a new <code>StreamFactory</code>
      * @throws BeanIOException if a <code>StreamFactory</code> could not be created
      * @see Settings
      */
     public static StreamFactory newInstance() throws BeanIOException {
         return newInstance(null);
     }
-    
+
     /**
      * Returns a new <code>StreamFactory</code> instance.  An implementation class is loaded
-     * using the the BeanIO configuration setting <code>org.beanio.streamFactory</code>.
+     * using the the BeanIO configuration setting <code>org.beanio.streamFactory</code>. 
      * @param classLoader the {@link ClassLoader} to use to load the stream factory and
      *   all subcomponents.  If null, the current thread's context class loader is used.
-     *   If there is no context class loader for the thread, the class loader that loaded 
+     *   If there is no context class loader for the thread, the class loader that loaded
      *   this class is used.
      * @return a new <code>StreamFactory</code>
      * @throws BeanIOException if a <code>StreamFactory</code> could not be created
@@ -318,12 +366,12 @@ public abstract class StreamFactory {
                 classLoader = Thread.currentThread().getContextClassLoader();
             }
             catch (Throwable t) { }
-            
+
             if (classLoader == null) {
                 classLoader = StreamFactory.class.getClassLoader();
             }
         }
-        
+
         String className = Settings.getInstance(classLoader).getProperty(Settings.STREAM_FACTORY_CLASS);
         if (className == null) {
             throw new BeanIOException("Property '" + Settings.STREAM_FACTORY_CLASS + "' not set");
@@ -339,46 +387,46 @@ public abstract class StreamFactory {
             else {
                 factory = (StreamFactory) classLoader.loadClass(className).newInstance();
             }
-            
+
             factory.setClassLoader(classLoader);
             factory.init();
             return factory;
         }
         catch (Exception ex) {
             throw new BeanIOException("Failed to load stream factory implementation class '" +
-                className + "'", ex);
+                    className + "'", ex);
         }
     }
-    
+
     /**
      * Test whether a mapping configuration exists for a named stream.
-     * @param streamName the stream name to test for existence
+          * @param streamName the stream name to test for existence
      * @return <code>true</code> if a mapping configuration is found for the named stream
      * @since 1.2
      */
     public abstract boolean isMapped(String streamName);
-    
+
     /**
      * This method is invoked after a StreamFactory is loaded and all attributes
      * have been set.
-     * @since 2.0
+          * @since 2.0
      */
     protected void init() { }
-    
+
     /**
      * Returns the class loader to use for resolving classpath resources and bean
      * objects declared in a mapping file.
-     * @return the {@link ClassLoader} to use
+          * @return the {@link ClassLoader} to use
      * @since 2.0
      */
     protected ClassLoader getClassLoader() {
         return classLoader;
     }
-    
+
     /**
      * Sets the class loader to use for resolving classpath resources and bean objects
      * declared in a mapping files.
-     * @param cl the {@link ClassLoader} to use
+          * @param cl the {@link ClassLoader} to use
      * @since 2.0
      */
     protected void setClassLoader(ClassLoader cl) {

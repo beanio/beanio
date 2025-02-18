@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.*;
 
+import org.apache.poi.ss.usermodel.Row;
 import org.beanio.*;
 import org.beanio.stream.*;
 import org.w3c.dom.Node;
@@ -95,6 +96,15 @@ public abstract class UnmarshallingContext extends ParsingContext {
      * @return the record value, or null if not supported
      */
     public Object toRecordValue(Node node) {
+        return null;
+    }
+
+     /**
+     * Converts a {@link Excel Row} to a record value.
+     * @param node the <code>Excel Row</code> to convert
+     * @return the record value, or null if not supported
+     */
+    public Object toRecordValue(Row row) {
         return null;
     }
     
